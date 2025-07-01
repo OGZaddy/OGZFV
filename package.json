@@ -6,11 +6,6 @@
   "scripts": {
     "start": "node index.js"
   },
-  "dependencies": {
-    "express": "^4.17.1",
-    "ws": "^8.2.3"
-  }
-}
   "keywords": [
     "ogz-prime",
     "trading-bot",
@@ -40,6 +35,11 @@
   "bugs": {
     "url": "https://github.com/ogzprime/transparency-system/issues"
   },
+  "homepage": "https://ogzprime.com",
+  "bin": {
+    "ogz-transparency": "./start_transparency_system.js"
+  }
+}
   "homepage": "https://ogzprime.com",
   "bin": {
     "ogz-transparency": "./start_transparency_system.js"
