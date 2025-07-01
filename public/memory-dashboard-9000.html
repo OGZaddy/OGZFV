@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🧠 OGZ Memory Dashboard</title>
+  <style>
+    body { 
+      font-family: monospace; 
+      background: #0f0f0f; 
+      color: #00ffcc; 
+      padding: 2rem; 
+      margin: 0; 
+    }
+    h1 { 
+      color: #0ff; 
+      text-align: center;
+    }
+    h2 { 
+      color: #ff0080; 
+      margin-top: -1rem; 
+      margin-bottom: 2rem; 
+      text-align: center;
+    }
+    table { 
+      border-collapse: collapse; 
+      width: 100%; 
+      margin-top: 1rem; 
+    }
+    th, td { 
+      border: 1px solid #222; 
+      padding: 0.5rem; 
+      text-align: left; 
+    }
+    th { 
+      background: #222; 
+    }
+    tr:nth-child(even) { 
+      background: #111; 
+    }
+    .win-rate {
+      font-weight: bold;
+    }
+    .high-win {
+      color: #00ff00;
+    }
+    .medium-win {
+      color: #ffff00;
+    }
+    .low-win {
+      color: #ff0000;
+    }
+    .positive-pnl {
+      color: #00ff00;
+    }
+    .negative-pnl {
+      color: #ff0000;
+    }
+    .filter-bar {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .filter-bar select, .filter-bar input {
+      background: #222;
+      color: #fff;
+      border: 1px solid #444;
+      padding: 5px 10px;
+      border-radius: 4px;
+    }
+    .filter-bar button {
+      background: #0066cc;
+      color: white;
+      border: none;
+      padding: 5px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .filter-bar button:hover {
+      background: #0088ff;
+    }
+    .stats-box {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 5px;
+      padding: 15px;
+      min-width: 150px;
+      flex-grow: 1;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 24px;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+    .stat-label {
+      color: #888;
+      font-size: 14px;
+    }
+    #refreshButton {
+      background: #00aa44;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+      margin: 20px auto;
+    }
+    #refreshButton:hover {
+      background: #00cc55;
+    }
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      color: #0ff;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      z-index: 1000;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 3px solid rgba(0,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #0ff;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 OGZ Pattern Memory Viewer</h1>
+  <h2>🧠 Power Signature: EXCEEDED 9000 — Untraceable. Unstoppable.</h2>
+  
+  <div class="stats-box">
+    <div class="stat-card">
+      <div class="stat-label">Total Patterns</div>
+      <div id="totalPatterns" class="stat-value">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Average Win Rate</div>
+      <div id="avgWinRate" class="stat-value">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Best Pattern PnL</div>
+      <div id="bestPatternPnL" class="stat-value">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Most Seen Pattern</div>
+      <div id="mostSeenPattern" class="stat-value">--</div>
+    </div>
+  </div>
+  
+  <div class="filter-bar">
+    <span>Filter by:</span>
+    <select id="filterType">
+      <option value="all">All Patterns</option>
+      <option value="highWin">High Win Rate (>70%)</option>
+      <option value="highPnL">High PnL (>$10)</option>
+      <option value="frequent">Frequently Seen (>5)</option>
+    </select>
+    <input type="text" id="searchInput" placeholder="Search pattern...">
+    <button id="applyFilter">Apply Filter</button>
+  </div>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Pattern Vector</th>
+        <th>Seen</th>
+        <th>Wins</th>
+        <th>Win Rate</th>
+        <th>Avg PnL</th>
+        <th>Last Seen</th>
+      </tr>
+    </thead>
+    <tbody id="memoryTable">
+      <tr><td colspan="6">Loading pattern memory...</td></tr>
+    </tbody>
+  </table>
+  
+  <button id="refreshButton">Refresh Memory Data</button>
+  
+  <div class="loading-overlay" id="loadingOverlay">
+    <div>
+      <span class="spinner"></span>
+      Loading pattern memory...
+    </div>
+  </div>
+
+  <script>
+    // Memory data cache
+    let memoryData = null;
+    
+    // DOM elements
+    const memoryTable = document.getElementById("memoryTable");
+    const filterType = document.getElementById("filterType");
+    const searchInput = document.getElementById("searchInput");
+    const applyFilterBtn = document.getElementById("applyFilter");
+    const refreshButton = document.getElementById("refreshButton");
+    const loadingOverlay = document.getElementById("loadingOverlay");
+    
+    // Stats elements
+    const totalPatterns = document.getElementById("totalPatterns");
+    const avgWinRate = document.getElementById("avgWinRate");
+    const bestPatternPnL = document.getElementById("bestPatternPnL");
+    const mostSeenPattern = document.getElementById("mostSeenPattern");
+    
+    // Load memory data from API
+    function loadMemoryData() {
+      showLoading(true);
+      
+      // Use the correct API endpoint URL with the proper port (3004)
+      fetch('http://localhost:3004/api/pattern-memory')
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`API error: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(data => {
+          memoryData = data;
+          updateStats(data);
+          renderMemoryTable(data);
+          showLoading(false);
+        })
+        .catch(err => {
+          console.error("Error loading memory data:", err);
+          memoryTable.innerHTML = `<tr><td colspan='6'>Error loading memory: ${err.message}</td></tr>`;
+          showLoading(false);
+        });
+    }
+    
+    // Update statistics
+    function updateStats(data) {
+      if (!data || Object.keys(data).length === 0) {
+        totalPatterns.textContent = "0";
+        avgWinRate.textContent = "0%";
+        bestPatternPnL.textContent = "$0";
+        mostSeenPattern.textContent = "None";
+        return;
+      }
+      
+      // Total patterns
+      const patternCount = Object.keys(data).length;
+      totalPatterns.textContent = patternCount;
+      
+      // Calculate overall stats
+      let totalWinRate = 0;
+      let bestPnL = -Infinity;
+      let bestPnLPattern = "";
+      let mostSeenCount = 0;
+      let mostSeenId = "";
+      
+      Object.entries(data).forEach(([key, pattern]) => {
+        // Calculate win rate
+        const winRate = pattern.wins / pattern.timesSeen;
+        totalWinRate += winRate;
+        
+        // Calculate average PnL
+        const avgPnL = pattern.totalPnL / pattern.timesSeen;
+        
+        // Track best PnL
+        if (avgPnL > bestPnL) {
+          bestPnL = avgPnL;
+          bestPnLPattern = key;
+        }
+        
+        // Track most frequently seen
+        if (pattern.timesSeen > mostSeenCount) {
+          mostSeenCount = pattern.timesSeen;
+          mostSeenId = key;
+        }
+      });
+      
+      // Update stat elements
+      const averageWinRate = (totalWinRate / patternCount) * 100;
+      avgWinRate.textContent = `${averageWinRate.toFixed(1)}%`;
+      bestPatternPnL.textContent = `$${bestPnL.toFixed(2)}`;
+      mostSeenPattern.textContent = `${mostSeenCount}x`;
+    }
+    
+    // Render memory table
+    function renderMemoryTable(data, filter = "all", searchTerm = "") {
+      memoryTable.innerHTML = "";
+      
+      if (!data || Object.keys(data).length === 0) {
+        memoryTable.innerHTML = "<tr><td colspan='6'>No pattern memory data available</td></tr>";
+        return;
+      }
+      
+      let entries = Object.entries(data);
+      
+      // Apply filters
+      if (filter === "highWin") {
+        entries = entries.filter(([_, pattern]) => 
+          (pattern.wins / pattern.timesSeen) > 0.7
+        );
+      } else if (filter === "highPnL") {
+        entries = entries.filter(([_, pattern]) => 
+          (pattern.totalPnL / pattern.timesSeen) > 10
+        );
+      } else if (filter === "frequent") {
+        entries = entries.filter(([_, pattern]) => pattern.timesSeen > 5);
+      }
+      
+      // Apply search
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        entries = entries.filter(([key, _]) => 
+          key.toLowerCase().includes(term)
+        );
+      }
+      
+      // Sort by most seen first
+      entries.sort(([_, a], [__, b]) => b.timesSeen - a.timesSeen);
+      
+      // Create table rows
+      entries.forEach(([vector, stats]) => {
+        const row = document.createElement("tr");
+        
+        // Calculate win rate
+        const winRate = stats.wins / stats.timesSeen * 100;
+        
+        // Determine win rate class
+        let winRateClass = "";
+        if (winRate >= 70) winRateClass = "high-win";
+        else if (winRate >= 50) winRateClass = "medium-win";
+        else winRateClass = "low-win";
+        
+        // Calculate average PnL
+        const avgPnL = stats.totalPnL / stats.timesSeen;
+        const pnlClass = avgPnL >= 0 ? "positive-pnl" : "negative-pnl";
+        
+        // Format last seen date
+        const lastSeen = stats.lastSeen ? new Date(stats.lastSeen).toLocaleString() : "Never";
+        
+        // Vector display (first 10 chars + ... + last 10 chars)
+        const shortVector = vector.length > 25 ? 
+          `${vector.substring(0, 10)}...${vector.substring(vector.length - 10)}` : 
+          vector;
+        
+        row.innerHTML = `
+          <td title="${vector}">${shortVector}</td>
+          <td>${stats.timesSeen}</td>
+          <td>${stats.wins}</td>
+          <td class="win-rate ${winRateClass}">${winRate.toFixed(1)}%</td>
+          <td class="${pnlClass}">$${avgPnL.toFixed(2)}</td>
+          <td>${lastSeen}</td>
+        `;
+        
+        memoryTable.appendChild(row);
+      });
+      
+      // Show "no results" if filtered to nothing
+      if (entries.length === 0) {
+        memoryTable.innerHTML = "<tr><td colspan='6'>No patterns match your filter criteria</td></tr>";
+      }
+    }
+    
+    // Show/hide loading overlay
+    function showLoading(show) {
+      loadingOverlay.style.display = show ? 'flex' : 'none';
+    }
+    
+    // Event listeners
+    applyFilterBtn.addEventListener("click", () => {
+      const filter = filterType.value;
+      const search = searchInput.value.trim();
+      renderMemoryTable(memoryData, filter, search);
+    });
+    
+    refreshButton.addEventListener("click", loadMemoryData);
+    
+    // Initial load
+    loadMemoryData();
+    
+    // Set up auto-refresh
+    setInterval(loadMemoryData, 60000); // Refresh every minute
+  </script>
+</body>
+</html>

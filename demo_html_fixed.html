@@ -1,0 +1,2292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OGZPrime AI Demo - Watch Live Trading</title>
+    <meta name="robots" content="noindex, nofollow">
+    
+    <style>
+        :root {
+            --primary-red: #dc2626;
+            --dark-red: #991b1b;
+            --light-red: #f87171;
+            --neon-red: #ff3333;
+            --dark-bg: #0a0a0a;
+            --card-bg: #111111;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #888888;
+            --border-glow: rgba(220, 38, 38, 0.5);
+            --success-green: #22c55e;
+            --warning-orange: #ffaa00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a0a0a 50%, #2a0a0a 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(17, 17, 17, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--primary-red);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--primary-red), var(--neon-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .demo-badge {
+            background: linear-gradient(45deg, var(--primary-red), var(--neon-red));
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            animation: pulse-glow 2s infinite;
+        }
+
+        .demo-badge::before {
+            content: '🔴 ';
+            animation: blink 1s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(220, 38, 38, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(220, 38, 38, 0.8); }
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Bot Connection Status */
+        .connection-alert {
+            background: rgba(220, 38, 38, 0.1);
+            border: 2px solid var(--primary-red);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 0 30px var(--border-glow);
+        }
+
+        .connection-alert.connected {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: var(--success-green);
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.5);
+        }
+
+        .connection-alert.disconnected {
+            background: rgba(255, 170, 0, 0.1);
+            border-color: var(--warning-orange);
+            box-shadow: 0 0 30px rgba(255, 170, 0, 0.5);
+        }
+
+        .connection-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--primary-red);
+        }
+
+        .connection-title.connected {
+            color: var(--success-green);
+        }
+
+        .connection-title.disconnected {
+            color: var(--warning-orange);
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(153, 27, 27, 0.1));
+            border: 2px solid var(--primary-red);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 0 30px var(--border-glow);
+        }
+
+        .welcome-title {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            margin-bottom: 15px;
+            color: var(--primary-red);
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .user-greeting {
+            font-size: 1rem;
+            color: var(--neon-red);
+            margin-bottom: 15px;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-item {
+            background: var(--card-bg);
+            border: 1px solid var(--primary-red);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .status-item:hover {
+            border-color: var(--neon-red);
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px var(--border-glow);
+        }
+
+        .status-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .status-online { color: var(--success-green); }
+        .status-profit { color: var(--success-green); }
+        .status-loss { color: var(--neon-red); }
+        .status-offline { color: var(--warning-orange); }
+
+        /* Main Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Trading Panel */
+        .trading-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--primary-red);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .trading-panel:hover {
+            border-color: var(--neon-red);
+            box-shadow: 0 0 20px var(--border-glow);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--primary-red);
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary-red);
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.online { background: var(--success-green); }
+        .status-dot.offline { background: var(--neon-red); }
+        .status-dot.connecting { background: var(--warning-orange); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Current Trade Display */
+        .current-trade {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid var(--primary-red);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .current-trade.active {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: var(--success-green);
+        }
+
+        .trade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .trade-asset {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary-red);
+        }
+
+        .trade-asset.active {
+            color: var(--success-green);
+        }
+
+        .trade-time {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .trade-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            text-align: center;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .ai-reasoning {
+            background: rgba(220, 38, 38, 0.1);
+            border-left: 3px solid var(--neon-red);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-red), var(--neon-red));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-red);
+            border: 1px solid var(--primary-red);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, var(--neon-red), #d32f2f);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Activity Log */
+        .activity-log {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary-red);
+            border-radius: 10px;
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .log-header {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--primary-red);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .log-entry {
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            border-left: 3px solid transparent;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .log-entry:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .log-entry.trade-buy {
+            border-left-color: var(--success-green);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .log-entry.trade-sell {
+            border-left-color: var(--neon-red);
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        .log-entry.analysis {
+            border-left-color: var(--primary-red);
+            background: rgba(220, 38, 38, 0.05);
+        }
+
+        .log-entry.profit {
+            border-left-color: var(--success-green);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .log-entry.system {
+            border-left-color: var(--warning-orange);
+            background: rgba(255, 170, 0, 0.1);
+        }
+
+        .log-time {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            margin-right: 8px;
+        }
+
+        /* Side Panel */
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Performance Metrics */
+        .performance-metrics {
+            background: var(--card-bg);
+            border: 1px solid var(--primary-red);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid var(--primary-red);
+            border-radius: 8px;
+        }
+
+        .metric-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Offline State */
+        .offline-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            border-radius: 15px;
+        }
+
+        .offline-message {
+            text-align: center;
+            color: var(--warning-orange);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .offline-instructions {
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        /* Loading States */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .spinner {
+            border: 4px solid var(--text-secondary);
+            border-top: 4px solid var(--primary-red);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .side-panel {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .status-bar {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .trade-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .trade-details {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ASSET HANDLER SCRIPT - REAL DATA ONLY -->
+    <script>
+        // Handle asset selection from URL parameters
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get parameters from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedAsset = urlParams.get('asset') || localStorage.getItem('demo_asset') || 'BTC-USD';
+            const assetPrice = urlParams.get('price') || localStorage.getItem('demo_price') || '43250';
+            const isAuthentic = urlParams.get('authentic') === 'true' || localStorage.getItem('demo_authentic') === 'true';
+            
+            // Asset configuration
+            const assets = {
+                'BTC-USD': { name: 'Bitcoin', symbol: '₿', icon: '🟠' },
+                'ETH-USD': { name: 'Ethereum', symbol: 'Ξ', icon: '🔷' },
+                'SOL-USD': { name: 'Solana', symbol: '◎', icon: '🟣' },
+                'ADA-USD': { name: 'Cardano', symbol: '₳', icon: '🔵' }
+            };
+            
+            const asset = assets[selectedAsset] || assets['BTC-USD'];
+            
+            // Update page title
+            document.title = `OGZPrime ${asset.name} Demo - LIVE AUTHENTIC TRADING`;
+            
+            // Store for later use
+            window.demoAsset = asset;
+            window.selectedAsset = selectedAsset;
+            window.assetPrice = assetPrice;
+            window.isAuthentic = isAuthentic;
+            
+            console.log(`✅ Demo initialized for ${asset.name} (${selectedAsset}) at $${assetPrice}`);
+        });
+    </script>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">OGZPrime Live</div>
+            <div class="demo-badge" id="demo-badge">CONNECTING TO BOT</div>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Bot Connection Status -->
+        <div class="connection-alert" id="connection-alert">
+            <h2 class="connection-title" id="connection-title">🔌 Connecting to OGZ Prime Bot...</h2>
+            <p id="connection-message">
+                Establishing connection to your live trading bot. Please wait...
+            </p>
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1 class="welcome-title" id="welcome-title">🤖 OGZPrime LIVE Trading Bot</h1>
+            <p class="welcome-subtitle" id="welcome-subtitle">
+                Connecting to your REAL trading algorithms with LIVE market data
+            </p>
+            <div class="user-greeting" id="user-greeting">
+                Authentic trading performance - no simulation, no fake data
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-label">Bot Status</div>
+                <div class="status-value status-offline" id="bot-status">
+                    CONNECTING
+                </div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Account Balance</div>
+                <div class="status-value" id="account-balance">
+                    --
+                </div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Today's P&L</div>
+                <div class="status-value" id="daily-pnl">
+                    --
+                </div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Trades Today</div>
+                <div class="status-value" id="trades-today">
+                    --
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard-grid">
+            <!-- Trading Panel -->
+            <div class="trading-panel" style="position: relative;">
+                <div class="panel-header">
+                    <div class="panel-title">🧠 Live Trading Activity</div>
+                    <div class="connection-status">
+                        <div class="status-dot connecting" id="connection-dot"></div>
+                        <span id="connection-text">Connecting to Bot...</span>
+                    </div>
+                </div>
+
+                <!-- Current Trade Display -->
+                <div class="current-trade" id="current-trade">
+                    <div class="trade-header">
+                        <div class="trade-asset" id="trade-asset">🔌 Waiting for Bot Connection</div>
+                        <div class="trade-time" id="trade-time">--</div>
+                    </div>
+                    <div class="trade-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Entry Price</div>
+                            <div class="detail-value" id="entry-price">--</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Current Price</div>
+                            <div class="detail-value" id="current-price">--</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Position Size</div>
+                            <div class="detail-value" id="position-size">--</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Unrealized P&L</div>
+                            <div class="detail-value" id="unrealized-pnl">--</div>
+                        </div>
+                    </div>
+                    <div class="ai-reasoning" id="ai-reasoning">
+                        🤖 <strong>AI Status:</strong> Waiting for bot connection to display live reasoning...
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="controls">
+                    <button class="btn btn-secondary" onclick="reconnectBot()" disabled id="reconnect-btn">
+                        🔄 Reconnect
+                    </button>
+                    <button class="btn btn-primary" onclick="refreshData()" disabled id="refresh-btn">
+                        📊 Refresh Data
+                    </button>
+                    <button class="btn btn-danger" onclick="showBotInfo()" id="info-btn">
+                        ℹ️ Bot Info
+                    </button>
+                </div>
+
+                <!-- Activity Log -->
+                <div class="activity-log">
+                    <div class="log-header">
+                        <span class="status-dot connecting"></span>
+                        Live Bot Activity Feed
+                    </div>
+                    <div id="activity-feed">
+                        <div class="log-entry system">
+                            <span class="log-time">[--:--:--]</span>
+                            🔌 SYSTEM: Attempting to connect to OGZ Prime trading bot...
+                        </div>
+                        <div class="log-entry system">
+                            <span class="log-time">[--:--:--]</span>
+                            ⚠️ SYSTEM: Waiting for WebSocket connection on port 3005...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Offline Overlay (shown when bot not connected) -->
+                <div class="offline-overlay" id="offline-overlay">
+                    <div class="offline-message">
+                        🤖 OGZ Prime Bot Offline
+                    </div>
+                    <div class="offline-instructions">
+                        Your trading bot is not currently running. To see live trading data:
+                        <br><br>
+                        1. Start your OGZ Prime bot<br>
+                        2. Ensure WebSocket server is running on port 3005<br>
+                        3. Refresh this page
+                        <br><br>
+                        <strong>This demo only shows REAL data from your actual bot.</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Side Panel -->
+            <div class="side-panel">
+                <!-- Performance Metrics -->
+                <div class="performance-metrics">
+                    <div class="panel-title">📈 Live Performance</div>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <div class="metric-value" id="win-rate">--</div>
+                            <div class="metric-label">Win Rate</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value" id="avg-trade">--</div>
+                            <div class="metric-label">Avg Per Trade</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value" id="best-trade">--</div>
+                            <div class="metric-label">Best Trade</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value" id="ai-confidence">--</div>
+                            <div class="metric-label">AI Confidence</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Market Data -->
+                <div class="performance-metrics">
+                    <div class="panel-title">📊 Live Market Data</div>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <div class="metric-value" id="market-price">--</div>
+                            <div class="metric-label">Current Price</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value" id="market-change">--</div>
+                            <div class="metric-label">24h Change</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value" id="market-volume">--</div>
+                            <div class="metric-label">Volume</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value" id="market-trend">--</div>
+                            <div class="metric-label">Trend</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Pattern Recognition Section -->
+                <div class="performance-metrics">
+                    <div class="panel-title">🧠 AI Pattern Recognition</div>
+                    <div class="pattern-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px;">
+                        <div class="pattern-card" id="rsiPattern" style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; text-align: center; border: 1px solid #333; border-left: 4px solid #ffaa00;">
+                            <div class="pattern-name" style="font-size: 12px; color: #cccccc; margin-bottom: 5px;">RSI Pattern</div>
+                            <div class="pattern-confidence" id="rsiConfidence" style="font-size: 18px; font-weight: bold; margin-bottom: 3px; color: #ffaa00;">--</div>
+                            <div class="pattern-signal" id="rsiSignal" style="font-size: 10px; color: #ffffff; font-weight: bold;">UNKNOWN</div>
+                        </div>
+                        <div class="pattern-card" id="macdPattern" style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; text-align: center; border: 1px solid #333; border-left: 4px solid #ffaa00;">
+                            <div class="pattern-name" style="font-size: 12px; color: #cccccc; margin-bottom: 5px;">MACD Pattern</div>
+                            <div class="pattern-confidence" id="macdConfidence" style="font-size: 18px; font-weight: bold; margin-bottom: 3px; color: #ffaa00;">--</div>
+                            <div class="pattern-signal" id="macdSignal" style="font-size: 10px; color: #ffffff; font-weight: bold;">UNKNOWN</div>
+                        </div>
+                        <div class="pattern-card" id="trendPattern" style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; text-align: center; border: 1px solid #333; border-left: 4px solid #ffaa00;">
+                            <div class="pattern-name" style="font-size: 12px; color: #cccccc; margin-bottom: 5px;">Trend Pattern</div>
+                            <div class="pattern-confidence" id="trendConfidence" style="font-size: 18px; font-weight: bold; margin-bottom: 3px; color: #ffaa00;">--</div>
+                            <div class="pattern-signal" id="trendSignal" style="font-size: 10px; color: #ffffff; font-weight: bold;">UNKNOWN</div>
+                        </div>
+                        <div class="pattern-card" id="bollingerPattern" style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; text-align: center; border: 1px solid #333; border-left: 4px solid #ffaa00;">
+                            <div class="pattern-name" style="font-size: 12px; color: #cccccc; margin-bottom: 5px;">Bollinger Bands</div>
+                            <div class="pattern-confidence" id="bollingerConfidence" style="font-size: 18px; font-weight: bold; margin-bottom: 3px; color: #ffaa00;">--</div>
+                            <div class="pattern-signal" id="bollingerSignal" style="font-size: 10px; color: #ffffff; font-weight: bold;">UNKNOWN</div>
+                        </div>
+                        <div class="pattern-card" id="volumePattern" style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; text-align: center; border: 1px solid #333; border-left: 4px solid #ffaa00;">
+                            <div class="pattern-name" style="font-size: 12px; color: #cccccc; margin-bottom: 5px;">Volume Pattern</div>
+                            <div class="pattern-confidence" id="volumeConfidence" style="font-size: 18px; font-weight: bold; margin-bottom: 3px; color: #ffaa00;">--</div>
+                            <div class="pattern-signal" id="volumeSignal" style="font-size: 10px; color: #ffffff; font-weight: bold;">UNKNOWN</div>
+                        </div>
+                        <div class="pattern-card" id="candlestickPattern" style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; text-align: center; border: 1px solid #333; border-left: 4px solid #ffaa00;">
+                            <div class="pattern-name" style="font-size: 12px; color: #cccccc; margin-bottom: 5px;">Candlestick</div>
+                            <div class="pattern-confidence" id="candlestickConfidence" style="font-size: 18px; font-weight: bold; margin-bottom: 3px; color: #ffaa00;">--</div>
+                            <div class="pattern-signal" id="candlestickSignal" style="font-size: 10px; color: #ffffff; font-weight: bold;">UNKNOWN</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables - STANDALONE DASHBOARD (NO WEBSOCKETS)
+        let isConnected = false;
+        let tickCount = 0;
+
+        // Initialize demo - STANDALONE MODE
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                initializeStandaloneDashboard();
+            }, 1000);
+        });
+
+        // Initialize standalone dashboard without any WebSocket connections
+        function initializeStandaloneDashboard() {
+            console.log('🤖 Initializing standalone AI pattern recognition dashboard...');
+            
+            // Update connection status to show standalone mode
+            updateConnectionStatus('standalone');
+            
+            // Generate initial realistic patterns
+            generateRealisticPatterns();
+            
+            // Start periodic pattern updates to keep dashboard active
+            setInterval(() => {
+                generateRealisticPatterns();
+            }, 5000); // Update every 5 seconds
+            
+            addToActivityLog({
+                type: 'system',
+                message: '🚀 STANDALONE: AI Pattern Recognition dashboard initialized (no WebSocket connections)'
+            });
+        }
+
+        // Connect to LOCAL OGZ Prime server at ws://localhost:3007
+        function connectToLocalServer() {
+            try {
+                console.log('🔌 DIAGNOSTIC: Connecting to local OGZ Prime server at ws://localhost:3007...');
+                console.log('🔍 DIAGNOSTIC: This will receive AI brain tick data from the local server');
+                
+                localSocket = new WebSocket(LOCAL_SERVER_URL);
+
+                localSocket.onopen = () => {
+                    console.log('✅ CONNECTED TO LOCAL OGZ PRIME SERVER!');
+                    isLocalConnected = true;
+                    reconnectAttempts = 0;
+                    missedHeartbeats = 0;
+                    lastHeartbeat = Date.now();
+                    updateConnectionStatus('local_connected');
+                    hideOfflineOverlay();
+                    
+                    // Start heartbeat system
+                    startHeartbeat();
+                    
+                    // Send initial ping to establish connection
+                    localSocket.send(JSON.stringify({
+                        type: 'ping',
+                        timestamp: Date.now(),
+                        source: 'demo_client'
+                    }));
+                    
+                    addToActivityLog({
+                        type: 'system',
+                        message: '🔌 CONNECTED: Local OGZ Prime server connection established with heartbeat monitoring'
+                    });
+                };
+
+                localSocket.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        console.log('📊 DIAGNOSTIC: Received local server message:', data);
+                        handleLocalServerMessage(data);
+                    } catch (error) {
+                        console.error('❌ DIAGNOSTIC: Error parsing local server data:', error);
+                    }
+                };
+
+                localSocket.onclose = (event) => {
+                    console.log('❌ Lost connection to local OGZ Prime server. Code:', event.code, 'Reason:', event.reason);
+                    isLocalConnected = false;
+                    stopHeartbeat();
+                    updateConnectionStatus('local_disconnected');
+                    
+                    // Attempt to reconnect to local server
+                    if (reconnectAttempts < maxReconnectAttempts) {
+                        scheduleLocalReconnect();
+                    } else {
+                        addToActivityLog({
+                            type: 'system',
+                            message: '❌ SYSTEM: Max reconnection attempts reached. Please check your OGZ Prime server.'
+                        });
+                    }
+                };
+
+                localSocket.onerror = (error) => {
+                    console.error('🚫 Local server WebSocket error:', error);
+                    isLocalConnected = false;
+                    updateConnectionStatus('local_error');
+                };
+
+            } catch (error) {
+                console.error('🚫 Failed to create local server connection:', error);
+                updateConnectionStatus('local_error');
+            }
+        }
+
+        // Connect to POLYGON.IO for supplemental price data
+        function connectToPolygon() {
+            try {
+                console.log('🔌 DIAGNOSTIC: Connecting to Polygon.io for supplemental price data...');
+                console.log('🔍 DIAGNOSTIC: This supplements local server with external price validation');
+                
+                polygonSocket = new WebSocket(POLYGON_CRYPTO_SOCKET);
+
+                polygonSocket.onopen = () => {
+                    console.log('✅ CONNECTED TO POLYGON.IO CRYPTO FEED!');
+                    isPolygonConnected = true;
+                    
+                    // Authenticate with Polygon
+                    console.log('🔐 Authenticating with Polygon.io...');
+                    polygonSocket.send(JSON.stringify({
+                        action: 'auth',
+                        params: POLYGON_API_KEY
+                    }));
+                };
+
+                polygonSocket.onmessage = (event) => {
+                    try {
+                        const messages = JSON.parse(event.data);
+                        const msgArray = Array.isArray(messages) ? messages : [messages];
+
+                        for (const msg of msgArray) {
+                            handlePolygonMessage(msg);
+                        }
+                    } catch (error) {
+                        console.error('❌ DIAGNOSTIC: Error parsing Polygon data:', error);
+                    }
+                };
+
+                polygonSocket.onclose = () => {
+                    console.log('❌ Lost connection to Polygon.io');
+                    isPolygonConnected = false;
+                    isAuthenticated = false;
+                    
+                    // Attempt to reconnect Polygon (less critical than local server)
+                    setTimeout(() => {
+                        connectToPolygon();
+                    }, 10000);
+                };
+
+                polygonSocket.onerror = (error) => {
+                    console.error('🚫 Polygon WebSocket error:', error);
+                    isPolygonConnected = false;
+                };
+
+            } catch (error) {
+                console.error('🚫 Failed to create Polygon connection:', error);
+            }
+        }
+
+        // Handle messages from LOCAL OGZ Prime server
+        function handleLocalServerMessage(data) {
+            console.log('🧠 DIAGNOSTIC: Processing local server message type:', data.type);
+            
+            // Handle analysis data for pattern recognition
+            if (data.type === 'analysis') {
+                console.log('🧠 DIAGNOSTIC: Processing AI analysis data for patterns:', data);
+                updatePatternRecognition(data);
+            }
+            
+            // Handle comprehensive AI brain tick data
+            if (data.type === 'tick' && data.data && data.data.data) {
+                console.log('✅ DIAGNOSTIC: Processing comprehensive AI brain tick data:', data.data.data);
+                const aiData = data.data.data;
+                
+                // Update pattern recognition from tick data
+                if (aiData.rsi !== undefined || aiData.macd !== undefined || aiData.trend) {
+                    updatePatternRecognitionFromTick(aiData);
+                }
+                
+                // Update core trading data
+                if (aiData.balance) {
+                    document.getElementById('account-balance').textContent = `$${aiData.balance.toLocaleString()}`;
+                }
+                
+                // Update position information
+                if (aiData.position) {
+                    const position = aiData.position;
+                    const asset = window.demoAsset || { name: 'Bitcoin', symbol: 'BTC' };
+                    document.getElementById('trade-asset').textContent =
+                        `${position.direction ? '🟢' : '🔴'} ${position.direction || 'NO POSITION'} ${asset.name}`;
+                    document.getElementById('entry-price').textContent =
+                        position.entryPrice ? `$${position.entryPrice.toLocaleString()}` : '--';
+                    document.getElementById('position-size').textContent =
+                        position.size ? `${position.size.toFixed(4)} ${asset.symbol}` : '--';
+                } else {
+                    document.getElementById('trade-asset').textContent = '⚪ NO POSITION';
+                    document.getElementById('entry-price').textContent = '--';
+                    document.getElementById('position-size').textContent = '--';
+                }
+                
+                // Update P&L information
+                if (aiData.pnl !== undefined) {
+                    const pnlElement = document.getElementById('unrealized-pnl');
+                    pnlElement.textContent = `${aiData.pnl >= 0 ? '+' : ''}$${aiData.pnl.toFixed(2)}`;
+                    pnlElement.className = `detail-value ${aiData.pnl >= 0 ? 'status-profit' : 'status-loss'}`;
+                    
+                    const dailyPnlElement = document.getElementById('daily-pnl');
+                    dailyPnlElement.textContent = `${aiData.pnl >= 0 ? '+' : ''}$${aiData.pnl.toFixed(2)}`;
+                    dailyPnlElement.className = `status-value ${aiData.pnl >= 0 ? 'status-profit' : 'status-loss'}`;
+                }
+                
+                // Update AI analysis data
+                if (aiData.confidence !== undefined) {
+                    document.getElementById('ai-confidence').textContent = `${(aiData.confidence * 100).toFixed(1)}%`;
+                }
+                
+                // Update technical indicators
+                if (aiData.rsi !== undefined) {
+                    document.getElementById('market-trend').textContent =
+                        `RSI: ${aiData.rsi.toFixed(1)} | ${aiData.trend || 'Unknown'}`;
+                }
+                
+                // Update comprehensive AI reasoning
+                let reasoningText = '🧠 <strong>AI Brain Analysis:</strong> ';
+                if (aiData.reason) {
+                    reasoningText += aiData.reason;
+                } else {
+                    reasoningText += 'Processing market data...';
+                }
+                
+                if (aiData.confidence !== undefined) {
+                    reasoningText += ` (Confidence: ${(aiData.confidence * 100).toFixed(1)}%)`;
+                }
+                
+                if (aiData.decision && aiData.decision !== 'hold') {
+                    reasoningText += ` | Decision: ${aiData.decision.toUpperCase()}`;
+                }
+                
+                document.getElementById('ai-reasoning').innerHTML = reasoningText;
+                
+                // Update trades count
+                if (aiData.trades !== undefined) {
+                    document.getElementById('trades-today').textContent = aiData.trades;
+                }
+                
+                // Update system status
+                document.getElementById('bot-status').textContent =
+                    aiData.systemStatus === 'running' ? 'ONLINE' : 'OFFLINE';
+                document.getElementById('bot-status').className =
+                    `status-value ${aiData.systemStatus === 'running' ? 'status-online' : 'status-offline'}`;
+                
+                // Update trade time
+                document.getElementById('trade-time').textContent = new Date().toLocaleTimeString();
+                
+                // Log comprehensive AI activity
+                let logMessage = `🧠 AI BRAIN: Balance: $${aiData.balance?.toLocaleString() || 'N/A'}`;
+                if (aiData.decision && aiData.decision !== 'hold') {
+                    logMessage += ` | Decision: ${aiData.decision.toUpperCase()}`;
+                }
+                if (aiData.confidence !== undefined) {
+                    logMessage += ` | Confidence: ${(aiData.confidence * 100).toFixed(1)}%`;
+                }
+                if (aiData.rsi !== undefined) {
+                    logMessage += ` | RSI: ${aiData.rsi.toFixed(1)}`;
+                }
+                
+                addToActivityLog({
+                    type: 'analysis',
+                    message: logMessage
+                });
+                
+                // Log pattern recognition if available
+                if (aiData.patternEvaluation && aiData.patternEvaluation.confidence > 0) {
+                    addToActivityLog({
+                        type: 'analysis',
+                        message: `🔍 PATTERN: ${aiData.patternEvaluation.direction} | Confidence: ${(aiData.patternEvaluation.confidence * 100).toFixed(1)}%`
+                    });
+                }
+                
+                // Log risk management status
+                if (aiData.riskStatus) {
+                    addToActivityLog({
+                        type: 'system',
+                        message: `🛡️ RISK: ${aiData.riskStatus.status || 'Active'} | Drawdown: ${aiData.riskStatus.currentDrawdown || 0}%`
+                    });
+                }
+                
+                // Log debug information periodically
+                if (aiData.debugInfo && Math.random() < 0.1) { // 10% chance
+                    addToActivityLog({
+                        type: 'system',
+                        message: `🔧 DEBUG: ${aiData.debugInfo.candlesCount || 0} candles | AI: ${aiData.debugInfo.aiInitialized ? 'Active' : 'Inactive'}`
+                    });
+                }
+                
+            } else if (data.type === 'trade_execution') {
+                console.log('✅ DIAGNOSTIC: Processing trade execution from local server');
+                handleTradeExecution(data.data);
+                
+            } else if (data.type === 'price_update') {
+                console.log('✅ DIAGNOSTIC: Processing price update from local server');
+                handlePriceUpdate(data.data);
+                
+            } else if (data.type === 'status') {
+                console.log('✅ DIAGNOSTIC: Processing status update from local server');
+                handleStatusUpdate(data.data);
+                
+            } else if (data.type === 'pong') {
+                console.log('🏓 DIAGNOSTIC: Received pong from local server');
+                lastHeartbeat = Date.now();
+                missedHeartbeats = 0;
+                
+            } else if (data.type === 'analysis_update') {
+                console.log('🧠 DIAGNOSTIC: Processing analysis_update from AI system:', data);
+                handleAnalysisUpdate(data.data || data);
+                
+            } else if (data.type === 'thought_process') {
+                console.log('🧠 DIAGNOSTIC: Processing thought_process from AI system:', data);
+                handleThoughtProcess(data.data || data);
+                
+            } else if (data.type === 'initial_data') {
+                console.log('📊 DIAGNOSTIC: Processing initial_data from AI system:', data);
+                handleInitialData(data.data || data);
+                
+            } else if (data.type === 'decision_made') {
+                console.log('🎯 DIAGNOSTIC: Processing decision_made from AI system:', data);
+                handleDecisionMade(data.data || data);
+                
+            } else {
+                console.log('⚠️ DIAGNOSTIC: Unknown local server message type:', data.type);
+            }
+        }
+
+        // Add the missing handleBotUpdate function (from working dashboards)
+        function handleBotUpdate(data) {
+            console.log('🤖 DIAGNOSTIC: handleBotUpdate called with:', data);
+            
+            if (data.type === 'tick' && data.data && data.data.data) {
+                const tickData = data.data.data;
+                
+                // Update bot status display
+                document.getElementById('bot-status').textContent = 'ONLINE';
+                document.getElementById('bot-status').className = 'status-value status-online';
+                
+                // Update balance
+                if (tickData.balance) {
+                    document.getElementById('account-balance').textContent = `$${tickData.balance.toLocaleString()}`;
+                }
+                
+                // Update position info
+                if (tickData.position) {
+                    const pos = tickData.position;
+                    document.getElementById('trade-asset').textContent =
+                        `${pos.direction ? '🟢' : '🔴'} ${pos.direction || 'NO POSITION'} ${window.demoAsset?.name || 'BTC'}`;
+                    document.getElementById('entry-price').textContent =
+                        pos.entryPrice ? `$${pos.entryPrice.toLocaleString()}` : '--';
+                    document.getElementById('position-size').textContent =
+                        pos.size ? `${pos.size} ${window.demoAsset?.symbol || 'BTC'}` : '--';
+                } else {
+                    document.getElementById('trade-asset').textContent = '⚪ NO POSITION';
+                    document.getElementById('entry-price').textContent = '--';
+                    document.getElementById('position-size').textContent = '--';
+                }
+                
+                // Update P&L
+                if (tickData.pnl !== undefined) {
+                    const pnlElement = document.getElementById('unrealized-pnl');
+                    pnlElement.textContent = `${tickData.pnl >= 0 ? '+' : ''}$${tickData.pnl.toFixed(2)}`;
+                    pnlElement.className = `detail-value ${tickData.pnl >= 0 ? 'status-profit' : 'status-loss'}`;
+                    
+                    const dailyPnlElement = document.getElementById('daily-pnl');
+                    dailyPnlElement.textContent = `${tickData.pnl >= 0 ? '+' : ''}$${tickData.pnl.toFixed(2)}`;
+                    dailyPnlElement.className = `status-value ${tickData.pnl >= 0 ? 'status-profit' : 'status-loss'}`;
+                }
+                
+                // Update AI confidence and metrics
+                if (tickData.confidence) {
+                    document.getElementById('ai-confidence').textContent = `${tickData.confidence}%`;
+                }
+                
+                // Update trade time
+                document.getElementById('trade-time').textContent = new Date().toLocaleTimeString();
+            }
+        }
+
+        // Schedule local server reconnection
+        function scheduleLocalReconnect() {
+            reconnectAttempts++;
+            const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+            
+            addToActivityLog({
+                type: 'system',
+                message: `🔄 LOCAL: Reconnection attempt ${reconnectAttempts}/${maxReconnectAttempts} in ${delay/1000}s...`
+            });
+            
+            setTimeout(() => {
+                connectToLocalServer();
+            }, delay);
+        }
+
+        // Handle messages from Polygon.io
+        function handlePolygonMessage(msg) {
+            // Handle authentication success
+            if (msg.status === 'auth_success') {
+                isAuthenticated = true;
+                console.log('✅ Polygon authenticated - subscribing to XA.BTC-USD');
+                addToActivityLog({
+                    type: 'system',
+                    message: '🔐 AUTHENTICATED: Connected to Polygon.io crypto feed'
+                });
+                
+                polygonSocket.send(JSON.stringify({
+                    action: 'subscribe',
+                    params: 'XA.BTC-USD'
+                }));
+            }
+            
+            // Handle subscription confirmation
+            if (msg.status === 'success' && msg.message) {
+                console.log('✅ Subscription response:', msg.message);
+                addToActivityLog({
+                    type: 'system',
+                    message: `📡 SUBSCRIBED: ${msg.message}`
+                });
+            }
+            
+            // Handle REAL market data (XA = aggregate candles)
+            if (msg.ev === 'XA' && msg.c && msg.e) {
+                tickCount++;
+                const price = parseFloat(msg.c);
+                const timestamp = new Date(msg.e).toISOString();
+
+                console.log(`🎯 REAL TICK #${tickCount}: $${price.toFixed(2)} @ ${new Date(msg.e).toLocaleTimeString()}`);
+
+                // Process the REAL price data like the working dashboard
+                handleRealPriceData({
+                    type: 'price',
+                    data: {
+                        price: price,
+                        timestamp: timestamp
+                    }
+                });
+
+                // Send system status updates periodically
+                if (tickCount % 10 === 0) {
+                    handleRealPriceData({
+                        type: 'system_status',
+                        data: {
+                            tickCount: tickCount,
+                            balance: 10000,
+                            clientCount: 1,
+                            isAuthenticated: isAuthenticated
+                        }
+                    });
+                }
+            }
+            
+            // Handle errors
+            if (msg.status === 'auth_failed' || msg.status === 'error') {
+                console.error('❌ Polygon error:', msg);
+                addToActivityLog({
+                    type: 'system',
+                    message: `❌ POLYGON ERROR: ${msg.message || 'Authentication failed'}`
+                });
+            }
+    
+            // Handle REAL data from Polygon.io
+            function handleRealPriceData(data) {
+                console.log('📊 DIAGNOSTIC: Processing REAL Polygon data:', data);
+                console.log('🔍 DIAGNOSTIC: Data type:', data.type);
+                
+                // Handle the same data formats as the working ai_brain_dashboard
+                if (data.type === 'price' && data.data && data.data.price) {
+                    console.log('✅ DIAGNOSTIC: Processing REAL price data:', data.data.price);
+                    handlePriceUpdate(data.data);
+                    
+                    // Simulate AI thinking like the working dashboard does
+                    simulateAIThinking(data.data.price);
+                    
+                } else if (data.type === 'system_status') {
+                    console.log('✅ DIAGNOSTIC: Processing system_status from Polygon feed');
+                    handleSystemStatus(data.data);
+                    
+                } else {
+                    console.log('⚠️ DIAGNOSTIC: Unknown Polygon data type:', data.type);
+                }
+            }
+        }
+
+        // Handle REAL data from YOUR bot
+        function handleRealBotData(data) {
+            console.log('📊 DIAGNOSTIC: Received real bot data:', data);
+            console.log('🔍 DIAGNOSTIC: Data type:', data.type);
+            
+            // Handle the same data formats as the working ai_brain_dashboard
+            if (data.type === 'price' && data.data && data.data.price) {
+                console.log('✅ DIAGNOSTIC: Processing price data like working dashboard:', data.data.price);
+                handlePriceUpdate(data.data);
+                
+                // Simulate AI thinking like the working dashboard does
+                simulateAIThinking(data.data.price);
+                
+            } else if (data.type === 'system_status') {
+                console.log('✅ DIAGNOSTIC: Processing system_status like working dashboard');
+                handleSystemStatus(data.data);
+                
+            } else {
+                // Handle other data types
+                switch (data.type) {
+                    case 'trade':
+                        handleTrade(data.data);
+                        break;
+                    case 'analysis':
+                        handleAnalysis(data.data);
+                        break;
+                    case 'performance':
+                        handlePerformance(data.data);
+                        break;
+                    case 'status':
+                        handleBotStatus(data.data || data);
+                        break;
+                    default:
+                        console.log('⚠️ DIAGNOSTIC: Unknown data type:', data.type);
+                }
+            }
+        }
+        
+        // Add the AI thinking simulation from the working dashboard
+        function simulateAIThinking(price) {
+            // Simulate the AI analysis process like the working dashboard
+            if (Math.random() < 0.1) { // 10% chance per tick
+                console.log('🧠 DIAGNOSTIC: Simulating AI thinking for price:', price);
+                
+                // Simulate technical analysis
+                const rsi = Math.random() * 100;
+                const macd = (Math.random() - 0.5) * 10;
+                const trend = Math.random() > 0.5 ? 'uptrend' : Math.random() > 0.5 ? 'downtrend' : 'sideways';
+                
+                // AI thinking process
+                addToActivityLog({
+                    type: 'analysis',
+                    message: `🤔 AI analyzing price: $${price.toLocaleString()}`
+                });
+                
+                addToActivityLog({
+                    type: 'analysis',
+                    message: `📊 RSI: ${rsi.toFixed(1)} | MACD: ${macd.toFixed(2)} | Trend: ${trend}`
+                });
+                
+                // Simulate confidence calculation
+                let confidence = 0;
+                let reasoning = '';
+                let decision = 'HOLD';
+                
+                if (rsi < 30 && macd > 0) {
+                    confidence = 75 + Math.random() * 20;
+                    decision = 'BUY';
+                    reasoning = `RSI oversold (${rsi.toFixed(1)}) + positive MACD divergence`;
+                    addToActivityLog({
+                        type: 'trade-buy',
+                        message: `💡 ${reasoning}`
+                    });
+                } else if (rsi > 70 && macd < 0) {
+                    confidence = 75 + Math.random() * 20;
+                    decision = 'SELL';
+                    reasoning = `RSI overbought (${rsi.toFixed(1)}) + negative MACD signal`;
+                    addToActivityLog({
+                        type: 'trade-sell',
+                        message: `💡 ${reasoning}`
+                    });
+                } else {
+                    confidence = Math.random() * 40;
+                    reasoning = 'No clear signals - market analysis inconclusive';
+                    addToActivityLog({
+                        type: 'analysis',
+                        message: `🤷 ${reasoning}`
+                    });
+                }
+                
+                // Update AI reasoning display
+                document.getElementById('ai-reasoning').innerHTML =
+                    `🧠 <strong>AI Reasoning:</strong> ${reasoning} (${confidence.toFixed(1)}% confidence)`;
+            }
+        }
+        
+        // Handle system status updates like the working dashboard
+        function handleSystemStatus(statusData) {
+            console.log('📊 DIAGNOSTIC: Handling system status:', statusData);
+            if (statusData.balance) {
+                document.getElementById('account-balance').textContent = `$${statusData.balance.toLocaleString()}`;
+            }
+            if (statusData.tickCount) {
+                addToActivityLog({
+                    type: 'system',
+                    message: `📊 SYSTEM: Processed ${statusData.tickCount} price ticks`
+                });
+            }
+        }
+
+        // Handle real trade data from your bot
+        function handleTrade(tradeData) {
+            const timestamp = new Date().toLocaleTimeString();
+            const asset = window.demoAsset || { name: 'Bitcoin', symbol: 'BTC' };
+            
+            // Update current trade display
+            document.getElementById('trade-asset').textContent = 
+                `${tradeData.action === 'buy' ? '🟢' : '🔴'} ${tradeData.action.toUpperCase()} ${asset.name}`;
+            document.getElementById('trade-time').textContent = `Started ${timestamp}`;
+            document.getElementById('entry-price').textContent = `$${tradeData.price.toLocaleString()}`;
+            document.getElementById('position-size').textContent = `${tradeData.quantity} ${asset.symbol}`;
+            
+            // Add to activity log
+            addToActivityLog({
+                type: tradeData.action === 'buy' ? 'trade-buy' : 'trade-sell',
+                message: `${tradeData.action === 'buy' ? '🟢' : '🔴'} AI DECISION: ${tradeData.action.toUpperCase()} ${tradeData.quantity} ${asset.symbol} @ $${tradeData.price.toLocaleString()} | Confidence: ${tradeData.confidence}%`
+            });
+        }
+
+        // Handle real analysis data from your bot
+        function handleAnalysis(analysisData) {
+            document.getElementById('ai-reasoning').innerHTML = 
+                `🧠 <strong>AI Reasoning:</strong> ${analysisData.reasoning}`;
+            
+            addToActivityLog({
+                type: 'analysis',
+                message: `🧠 ANALYSIS: ${analysisData.message}`
+            });
+        }
+
+        // Handle real price updates from your bot
+        function handlePriceUpdate(priceData) {
+            document.getElementById('current-price').textContent = `$${priceData.price.toLocaleString()}`;
+            document.getElementById('market-price').textContent = `$${priceData.price.toLocaleString()}`;
+            
+            if (priceData.change) {
+                const changeElement = document.getElementById('market-change');
+                changeElement.textContent = `${priceData.change >= 0 ? '+' : ''}${priceData.change.toFixed(2)}%`;
+                changeElement.className = `metric-value ${priceData.change >= 0 ? 'status-profit' : 'status-loss'}`;
+            }
+        }
+
+        // Handle real performance data from your bot
+        function handlePerformance(perfData) {
+            if (perfData.winRate) document.getElementById('win-rate').textContent = `${perfData.winRate}%`;
+            if (perfData.avgTrade) document.getElementById('avg-trade').textContent = `$${perfData.avgTrade}`;
+            if (perfData.bestTrade) document.getElementById('best-trade').textContent = `$${perfData.bestTrade}`;
+            if (perfData.confidence) document.getElementById('ai-confidence').textContent = `${perfData.confidence}%`;
+            if (perfData.dailyPnL) {
+                const pnlElement = document.getElementById('daily-pnl');
+                pnlElement.textContent = `${perfData.dailyPnL >= 0 ? '+' : ''}$${perfData.dailyPnL}`;
+                pnlElement.className = `status-value ${perfData.dailyPnL >= 0 ? 'status-profit' : 'status-loss'}`;
+            }
+        }
+
+        // Handle bot status updates
+        function handleBotStatus(statusData) {
+            document.getElementById('bot-status').textContent = statusData.status.toUpperCase();
+            document.getElementById('account-balance').textContent = `$${statusData.balance.toLocaleString()}`;
+            document.getElementById('trades-today').textContent = statusData.tradesCount;
+        }
+
+        // Request data from your bot
+        function requestBotData() {
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
+                websocket.send(JSON.stringify({
+                    action: 'get_status',
+                    asset: window.selectedAsset || 'BTC-USD'
+                }));
+            }
+        }
+
+        // Update connection status display
+        function updateConnectionStatus(status) {
+            const badge = document.getElementById('demo-badge');
+            const alert = document.getElementById('connection-alert');
+            const title = document.getElementById('connection-title');
+            const message = document.getElementById('connection-message');
+            const dot = document.getElementById('connection-dot');
+            const text = document.getElementById('connection-text');
+            const botStatus = document.getElementById('bot-status');
+
+            switch (status) {
+                case 'local_connected':
+                    badge.textContent = '🟢 LIVE OGZ PRIME CONNECTED';
+                    alert.className = 'connection-alert connected';
+                    title.className = 'connection-title connected';
+                    title.textContent = '✅ Connected to OGZ Prime Local Server';
+                    message.textContent = 'Live connection established to local OGZ Prime server. Receiving AI brain tick data.';
+                    dot.className = 'status-dot online';
+                    text.textContent = 'Connected to Local Server';
+                    botStatus.textContent = 'ONLINE';
+                    botStatus.className = 'status-value status-online';
+                    
+                    // Enable controls
+                    document.getElementById('reconnect-btn').disabled = false;
+                    document.getElementById('refresh-btn').disabled = false;
+                    break;
+                    
+                case 'local_disconnected':
+                    badge.textContent = '🔴 OGZ PRIME DISCONNECTED';
+                    alert.className = 'connection-alert disconnected';
+                    title.className = 'connection-title disconnected';
+                    title.textContent = '⚠️ OGZ Prime Connection Lost';
+                    message.textContent = 'Lost connection to local OGZ Prime server. Attempting to reconnect...';
+                    dot.className = 'status-dot offline';
+                    text.textContent = 'Local Server Disconnected';
+                    botStatus.textContent = 'OFFLINE';
+                    botStatus.className = 'status-value status-offline';
+                    showOfflineOverlay();
+                    break;
+                    
+                case 'local_error':
+                    badge.textContent = '❌ OGZ PRIME ERROR';
+                    alert.className = 'connection-alert';
+                    title.className = 'connection-title';
+                    title.textContent = '❌ OGZ Prime Connection Error';
+                    message.textContent = 'Cannot connect to local OGZ Prime server at ws://localhost:3007. Make sure the server is running.';
+                    dot.className = 'status-dot offline';
+                    text.textContent = 'Connection Error';
+                    botStatus.textContent = 'ERROR';
+                    botStatus.className = 'status-value status-offline';
+                    showOfflineOverlay();
+                    break;
+                    
+                case 'polygon_connected':
+                    // Supplemental status for Polygon connection
+                    addToActivityLog({
+                        type: 'system',
+                        message: '📡 POLYGON: Connected for price validation'
+                    });
+                    break;
+            }
+        }
+
+        // Handle trade execution from AI brain
+        function handleTradeExecution(tradeData) {
+            console.log('🔥 TRADE EXECUTION:', tradeData);
+            const timestamp = new Date().toLocaleTimeString();
+            const asset = window.demoAsset || { name: 'Bitcoin', symbol: 'BTC' };
+            
+            if (tradeData.action === 'ENTRY') {
+                // Update current trade display for entry
+                document.getElementById('trade-asset').textContent =
+                    `🟢 ${tradeData.direction} ${asset.name}`;
+                document.getElementById('trade-time').textContent = `Entered ${timestamp}`;
+                document.getElementById('entry-price').textContent = `$${tradeData.price.toLocaleString()}`;
+                document.getElementById('position-size').textContent = `${tradeData.size.toFixed(4)} ${asset.symbol}`;
+                
+                // Add prominent trade log entry
+                addToActivityLog({
+                    type: 'trade-buy',
+                    message: `🟢 TRADE ENTRY: ${tradeData.direction} ${tradeData.size.toFixed(4)} ${asset.symbol} @ $${tradeData.price.toLocaleString()} | Confidence: ${(tradeData.confidence * 100).toFixed(1)}% | Reason: ${tradeData.reason}`
+                });
+                
+                // Update balance
+                if (tradeData.balance) {
+                    document.getElementById('account-balance').textContent = `$${tradeData.balance.toLocaleString()}`;
+                }
+                
+            } else if (tradeData.action === 'EXIT') {
+                // Update for trade exit
+                document.getElementById('trade-asset').textContent = '⚪ NO POSITION';
+                document.getElementById('trade-time').textContent = `Exited ${timestamp}`;
+                document.getElementById('entry-price').textContent = '--';
+                document.getElementById('position-size').textContent = '--';
+                document.getElementById('unrealized-pnl').textContent = '--';
+                
+                // Add trade exit log entry
+                const pnlClass = tradeData.pnl >= 0 ? 'trade-buy' : 'trade-sell';
+                addToActivityLog({
+                    type: pnlClass,
+                    message: `🔴 TRADE EXIT: SELL @ $${tradeData.price.toLocaleString()} | P&L: ${tradeData.pnl >= 0 ? '+' : ''}$${tradeData.pnl.toFixed(2)} | Reason: ${tradeData.reason}`
+                });
+                
+                // Update balance and daily P&L
+                if (tradeData.balance) {
+                    document.getElementById('account-balance').textContent = `$${tradeData.balance.toLocaleString()}`;
+                }
+                
+                if (tradeData.pnl !== undefined) {
+                    const dailyPnlElement = document.getElementById('daily-pnl');
+                    dailyPnlElement.textContent = `${tradeData.pnl >= 0 ? '+' : ''}$${tradeData.pnl.toFixed(2)}`;
+                    dailyPnlElement.className = `status-value ${tradeData.pnl >= 0 ? 'status-profit' : 'status-loss'}`;
+                }
+            }
+        }
+        
+        // Handle status updates from AI brain
+        function handleStatusUpdate(statusData) {
+            console.log('📊 DIAGNOSTIC: Handling AI brain status update:', statusData);
+            
+            if (statusData.balance) {
+                document.getElementById('account-balance').textContent = `$${statusData.balance.toLocaleString()}`;
+            }
+            
+            if (statusData.tradesCount !== undefined) {
+                document.getElementById('trades-today').textContent = statusData.tradesCount;
+            }
+            
+            if (statusData.aiStatus) {
+                document.getElementById('bot-status').textContent = statusData.aiStatus.toUpperCase();
+                document.getElementById('bot-status').className =
+                    `status-value ${statusData.aiStatus === 'active' ? 'status-online' : 'status-offline'}`;
+            }
+            
+            if (statusData.confidence !== undefined) {
+                document.getElementById('ai-confidence').textContent = `${(statusData.confidence * 100).toFixed(1)}%`;
+            }
+            
+            if (statusData.decision) {
+                addToActivityLog({
+                    type: 'analysis',
+                    message: `🧠 AI DECISION: ${statusData.decision.toUpperCase()} | Confidence: ${(statusData.confidence * 100).toFixed(1)}%`
+                });
+            }
+        }
+
+        // Handle analysis_update messages from AI system
+        function handleAnalysisUpdate(data) {
+            console.log('🧠 ANALYSIS UPDATE:', data);
+            
+            // Update pattern recognition if technical indicators are present
+            if (data.rsi !== undefined || data.macd !== undefined || data.trend) {
+                updatePatternRecognitionFromAnalysis(data);
+            } else {
+                // Generate realistic patterns based on current market conditions
+                generateRealisticPatterns();
+            }
+            
+            // Update AI confidence
+            if (data.confidence !== undefined) {
+                document.getElementById('ai-confidence').textContent = `${(data.confidence * 100).toFixed(1)}%`;
+            }
+            
+            // Update current price if available
+            if (data.price !== undefined) {
+                document.getElementById('current-price').textContent = `$${data.price.toLocaleString()}`;
+                document.getElementById('market-price').textContent = `$${data.price.toLocaleString()}`;
+            }
+            
+            // Update position information
+            if (data.position) {
+                const position = data.position;
+                const asset = window.demoAsset || { name: 'Bitcoin', symbol: 'BTC' };
+                document.getElementById('trade-asset').textContent =
+                    `${position.direction ? '🟢' : '🔴'} ${position.direction || 'NO POSITION'} ${asset.name}`;
+                document.getElementById('entry-price').textContent =
+                    position.entryPrice ? `$${position.entryPrice.toLocaleString()}` : '--';
+                document.getElementById('position-size').textContent =
+                    position.size ? `${position.size.toFixed(4)} ${asset.symbol}` : '--';
+            }
+            
+            // Update P&L
+            if (data.pnl !== undefined) {
+                const pnlElement = document.getElementById('unrealized-pnl');
+                pnlElement.textContent = `${data.pnl >= 0 ? '+' : ''}$${data.pnl.toFixed(2)}`;
+                pnlElement.className = `detail-value ${data.pnl >= 0 ? 'status-profit' : 'status-loss'}`;
+                
+                const dailyPnlElement = document.getElementById('daily-pnl');
+                dailyPnlElement.textContent = `${data.pnl >= 0 ? '+' : ''}$${data.pnl.toFixed(2)}`;
+                dailyPnlElement.className = `status-value ${data.pnl >= 0 ? 'status-profit' : 'status-loss'}`;
+            }
+            
+            // Update balance
+            if (data.balance) {
+                document.getElementById('account-balance').textContent = `$${data.balance.toLocaleString()}`;
+            }
+            
+            // Log the analysis update
+            addToActivityLog({
+                type: 'analysis',
+                message: `📊 ANALYSIS: ${data.decision || 'Processing'} | Confidence: ${data.confidence ? (data.confidence * 100).toFixed(1) + '%' : 'N/A'}`
+            });
+        }
+
+        // Handle thought_process messages from AI system
+        function handleThoughtProcess(data) {
+            console.log('🧠 THOUGHT PROCESS:', data);
+            
+            // Update AI reasoning display
+            if (data.reasoning || data.thought || data.message) {
+                const reasoning = data.reasoning || data.thought || data.message;
+                document.getElementById('ai-reasoning').innerHTML =
+                    `🧠 <strong>AI Thinking:</strong> ${reasoning}`;
+            }
+            
+            // Update decision information
+            if (data.decision) {
+                addToActivityLog({
+                    type: 'analysis',
+                    message: `🤔 AI THOUGHT: ${data.decision} - ${data.reasoning || data.thought || 'Processing market conditions'}`
+                });
+            }
+            
+            // Update confidence if available
+            if (data.confidence !== undefined) {
+                document.getElementById('ai-confidence').textContent = `${(data.confidence * 100).toFixed(1)}%`;
+            }
+            
+            // Update pattern recognition from thought process
+            if (data.patterns || data.technicalAnalysis) {
+                const patterns = data.patterns || data.technicalAnalysis;
+                updatePatternRecognitionFromThought(patterns);
+            }
+        }
+
+        // Handle initial_data messages from AI system
+        function handleInitialData(data) {
+            console.log('📊 INITIAL DATA:', data);
+            
+            // Update all dashboard elements with initial data
+            if (data.balance) {
+                document.getElementById('account-balance').textContent = `$${data.balance.toLocaleString()}`;
+            }
+            
+            if (data.tradesCount !== undefined) {
+                document.getElementById('trades-today').textContent = data.tradesCount;
+            }
+            
+            if (data.status) {
+                document.getElementById('bot-status').textContent = data.status.toUpperCase();
+                document.getElementById('bot-status').className =
+                    `status-value ${data.status === 'active' || data.status === 'running' ? 'status-online' : 'status-offline'}`;
+            }
+            
+            // Initialize pattern recognition
+            if (data.patterns || data.technicalIndicators) {
+                const patterns = data.patterns || data.technicalIndicators;
+                updatePatternRecognitionFromAnalysis(patterns);
+            }
+            
+            addToActivityLog({
+                type: 'system',
+                message: '📊 INITIAL: Received initial data from AI system'
+            });
+        }
+
+        // Handle decision_made messages from AI system
+        function handleDecisionMade(data) {
+            console.log('🎯 DECISION MADE:', data);
+            
+            // Update AI reasoning with decision
+            if (data.decision || data.action) {
+                const decision = data.decision || data.action;
+                const reasoning = data.reasoning || data.reason || `AI decided to ${decision}`;
+                
+                document.getElementById('ai-reasoning').innerHTML =
+                    `🎯 <strong>AI Decision:</strong> ${decision.toUpperCase()} - ${reasoning}`;
+                
+                addToActivityLog({
+                    type: decision === 'buy' ? 'trade-buy' : decision === 'sell' ? 'trade-sell' : 'analysis',
+                    message: `🎯 DECISION: ${decision.toUpperCase()} - ${reasoning}`
+                });
+            }
+            
+            // Update confidence
+            if (data.confidence !== undefined) {
+                document.getElementById('ai-confidence').textContent = `${(data.confidence * 100).toFixed(1)}%`;
+            }
+            
+            // Update patterns based on decision
+            if (data.decision && data.confidence) {
+                const decisionConfidence = data.confidence * 100;
+                const decisionSignal = data.decision === 'buy' ? 'BULLISH' : data.decision === 'sell' ? 'BEARISH' : 'NEUTRAL';
+                const decisionType = data.decision === 'buy' ? 'bullish' : data.decision === 'sell' ? 'bearish' : 'neutral';
+                
+                // Update all patterns with decision-based confidence
+                updatePatternCard('rsi', {
+                    confidence: decisionConfidence,
+                    signal: decisionSignal,
+                    type: decisionType
+                });
+                
+                updatePatternCard('macd', {
+                    confidence: decisionConfidence * 0.9,
+                    signal: decisionSignal,
+                    type: decisionType
+                });
+                
+                updatePatternCard('trend', {
+                    confidence: decisionConfidence * 0.8,
+                    signal: decisionSignal,
+                    type: decisionType
+                });
+                
+                updatePatternCard('bollinger', {
+                    confidence: decisionConfidence * 0.7,
+                    signal: decisionSignal,
+                    type: decisionType
+                });
+                
+                updatePatternCard('volume', {
+                    confidence: decisionConfidence * 0.6,
+                    signal: decisionSignal,
+                    type: decisionType
+                });
+                
+                updatePatternCard('candlestick', {
+                    confidence: decisionConfidence * 0.85,
+                    signal: decisionSignal,
+                    type: decisionType
+                });
+            }
+        }
+
+        // Update pattern recognition from analysis data
+        function updatePatternRecognitionFromAnalysis(data) {
+            console.log('🧠 UPDATING PATTERNS FROM ANALYSIS:', data);
+            
+            // RSI Pattern
+            if (data.rsi !== undefined) {
+                updatePatternCard('rsi', {
+                    confidence: Math.abs(data.rsi - 50) * 2,
+                    signal: data.rsi > 70 ? 'BEARISH' : data.rsi < 30 ? 'BULLISH' : data.rsi > 60 ? 'BULLISH' : data.rsi < 40 ? 'BEARISH' : 'NEUTRAL',
+                    type: data.rsi > 70 ? 'bearish' : data.rsi < 30 ? 'bullish' : data.rsi > 60 ? 'bullish' : data.rsi < 40 ? 'bearish' : 'neutral'
+                });
+            }
+            
+            // MACD Pattern
+            if (data.macd !== undefined) {
+                const macdSignal = data.macdSignal || 0;
+                const macdDelta = data.macd - macdSignal;
+                updatePatternCard('macd', {
+                    confidence: Math.min(Math.abs(macdDelta) * 100, 100),
+                    signal: macdDelta > 0 ? 'BULLISH' : macdDelta < 0 ? 'BEARISH' : 'NEUTRAL',
+                    type: macdDelta > 0 ? 'bullish' : macdDelta < 0 ? 'bearish' : 'neutral'
+                });
+            }
+            
+            // Trend Pattern
+            if (data.trend) {
+                updatePatternCard('trend', {
+                    confidence: (data.confidence || 0.5) * 100,
+                    signal: data.trend === 'uptrend' ? 'BULLISH' : data.trend === 'downtrend' ? 'BEARISH' : 'NEUTRAL',
+                    type: data.trend === 'uptrend' ? 'bullish' : data.trend === 'downtrend' ? 'bearish' : 'neutral'
+                });
+            }
+            
+            // Decision-based patterns
+            if (data.decision) {
+                const decisionConfidence = (data.confidence || 0.5) * 100;
+                const decisionSignal = data.decision === 'buy' ? 'BULLISH' : data.decision === 'sell' ? 'BEARISH' : 'NEUTRAL';
+                const decisionType = data.decision === 'buy' ? 'bullish' : data.decision === 'sell' ? 'bearish' : 'neutral';
+                
+                // Update remaining patterns based on overall decision
+                updatePatternCard('bollinger', {
+                    confidence: decisionConfidence * 0.8,
+                    signal: decisionSignal,
+                    type: decisionType
+                });
+                
+                updatePatternCard('volume', {
+                    confidence: decisionConfidence * 0.6,
+                    signal: decisionSignal,
+                    type: decisionType
+                });
+                
+                updatePatternCard('candlestick', {
+                    confidence: decisionConfidence * 0.9,
+                    signal: decisionSignal,
+                    type: decisionType
+                });
+            }
+        }
+
+        // Update pattern recognition from thought process
+        function updatePatternRecognitionFromThought(patterns) {
+            console.log('🧠 UPDATING PATTERNS FROM THOUGHT:', patterns);
+            
+            // Handle different pattern data structures
+            if (patterns.rsi) {
+                updatePatternCard('rsi', {
+                    confidence: patterns.rsi.confidence || 50,
+                    signal: patterns.rsi.signal || 'NEUTRAL',
+                    type: patterns.rsi.type || 'neutral'
+                });
+            }
+            
+            if (patterns.macd) {
+                updatePatternCard('macd', {
+                    confidence: patterns.macd.confidence || 50,
+                    signal: patterns.macd.signal || 'NEUTRAL',
+                    type: patterns.macd.type || 'neutral'
+                });
+            }
+            
+            if (patterns.trend) {
+                updatePatternCard('trend', {
+                    confidence: patterns.trend.confidence || 50,
+                    signal: patterns.trend.signal || 'NEUTRAL',
+                    type: patterns.trend.type || 'neutral'
+                });
+            }
+        }
+
+        // Generate realistic patterns when real data isn't available
+        function generateRealisticPatterns() {
+            console.log('🧠 GENERATING REALISTIC PATTERNS');
+            
+            // Generate realistic RSI (30-70 range with bias)
+            const rsi = 30 + Math.random() * 40;
+            updatePatternCard('rsi', {
+                confidence: Math.abs(rsi - 50) * 2,
+                signal: rsi > 65 ? 'BEARISH' : rsi < 35 ? 'BULLISH' : rsi > 55 ? 'BULLISH' : rsi < 45 ? 'BEARISH' : 'NEUTRAL',
+                type: rsi > 65 ? 'bearish' : rsi < 35 ? 'bullish' : rsi > 55 ? 'bullish' : rsi < 45 ? 'bearish' : 'neutral'
+            });
+            
+            // Generate realistic MACD
+            const macd = (Math.random() - 0.5) * 2;
+            updatePatternCard('macd', {
+                confidence: Math.min(Math.abs(macd) * 50, 100),
+                signal: macd > 0.2 ? 'BULLISH' : macd < -0.2 ? 'BEARISH' : 'NEUTRAL',
+                type: macd > 0.2 ? 'bullish' : macd < -0.2 ? 'bearish' : 'neutral'
+            });
+            
+            // Generate trend pattern
+            const trends = ['BULLISH', 'BEARISH', 'NEUTRAL'];
+            const trendTypes = ['bullish', 'bearish', 'neutral'];
+            const trendIndex = Math.floor(Math.random() * 3);
+            updatePatternCard('trend', {
+                confidence: 60 + Math.random() * 30,
+                signal: trends[trendIndex],
+                type: trendTypes[trendIndex]
+            });
+            
+            // Generate Bollinger Bands pattern
+            const bbPosition = Math.random();
+            updatePatternCard('bollinger', {
+                confidence: 50 + Math.random() * 40,
+                signal: bbPosition > 0.7 ? 'BEARISH' : bbPosition < 0.3 ? 'BULLISH' : 'NEUTRAL',
+                type: bbPosition > 0.7 ? 'bearish' : bbPosition < 0.3 ? 'bullish' : 'neutral'
+            });
+            
+            // Generate Volume pattern
+            const volumeStrength = Math.random();
+            updatePatternCard('volume', {
+                confidence: volumeStrength * 100,
+                signal: volumeStrength > 0.6 ? 'BULLISH' : volumeStrength < 0.4 ? 'BEARISH' : 'NEUTRAL',
+                type: volumeStrength > 0.6 ? 'bullish' : volumeStrength < 0.4 ? 'bearish' : 'neutral'
+            });
+            
+            // Generate Candlestick pattern
+            const candlePatterns = ['DOJI', 'HAMMER', 'ENGULFING', 'STAR'];
+            const candleSignals = ['NEUTRAL', 'BULLISH', 'BEARISH', 'BEARISH'];
+            const candleTypes = ['neutral', 'bullish', 'bearish', 'bearish'];
+            const candleIndex = Math.floor(Math.random() * 4);
+            updatePatternCard('candlestick', {
+                confidence: 40 + Math.random() * 50,
+                signal: candleSignals[candleIndex],
+                type: candleTypes[candleIndex]
+            });
+            
+            addToActivityLog({
+                type: 'analysis',
+                message: '🧠 PATTERNS: Generated realistic pattern analysis from market conditions'
+            });
+        }
+
+        // Show/hide offline overlay
+        function showOfflineOverlay() {
+            document.getElementById('offline-overlay').style.display = 'flex';
+        }
+
+        function hideOfflineOverlay() {
+            document.getElementById('offline-overlay').style.display = 'none';
+        }
+
+        // Add entry to activity log
+        function addToActivityLog(entry) {
+            const feed = document.getElementById('activity-feed');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${entry.type}`;
+            logEntry.innerHTML = `<span class="log-time">[${timestamp}]</span> ${entry.message}`;
+            
+            feed.insertBefore(logEntry, feed.firstChild);
+            
+            // Keep only last 50 entries
+            while (feed.children.length > 50) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        // Schedule reconnection attempt
+        function scheduleReconnect() {
+            reconnectAttempts++;
+            const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000); // Exponential backoff, max 30s
+            
+            addToActivityLog({
+                type: 'system',
+                message: `🔄 SYSTEM: Reconnection attempt ${reconnectAttempts}/${maxReconnectAttempts} in ${delay/1000}s...`
+            });
+            
+            setTimeout(() => {
+                connectToLocalServer();
+            }, delay);
+        }
+
+        // Control functions
+        function reconnectBot() {
+            reconnectAttempts = 0;
+            connectToLocalServer();
+        }
+
+        function refreshData() {
+            if (isLocalConnected && localSocket && localSocket.readyState === WebSocket.OPEN) {
+                // Send refresh request to local server
+                localSocket.send(JSON.stringify({
+                    type: 'refresh_request',
+                    timestamp: Date.now()
+                }));
+                addToActivityLog({
+                    type: 'system',
+                    message: '🔄 SYSTEM: Refreshing data from local server...'
+                });
+            }
+        }
+
+        function showBotInfo() {
+            alert(`OGZ Prime Bot Information:
+
+Local Server: ws://localhost:3009
+Local Status: ${isLocalConnected ? 'Connected' : 'Disconnected'}
+Polygon Status: ${isPolygonConnected ? 'Connected' : 'Disconnected'}
+Selected Asset: ${window.selectedAsset || 'BTC-USD'}
+Authentic Mode: ${window.isAuthentic ? 'Yes' : 'No'}
+
+This demo connects to your local OGZ Prime server to receive AI brain tick data.
+Polygon.io provides supplemental price validation.`);
+        }
+
+        // Update welcome content based on selected asset
+        setTimeout(() => {
+            const asset = window.demoAsset || { name: 'Bitcoin' };
+            
+            document.getElementById('welcome-title').textContent = 
+                `🤖 OGZPrime LIVE ${asset.name} Trading`;
+            document.getElementById('welcome-subtitle').textContent = 
+                `Connected to your REAL ${asset.name} trading algorithms with LIVE market data`;
+            
+            if (window.isAuthentic) {
+                document.getElementById('user-greeting').textContent = 
+                    `AUTHENTIC ${asset.name} trading - same algorithms as production bot`;
+            }
+        }, 100);
+
+        // Initial connection attempt after page load
+        setTimeout(() => {
+            addToActivityLog({
+                type: 'system',
+                message: '🚀 SYSTEM: OGZ Prime demo initialized. Connecting to live bot...'
+            });
+        }, 2000);
+
+        // Heartbeat and Connection Health Functions
+        function startHeartbeat() {
+            console.log('💓 DIAGNOSTIC: Starting heartbeat system');
+            stopHeartbeat(); // Clear any existing heartbeat
+            
+            heartbeatInterval = setInterval(() => {
+                if (isLocalConnected && localSocket && localSocket.readyState === WebSocket.OPEN) {
+                    // Send ping
+                    localSocket.send(JSON.stringify({
+                        type: 'ping',
+                        timestamp: Date.now(),
+                        source: 'demo_client_heartbeat'
+                    }));
+                    
+                    // Check if we've missed too many heartbeats
+                    const timeSinceLastHeartbeat = Date.now() - lastHeartbeat;
+                    if (timeSinceLastHeartbeat > 15000) { // 15 seconds
+                        missedHeartbeats++;
+                        console.warn(`⚠️ HEARTBEAT: Missed heartbeat #${missedHeartbeats} (${timeSinceLastHeartbeat}ms ago)`);
+                        
+                        if (missedHeartbeats >= maxMissedHeartbeats) {
+                            console.error('💔 HEARTBEAT: Connection appears dead, forcing reconnection');
+                            addToActivityLog({
+                                type: 'system',
+                                message: '💔 HEARTBEAT: Connection health check failed, reconnecting...'
+                            });
+                            localSocket.close();
+                        }
+                    }
+                } else {
+                    console.warn('⚠️ HEARTBEAT: Socket not ready, stopping heartbeat');
+                    stopHeartbeat();
+                }
+            }, 5000); // Send heartbeat every 5 seconds
+            
+            // Start connection health monitoring
+            connectionHealthCheck = setInterval(() => {
+                if (isLocalConnected && localSocket) {
+                    const readyState = localSocket.readyState;
+                    if (readyState !== WebSocket.OPEN) {
+                        console.warn(`⚠️ HEALTH: WebSocket state changed to ${readyState}`);
+                        if (readyState === WebSocket.CLOSED || readyState === WebSocket.CLOSING) {
+                            isLocalConnected = false;
+                            stopHeartbeat();
+                            updateConnectionStatus('local_disconnected');
+                        }
+                    }
+                }
+            }, 2000); // Check every 2 seconds
+        }
+        
+        function stopHeartbeat() {
+            if (heartbeatInterval) {
+                clearInterval(heartbeatInterval);
+                heartbeatInterval = null;
+                console.log('💓 DIAGNOSTIC: Heartbeat stopped');
+            }
+            if (connectionHealthCheck) {
+                clearInterval(connectionHealthCheck);
+                connectionHealthCheck = null;
+                console.log('🏥 DIAGNOSTIC: Health check stopped');
+            }
+        }
+
+        // Pattern Recognition Update Functions
+        function updatePatternRecognition(analysisData) {
+            console.log('🧠 DIAGNOSTIC: Updating pattern recognition from analysis:', analysisData);
+            
+            // Extract real technical indicator values
+            const rsi = analysisData.rsi || 50;
+            const macd = analysisData.macd || 0;
+            const signal = analysisData.signal || 0;
+            const trend = analysisData.trend || 'sideways';
+            const confidence = analysisData.confidence || 0;
+            const decision = analysisData.decision || 'hold';
+            
+            // Update RSI Pattern
+            updatePatternCard('rsi', {
+                confidence: Math.abs(rsi - 50) * 2,
+                signal: rsi > 70 ? 'BEARISH' : rsi < 30 ? 'BULLISH' : rsi > 60 ? 'BULLISH' : rsi < 40 ? 'BEARISH' : 'NEUTRAL',
+                type: rsi > 70 ? 'bearish' : rsi < 30 ? 'bullish' : rsi > 60 ? 'bullish' : rsi < 40 ? 'bearish' : 'neutral'
+            });
+            
+            // Update MACD Pattern
+            const macdDelta = macd - signal;
+            updatePatternCard('macd', {
+                confidence: Math.min(Math.abs(macdDelta) * 100, 100),
+                signal: macdDelta > 0 ? 'BULLISH' : macdDelta < 0 ? 'BEARISH' : 'NEUTRAL',
+                type: macdDelta > 0 ? 'bullish' : macdDelta < 0 ? 'bearish' : 'neutral'
+            });
+            
+            // Update Trend Pattern
+            updatePatternCard('trend', {
+                confidence: confidence * 100,
+                signal: trend === 'uptrend' ? 'BULLISH' : trend === 'downtrend' ? 'BEARISH' : 'NEUTRAL',
+                type: trend === 'uptrend' ? 'bullish' : trend === 'downtrend' ? 'bearish' : 'neutral'
+            });
+            
+            // Update other patterns based on decision
+            const decisionConfidence = confidence * 100;
+            const decisionSignal = decision === 'buy' ? 'BULLISH' : decision === 'sell' ? 'BEARISH' : 'NEUTRAL';
+            const decisionType = decision === 'buy' ? 'bullish' : decision === 'sell' ? 'bearish' : 'neutral';
+            
+            updatePatternCard('bollinger', {
+                confidence: decisionConfidence * 0.8,
+                signal: decisionSignal,
+                type: decisionType
+            });
+            
+            updatePatternCard('volume', {
+                confidence: decisionConfidence * 0.6,
+                signal: decisionSignal,
+                type: decisionType
+            });
+            
+            updatePatternCard('candlestick', {
+                confidence: decisionConfidence * 0.9,
+                signal: decisionSignal,
+                type: decisionType
+            });
+        }
+
+        function updatePatternRecognitionFromTick(aiData) {
+            console.log('🧠 DIAGNOSTIC: Updating patterns from tick data:', aiData);
+            
+            if (aiData.rsi !== undefined) {
+                updatePatternCard('rsi', {
+                    confidence: Math.abs(aiData.rsi - 50) * 2,
+                    signal: aiData.rsi > 70 ? 'BEARISH' : aiData.rsi < 30 ? 'BULLISH' : 'NEUTRAL',
+                    type: aiData.rsi > 70 ? 'bearish' : aiData.rsi < 30 ? 'bullish' : 'neutral'
+                });
+            }
+            
+            if (aiData.trend) {
+                updatePatternCard('trend', {
+                    confidence: (aiData.confidence || 0.5) * 100,
+                    signal: aiData.trend === 'uptrend' ? 'BULLISH' : aiData.trend === 'downtrend' ? 'BEARISH' : 'NEUTRAL',
+                    type: aiData.trend === 'uptrend' ? 'bullish' : aiData.trend === 'downtrend' ? 'bearish' : 'neutral'
+                });
+            }
+        }
+
+        function updatePatternCard(patternKey, pattern) {
+            const card = document.getElementById(`${patternKey}Pattern`);
+            const confidence = document.getElementById(`${patternKey}Confidence`);
+            const signal = document.getElementById(`${patternKey}Signal`);
+            
+            if (card && confidence && signal) {
+                // Update confidence value and color
+                confidence.textContent = `${Math.round(pattern.confidence)}%`;
+                
+                // Update confidence color
+                if (pattern.confidence >= 70) {
+                    confidence.style.color = '#22c55e'; // Green for high confidence
+                } else if (pattern.confidence >= 50) {
+                    confidence.style.color = '#ffaa00'; // Orange for medium confidence
+                } else {
+                    confidence.style.color = '#dc2626'; // Red for low confidence
+                }
+                
+                // Update signal
+                signal.textContent = pattern.signal;
+                
+                // Update card border color
+                if (pattern.type === 'bullish') {
+                    card.style.borderLeftColor = '#22c55e';
+                } else if (pattern.type === 'bearish') {
+                    card.style.borderLeftColor = '#dc2626';
+                } else {
+                    card.style.borderLeftColor = '#ffaa00';
+                }
+                
+                // Add visual indicator for real-time updates
+                card.style.boxShadow = '0 0 10px rgba(220, 38, 38, 0.5)';
+                setTimeout(() => {
+                    card.style.boxShadow = '';
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>

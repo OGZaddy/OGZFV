@@ -1,0 +1,86 @@
+[
+  {
+    "type": "ENTRY",
+    "direction": "BUY",
+    "price": 30226.617716775727,
+    "size": 0.003308342366883482,
+    "balance": 10000,
+    "reason": "Manual buy command",
+    "confidence": 1,
+    "assetName": "BTC-USD",
+    "profileName": "default",
+    "timestamp": "2025-05-25T10:12:19.840Z"
+  },
+  {
+    "type": "ENTRY",
+    "direction": "BUY",
+    "price": 29738.29727836273,
+    "size": 0.0033626673061997714,
+    "balance": 10000,
+    "reason": "Manual buy command",
+    "confidence": 1,
+    "assetName": "BTC-USD",
+    "profileName": "default",
+    "timestamp": "2025-05-25T10:18:04.995Z"
+  },
+  {
+    "type": "ENTRY",
+    "direction": "BUY",
+    "price": 29373.405462001134,
+    "size": 0.0034044401194599267,
+    "balance": 10000,
+    "reason": "Manual buy command",
+    "confidence": 1,
+    "assetName": "BTC-USD",
+    "profileName": "default",
+    "timestamp": "2025-05-25T10:19:55.262Z"
+  },
+  {
+    "type": "ENTRY",
+    "direction": "BUY",
+    "price": 29835.114513187156,
+    "size": 0.0033517551928885637,
+    "balance": 10000,
+    "reason": "Manual buy command",
+    "confidence": 1,
+    "assetName": "BTC-USD",
+    "profileName": "default",
+    "timestamp": "2025-05-25T10:22:46.046Z"
+  },
+  {
+    "type": "ENTRY",
+    "direction": "BUY",
+    "price": 31792.46530739691,
+    "size": 0.003145399359034097,
+    "balance": 10000,
+    "reason": "Manual buy command",
+    "confidence": 1,
+    "assetName": "BTC-USD",
+    "profileName": "default",
+    "timestamp": "2025-05-25T10:24:58.326Z"
+  },
+  {
+    "type": "ENTRY",
+    "direction": "BUY",
+    "price": 29108.308170825585,
+    "size": 0.0034354452829459567,
+    "balance": 10000,
+    "reason": "Manual buy command",
+    "confidence": 1,
+    "assetName": "BTC-USD",
+    "profileName": "default",
+    "timestamp": "2025-05-25T10:35:22.755Z"
+  },
+  {
+    "type": "ENTRY",
+    "direction": "BUY",
+    "price": 255.3761316640475,
+    "size": 0.3916051013131713,
+    "balance": 10000.659591326508,
+    "reason": "Manual buy command",
+    "confidence": 1,
+    "assetName": "BTC-USD",
+    "profileName": "default",
+    "timestamp": "2025-05-25T22:18:48.277Z"
+  }
+]

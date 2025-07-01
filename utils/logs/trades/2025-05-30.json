@@ -1,0 +1,50 @@
+[
+  {
+    "type": "ENTRY",
+    "direction": "BUY",
+    "price": 30348.159728853738,
+    "size": 0.0032950927138070997,
+    "balance": 10000,
+    "reason": "Manual buy command",
+    "confidence": 1,
+    "assetName": "BTC-USD",
+    "profileName": "default",
+    "timestamp": "2025-05-30T07:32:28.785Z"
+  },
+  {
+    "type": "ENTRY",
+    "direction": "BUY",
+    "price": 30061.74344522697,
+    "size": 0.0033264870409862213,
+    "balance": 10000,
+    "reason": "Manual buy command",
+    "confidence": 1,
+    "assetName": "BTC-USD",
+    "profileName": "default",
+    "timestamp": "2025-05-30T09:37:38.230Z"
+  },
+  {
+    "type": "ENTRY",
+    "direction": "BUY",
+    "price": 29840.61714252764,
+    "size": 0.0033511371270362918,
+    "balance": 10000,
+    "reason": "Manual buy command",
+    "confidence": 1,
+    "assetName": "BTC-USD",
+    "profileName": "default",
+    "timestamp": "2025-05-30T10:07:14.886Z"
+  },
+  {
+    "type": "ENTRY",
+    "direction": "BUY",
+    "price": 30079.82872498638,
+    "size": 0.0033244870146794787,
+    "balance": 10000,
+    "reason": "Manual buy command",
+    "confidence": 1,
+    "assetName": "BTC-USD",
+    "profileName": "default",
+    "timestamp": "2025-05-30T13:28:39.951Z"
+  }
+]

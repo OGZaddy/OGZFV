@@ -1,0 +1,14 @@
+[
+  {
+    "type": "ENTRY",
+    "direction": "BUY",
+    "price": 29989.80353139999,
+    "size": 0.0033344666594863743,
+    "balance": 10000,
+    "reason": "Manual buy command",
+    "confidence": 1,
+    "assetName": "BTC-USD",
+    "profileName": "default",
+    "timestamp": "2025-05-29T09:54:11.260Z"
+  }
+]

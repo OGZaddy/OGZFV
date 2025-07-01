@@ -1,0 +1,70 @@
+{
+  "timestamp": "2025-06-17T14:35:11.082Z",
+  "type": "CRITICAL_ERROR",
+  "message": "OGZPrimeV10 is not a constructor",
+  "stack": "TypeError: OGZPrimeV10 is not a constructor\n    at initializeComponents (C:\\Users\\og_za\\Desktop\\OGZPAlpha\\OGZPrimeValhallaEdition\\run-trading-bot-v10.2.js:325:11)\n    at initializeSystem (C:\\Users\\og_za\\Desktop\\OGZPAlpha\\OGZPrimeValhallaEdition\\run-trading-bot-v10.2.js:191:11)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async main (C:\\Users\\og_za\\Desktop\\OGZPAlpha\\OGZPrimeValhallaEdition\\run-trading-bot-v10.2.js:1277:5)",
+  "config": {
+    "mode": "live",
+    "assetName": "BTC-USD",
+    "profileName": "default",
+    "initialBalance": 10000,
+    "riskManagement": {
+      "baseRiskPercent": 1,
+      "maxDrawdownPercent": 10,
+      "dailyLossLimitPercent": 3,
+      "recoveryThreshold": 5,
+      "maxPositionSize": 0.1,
+      "enableAdaptiveRisk": true,
+      "enableDrawdownProtection": true,
+      "enableRecoveryMode": true
+    },
+    "enableMultiTimeframe": true,
+    "enableFibonacciLevels": true,
+    "enableSupportResistance": true,
+    "enablePatternRejectionTracking": true,
+    "enableMobileMonitoring": false,
+    "webSocketPorts": {
+      "data": 3001,
+      "gui": 3002,
+      "control": 3003,
+      "mobile": 3004
+    },
+    "logDirectory": "C:\\Users\\og_za\\Desktop\\OGZPAlpha\\OGZPrimeValhallaEdition\\logs",
+    "profilesDirectory": "C:\\Users\\og_za\\Desktop\\OGZPAlpha\\OGZPrimeValhallaEdition\\profiles",
+    "patternMemoryDirectory": "C:\\Users\\og_za\\Desktop\\OGZPAlpha\\OGZPrimeValhallaEdition\\data\\patterns",
+    "backupDirectory": "C:\\Users\\og_za\\Desktop\\OGZPAlpha\\OGZPrimeValhallaEdition\\backups",
+    "verboseLogging": false,
+    "enableDiscordAlerts": false,
+    "enableTradingLog": true,
+    "enablePerformanceReports": true,
+    "timeframes": [
+      "1m",
+      "5m",
+      "15m",
+      "1h"
+    ],
+    "primaryTimeframe": "1m",
+    "analytics": {
+      "enableEdgeDecayDetection": true,
+      "enableQualityScoring": true,
+      "enableABTesting": false,
+      "generateDailyReports": true
+    },
+    "closePositionsOnShutdown": false,
+    "closePositionsOnEmergency": true,
+    "enableAutoRestart": false,
+    "maxRestartAttempts": 3
+  },
+  "systemState": null,
+  "performance": null,
+  "memoryUsage": {
+    "rss": 48332800,
+    "heapTotal": 11042816,
+    "heapUsed": 6927696,
+    "external": 2012869,
+    "arrayBuffers": 16659
+  },
+  "uptime": 16,
+  "nodeVersion": "v22.14.0",
+  "platform": "win32"
+}

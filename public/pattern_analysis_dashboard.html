@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OGZ Prime - AI Pattern Analysis Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: rgba(0,0,0,0.8);
+            padding: 15px 30px;
+            border-bottom: 2px solid #00ff88;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .pattern-panel {
+            background: rgba(0,0,0,0.7);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #333;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .panel-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 15px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .pattern-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+        
+        .pattern-card.active {
+            border-color: #00ff88;
+            box-shadow: 0 0 15px rgba(0,255,136,0.3);
+        }
+        
+        .pattern-card.bullish {
+            border-left: 4px solid #00ff88;
+        }
+        
+        .pattern-card.bearish {
+            border-left: 4px solid #ff4444;
+        }
+        
+        .pattern-card.neutral {
+            border-left: 4px solid #ffaa00;
+        }
+        
+        .pattern-name {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+        
+        .pattern-confidence {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .confidence-high { color: #00ff88; }
+        .confidence-medium { color: #ffaa00; }
+        .confidence-low { color: #ff4444; }
+        
+        .pattern-details {
+            font-size: 12px;
+            color: #cccccc;
+            margin-top: 8px;
+        }
+        
+        .pattern-history {
+            background: rgba(0,0,0,0.5);
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .history-entry {
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            border-left: 3px solid transparent;
+        }
+        
+        .history-entry.win {
+            background: rgba(0,255,136,0.1);
+            border-left-color: #00ff88;
+        }
+        
+        .history-entry.loss {
+            background: rgba(255,68,68,0.1);
+            border-left-color: #ff4444;
+        }
+        
+        .history-entry.analysis {
+            background: rgba(255,170,0,0.1);
+            border-left-color: #ffaa00;
+        }
+        
+        .feature-analysis {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .feature-item {
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .feature-label {
+            font-size: 10px;
+            color: #cccccc;
+            margin-bottom: 5px;
+        }
+        
+        .feature-value {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .status-connected {
+            background: #00ff88;
+            color: #000;
+        }
+        
+        .status-disconnected {
+            background: #ff4444;
+            color: #fff;
+        }
+        
+        .pattern-memory {
+            background: rgba(0,0,0,0.5);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .memory-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+        
+        .memory-stat {
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 6px;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            color: #cccccc;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .pattern-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-analysis {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🧠 OGZ Prime AI Pattern Analysis</div>
+    </div>
+    
+    <div class="connection-status status-disconnected" id="connection-status">
+        🔴 CONNECTING
+    </div>
+    
+    <div class="dashboard-container">
+        <!-- Current Pattern Analysis -->
+        <div class="pattern-panel">
+            <div class="panel-title">🔍 Current Pattern Analysis</div>
+            
+            <div class="pattern-grid" id="current-patterns">
+                <div class="pattern-card neutral">
+                    <div class="pattern-name">RSI Pattern</div>
+                    <div class="pattern-confidence confidence-low" id="rsi-confidence">--</div>
+                    <div class="pattern-details" id="rsi-details">Waiting for data...</div>
+                </div>
+                
+                <div class="pattern-card neutral">
+                    <div class="pattern-name">MACD Pattern</div>
+                    <div class="pattern-confidence confidence-low" id="macd-confidence">--</div>
+                    <div class="pattern-details" id="macd-details">Waiting for data...</div>
+                </div>
+                
+                <div class="pattern-card neutral">
+                    <div class="pattern-name">Trend Pattern</div>
+                    <div class="pattern-confidence confidence-low" id="trend-confidence">--</div>
+                    <div class="pattern-details" id="trend-details">Waiting for data...</div>
+                </div>
+                
+                <div class="pattern-card neutral">
+                    <div class="pattern-name">Bollinger Pattern</div>
+                    <div class="pattern-confidence confidence-low" id="bb-confidence">--</div>
+                    <div class="pattern-details" id="bb-details">Waiting for data...</div>
+                </div>
+                
+                <div class="pattern-card neutral">
+                    <div class="pattern-name">Volume Pattern</div>
+                    <div class="pattern-confidence confidence-low" id="volume-confidence">--</div>
+                    <div class="pattern-details" id="volume-details">Waiting for data...</div>
+                </div>
+                
+                <div class="pattern-card neutral">
+                    <div class="pattern-name">Candlestick Pattern</div>
+                    <div class="pattern-confidence confidence-low" id="candle-confidence">--</div>
+                    <div class="pattern-details" id="candle-details">Waiting for data...</div>
+                </div>
+            </div>
+            
+            <div class="panel-title">📊 Feature Analysis</div>
+            <div class="feature-analysis" id="feature-analysis">
+                <div class="feature-item">
+                    <div class="feature-label">RSI Normalized</div>
+                    <div class="feature-value" id="feature-rsi">--</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-label">MACD Delta</div>
+                    <div class="feature-value" id="feature-macd">--</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-label">Trend Score</div>
+                    <div class="feature-value" id="feature-trend">--</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-label">BB Width</div>
+                    <div class="feature-value" id="feature-bb">--</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-label">Volatility</div>
+                    <div class="feature-value" id="feature-vol">--</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-label">Price Momentum</div>
+                    <div class="feature-value" id="feature-momentum">--</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pattern Memory & History -->
+        <div class="pattern-panel">
+            <div class="panel-title">🧠 Pattern Memory System</div>
+            
+            <div class="pattern-memory">
+                <div class="memory-stats">
+                    <div class="memory-stat">
+                        <div class="stat-value" id="total-patterns">--</div>
+                        <div class="stat-label">Total Patterns</div>
+                    </div>
+                    <div class="memory-stat">
+                        <div class="stat-value" id="high-confidence">--</div>
+                        <div class="stat-label">High Confidence</div>
+                    </div>
+                    <div class="memory-stat">
+                        <div class="stat-value" id="win-rate">--</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="memory-stat">
+                        <div class="stat-value" id="avg-pnl">--</div>
+                        <div class="stat-label">Avg P&L</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel-title">📈 Pattern Recognition History</div>
+            <div class="pattern-history" id="pattern-history">
+                <div class="history-entry analysis">
+                    <strong>[--:--:--]</strong> 🔍 SYSTEM: Waiting for pattern analysis data...
+                </div>
+                <div class="history-entry analysis">
+                    <strong>[--:--:--]</strong> 🧠 PATTERN: Connecting to AI brain for pattern recognition...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class PatternAnalysisDashboard {
+            constructor() {
+                this.websocket = null;
+                this.isConnected = false;
+                this.reconnectAttempts = 0;
+                this.maxReconnectAttempts = 10;
+                
+                // Auto-detect WebSocket URL
+                this.config = {
+                    websocketUrl: this.detectWebSocketUrl(),
+                    reconnectDelay: 2000,
+                    heartbeatInterval: 30000
+                };
+                
+                this.init();
+            }
+            
+            detectWebSocketUrl() {
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const host = window.location.hostname === 'localhost' ? 'localhost' : window.location.hostname;
+                const port = window.location.protocol === 'https:' ? '3007' : '3009';
+                return `${protocol}//${host}:${port}`;
+            }
+            
+            init() {
+                console.log('🧠 Initializing Pattern Analysis Dashboard...');
+                this.connectToTransparencyServer();
+                this.startHeartbeat();
+            }
+            
+            connectToTransparencyServer() {
+                if (this.isConnected) return;
+                
+                try {
+                    console.log('🔌 Connecting to transparency server:', this.config.websocketUrl);
+                    this.websocket = new WebSocket(this.config.websocketUrl);
+                    
+                    this.websocket.onopen = () => {
+                        console.log('✅ Connected to transparency server');
+                        this.isConnected = true;
+                        this.reconnectAttempts = 0;
+                        this.updateConnectionStatus('connected');
+                        
+                        // Subscribe to pattern analysis channels
+                        this.subscribe([
+                            'pattern-matches',
+                            'real-time-analysis',
+                            'neural-mapping',
+                            'confidence-changes'
+                        ]);
+                    };
+                    
+                    this.websocket.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            this.handlePatternData(data);
+                        } catch (error) {
+                            console.error('❌ Error parsing pattern data:', error);
+                        }
+                    };
+                    
+                    this.websocket.onclose = () => {
+                        console.log('❌ Transparency server connection closed');
+                        this.isConnected = false;
+                        this.updateConnectionStatus('disconnected');
+                        this.scheduleReconnect();
+                    };
+                    
+                    this.websocket.onerror = (error) => {
+                        console.error('🚫 Transparency server error:', error);
+                        this.updateConnectionStatus('error');
+                    };
+                    
+                } catch (error) {
+                    console.error('🚫 Failed to create transparency connection:', error);
+                    this.updateConnectionStatus('error');
+                    this.scheduleReconnect();
+                }
+            }
+            
+            subscribe(channels) {
+                if (!this.isConnected || !this.websocket) return;
+                
+                channels.forEach(channel => {
+                    try {
+                        const subscribeMessage = {
+                            type: 'subscribe',
+                            channel: channel,
+                            timestamp: Date.now()
+                        };
+                        
+                        this.websocket.send(JSON.stringify(subscribeMessage));
+                        console.log(`📡 Subscribed to pattern channel: ${channel}`);
+                    } catch (error) {
+                        console.error(`❌ Error subscribing to channel ${channel}:`, error);
+                    }
+                });
+            }
+            
+            handlePatternData(data) {
+                console.log('📊 Received pattern data:', data.type);
+                
+                switch (data.type) {
+                    case 'pattern_match':
+                    case 'pattern_matches':
+                        this.updatePatternMatches(data.data);
+                        break;
+                    case 'real_time_analysis':
+                        this.updateRealTimeAnalysis(data.data);
+                        break;
+                    case 'neural_mapping':
+                        this.updateNeuralMapping(data.data);
+                        break;
+                    case 'confidence_update':
+                        this.updateConfidenceData(data.data);
+                        break;
+                    case 'welcome':
+                        this.addToHistory('analysis', 'Connected to AI pattern recognition system');
+                        break;
+                    case 'pong':
+                        // Heartbeat response
+                        break;
+                    default:
+                        console.log('⚠️ Unknown pattern data type:', data.type);
+                }
+            }
+            
+            updatePatternMatches(patternData) {
+                console.log('🔍 Updating pattern matches:', patternData);
+                
+                if (patternData.confidence !== undefined) {
+                    this.updatePatternCard('rsi', {
+                        confidence: patternData.confidence,
+                        direction: patternData.direction,
+                        details: `${patternData.timesSeen || 0} matches, ${(patternData.historicalAccuracy * 100).toFixed(1)}% accuracy`
+                    });
+                }
+                
+                this.addToHistory('analysis', 
+                    `🔍 PATTERN MATCH: ${patternData.direction || 'NEUTRAL'} | Confidence: ${(patternData.confidence * 100).toFixed(1)}% | Matches: ${patternData.timesSeen || 0}`
+                );
+            }
+            
+            updateRealTimeAnalysis(analysisData) {
+                console.log('📊 Updating real-time analysis:', analysisData);
+                
+                // Update individual pattern cards
+                if (analysisData.indicators) {
+                    const indicators = analysisData.indicators;
+                    
+                    // RSI Pattern
+                    if (indicators.rsi !== undefined) {
+                        const rsiSignal = indicators.rsi > 70 ? 'SELL' : indicators.rsi < 30 ? 'BUY' : 'HOLD';
+                        const rsiConfidence = indicators.rsi > 70 || indicators.rsi < 30 ? 0.8 : 0.3;
+                        
+                        this.updatePatternCard('rsi', {
+                            confidence: rsiConfidence,
+                            direction: rsiSignal,
+                            details: `RSI: ${indicators.rsi.toFixed(1)} | ${rsiSignal} signal`
+                        });
+                        
+                        document.getElementById('feature-rsi').textContent = (indicators.rsi / 100).toFixed(3);
+                    }
+                    
+                    // MACD Pattern
+                    if (indicators.macd !== undefined && indicators.signal !== undefined) {
+                        const macdDelta = indicators.macd - indicators.signal;
+                        const macdSignal = macdDelta > 0 ? 'BUY' : 'SELL';
+                        const macdConfidence = Math.abs(macdDelta) > 0.5 ? 0.7 : 0.4;
+                        
+                        this.updatePatternCard('macd', {
+                            confidence: macdConfidence,
+                            direction: macdSignal,
+                            details: `MACD: ${indicators.macd.toFixed(3)} | Signal: ${indicators.signal.toFixed(3)}`
+                        });
+                        
+                        document.getElementById('feature-macd').textContent = macdDelta.toFixed(3);
+                    }
+                    
+                    // Trend Pattern
+                    if (indicators.trend) {
+                        const trendConfidence = indicators.trend === 'sideways' ? 0.3 : 0.6;
+                        const trendDirection = indicators.trend === 'uptrend' ? 'BUY' : 
+                                             indicators.trend === 'downtrend' ? 'SELL' : 'HOLD';
+                        
+                        this.updatePatternCard('trend', {
+                            confidence: trendConfidence,
+                            direction: trendDirection,
+                            details: `Trend: ${indicators.trend}`
+                        });
+                        
+                        const trendScore = indicators.trend === 'uptrend' ? 1 : 
+                                         indicators.trend === 'downtrend' ? -1 : 0;
+                        document.getElementById('feature-trend').textContent = trendScore;
+                    }
+                }
+                
+                // Update feature analysis
+                if (analysisData.confidence !== undefined) {
+                    this.addToHistory('analysis', 
+                        `📊 ANALYSIS: ${analysisData.decision || 'HOLD'} | Confidence: ${(analysisData.confidence * 100).toFixed(1)}% | Price: $${analysisData.price?.toLocaleString() || '--'}`
+                    );
+                }
+            }
+            
+            updateNeuralMapping(neuralData) {
+                console.log('🧠 Updating neural mapping:', neuralData);
+                
+                if (neuralData.processingTime) {
+                    this.addToHistory('analysis', 
+                        `🧠 NEURAL: Processing time: ${neuralData.processingTime.toFixed(1)}ms | Layers active`
+                    );
+                }
+            }
+            
+            updateConfidenceData(confidenceData) {
+                console.log('📈 Updating confidence data:', confidenceData);
+                
+                if (confidenceData.breakdown) {
+                    const breakdown = confidenceData.breakdown;
+                    
+                    // Update memory stats
+                    if (breakdown.overall !== undefined) {
+                        document.getElementById('high-confidence').textContent = 
+                            `${(breakdown.overall * 100).toFixed(1)}%`;
+                    }
+                    
+                    if (breakdown.technical && breakdown.technical.total !== undefined) {
+                        document.getElementById('win-rate').textContent = 
+                            `${(breakdown.technical.total * 100).toFixed(1)}%`;
+                    }
+                }
+                
+                this.addToHistory('analysis', 
+                    `📈 CONFIDENCE: Overall: ${(confidenceData.overall * 100).toFixed(1)}% | Trend: ${confidenceData.trend || 'stable'}`
+                );
+            }
+            
+            updatePatternCard(patternType, data) {
+                const confidenceElement = document.getElementById(`${patternType}-confidence`);
+                const detailsElement = document.getElementById(`${patternType}-details`);
+                const cardElement = confidenceElement?.closest('.pattern-card');
+                
+                if (confidenceElement && detailsElement && cardElement) {
+                    // Update confidence
+                    confidenceElement.textContent = `${(data.confidence * 100).toFixed(1)}%`;
+                    
+                    // Update confidence class
+                    confidenceElement.className = 'pattern-confidence ' + 
+                        (data.confidence > 0.7 ? 'confidence-high' : 
+                         data.confidence > 0.4 ? 'confidence-medium' : 'confidence-low');
+                    
+                    // Update details
+                    detailsElement.textContent = data.details;
+                    
+                    // Update card class
+                    cardElement.className = 'pattern-card ' + 
+                        (data.direction === 'BUY' ? 'bullish' : 
+                         data.direction === 'SELL' ? 'bearish' : 'neutral') +
+                        (data.confidence > 0.6 ? ' active' : '');
+                }
+            }
+            
+            updateConnectionStatus(status) {
+                const statusElement = document.getElementById('connection-status');
+                
+                switch (status) {
+                    case 'connected':
+                        statusElement.textContent = '🟢 CONNECTED';
+                        statusElement.className = 'connection-status status-connected';
+                        break;
+                    case 'disconnected':
+                        statusElement.textContent = '🔴 DISCONNECTED';
+                        statusElement.className = 'connection-status status-disconnected';
+                        break;
+                    case 'error':
+                        statusElement.textContent = '❌ ERROR';
+                        statusElement.className = 'connection-status status-disconnected';
+                        break;
+                }
+            }
+            
+            addToHistory(type, message) {
+                const historyContainer = document.getElementById('pattern-history');
+                const timestamp = new Date().toLocaleTimeString();
+                
+                const entry = document.createElement('div');
+                entry.className = `history-entry ${type}`;
+                entry.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+                
+                historyContainer.insertBefore(entry, historyContainer.firstChild);
+                
+                // Keep only last 50 entries
+                while (historyContainer.children.length > 50) {
+                    historyContainer.removeChild(historyContainer.lastChild);
+                }
+            }
+            
+            scheduleReconnect() {
+                if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+                    console.log('❌ Max reconnection attempts reached');
+                    return;
+                }
+                
+                this.reconnectAttempts++;
+                const delay = Math.min(this.config.reconnectDelay * Math.pow(1.5, this.reconnectAttempts - 1), 30000);
+                
+                console.log(`🔄 Scheduling reconnection attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${Math.round(delay/1000)}s`);
+                
+                setTimeout(() => {
+                    if (!this.isConnected) {
+                        this.connectToTransparencyServer();
+                    }
+                }, delay);
+            }
+            
+            startHeartbeat() {
+                setInterval(() => {
+                    if (this.isConnected && this.websocket) {
+                        try {
+                            this.websocket.send(JSON.stringify({
+                                type: 'ping',
+                                timestamp: Date.now()
+                            }));
+                        } catch (error) {
+                            console.error('❌ Error sending heartbeat:', error);
+                        }
+                    }
+                }, this.config.heartbeatInterval);
+            }
+        }
+        
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Initializing Pattern Analysis Dashboard...');
+            window.patternDashboard = new PatternAnalysisDashboard();
+        });
+    </script>
+</body>
+</html>

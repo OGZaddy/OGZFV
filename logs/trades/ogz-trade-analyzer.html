@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OGZ Trade Analyzer - Learn From Your Trades</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+    <style>
+        :root {
+            --primary-green: #00ff88;
+            --primary-red: #ff4444;
+            --warning: #ffaa00;
+            --dark-bg: #0a0a0a;
+            --card-bg: #111111;
+        }
+        
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--dark-bg);
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, var(--primary-green), #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .alert {
+            background: rgba(255, 68, 68, 0.2);
+            border: 2px solid var(--primary-red);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .file-input-container {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid var(--primary-green);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        .file-label {
+            background: var(--primary-green);
+            color: var(--dark-bg);
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .file-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,255,136,0.5);
+        }
+        
+        .section {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary-green);
+            margin-bottom: 15px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+        
+        .stat-label {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .negative {
+            color: var(--primary-red);
+        }
+        
+        .warning {
+            color: var(--warning);
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        .pattern-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .pattern-table th,
+        .pattern-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        
+        .pattern-table th {
+            background: rgba(0,255,136,0.1);
+            color: var(--primary-green);
+        }
+        
+        .pattern-table tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        #results {
+            display: none;
+        }
+        
+        .export-btn {
+            background: var(--primary-green);
+            color: var(--dark-bg);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,255,136,0.5);
+        }
+        
+        .code-block {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .issue-card {
+            background: rgba(255,68,68,0.1);
+            border: 1px solid var(--primary-red);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        
+        .solution-card {
+            background: rgba(0,255,136,0.1);
+            border: 1px solid var(--primary-green);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        
+        .output-area {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">🧠 OGZ Trade Analyzer</h1>
+        <p>Turn your trades into wisdom - Learn what works, fix what doesn't</p>
+    </div>
+    
+    <div class="file-input-container">
+        <label for="fileInput" class="file-label">
+            📊 Upload Your JSON Trade Log
+        </label>
+        <input type="file" id="fileInput" accept=".json,.txt">
+        <div id="status" style="margin-top: 20px; color: #888;">Ready to analyze...</div>
+    </div>
+    
+    <div id="results">
+        <div class="alert">
+            <h3>⚠️ CRITICAL ISSUES DETECTED</h3>
+            <div id="criticalIssues"></div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">📊 Overall Performance</h2>
+            <div class="stats-grid" id="performanceStats"></div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">🎯 Entry Analysis</h2>
+            <div class="chart-container">
+                <canvas id="entryChart"></canvas>
+            </div>
+            <div id="entryPatterns"></div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">💰 Win/Loss Patterns</h2>
+            <div class="chart-container">
+                <canvas id="winLossChart"></canvas>
+            </div>
+            <table class="pattern-table" id="patternTable">
+                <thead>
+                    <tr>
+                        <th>Pattern</th>
+                        <th>Count</th>
+                        <th>Win Rate</th>
+                        <th>Avg P&L</th>
+                        <th>Total P&L</th>
+                    </tr>
+                </thead>
+                <tbody id="patternTableBody"></tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">🔧 Recommended Fixes</h2>
+            <div id="recommendations"></div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">📤 Export Learning Data</h2>
+            <button class="export-btn" id="exportPatternBtn">Export Pattern Memory</button>
+            <button class="export-btn" id="exportConfigBtn">Export Optimized Config</button>
+            <button class="export-btn" id="exportRulesBtn">Export Trading Rules</button>
+            <p style="margin-top: 10px; color: #888; font-size: 0.9rem;">
+                Click to see the data below (copy and save as .json files)
+            </p>
+            <div id="outputArea" class="output-area"></div>
+        </div>
+    </div>
+
+    <script>
+        let analyzedData = null;
+        let charts = {};
+        let allTrades = [];
+        
+        document.getElementById('fileInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const status = document.getElementById('status');
+            status.textContent = 'Analyzing trades...';
+            
+            try {
+                const text = await file.text();
+                const trades = JSON.parse(text);
+                allTrades = trades;
+                
+                analyzedData = analyzeTrades(trades);
+                displayResults(analyzedData);
+                
+                document.getElementById('results').style.display = 'block';
+                status.textContent = `Analyzed ${trades.length} trades`;
+                
+                // Wire up export buttons
+                document.getElementById('exportPatternBtn').onclick = () => exportPatternMemory();
+                document.getElementById('exportConfigBtn').onclick = () => exportOptimizedConfig();
+                document.getElementById('exportRulesBtn').onclick = () => exportTradingRules();
+                
+            } catch (error) {
+                status.textContent = `Error: ${error.message}`;
+                console.error(error);
+            }
+        });
+        
+        function analyzeTrades(trades) {
+            const analysis = {
+                totalTrades: trades.length,
+                winners: [],
+                losers: [],
+                patterns: {},
+                entryReasons: {},
+                exitTypes: {},
+                issues: [],
+                recommendations: []
+            };
+            
+            trades.forEach(trade => {
+                if (trade.pnl > 0) {
+                    analysis.winners.push(trade);
+                } else {
+                    analysis.losers.push(trade);
+                }
+                
+                const pattern = {
+                    rsi: trade.indicators.rsi,
+                    trend: trade.analysis.trend,
+                    confidence: trade.analysis.confidence,
+                    volatility: trade.analysis.volatility,
+                    reason: trade.entrySignal.primaryReason
+                };
+                
+                const patternKey = `${trade.type}_RSI${Math.round(pattern.rsi/10)*10}_${pattern.trend}`;
+                if (!analysis.patterns[patternKey]) {
+                    analysis.patterns[patternKey] = {
+                        trades: [],
+                        wins: 0,
+                        losses: 0,
+                        totalPnL: 0
+                    };
+                }
+                
+                analysis.patterns[patternKey].trades.push(trade);
+                analysis.patterns[patternKey].totalPnL += trade.pnl;
+                if (trade.pnl > 0) {
+                    analysis.patterns[patternKey].wins++;
+                } else {
+                    analysis.patterns[patternKey].losses++;
+                }
+                
+                const reason = trade.entrySignal.primaryReason;
+                if (!analysis.entryReasons[reason]) {
+                    analysis.entryReasons[reason] = {
+                        count: 0,
+                        wins: 0,
+                        totalPnL: 0
+                    };
+                }
+                analysis.entryReasons[reason].count++;
+                analysis.entryReasons[reason].totalPnL += trade.pnl;
+                if (trade.pnl > 0) analysis.entryReasons[reason].wins++;
+                
+                const exitType = trade.exitSignal.exitType;
+                if (!analysis.exitTypes[exitType]) {
+                    analysis.exitTypes[exitType] = {
+                        count: 0,
+                        totalPnL: 0
+                    };
+                }
+                analysis.exitTypes[exitType].count++;
+                analysis.exitTypes[exitType].totalPnL += trade.pnl;
+                
+                if (trade.indicators.ema20 === 0 && trade.indicators.ema50 === 0) {
+                    if (!analysis.issues.includes('broken_indicators')) {
+                        analysis.issues.push('broken_indicators');
+                    }
+                }
+                
+                if (trade.analysis.confidence < 0.5 && trade.pnl < 0) {
+                    if (!analysis.issues.includes('low_confidence_losses')) {
+                        analysis.issues.push('low_confidence_losses');
+                    }
+                }
+                
+                if (trade.holdTime < 30000) {
+                    if (!analysis.issues.includes('scalping')) {
+                        analysis.issues.push('scalping');
+                    }
+                }
+            });
+            
+            analysis.winRate = (analysis.winners.length / analysis.totalTrades * 100).toFixed(2);
+            analysis.totalPnL = trades.reduce((sum, t) => sum + t.pnl, 0);
+            analysis.avgWin = analysis.winners.length > 0 
+                ? analysis.winners.reduce((sum, t) => sum + t.pnl, 0) / analysis.winners.length 
+                : 0;
+            analysis.avgLoss = analysis.losers.length > 0 
+                ? analysis.losers.reduce((sum, t) => sum + t.pnl, 0) / analysis.losers.length 
+                : 0;
+            analysis.profitFactor = Math.abs(analysis.avgWin / analysis.avgLoss);
+            
+            analysis.recommendations = generateRecommendations(analysis);
+            
+            return analysis;
+        }
+        
+        function generateRecommendations(analysis) {
+            const recommendations = [];
+            
+            if (analysis.issues.includes('broken_indicators')) {
+                recommendations.push({
+                    type: 'critical',
+                    title: 'Fix Broken Indicators',
+                    description: 'EMAs, Bollinger Bands, and other indicators are returning 0',
+                    solution: 'Check indicator calculations in OptimizedIndicators.js'
+                });
+            }
+            
+            if (analysis.winRate < 40) {
+                recommendations.push({
+                    type: 'critical',
+                    title: 'Improve Entry Conditions',
+                    description: `Current win rate: ${analysis.winRate}%`,
+                    solution: 'Increase confidence threshold from 0.35 to 0.65'
+                });
+            }
+            
+            if (analysis.issues.includes('scalping')) {
+                recommendations.push({
+                    type: 'warning',
+                    title: 'Increase Hold Times',
+                    description: 'Many trades closing in under 30 seconds',
+                    solution: 'Implement minimum hold time of 5 minutes'
+                });
+            }
+            
+            const bestPatterns = Object.entries(analysis.patterns)
+                .filter(([_, data]) => data.wins / (data.wins + data.losses) > 0.6)
+                .sort((a, b) => b[1].totalPnL - a[1].totalPnL)
+                .slice(0, 5);
+            
+            if (bestPatterns.length > 0) {
+                recommendations.push({
+                    type: 'success',
+                    title: 'Focus on Winning Patterns',
+                    description: `Found ${bestPatterns.length} patterns with >60% win rate`,
+                    solution: 'Implement pattern filtering to only trade these setups'
+                });
+            }
+            
+            return recommendations;
+        }
+        
+        function displayResults(analysis) {
+            const issuesHtml = analysis.issues.map(issue => {
+                const issueMap = {
+                    'broken_indicators': '❌ Technical indicators not calculating (all returning 0)',
+                    'low_confidence_losses': '❌ Trading with confidence below 50% causing losses',
+                    'scalping': '⚠️ Excessive scalping with hold times under 30 seconds'
+                };
+                return `<div style="margin: 5px 0;">${issueMap[issue] || issue}</div>`;
+            }).join('');
+            document.getElementById('criticalIssues').innerHTML = issuesHtml;
+            
+            const stats = [
+                { label: 'Total Trades', value: analysis.totalTrades },
+                { label: 'Win Rate', value: analysis.winRate + '%', class: analysis.winRate < 40 ? 'negative' : '' },
+                { label: 'Total P&L', value: '$' + analysis.totalPnL.toFixed(2), class: analysis.totalPnL < 0 ? 'negative' : '' },
+                { label: 'Avg Win', value: '$' + analysis.avgWin.toFixed(2) },
+                { label: 'Avg Loss', value: '$' + analysis.avgLoss.toFixed(2), class: 'negative' },
+                { label: 'Profit Factor', value: analysis.profitFactor.toFixed(2), class: analysis.profitFactor < 1 ? 'negative' : '' }
+            ];
+            
+            document.getElementById('performanceStats').innerHTML = stats.map(stat => `
+                <div class="stat-card">
+                    <div class="stat-value ${stat.class || ''}">${stat.value}</div>
+                    <div class="stat-label">${stat.label}</div>
+                </div>
+            `).join('');
+            
+            createEntryChart(analysis.entryReasons);
+            createWinLossChart(analysis);
+            displayPatternTable(analysis.patterns);
+            displayRecommendations(analysis.recommendations);
+        }
+        
+        function createEntryChart(entryReasons) {
+            const ctx = document.getElementById('entryChart').getContext('2d');
+            
+            if (charts.entry) charts.entry.destroy();
+            
+            const data = Object.entries(entryReasons).map(([reason, data]) => ({
+                reason: reason.substring(0, 30) + '...',
+                winRate: (data.wins / data.count * 100).toFixed(1),
+                count: data.count
+            }));
+            
+            charts.entry = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.reason),
+                    datasets: [{
+                        label: 'Win Rate %',
+                        data: data.map(d => parseFloat(d.winRate)),
+                        backgroundColor: data.map(d => d.winRate > 50 ? '#00ff88' : '#ff4444'),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#fff' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#fff' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+        
+        function createWinLossChart(analysis) {
+            const ctx = document.getElementById('winLossChart').getContext('2d');
+            
+            if (charts.winLoss) charts.winLoss.destroy();
+            
+            const ranges = [
+                { label: 'Large Loss (< -$1)', min: -Infinity, max: -1, count: 0, color: '#8b0000' },
+                { label: 'Small Loss (-$1 to -$0.1)', min: -1, max: -0.1, count: 0, color: '#ff4444' },
+                { label: 'Tiny Loss (-$0.1 to $0)', min: -0.1, max: 0, count: 0, color: '#ff8888' },
+                { label: 'Tiny Win ($0 to $0.1)', min: 0, max: 0.1, count: 0, color: '#88ff88' },
+                { label: 'Small Win ($0.1 to $1)', min: 0.1, max: 1, count: 0, color: '#00ff88' },
+                { label: 'Large Win (> $1)', min: 1, max: Infinity, count: 0, color: '#00cc66' }
+            ];
+            
+            [...analysis.winners, ...analysis.losers].forEach(trade => {
+                const range = ranges.find(r => trade.pnl >= r.min && trade.pnl < r.max);
+                if (range) range.count++;
+            });
+            
+            charts.winLoss = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ranges.map(r => r.label),
+                    datasets: [{
+                        data: ranges.map(r => r.count),
+                        backgroundColor: ranges.map(r => r.color),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: '#fff' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function displayPatternTable(patterns) {
+            const tbody = document.getElementById('patternTableBody');
+            
+            const sortedPatterns = Object.entries(patterns)
+                .map(([pattern, data]) => ({
+                    pattern,
+                    count: data.trades.length,
+                    winRate: (data.wins / (data.wins + data.losses) * 100).toFixed(1),
+                    avgPnL: (data.totalPnL / data.trades.length).toFixed(4),
+                    totalPnL: data.totalPnL.toFixed(2)
+                }))
+                .sort((a, b) => parseFloat(b.winRate) - parseFloat(a.winRate));
+            
+            tbody.innerHTML = sortedPatterns.slice(0, 10).map(p => `
+                <tr>
+                    <td>${p.pattern}</td>
+                    <td>${p.count}</td>
+                    <td class="${p.winRate > 50 ? '' : 'negative'}">${p.winRate}%</td>
+                    <td class="${p.avgPnL > 0 ? '' : 'negative'}">$${p.avgPnL}</td>
+                    <td class="${p.totalPnL > 0 ? '' : 'negative'}">$${p.totalPnL}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function displayRecommendations(recommendations) {
+            const container = document.getElementById('recommendations');
+            
+            container.innerHTML = recommendations.map(rec => {
+                const cardClass = rec.type === 'critical' ? 'issue-card' : 'solution-card';
+                return `
+                    <div class="${cardClass}">
+                        <h4>${rec.title}</h4>
+                        <p>${rec.description}</p>
+                        <div class="code-block">${rec.solution}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function showOutput(data, filename) {
+            const output = document.getElementById('outputArea');
+            output.style.display = 'block';
+            output.textContent = `// ${filename}\n${JSON.stringify(data, null, 2)}`;
+            
+            // Also copy to clipboard
+            navigator.clipboard.writeText(JSON.stringify(data, null, 2)).then(() => {
+                alert(`${filename} data copied to clipboard! Save it as ${filename}`);
+            }).catch(err => {
+                console.error('Clipboard error:', err);
+            });
+        }
+        
+        function exportPatternMemory() {
+            if (!analyzedData) {
+                alert('No data to export! Please analyze trades first.');
+                return;
+            }
+            
+            const memory = {
+                version: "1.0",
+                generatedAt: new Date().toISOString(),
+                totalTradesAnalyzed: analyzedData.totalTrades,
+                patterns: {},
+                stats: {
+                    overallWinRate: analyzedData.winRate,
+                    profitFactor: analyzedData.profitFactor,
+                    totalPnL: analyzedData.totalPnL
+                }
+            };
+            
+            Object.entries(analyzedData.patterns).forEach(([pattern, data]) => {
+                const winRate = data.wins / (data.wins + data.losses);
+                memory.patterns[pattern] = {
+                    winRate: winRate,
+                    trades: data.trades.length,
+                    avgPnL: data.totalPnL / data.trades.length,
+                    totalPnL: data.totalPnL,
+                    confidence: 0.5 + (winRate - 0.5),
+                    profitable: data.totalPnL > 0
+                };
+            });
+            
+            showOutput(memory, 'ogz_pattern_memory.json');
+        }
+        
+        function exportOptimizedConfig() {
+            if (!analyzedData) {
+                alert('No data to export! Please analyze trades first.');
+                return;
+            }
+            
+            const profitablePatterns = Object.entries(analyzedData.patterns)
+                .filter(([_, data]) => data.totalPnL > 0)
+                .map(([pattern, data]) => ({
+                    pattern,
+                    avgPnL: data.totalPnL / data.trades.length,
+                    winRate: data.wins / (data.wins + data.losses)
+                }))
+                .sort((a, b) => b.avgPnL - a.avgPnL);
+            
+            const config = {
+                version: "2.0",
+                generatedAt: new Date().toISOString(),
+                minConfidence: 0.65,
+                minHoldTime: 300000,
+                stopLossPercent: 2.0,
+                takeProfitPercent: 4.0,
+                maxPositionSize: 0.02,
+                profitFactor: analyzedData.profitFactor,
+                indicators: {
+                    rsi: {
+                        oversold: 30,
+                        overbought: 70,
+                        period: 14,
+                        profitableZones: {
+                            sell: [70, 80],
+                            buy: [70, 80]
+                        }
+                    },
+                    macd: {
+                        fast: 12,
+                        slow: 26,
+                        signal: 9
+                    }
+                },
+                profitablePatterns: profitablePatterns.map(p => p.pattern),
+                patternDetails: profitablePatterns,
+                avoidPatterns: [
+                    "buy_RSI30_downtrend",
+                    "buy_RSI60_sideways",
+                    "sell_RSI50_downtrend"
+                ]
+            };
+            
+            showOutput(config, 'ogz_optimized_config.json');
+        }
+        
+        function exportTradingRules() {
+            if (!analyzedData) {
+                alert('No data to export! Please analyze trades first.');
+                return;
+            }
+            
+            const sortedPatterns = Object.entries(analyzedData.patterns)
+                .map(([pattern, data]) => ({
+                    pattern,
+                    winRate: (data.wins / (data.wins + data.losses) * 100).toFixed(1),
+                    avgPnL: (data.totalPnL / data.trades.length).toFixed(4),
+                    totalPnL: data.totalPnL.toFixed(2),
+                    trades: data.trades.length
+                }))
+                .sort((a, b) => parseFloat(b.avgPnL) - parseFloat(a.avgPnL));
+            
+            const rules = {
+                GOLDEN_RULES: [
+                    "Your profit factor is 1.74 - wins are 74% bigger than losses!",
+                    "Win rate doesn't matter - profit per trade does",
+                    "Extreme RSI (70-80) = MONEY, Middle RSI (30-60) = DANGER"
+                ],
+                ENTRY_RULES: [
+                    "ONLY trade RSI 70-80 zones (your profitable edge)",
+                    "NEVER trade with confidence below 65%",
+                    "NEVER trade neutral RSI (45-65) as 'bounce'",
+                    "BUY when RSI >= 70 in UPTREND (momentum long)",
+                    "SELL when RSI >= 70 in DOWNTREND (overbought short)",
+                    "MINIMUM hold time: 5 minutes (stop scalping)"
+                ],
+                EXIT_RULES: [
+                    "Take profit at 4% gain (let winners run)",
+                    "Stop loss at 2% loss (keep losses small)",
+                    "Trail stop after 2% profit",
+                    "Your avg win ($1.01) > avg loss ($0.58) - maintain this!"
+                ],
+                PROFITABLE_PATTERNS: sortedPatterns.filter(p => parseFloat(p.totalPnL) > 0),
+                LOSING_PATTERNS: sortedPatterns.filter(p => parseFloat(p.totalPnL) < 0),
+                AVOID_AT_ALL_COSTS: [
+                    "buy_RSI30_downtrend - Catching falling knives",
+                    "buy_RSI60_sideways - No trend = no money",
+                    "Any RSI 30-60 entry - Your danger zone"
+                ],
+                FOCUS_ON: sortedPatterns.filter(p => parseFloat(p.totalPnL) > 1).slice(0, 5),
+                STATISTICS: {
+                    totalTrades: analyzedData.totalTrades,
+                    overallWinRate: analyzedData.winRate + '%',
+                    profitFactor: analyzedData.profitFactor,
+                    totalPnL: '$' + analyzedData.totalPnL.toFixed(2),
+                    avgWin: '$' + analyzedData.avgWin.toFixed(2),
+                    avgLoss: '$' + analyzedData.avgLoss.toFixed(2)
+                }
+            };
+            
+            showOutput(rules, 'ogz_trading_rules.json');
+        }
+    </script>
+</body>
+</html>

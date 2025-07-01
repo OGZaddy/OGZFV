@@ -1,0 +1,33 @@
+{
+  "version": "10.2.0",
+  "assetName": "BTC-USD",
+  "profileName": "default",
+  "timeframes": [
+    "1m",
+    "5m",
+    "15m"
+  ],
+  "primaryTimeframe": "1m",
+  "minPatternMatches": 1,
+  "patternSimilarityThreshold": 0.7,
+  "minConfidenceThreshold": 0.7,
+  "maxPositionSize": 0.15,
+  "enableMultiTimeframe": false,
+  "enableFibonacciLevels": false,
+  "enableSupportResistance": false,
+  "fibLevels": [
+    0.236,
+    0.382,
+    0.5,
+    0.618,
+    0.786
+  ],
+  "goldenZone": [
+    0.618,
+    0.65
+  ],
+  "maxSwingLookback": 100,
+  "srLevelStrength": 3,
+  "srProximityPercent": 0.5,
+  "lastModified": "2025-06-17T15:17:24.945Z"
+}

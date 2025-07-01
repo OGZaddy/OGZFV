@@ -1,0 +1,1 @@
+window.OGZ_CONFIG = { fxEnabled: true, commentaryMode: 'sassy' };

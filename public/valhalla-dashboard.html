@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OGZ Prime Valhalla Edition</title>
+  
+  <!-- External Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- External Stylesheets -->
+  <link rel="stylesheet" href="valhalla-style.css">
+  
+  <!-- Main Integration Script -->
+  <script src="./complete-integration.js" type="module"></script>
+
+<style>
+/* ============================================================================
+   OGZ PRIME VALHALLA EDITION - ADVANCED TRADING DASHBOARD STYLING
+   ============================================================================
+   
+   This stylesheet powers the OGZ Prime Valhalla trading dashboard interface.
+   Built for professional crypto trading with a focus on:
+   - Real-time data visualization
+   - Immersive user experience
+   - Responsive design across all devices
+   - Advanced animations and visual feedback
+   
+   Author: OGZ Prime Development Team
+   Version: Valhalla Edition
+   ============================================================================ */
+
+/* ============================================================================
+   CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+   ============================================================================ */
+:root {
+  /* Primary Brand Colors */
+  --primary-color: #9d71c7;           /* OGZ Prime Purple */
+  --primary-color-dark: #7d51a7;      /* Darker shade for hovers */
+  
+  /* Background Colors */
+  --background-color: #0f0f0f;        /* Main dark background */
+  --card-background: #1a1a1a;         /* Card/panel backgrounds */
+  --card-background-alt: #222222;     /* Alternative card color */
+  
+  /* Text Colors */
+  --text-color: #ffffff;              /* Primary text */
+  --text-color-muted: #aaaaaa;        /* Secondary/muted text */
+  
+  /* Status Colors */
+  --success-color: #00ff00;           /* Green for profits/success */
+  --error-color: #ff3333;             /* Red for losses/errors */
+  --warning-color: #ffff00;           /* Yellow for warnings */
+  --accent-color: #00bfff;            /* Deep sky blue accent */
+  
+  /* Visual Effects */
+  --glow-color: rgba(157, 113, 199, 0.4); /* Purple glow effect */
+}
+
+/* ============================================================================
+   BASE STYLES & RESET
+   ============================================================================ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Maven Pro', sans-serif;
+  background: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+/* Enhanced body styling with gradient background */
+body.ogzp-valhalla {
+  background: radial-gradient(circle at center, #151515 0%, #0a0a0a 100%);
+  transition: all 0.5s ease;
+}
+
+/* Fade-in animation for loaded content */
+.ogzp-loaded {
+  animation: fadeIn 1s ease-in;
+}
+
+/* ============================================================================
+   MAIN LAYOUT STRUCTURE
+   ============================================================================ */
+
+/* Primary dashboard container - uses flexbox for responsive layout */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;           /* Full viewport height */
+  padding: 16px;
+  gap: 16px;               /* Consistent spacing between sections */
+}
+
+/* ============================================================================
+   HEADER SECTION
+   ============================================================================ */
+
+/* Top header with logo, status, balance, and controls */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo and branding */
+.logo h1 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--primary-color);
+  text-shadow: 0 0 10px var(--glow-color);    /* Subtle glow effect */
+}
+
+.logo .version {
+  font-size: 16px;
+  opacity: 0.8;
+  font-weight: normal;
+}
+
+/* ============================================================================
+   CONNECTION STATUS INDICATORS
+   ============================================================================ */
+
+/* Status indicator styles with animations for different connection states */
+.status-connecting {
+  font-size: 12px;
+  color: var(--warning-color);
+  padding: 4px;
+  animation: blink 1s infinite;    /* Blinking animation for connecting state */
+}
+
+.status-connected {
+  font-size: 12px;
+  color: var(--success-color);
+  padding: 4px;
+}
+
+.status-error {
+  font-size: 12px;
+  color: var(--error-color);
+  padding: 4px;
+}
+
+.status-reconnecting {
+  font-size: 12px;
+  color: var(--warning-color);
+  padding: 4px;
+  animation: blink 1s infinite;    /* Blinking animation for reconnecting */
+}
+
+/* ============================================================================
+   BALANCE DISPLAY
+   ============================================================================ */
+
+/* Account balance container with inset shadow for depth */
+.balance-container {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 8px 16px;
+  background-color: var(--card-background-alt);
+  border-radius: 4px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================================================
+   CONTROL BUTTONS
+   ============================================================================ */
+
+/* Control button container */
+.controls {
+  display: flex;
+  gap: 12px;
+}
+
+/* Base control button styling */
+.control-button {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  font-family: 'Maven Pro', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Buy button - green for long positions */
+.control-button.buy {
+  background-color: var(--success-color);
+  color: #000;
+}
+
+/* Sell button - red for short positions */
+.control-button.sell {
+  background-color: var(--error-color);
+  color: #fff;
+}
+
+/* Kill switch - emergency stop */
+.control-button.kill {
+  background-color: #444;
+  color: #fff;
+}
+
+/* Interactive button effects */
+.control-button:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.control-button:active, .button-active {
+  transform: scale(0.95);
+  filter: brightness(0.9);
+}
+
+/* ============================================================================
+   MAIN DASHBOARD CONTENT AREA
+   ============================================================================ */
+
+/* Main content area - flexible layout for charts and panels */
+.dashboard-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;                    /* Takes remaining vertical space */
+  gap: 16px;
+}
+
+/* ============================================================================
+   CHART CONTAINERS
+   ============================================================================ */
+
+/* Primary price chart container */
+.chart-container {
+  position: relative;         /* For absolute positioned overlays */
+  height: 50vh;              /* 50% of viewport height */
+  background-color: var(--card-background);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Profit & Loss chart container */
+.pnl-container {
+  height: 20vh;              /* 20% of viewport height */
+  background-color: var(--card-background);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Section headers for charts and panels */
+.pnl-container h3, .goal-tracking h3, .log-container h3 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ============================================================================
+   TECHNICAL INDICATORS OVERLAY
+   ============================================================================ */
+
+/* Real-time indicators overlay on price chart */
+.indicators-overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 12px;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 14px;
+  z-index: 10;              /* Above chart canvas */
+  border: 1px solid #333;
+}
+
+.indicators-overlay div {
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  min-width: 200px;
+}
+
+/* ============================================================================
+   GOAL TRACKING SECTION
+   ============================================================================ */
+
+/* Session goals and progress tracking */
+.goal-tracking {
+  background-color: var(--card-background);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Progress bar container */
+.goal-bar-container {
+  height: 10px;
+  background-color: #333;
+  border-radius: 5px;
+  margin: 10px 0;
+  overflow: hidden;
+}
+
+/* Animated progress bar fill */
+.goal-bar {
+  height: 100%;
+  width: 0%;                          /* Dynamically updated via JavaScript */
+  background-color: var(--primary-color);
+  transition: width 0.5s ease, background-color 0.5s ease;
+  box-shadow: 0 0 10px var(--primary-color);
+}
+
+/* Goal statistics display */
+.goal-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+/* ============================================================================
+   TRADE LOG SECTION
+   ============================================================================ */
+
+/* Trade log container */
+.log-container {
+  height: 20vh;
+  background-color: var(--card-background);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Scrollable log content area */
+.log-content {
+  height: calc(100% - 32px);          /* Account for header */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;      /* Newest entries at top */
+  font-family: monospace;
+  font-size: 14px;
+}
+
+/* Individual log entry styling */
+.log-entry {
+  padding: 6px 0;
+  border-bottom: 1px solid #333;
+}
+
+.log-entry .time {
+  color: var(--text-color-muted);
+  margin-right: 8px;
+}
+
+/* Color-coded log entries */
+.log-entry.buy-entry {
+  color: var(--success-color);
+}
+
+.log-entry.sell-entry {
+  color: var(--error-color);
+}
+
+/* ============================================================================
+   POPUP MODALS
+   ============================================================================ */
+
+/* Full-screen overlay for modals */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+/* Modal content container */
+.popup-content {
+  background-color: var(--card-background);
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow: 0 0 30px var(--glow-color);
+  animation: popIn 0.3s ease-out;
+}
+
+.popup-content h2 {
+  color: var(--primary-color);
+  margin-bottom: 16px;
+}
+
+.popup-content button {
+  padding: 8px 24px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  margin-top: 16px;
+  cursor: pointer;
+  font-family: 'Maven Pro', sans-serif;
+  transition: all 0.2s;
+}
+
+.popup-content button:hover {
+  background-color: var(--primary-color-dark);
+  transform: translateY(-2px);
+}
+
+/* ============================================================================
+   OGZ CONSOLE (DEBUG/SYSTEM INFO)
+   ============================================================================ */
+
+/* Fixed console overlay for system messages */
+.ogzp-console {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 300px;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: rgba(0, 0, 0, 0.9);
+  border-top-left-radius: 8px;
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--primary-color);
+  z-index: 20;
+  padding: 12px;
+  border-left: 1px solid var(--primary-color);
+  border-top: 1px solid var(--primary-color);
+}
+
+.ogzp-message {
+  margin-bottom: 6px;
+  opacity: 0;
+  animation: fadeInUp 0.5s forwards;
+}
+
+/* ============================================================================
+   VISUAL EFFECTS & ENHANCEMENTS
+   ============================================================================ */
+
+/* FX-enabled styling for enhanced visual effects */
+.fx-enabled {
+  box-shadow: inset 0 0 100px var(--glow-color);
+}
+
+.ogzp-fx-enabled .chart-container {
+  box-shadow: 0 0 15px var(--glow-color);
+}
+
+.ogzp-fx-enabled .control-button {
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================================================
+   INDICATOR STATUS CLASSES
+   ============================================================================ */
+
+/* Trend indicator colors */
+.trend-up {
+  color: var(--success-color) !important;
+  font-weight: bold;
+}
+
+.trend-down {
+  color: var(--error-color) !important;
+  font-weight: bold;
+}
+
+.trend-sideways {
+  color: var(--warning-color) !important;
+}
+
+/* RSI indicator states */
+.rsi-overbought {
+  color: var(--error-color) !important;
+  font-weight: bold;
+}
+
+.rsi-oversold {
+  color: var(--success-color) !important;
+  font-weight: bold;
+}
+
+/* MACD and Stochastic signals */
+.macd-bullish, .stoch-bullish {
+  color: var(--success-color) !important;
+  font-weight: bold;
+}
+
+.macd-bearish, .stoch-bearish {
+  color: var(--error-color) !important;
+  font-weight: bold;
+}
+
+/* Confidence level indicators */
+.confidence-high {
+  color: var(--success-color) !important;
+  font-weight: bold;
+}
+
+.confidence-medium {
+  color: var(--warning-color) !important;
+}
+
+.confidence-low {
+  color: var(--error-color) !important;
+}
+
+/* ============================================================================
+   KEYFRAME ANIMATIONS
+   ============================================================================ */
+
+/* Fade in animation for page load */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Slide up animation for console messages */
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Blinking animation for status indicators */
+@keyframes blink {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+/* Pop-in animation for modals */
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Glow effect animation */
+@keyframes glow {
+  0% { box-shadow: 0 0 10px var(--glow-color); }
+  50% { box-shadow: 0 0 20px var(--glow-color), 0 0 30px var(--glow-color); }
+  100% { box-shadow: 0 0 10px var(--glow-color); }
+}
+
+.glow-effect {
+  animation: glow 1.5s infinite alternate;
+}
+
+/* ============================================================================
+   VICTORY & CELEBRATION ANIMATIONS
+   ============================================================================ */
+
+/* Sparkle burst effects for trade victories */
+.sparkle-burst {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+@keyframes sparkleFade {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* Floating elements for big wins */
+@keyframes floatUp {
+  0% {
+    transform: translateY(100vh) scale(0);
+    opacity: 1;
+  }
+  10% {
+    transform: translateY(80vh) scale(1);
+  }
+  100% {
+    transform: translateY(-100px) scale(1);
+    opacity: 0;
+  }
+}
+
+.floating-emoji {
+  position: fixed;
+  bottom: 0;
+  font-size: 48px;
+  animation: floatUp 3s ease-out forwards;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN - TABLET & DESKTOP
+   ============================================================================ */
+
+/* Medium screens and up (tablets, small desktops) */
+@media (min-width: 768px) {
+  .dashboard-main {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  /* Larger chart takes 70% width */
+  .chart-container {
+    width: 70%;
+    height: 60vh;
+  }
+  
+  /* Side panels take 30% width */
+  .pnl-container, .goal-tracking {
+    width: 30%;
+    height: 30vh;
+  }
+  
+  /* Log spans full width at bottom */
+  .log-container {
+    width: 100%;
+    height: 20vh;
+  }
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN - MOBILE
+   ============================================================================ */
+
+/* Mobile devices (phones) */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 8px;
+  }
+  
+  /* Stack header elements vertically on mobile */
+  .dashboard-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .controls {
+    width: 100%;
+    justify-content: space-around;
+  }
+  
+  /* Smaller buttons on mobile */
+  .control-button {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+  
+  /* All sections stack vertically on mobile */
+  .dashboard-main {
+    flex-direction: column;
+  }
+  
+  /* Full width sections on mobile */
+  .chart-container,
+  .pnl-container,
+  .goal-tracking {
+    width: 100% !important;
+    height: 40vh;
+  }
+  
+  /* Smaller indicators overlay on mobile */
+  .indicators-overlay {
+    font-size: 12px;
+    padding: 8px;
+  }
+}
+
+/* ============================================================================
+   ULTRA-WIDE SCREEN OPTIMIZATIONS
+   ============================================================================ */
+
+/* Ultra-wide monitors (1600px+) */
+@media (min-width: 1600px) {
+  .dashboard-container {
+    max-width: 1800px;
+    margin: 0 auto;              /* Center the dashboard on ultra-wide screens */
+  }
+}
+
+/* ============================================================================
+   THEME VARIATIONS
+   ============================================================================ */
+
+/* Dark theme overrides (even darker than default) */
+:root.dark-theme {
+  --background-color: #000;
+  --card-background: #111;
+  --card-background-alt: #1a1a1a;
+  --text-color: #eee;
+  --text-color-muted: #999;
+}
+
+body.dark-theme {
+  background: var(--background-color);
+  color: var(--text-color);
+}
+
+/* ============================================================================
+   NOTIFICATION SYSTEM
+   ============================================================================ */
+
+/* Toast notifications */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 25px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  z-index: 9999;
+  animation: slideIn 0.3s ease-out;
+}
+
+.notification-success {
+  background: #28a745;
+}
+
+.notification-error {
+  background: #dc3545;
+}
+
+.notification-warning {
+  background: #ffc107;
+  color: #333;
+}
+
+.notification-info {
+  background: #17a2b8;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.fade-out {
+  animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; transform: translateX(100%); }
+}
+
+/* ============================================================================
+   END OF VALHALLA DASHBOARD STYLES
+   ============================================================================ */
+</style>
+
+</head>
+<body class="ogzp-valhalla">
+  <!-- ====================================================================
+       MAIN DASHBOARD CONTAINER
+       ====================================================================
+       Primary container for the entire trading dashboard interface.
+       Uses flexbox layout for responsive design across all devices.
+       ==================================================================== -->
+  <div class="dashboard-container">
+    
+    <!-- ================================================================
+         HEADER SECTION
+         ================================================================
+         Contains: Logo/branding, connection status, account balance,
+         and primary trading controls (BUY/SELL/KILL buttons)
+         ================================================================ -->
+    <header class="dashboard-header">
+      
+      <!-- Logo and System Status -->
+      <div class="logo">
+        <h1>OGZ Prime <span class="version">Valhalla</span></h1>
+        <!-- Dynamic connection status - updated via JavaScript -->
+        <span id="connection-status" class="status-connecting">CONNECTING</span>
+      </div>
+      
+      <!-- Real-time Account Balance Display -->
+      <div class="balance-container">
+        <div id="balance-display">Balance: $0.00</div>
+      </div>
+      
+      <!-- Primary Trading Controls -->
+      <div class="controls">
+        <!-- Manual buy order button -->
+        <button id="buy-button" onclick="manualBuy()" class="control-button buy">BUY</button>
+        <!-- Manual sell order button -->
+        <button id="sell-button" onclick="manualSell()" class="control-button sell">SELL</button>
+        <!-- Emergency stop button -->
+        <button id="kill-button" onclick="killBot()" class="control-button kill">STOP BOT</button>
+      </div>
+    </header>
+    
+    <!-- ================================================================
+         MAIN DASHBOARD CONTENT
+         ================================================================
+         Contains: Price chart, P&L chart, goal tracking, and indicators
+         Responsive layout adapts from mobile stack to desktop grid
+         ================================================================ -->
+    <main class="dashboard-main">
+      
+      <!-- Primary Price Chart with Technical Indicators -->
+      <div class="chart-container">
+        <!-- Chart.js canvas for real-time price visualization -->
+        <canvas id="priceChart"></canvas>
+        
+        <!-- Live Technical Indicators Overlay -->
+        <div id="indicators-container" class="indicators-overlay">
+          <div id="trend-display">Trend: --</div>
+          <div id="rsi-display">RSI: --</div>
+          <div id="macd-display">MACD: --</div>
+          <div id="confidence-display">Confidence: --%</div>
+          <div id="stochastic-display">Stochastic: --</div>
+        </div>
+      </div>
+      
+      <!-- Profit & Loss Tracking Chart -->
+      <div class="pnl-container">
+        <h3>Profit & Loss</h3>
+        <!-- Chart.js canvas for P&L visualization -->
+        <canvas id="pnlChart"></canvas>
+      </div>
+      
+      <!-- Session Goals and Progress Tracking -->
+      <div class="goal-tracking">
+        <h3>Session Goals</h3>
+        <!-- Animated progress bar -->
+        <div class="goal-bar-container">
+          <div id="goal-bar" class="goal-bar"></div>
+        </div>
+        <!-- Goal statistics display -->
+        <div class="goal-stats">
+          <div>PnL: <span id="pnl-current">$0</span> / <span id="pnl-target">$250</span></div>
+          <div>Trades: <span id="trades-current">0</span> / <span id="trades-target">10</span></div>
+          <div>Winrate: <span id="winrate-current">0%</span> / <span id="winrate-target">70%</span></div>
+        </div>
+      </div>
+    </main>
+    
+    <!-- ================================================================
+         TRADE LOG SECTION
+         ================================================================
+         Real-time log of all trading activity with timestamps
+         Newest entries appear at the top with color-coded status
+         ================================================================ -->
+    <div class="log-container">
+      <h3>Trade Log</h3>
+      <!-- Scrollable log content - populated via JavaScript -->
+      <div id="log" class="log-content"></div>
+    </div>
+    
+    <!-- ================================================================
+         SESSION END POPUP MODAL
+         ================================================================
+         Displayed when trading session is terminated
+         Shows session summary and statistics
+         ================================================================ -->
+    <div id="session-end-popup" class="popup" style="display: none;">
+      <div class="popup-content">
+        <h2>Session Ended</h2>
+        <p>Your trading session has been terminated.</p>
+        <button onclick="closePopup()">Close</button> 
+      </div>
+    </div>
+    
+    <!-- ================================================================
+         OGZ CONSOLE
+         ================================================================
+         Fixed debug/system console for development and monitoring
+         Displays system messages and debug information
+         ================================================================ -->
+    <div id="ogzp-console" class="ogzp-console"></div>
+  </div>
+  
+  <!-- ====================================================================
+       SVG DEFINITIONS FOR GLOW EFFECTS
+       ====================================================================
+       Hidden SVG element containing filter definitions for visual effects
+       Used by CSS for glow animations and enhanced visual feedback
+       ==================================================================== -->
+  <svg width="0" height="0" style="position: absolute;">
+    <defs>
+      <filter id="glow-effect" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="10" result="blur" />
+        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- ====================================================================
+       JAVASCRIPT INTEGRATION NOTES
+       ====================================================================
+       
+       Required JavaScript Functions (implement in complete-integration.js):
+       
+       1. manualBuy() - Handles manual buy button clicks
+       2. manualSell() - Handles manual sell button clicks  
+       3. killBot() - Handles emergency stop button
+       4. closePopup() - Closes session end modal
+       
+       Real-time Data Updates:
+       - Update #connection-status with WebSocket connection state
+       - Update #balance-display with current account balance
+       - Update indicator values in #indicators-container
+       - Populate #log with trade entries
+       - Update goal progress in #goal-bar and related spans
+       
+       Chart.js Integration:
+       - Initialize #priceChart as candlestick/line chart
+       - Initialize #pnlChart as profit/loss tracking chart
+       - Update charts with real-time market data
+       
+       WebSocket Events:
+       - Connect to trading data feed
+       - Handle GUI control commands
+       - Manage connection status updates
+       - Process real-time price updates
+       
+       ==================================================================== -->
+
+</body>
+</html>

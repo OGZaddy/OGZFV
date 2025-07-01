@@ -1,0 +1,47 @@
+{
+  "name": "ogzprime-valhalla",
+  "version": "1.0.0",
+  "description": "OGZ Prime Trading Bot - Valhalla Edition",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "ws": "^8.2.3"
+  }
+}
+  "keywords": [
+    "ogz-prime",
+    "trading-bot",
+    "ai-transparency",
+    "real-time",
+    "websocket",
+    "dashboard",
+    "neural-network",
+    "decision-making"
+  ],
+  "author": "OGZ Prime Development Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "node-fetch": "^3.3.2",
+    "ws": "^8.18.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ogzprime/transparency-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ogzprime/transparency-system/issues"
+  },
+  "homepage": "https://ogzprime.com",
+  "bin": {
+    "ogz-transparency": "./start_transparency_system.js"
+  }
+}
