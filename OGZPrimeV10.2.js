@@ -118,6 +118,7 @@ const { EnhancedPatternChecker, FeatureExtractor, PatternMemorySystem } = requir
 const MaxProfitManager = require('./core/MaxProfitManager');
 const WebSocketManager = require('./core/WebsocketManager');
 const ConnectionResilience = require('./core/ConnectionResilience');
+const TradingProfileManager = require('./core/TradingProfileManager');
 
 // Utility Functions
 const { logTrade } = require('./utils/tradeLogger');
@@ -132,19 +133,56 @@ const PerformanceAnalyzer = require('./core/PerformanceAnalyzer');
 const FibonacciDetector = require('./core/FibonacciDetector');
 const SupportResistanceDetector = require('./core/SupportResistanceDetector');
 
+// SS-Tier Advanced Position Sizing
+const QuantumPositionSizer = require('./core/QuantumPositionSizer');
+
+// Check if SSL server is running and adjust ports accordingly
+function getWebSocketPorts(config) {
+  // If SSL server is running, check if we should skip WebSocket init
+  if (process.env.OGZ_SSL_SERVER === 'true') {
+    console.log('🔒 SSL Server detected - checking port configuration');
+    
+    // If running as main bot, use standard ports
+    if (!process.env.OGZ_IS_SSL_INSTANCE) {
+      console.log('📡 Main bot mode - using standard ports 3001-3003');
+      return {
+        dataWebSocketPort: config.dataWebSocketPort || 3001,
+        guiWebSocketPort: config.guiWebSocketPort || 3002,
+        controlWebSocketPort: config.controlWebSocketPort || 3003
+      };
+    } else {
+      // This is the SSL instance - use SSL ports
+      const sslPorts = JSON.parse(process.env.OGZ_SSL_PORTS || '{}');
+      console.log('🔒 SSL instance - using SSL ports:', sslPorts);
+      return {
+        dataWebSocketPort: sslPorts.data || 4001,
+        guiWebSocketPort: sslPorts.gui || 4002,
+        controlWebSocketPort: sslPorts.control || 4003
+      };
+    }
+  }
+  
+  // No SSL server - use standard ports
+  return {
+    dataWebSocketPort: config.dataWebSocketPort || 3001,
+    guiWebSocketPort: config.guiWebSocketPort || 3002,
+    controlWebSocketPort: config.controlWebSocketPort || 3003
+  };
+}
+
 /**
  * OGZ Prime V10.2 - Advanced Cryptocurrency Trading Orchestrator
- * 
+ *
  * MASTER CLASS RESPONSIBILITIES:
  * 1. System Initialization and Configuration Management
- * 2. Market Data Processing and Multi-Timeframe Analysis  
+ * 2. Market Data Processing and Multi-Timeframe Analysis
  * 3. Trading Decision Coordination and Execution
  * 4. Risk Management and Performance Monitoring
  * 5. WebSocket Communication and GUI Integration
  * 6. Pattern Memory and Learning System Management
  * 7. Profile Management and Strategy Persistence
  * 8. Transparency Logging for Real-time AI Monitoring
- * 
+ *
  * INTEGRATION ARCHITECTURE:
  * This class acts as the central hub that coordinates all subsystems.
  * It implements the pub/sub pattern for loose coupling while maintaining
@@ -165,17 +203,13 @@ class OGZPrimeV10 {
    * @param {Object} config - Configuration options for the trading system
    */
   constructor(config = {}) {
-    // ========================================================================
-    // DIAGNOSTIC LOGGING FOR MULTIPLE INSTANCE ISSUE
-    // ========================================================================
-    const caller = new Error().stack.split('\n')[2].trim();
-    console.log(`🔍 INSTANCE DEBUG: OGZPrimeV10 constructor called from: ${caller}`);
-    console.log(`🔍 INSTANCE DEBUG: Config ports - GUI: ${config.guiWebSocketPort || 3002}, Data: ${config.dataWebSocketPort || 3001}, Control: ${config.controlWebSocketPort || 3003}`);
-    console.log(`🔍 INSTANCE DEBUG: Asset: ${config.assetName || 'BTC-USD'}, Profile: ${config.profileName || 'default'}`);
     
     // ========================================================================
     // CONFIGURATION MANAGEMENT
     // ========================================================================
+    
+    // Get appropriate ports based on SSL status
+    const webSocketPorts = getWebSocketPorts(config);
     
     /**
      * System configuration with intelligent defaults
@@ -207,10 +241,10 @@ class OGZPrimeV10 {
       srLevelStrength: 3,                 // Minimum touches for S/R confirmation
       srProximityPercent: 0.5,            // % distance for "near" S/R level
       
-      // WebSocket Communication Ports
-      dataWebSocketPort: 3001,            // Market data streaming
-      guiWebSocketPort: 3002,             // Dashboard communication (FIXED: matches dashboard)
-      controlWebSocketPort: 3003,         // Trading commands
+      // WebSocket Communication Ports (SSL-aware)
+      dataWebSocketPort: webSocketPorts.dataWebSocketPort,
+      guiWebSocketPort: webSocketPorts.guiWebSocketPort,
+      controlWebSocketPort: webSocketPorts.controlWebSocketPort,
       
       // File System Paths
       logDirectory: path.join(process.cwd(), 'logs'),
@@ -230,6 +264,7 @@ class OGZPrimeV10 {
     console.log(`   📊 Data Port: ${this.config.dataWebSocketPort}`);
     console.log(`   🖥️  GUI Port: ${this.config.guiWebSocketPort}`);
     console.log(`   🎮 Control Port: ${this.config.controlWebSocketPort}`);
+    console.log(`   🔒 SSL Server Running: ${process.env.OGZ_SSL_SERVER === 'true' ? 'YES' : 'NO'}`);
 
     // ========================================================================
     // SYSTEM INITIALIZATION
@@ -549,7 +584,7 @@ class OGZPrimeV10 {
     });
     
     // Inject OGZ Prime reference for cross-component communication
-    this.tradingBrain.ogzPrime = this;
+    this.tradingBrain.setOGZPrimeReference(this);
     
     // ========================================================================
     // WEBSOCKET COMMUNICATION MANAGER
@@ -607,7 +642,27 @@ class OGZPrimeV10 {
       dailyLossLimitPercent: 5.0,         // Daily loss limit
       volatilityScaling: true             // Dynamic risk adjustment
     });
-   
+    
+    // ========================================================================
+    // SS-TIER ENHANCEMENT: QUANTUM POSITION SIZING SYSTEM
+    // ========================================================================
+    
+    /**
+     * Quantum Position Sizer - Advanced position sizing with market quantum states
+     * @type {QuantumPositionSizer}
+     */
+    this.quantumPositionSizer = new QuantumPositionSizer(this.riskManager, {
+      quantumThreshold: 0.382,            // Fibonacci golden ratio threshold
+      kellyMultiplier: 0.25,              // Conservative Kelly (25%)
+      minPositionPercent: 0.01,           // Minimum 1% position
+      maxPositionPercent: 0.25,           // Maximum 25% position
+      volatilityWindow: 20,               // Candles for volatility calculation
+      confidenceBoost: 1.5,               // Confidence multiplier for quantum states
+      fibonacciLevels: [0.236, 0.382, 0.5, 0.618, 0.786, 1.0]
+    });
+    
+    // Connect Quantum Position Sizer to Trading Brain
+    this.tradingBrain.setQuantumPositionSizer(this.quantumPositionSizer);
     
     // ========================================================================
     // SS-TIER ENHANCEMENT: PERFORMANCE ANALYTICS
@@ -633,6 +688,19 @@ class OGZPrimeV10 {
      */
     this.connectionResilience = new ConnectionResilience(this);
     console.log('🛡️ Connection Resilience System: ACTIVATED');
+    
+    // ========================================================================
+    // TRADING PROFILE MANAGER INTEGRATION
+    // ========================================================================
+    
+    /**
+     * Hot-swappable trading profile manager with 6 pre-built personalities
+     * @type {TradingProfileManager}
+     */
+    this.profileManager = new TradingProfileManager({
+      defaultProfile: 'scalper' // GO BIG IN TEST MODE!
+    });
+    console.log('📊 Trading Profile Manager: ACTIVATED');
   }
   
   /**
@@ -1170,8 +1238,7 @@ processTick(tick) {
       this.connectionResilience.updateDataTimestamp();
     }
     
-    // Log transparency thought
-    this.logBotThought(`Processing market tick: $${price.toLocaleString()}`, 'ANALYZING', 0.6);
+    // Removed: High-frequency tick processing log
     
     // Update timeframes
     for (const tf of Object.keys(this.timeframeData)) {
@@ -1270,19 +1337,24 @@ processTick(tick) {
    * Run trading analysis with all enabled features
    */
   runAnalysis() {
-    console.log("🧠 Running market analysis...");
-    this.logBotThought('Starting comprehensive AI market analysis with all indicators', 'ANALYZING', 0.7);
+    // Removed: High-frequency analysis start log
+    // Removed: High-frequency AI analysis thought log
     this.lastAnalysis.time = Date.now();
     
     // Get candles for primary timeframe
     const candles = this.timeframeData[this.config.primaryTimeframe].candles;
     if (!candles || candles.length < 3) {
-      console.log(`⚠️ Not enough candles to analyze (${candles?.length || 0}) - need at least 3`);
+      // Only log this once per minute to avoid spam
+      const now = Date.now();
+      if (!this.lastInsufficientDataLog || now - this.lastInsufficientDataLog > 60000) {
+        console.log(`⚠️ Not enough candles to analyze (${candles?.length || 0}) - need at least 3`);
+        this.lastInsufficientDataLog = now;
+      }
       this.logBotThought(`Insufficient data for analysis - only ${candles?.length || 0} candles available`, 'WAITING', 0.3);
       return;
     }
     
-    console.log(`🧠 STARTING FULL AI ANALYSIS with ${candles.length} candles!`);
+    // Removed: High-frequency AI analysis log
     
     // Update trading brain with current candles
     this.tradingBrain.setCandles(candles);
@@ -1313,10 +1385,7 @@ processTick(tick) {
     
     // Evaluate pattern using pattern memory
     const patternEvaluation = this.patternChecker.evaluatePattern(features);
-    console.log("🧠 Pattern Eval:", patternEvaluation);
-    if (patternEvaluation.confidence > 0) {
-      console.log(`🔍 Pattern Confidence: ${patternEvaluation.confidence.toFixed(2)} | Direction: ${patternEvaluation.direction.toUpperCase()} | Match Reason: ${patternEvaluation.reason}`);
-    }
+    // Removed: High-frequency pattern evaluation logs
 
     // Default decision is to hold
     let decision = 'hold';
@@ -1581,11 +1650,7 @@ processTick(tick) {
     // Send to all connected GUI clients
     const success = this.webSocketManager.broadcast(this.config.guiWebSocketPort, data);
     
-    if (!success) {
-      console.warn(`⚠️ No GUI clients connected on port ${this.config.guiWebSocketPort}`);
-    } else {
-      console.log(`📡 Broadcasted tick to GUI on port ${this.config.guiWebSocketPort}`);
-    }
+    // Removed: High-frequency tick broadcast logs
     
     return success;
   }

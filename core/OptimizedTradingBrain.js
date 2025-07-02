@@ -93,8 +93,23 @@ class OptimizedTradingBrain {
     this.patternMemory = new Map();
     this.currentPatternId = null;
     
+    // 🚀 SCALPER-SPECIFIC: Micro-profit and quick exit system
+    this.scalperConfig = {
+      microProfitThreshold: 0.003,     // 0.3% micro-profit target
+      quickProfitThreshold: 0.005,     // 0.5% quick profit target
+      momentumShiftThreshold: 0.15,    // 15% momentum loss triggers exit
+      tightStopMultiplier: 0.5,        // 50% tighter stops for scalping
+      maxHoldTime: 300000,             // 5 minutes max hold time (300 seconds)
+      entryMomentum: null,             // Track entry momentum for comparison
+      lastMomentumCheck: 0,            // Throttle momentum checks to every 5 seconds
+      scalperModeActive: false         // Track if scalper mode is active
+    };
+    
     // Reference to parent OGZ Prime system for logging
     this.ogzPrime = null;
+    
+    // Quantum Position Sizer reference (set by OGZ Prime)
+    this.quantumPositionSizer = null;
     
     console.log(`🧠 Enhanced Trading Brain initialized with $${balance.toLocaleString()} balance`);
     console.log(`🎯 Houston Fund Target: $${this.config.houstonFundTarget.toLocaleString()}`);
@@ -112,6 +127,49 @@ class OptimizedTradingBrain {
   setOGZPrimeReference(ogzPrime) {
     this.ogzPrime = ogzPrime;
     console.log('🔗 Trading Brain linked to OGZ Prime system');
+  }
+  
+  /**
+   * Set reference to Quantum Position Sizer for advanced position sizing
+   * @param {QuantumPositionSizer} quantumPositionSizer - Quantum position sizer instance
+   */
+  setQuantumPositionSizer(quantumPositionSizer) {
+    this.quantumPositionSizer = quantumPositionSizer;
+    console.log('⚛️ Trading Brain linked to Quantum Position Sizer');
+  }
+  
+  /**
+   * 🚀 SCALPER-SPECIFIC: Activate scalper mode with profile settings
+   * @param {Object} profileSettings - Scalper profile configuration
+   */
+  activateScalperMode(profileSettings = {}) {
+    this.scalperConfig.scalperModeActive = true;
+    
+    // Override defaults with profile settings
+    if (profileSettings.enableMicroProfits) {
+      this.scalperConfig.microProfitThreshold = profileSettings.microProfitTarget || 0.003;
+    }
+    if (profileSettings.enableQuickExits) {
+      this.scalperConfig.quickProfitThreshold = profileSettings.quickProfitTarget || 0.005;
+    }
+    if (profileSettings.maxHoldTimeSeconds) {
+      this.scalperConfig.maxHoldTime = profileSettings.maxHoldTimeSeconds * 1000;
+    }
+    
+    console.log('🚀 SCALPER MODE ACTIVATED!');
+    console.log(`   💰 Micro-Profit: ${(this.scalperConfig.microProfitThreshold * 100).toFixed(1)}%`);
+    console.log(`   ⚡ Quick-Profit: ${(this.scalperConfig.quickProfitThreshold * 100).toFixed(1)}%`);
+    console.log(`   🕒 Max Hold: ${this.scalperConfig.maxHoldTime / 1000}s`);
+    console.log(`   🔴 Tight Stops: ${this.scalperConfig.tightStopMultiplier * 100}% of normal`);
+  }
+  
+  /**
+   * 🚀 SCALPER-SPECIFIC: Deactivate scalper mode
+   */
+  deactivateScalperMode() {
+    this.scalperConfig.scalperModeActive = false;
+    this.scalperConfig.entryMomentum = null;
+    console.log('⏹️ Scalper mode deactivated');
   }
   
   /**
@@ -306,6 +364,17 @@ class OptimizedTradingBrain {
       sessionTradeNumber: this.sessionStats.tradesCount + 1
     };
     
+    // 🚀 SCALPER-SPECIFIC: Capture entry momentum for shift detection
+    if (this.scalperConfig.scalperModeActive) {
+      this.scalperConfig.entryMomentum = {
+        rsi: analysisData.rsi || 50,
+        macd: analysisData.macd || 0,
+        volume: analysisData.volume || 0,
+        trend: analysisData.trend || 'neutral',
+        capturedAt: Date.now()
+      };
+    }
+    
     // Start advanced profit management
     this.maxProfitManager.start(price, direction, {
       volatility: analysisData.volatility,
@@ -356,13 +425,7 @@ class OptimizedTradingBrain {
     const pnlPercent = ((price - this.position.entryPrice) / this.position.entryPrice) * 100;
     const realPercent = pnlPercent; // For verification
     
-    // ⚠️ DEBUG: Verify profit calculation math
-    console.log(`🔍 PROFIT CALCULATION VERIFICATION:`);
-    console.log(`   Entry Price: $${this.position.entryPrice.toFixed(2)}`);
-    console.log(`   Exit Price: $${price.toFixed(2)}`);
-    console.log(`   Price Difference: $${(price - this.position.entryPrice).toFixed(2)}`);
-    console.log(`   Calculated %: ${realPercent.toFixed(2)}%`);
-    console.log(`   Raw PnL: $${pnl.toFixed(2)}`);
+    // Removed: High-frequency profit calculation verification logs
     
     // Update account balance
     const balanceBefore = this.balance;
@@ -554,6 +617,15 @@ class OptimizedTradingBrain {
     // Only manage if we have an active position
     if (!this.position) return;
     
+    // 🚀 SCALPER-SPECIFIC: Check for micro-profits and quick exits FIRST
+    if (this.scalperConfig.scalperModeActive) {
+      const scalperAction = this.checkScalperExitConditions(price, currentAnalysis);
+      if (scalperAction) {
+        this.closePosition(price, scalperAction.reason, currentAnalysis);
+        return; // Exit early - scalper takes priority
+      }
+    }
+    
     // Update position tracking metrics
     this.updatePositionMetrics(price);
     
@@ -606,11 +678,116 @@ class OptimizedTradingBrain {
       });
     }
     
-    console.log(`🔹 PARTIAL EXIT: Tier ${exitResult.tier || 'unknown'} @ $${price.toFixed(2)}`);
-    console.log(`   Size: ${partialSize.toFixed(6)} | P&L: +$${partialPnl.toFixed(2)}`);
-    console.log(`   Remaining Position: ${this.position.size.toFixed(6)} | Balance: $${this.balance.toFixed(2)}`);
+    // Removed: High-frequency partial exit logging
   }
   
+  /**
+   * 🚀 SCALPER-SPECIFIC: Check scalper exit conditions (micro-profits, quick exits)
+   * @param {number} price - Current price
+   * @param {Object} currentAnalysis - Current market analysis
+   * @returns {Object|null} Exit action or null
+   */
+  checkScalperExitConditions(price, currentAnalysis) {
+    if (!this.position) return null;
+    
+    const currentTime = Date.now();
+    const holdTime = currentTime - this.position.entryTimestamp;
+    const currentPnL = this.calculatePnL(price);
+    const pnlPercent = Math.abs(currentPnL / (this.position.entryPrice * this.position.size));
+    
+    // 💰 MICRO-PROFIT TAKING: 0.3% - 0.5% profits
+    if (pnlPercent >= this.scalperConfig.microProfitThreshold && currentPnL > 0) {
+      return {
+        action: 'exit',
+        reason: `Scalper Micro-Profit: ${(pnlPercent * 100).toFixed(2)}% in ${this.formatHoldTime(holdTime)}`
+      };
+    }
+    
+    // ⚡ QUICK PROFIT TAKING: 0.5%+ profits
+    if (pnlPercent >= this.scalperConfig.quickProfitThreshold && currentPnL > 0) {
+      return {
+        action: 'exit',
+        reason: `Scalper Quick-Profit: ${(pnlPercent * 100).toFixed(2)}% FAST EXIT`
+      };
+    }
+    
+    // 🕒 MAX HOLD TIME: 5 minutes maximum
+    if (holdTime >= this.scalperConfig.maxHoldTime) {
+      return {
+        action: 'exit',
+        reason: `Scalper Max-Hold: ${this.formatHoldTime(holdTime)} limit reached`
+      };
+    }
+    
+    // 📉 MOMENTUM SHIFT DETECTION: Check every 5 seconds
+    if (currentTime - this.scalperConfig.lastMomentumCheck >= 5000) {
+      this.scalperConfig.lastMomentumCheck = currentTime;
+      
+      const momentumShift = this.detectMomentumShift(currentAnalysis);
+      if (momentumShift) {
+        return {
+          action: 'exit',
+          reason: `Scalper Momentum-Shift: ${momentumShift.reason}`
+        };
+      }
+    }
+    
+    // 🔴 TIGHT STOP LOSS: 50% tighter than normal
+    const tightStopDistance = this.position.entryPrice * this.config.stopLossPercent * this.scalperConfig.tightStopMultiplier;
+    const tightStopPrice = this.position.direction === 'buy'
+      ? this.position.entryPrice - tightStopDistance
+      : this.position.entryPrice + tightStopDistance;
+      
+    if ((this.position.direction === 'buy' && price <= tightStopPrice) ||
+        (this.position.direction === 'sell' && price >= tightStopPrice)) {
+      return {
+        action: 'exit',
+        reason: `Scalper Tight-Stop: ${(this.scalperConfig.tightStopMultiplier * 100)}% tighter stop triggered`
+      };
+    }
+    
+    return null; // No scalper exit conditions met
+  }
+  
+  /**
+   * 📊 SCALPER-SPECIFIC: Detect momentum shifts for quick exits
+   * @param {Object} currentAnalysis - Current market analysis
+   * @returns {Object|null} Momentum shift detection result
+   */
+  detectMomentumShift(currentAnalysis) {
+    if (!this.position || !this.scalperConfig.entryMomentum) return null;
+    
+    // Compare current momentum vs entry momentum
+    const currentMomentum = {
+      rsi: currentAnalysis.rsi || 50,
+      macd: currentAnalysis.macd || 0,
+      volume: currentAnalysis.volume || 0,
+      trend: currentAnalysis.trend || 'neutral'
+    };
+    
+    // RSI momentum shift (15% threshold)
+    const rsiShift = Math.abs(currentMomentum.rsi - this.scalperConfig.entryMomentum.rsi) / this.scalperConfig.entryMomentum.rsi;
+    if (rsiShift >= this.scalperConfig.momentumShiftThreshold) {
+      return { reason: `RSI shifted ${(rsiShift * 100).toFixed(1)}%` };
+    }
+    
+    // MACD momentum shift
+    if (this.scalperConfig.entryMomentum.macd !== 0) {
+      const macdShift = Math.abs(currentMomentum.macd - this.scalperConfig.entryMomentum.macd) / Math.abs(this.scalperConfig.entryMomentum.macd);
+      if (macdShift >= this.scalperConfig.momentumShiftThreshold) {
+        return { reason: `MACD shifted ${(macdShift * 100).toFixed(1)}%` };
+      }
+    }
+    
+    // Trend reversal
+    if (this.scalperConfig.entryMomentum.trend !== currentMomentum.trend &&
+        currentMomentum.trend !== 'neutral') {
+      return { reason: `Trend reversed: ${this.scalperConfig.entryMomentum.trend} → ${currentMomentum.trend}` };
+    }
+    
+    return null;
+  }
+
   /**
    * Check basic exit conditions (stop loss, take profit)
    * @param {number} price - Current price
@@ -683,12 +860,55 @@ class OptimizedTradingBrain {
   
   /**
    * Calculate position size based on risk parameters and confidence
+   * Uses Quantum Position Sizer when available, falls back to traditional sizing
    * @param {number} price - Entry price
    * @param {number} confidence - Signal confidence (0-5)
    * @param {Object} analysisData - Market analysis data
    * @returns {number} Calculated position size
    */
   calculatePositionSize(price, confidence = 1, analysisData = {}) {
+    // Use Quantum Position Sizer if available
+    if (this.quantumPositionSizer) {
+      try {
+        const volatility = analysisData.volatility || analysisData.atr || 0.01;
+        const patternStrength = analysisData.patternConfidence || confidence || 1;
+        
+        // Prepare market data for quantum analysis
+        const marketData = {
+          rsi: analysisData.rsi || 50,
+          macd: analysisData.macd || 0,
+          volume: analysisData.volume || 0,
+          trend: analysisData.trend || 'neutral',
+          trendStrength: analysisData.trendStrength || 0,
+          support: analysisData.support || price * 0.98,
+          resistance: analysisData.resistance || price * 1.02,
+          fibLevels: analysisData.fibLevels || [],
+          timeframeConcurrence: analysisData.timeframeConcurrence || false,
+          marketRegime: analysisData.marketRegime || 'normal'
+        };
+        
+        const quantumResult = this.quantumPositionSizer.calculateOptimalPosition(
+          price,
+          volatility,
+          patternStrength,
+          this.balance,
+          marketData
+        );
+        
+        console.log(`⚛️ Quantum Position Size: ${quantumResult.optimalShares.toFixed(6)} (${(quantumResult.positionSizePercent * 100).toFixed(2)}%)`);
+        console.log(`   Kelly Score: ${quantumResult.kellyScore.toFixed(4)} | Quantum State: ${quantumResult.quantumState}`);
+        
+        return quantumResult.optimalShares;
+        
+      } catch (error) {
+        console.log(`⚠️ Quantum Position Sizer error: ${error.message}, falling back to traditional sizing`);
+        // Fall through to traditional sizing
+      }
+    }
+    
+    // Traditional position sizing (fallback)
+    console.log('📊 Using traditional position sizing');
+    
     // Base risk amount
     const baseRisk = this.balance * this.config.basePositionSize;
     

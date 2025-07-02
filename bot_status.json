@@ -1,8 +1,8 @@
 {
-  "timestamp": "6/28/2025, 4:52:46 AM",
-  "thought": "Connecting to live Polygon.io market data feed",
-  "decision": "CONNECTING",
-  "confidence": 80,
+  "timestamp": "7/2/2025, 10:27:59 AM",
+  "thought": "AGGRESSIVE: MACD bearish crossover",
+  "decision": "SELL",
+  "confidence": 32,
   "balance": 10000,
-  "price": 0
+  "price": 109477.43
 }

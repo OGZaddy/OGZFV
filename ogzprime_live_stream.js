@@ -134,8 +134,7 @@ class SecondTowerStreamer {
     // Start WebSocket server for streaming live data
     this.wss = new WebSocket.Server({ port: this.config.streamPort });
     this.wss.on('connection', (ws, req) => {
-      console.log(`🔗 DIAGNOSTIC: New client connected from ${req.socket.remoteAddress}`);
-      console.log(`🔍 DIAGNOSTIC: Total clients now: ${this.clients.size + 1}`);
+      // Removed: High-frequency client connection diagnostic logs
       this.clients.add(ws);
       
       // Send current status immediately upon connection
@@ -143,8 +142,7 @@ class SecondTowerStreamer {
       this.sendToClient(ws, 'status', this.liveData);
 
       ws.on('close', () => {
-        console.log('👋 DIAGNOSTIC: Client disconnected');
-        console.log(`🔍 DIAGNOSTIC: Total clients now: ${this.clients.size - 1}`);
+        // Removed: High-frequency client disconnection diagnostic logs
         this.clients.delete(ws);
       });
       ws.on('error', (error) => {
@@ -268,14 +266,13 @@ class SecondTowerStreamer {
   // Broadcast a message (of given type) with data to all connected clients
   broadcastToClients(type, data) {
     const message = JSON.stringify({ type, data, timestamp: new Date().toISOString() });
-    console.log(`📤 DIAGNOSTIC: Broadcasting to ${this.clients.size} clients:`, { type, data });
-    console.log(`📋 DIAGNOSTIC: Message format:`, message);
+    // Removed: High-frequency broadcasting diagnostic logs
     
     for (const client of this.clients) {
       if (client.readyState === WebSocket.OPEN) {
         try {
           client.send(message);
-          console.log(`✅ DIAGNOSTIC: Message sent to client successfully`);
+          // Removed: High-frequency message success logs
         } catch (error) {
           console.error('⚠️ DIAGNOSTIC: Error sending to client:', error);
           this.clients.delete(client);
@@ -305,14 +302,13 @@ class SecondTowerStreamer {
     };
 
     const message = JSON.stringify(tickMessage);
-    console.log(`🧠 AI BRAIN TICK: Broadcasting to ${this.clients.size} clients`);
-    console.log(`📋 AI BRAIN TICK format:`, tickMessage);
+    // Removed: High-frequency AI brain tick broadcasting logs
     
     for (const client of this.clients) {
       if (client.readyState === WebSocket.OPEN) {
         try {
           client.send(message);
-          console.log(`✅ AI BRAIN TICK: Sent to client successfully`);
+          // Removed: High-frequency AI brain tick success logs
         } catch (error) {
           console.error('⚠️ AI BRAIN TICK: Error sending to client:', error);
           this.clients.delete(client);
@@ -431,12 +427,9 @@ polygonSocket.on('message', (data) => {
         const timestamp = new Date(msg.e).toISOString();
 
         // Log every 10th tick to avoid spam
-        if (tickCount % 10 === 0 || tickCount <= 5) {
-          console.log(`🎯 TICK #${tickCount}: $${price.toFixed(2)} @ ${new Date(msg.e).toLocaleTimeString()}`);
-        }
+        // Removed: High-frequency tick logging every 10 ticks
 
-        // DIAGNOSTIC: Send price updates in the format the working dashboard expects
-        console.log(`📤 DIAGNOSTIC: Broadcasting price update: ${price}`);
+        // Removed: High-frequency price update broadcasting logs
         streamer.broadcastToClients('price', {
           price: price,
           timestamp: timestamp
@@ -444,7 +437,7 @@ polygonSocket.on('message', (data) => {
         
         // Also send system status updates periodically (like the working dashboard expects)
         if (tickCount % 10 === 0) { // Every 10 ticks
-          console.log(`📤 DIAGNOSTIC: Broadcasting system_status update`);
+          // Removed: High-frequency system status broadcasting logs
           streamer.broadcastToClients('system_status', {
             tickCount: tickCount,
             balance: ogzPrime.balance || 10000,

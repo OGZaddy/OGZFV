@@ -130,8 +130,7 @@ function setupWebSocketHandlers(websocketServer, serverType) {
   let clients = [];
   
   websocketServer.on('connection', (ws) => {
-    console.log(`[SSL-${Date.now()}] ${serverType} WebSocket: Frontend connected to AI brain stream`);
-    console.log(`🔍 DIAGNOSTIC: ${serverType} client connected. Total clients: ${clients.length + 1}`);
+    // Removed: High-frequency SSL client connection diagnostic logs
     clients.push(ws);
     
     // Send initial REAL status to new client
@@ -152,18 +151,18 @@ function setupWebSocketHandlers(websocketServer, serverType) {
       }
     });
     
-    console.log(`🔍 DIAGNOSTIC: ${serverType} - Sending initial status to new client`);
+    // Removed: High-frequency SSL initial status diagnostic logs
     
     if (ws.readyState === WebSocket.OPEN) {
       ws.send(statusPayload);
-      console.log(`🔍 DIAGNOSTIC: ${serverType} - Initial status sent successfully`);
+      // Removed: High-frequency SSL status sent success logs
     }
 
     // Handle incoming messages from dashboard
     ws.on('message', (message) => {
       try {
         const data = JSON.parse(message);
-        console.log(`🔍 DIAGNOSTIC: ${serverType} - Received message from dashboard:`, data.type);
+        // Removed: High-frequency SSL message reception diagnostic logs
         
         if (data.type === 'ping') {
           const pongResponse = JSON.stringify({
@@ -173,7 +172,7 @@ function setupWebSocketHandlers(websocketServer, serverType) {
             serverType: serverType
           });
           ws.send(pongResponse);
-          console.log(`🔍 DIAGNOSTIC: ${serverType} - Sent pong response`);
+          // Removed: High-frequency SSL pong response diagnostic logs
         }
       } catch (err) {
         console.error(`🔍 DIAGNOSTIC: ${serverType} - Error parsing dashboard message:`, err);
@@ -237,9 +236,7 @@ polygonSocket.on('message', (data) => {
         // Store last known price
         lastKnownPrice = price;
 
-        if (tickCount % 10 === 0 || tickCount <= 5) {
-          console.log(`🎯 TICK #${tickCount}: $${price.toFixed(2)} @ ${new Date(msg.e).toLocaleTimeString()}`);
-        }
+        // Removed: High-frequency tick logging every 10 ticks
 
         // Broadcast to all clients (both regular and secure)
         const pricePayload = JSON.stringify({
@@ -293,13 +290,16 @@ setInterval(() => {
   const regularClientCount = global.regularClients ? global.regularClients.length : 0;
   const secureClientCount = global.secureClients ? global.secureClients.length : 0;
   
-  console.log(`📊 SYSTEM STATUS:`);
-  console.log(`   🔌 Polygon: ${isAuthenticated ? 'Connected ✅' : 'Disconnected ❌'}`);
-  console.log(`   📊 Ticks: ${tickCount}`);
-  const realBalance = ogzPrime && ogzPrime.getBalance ? ogzPrime.getBalance() : 10000;
-  console.log(`   💰 Balance: $${realBalance.toFixed(2)}`);
-  console.log(`   📡 Regular Clients: ${regularClientCount}`);
-  console.log(`   🔒 Secure Clients: ${secureClientCount}`);
+  // System status now logged every 5 minutes instead of 30 seconds to reduce noise
+  if (Math.floor(Date.now() / 1000) % 300 === 0) { // Every 5 minutes
+    console.log(`📊 SYSTEM STATUS:`);
+    console.log(`   🔌 Polygon: ${isAuthenticated ? 'Connected ✅' : 'Disconnected ❌'}`);
+    console.log(`   📊 Ticks: ${tickCount}`);
+    const realBalance = ogzPrime && ogzPrime.getBalance ? ogzPrime.getBalance() : 10000;
+    console.log(`   💰 Balance: $${realBalance.toFixed(2)}`);
+    console.log(`   📡 Regular Clients: ${regularClientCount}`);
+    console.log(`   🔒 Secure Clients: ${secureClientCount}`);
+  }
 }, 30000);
 
 // Get network interfaces

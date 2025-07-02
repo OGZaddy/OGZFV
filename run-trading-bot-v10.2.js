@@ -12,7 +12,7 @@ const { sendDiscordMessage } = require('./utils/discordNotifier');
 const args = process.argv.slice(2);
 
 const config = {
-  mode: args.includes('--simulate') ? 'simulate' : 'live',
+  mode: 'live',
   assetName: getArgValue(args, '--asset', 'BTC-USD'),
   profileName: getArgValue(args, '--profile', 'default'),
   initialBalance: parseFloat(getArgValue(args, '--balance', '10000')),
@@ -31,6 +31,8 @@ const config = {
   patternMemoryDirectory: getArgValue(args, '--patterns', path.join(process.cwd(), 'data', 'patterns'))
 };
 
+console.log(`🔧 Configuration: Asset=${config.assetName}, Profile=${config.profileName}`);
+
 // Instantiate bot
 const bot = new OGZPrimeV10(config);
 
@@ -48,30 +50,20 @@ console.log(`🔌 Transparency WebSocket: ws://localhost:3009`);
 // Display banner
 displayBanner();
 
-// Launch bot
-if (config.mode === 'live') {
-  console.log(`🟢 Launching OGZ Prime in LIVE mode (Polygon.io)`);
-  if (!process.env.POLYGON_API_KEY) {
-    console.error('❌ Error: POLYGON_API_KEY not found in .env file');
-    config.mode = 'simulate';
-    startSimulationMode();
-  } else {
-    startLiveMode();
-  }
+// Launch bot in live mode
+console.log(`🟢 Launching OGZ Prime in LIVE mode (Polygon.io)`);
+if (!process.env.POLYGON_API_KEY) {
+  console.error('❌ Error: POLYGON_API_KEY not found in .env file');
+  console.error('❌ Please add POLYGON_API_KEY to your .env file');
+  process.exit(1);
 } else {
-  console.log(`🔵 Launching OGZ Prime in SIMULATION mode`);
-  startSimulationMode();
+  startLiveMode();
 }
 
 // --- LIVE MODE ---
 function startLiveMode() {
   try {
-    const feed = new PolygonWebSocket((tick) => {
-      bot.processTick(tick);
-    });
-    feed.connect();
-
-    bot.isRunning = true;
+    bot.start();
 
     if (bot.config.enablePatternRejectionTracking) {
       console.log('🧠 Pattern rejection tracking enabled');
@@ -80,22 +72,10 @@ function startLiveMode() {
     sendDiscordMessage(`🚀 OGZ Prime V${bot.config.version} started in LIVE mode\n📈 Trading ${config.assetName} with ${config.profileName} profile\n💰 Initial balance: $${config.initialBalance.toFixed(2)}`);
   } catch (error) {
     console.error('❌ Failed to start live mode:', error);
-    startSimulationMode();
-  }
-}
-
-// --- SIM MODE ---
-function startSimulationMode() {
-  try {
-    bot.start();
-    setTimeout(() => bot.executeManualBuy(), 3000);
-
-    sendDiscordMessage(`🚀 OGZ Prime V${bot.config.version} started in SIMULATION mode\n📈 Trading ${config.assetName} with ${config.profileName} profile\n💰 Initial balance: $${config.initialBalance.toFixed(2)}`);
-  } catch (error) {
-    console.error('❌ Failed to start simulation mode:', error);
     process.exit(1);
   }
 }
+
 
 // --- CLEAN SHUTDOWN ---
 function handleShutdown() {

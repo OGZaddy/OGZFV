@@ -55,7 +55,7 @@ class TimeframeManager {
       aggregationMethod: 'OHLCV', // Standard OHLCV aggregation
       
       // FIXED: Cache TTL settings to prevent stale data
-      cacheTTL: 30000,           // 30 seconds TTL for cache entries
+      cacheTTL: 5000, // 5 seconds TTL for scalping optimization
       volatilityCacheInvalidation: true, // Invalidate cache on volatility spikes
       maxVolatilityThreshold: 0.05, // 5% volatility threshold for cache invalidation
       

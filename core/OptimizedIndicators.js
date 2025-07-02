@@ -50,24 +50,101 @@ class OptimizedIndicators {
     this.cache = new Map();
     this.cacheTimeout = 5000; // 5 seconds cache
     
+    // 🚀 SCALPER-SPECIFIC: Dedicated 1-minute indicator cache
+    this.scalperCache = new Map();
+    this.scalperCacheTimeout = 60000; // 1 minute cache for indicators
+    this.scalperModeActive = false;
+    
     // Cleanup old cache entries periodically
     setInterval(() => {
       const now = Date.now();
+      
+      // Regular cache cleanup
       for (const [key, value] of this.cache.entries()) {
         if (value.timestamp && now - value.timestamp > this.cacheTimeout) {
           this.cache.delete(key);
         }
       }
+      
+      // 🚀 SCALPER: Dedicated cache cleanup
+      for (const [key, value] of this.scalperCache.entries()) {
+        if (value.timestamp && now - value.timestamp > this.scalperCacheTimeout) {
+          this.scalperCache.delete(key);
+        }
+      }
     }, 10000);
+  }
+  
+  /**
+   * 🚀 SCALPER-SPECIFIC: Activate scalper mode for optimized caching
+   */
+  activateScalperMode() {
+    this.scalperModeActive = true;
+    console.log('🚀 Indicators: Scalper mode activated - optimized 1m caching');
+  }
+  
+  /**
+   * 🚀 SCALPER-SPECIFIC: Deactivate scalper mode
+   */
+  deactivateScalperMode() {
+    this.scalperModeActive = false;
+    this.scalperCache.clear();
+    console.log('⏹️ Indicators: Scalper mode deactivated');
+  }
+  
+  /**
+   * 🚀 SCALPER-SPECIFIC: Generate cache key for scalper indicators
+   */
+  getScalperCacheKey(method, candles, ...params) {
+    if (!candles || candles.length === 0) return null;
+    
+    // Use last 3 candle timestamps for key (handles 1m updates efficiently)
+    const recent = candles.slice(-3);
+    const keyData = recent.map(c => `${c.timestamp || c.time || 0}-${c.close}`).join('|');
+    return `scalper_${method}_${keyData}_${params.join('_')}`;
+  }
+  
+  /**
+   * 🚀 SCALPER-SPECIFIC: Get cached result or calculate for scalper mode
+   */
+  getScalperCached(method, candles, calculatorFn, ...params) {
+    if (!this.scalperModeActive) {
+      return calculatorFn.call(this, candles, ...params);
+    }
+    
+    const key = this.getScalperCacheKey(method, candles, ...params);
+    if (!key) return calculatorFn.call(this, candles, ...params);
+    
+    // Check scalper cache first
+    const cached = this.scalperCache.get(key);
+    if (cached && (Date.now() - cached.timestamp < this.scalperCacheTimeout)) {
+      return cached.value;
+    }
+    
+    // Calculate and cache
+    const result = calculatorFn.call(this, candles, ...params);
+    this.scalperCache.set(key, {
+      value: result,
+      timestamp: Date.now()
+    });
+    
+    return result;
   }
 
   /**
    * Calculate RSI (Relative Strength Index)
-   * FIXED: Actually calculates RSI instead of returning cached/wrong values
+   * 🚀 SCALPER-OPTIMIZED: Uses dedicated caching for 1-minute bars
    */
   calculateRSI(candles, period = 14) {
+    // 🚀 SCALPER: Use optimized caching
+    return this.getScalperCached('RSI', candles, this._calculateRSICore, period);
+  }
+  
+  /**
+   * Core RSI calculation (cached by scalper system)
+   */
+  _calculateRSICore(candles, period = 14) {
     if (!candles || candles.length < period + 1) {
-      console.log(`⚠️ Not enough candles for RSI: ${candles?.length || 0} < ${period + 1}`);
       return 50; // Return neutral RSI, not 0
     }
 
@@ -109,8 +186,6 @@ class OptimizedIndicators {
 
     const rs = avgGain / avgLoss;
     const rsi = 100 - (100 / (1 + rs));
-
-    console.log(`📊 RSI Calculated: ${rsi.toFixed(2)} (avgGain: ${avgGain.toFixed(4)}, avgLoss: ${avgLoss.toFixed(4)})`);
     
     return rsi;
   }
@@ -151,7 +226,7 @@ class OptimizedIndicators {
    */
   calculateMACD(candles, fastPeriod = 12, slowPeriod = 26, signalPeriod = 9) {
     if (!candles || candles.length < slowPeriod + signalPeriod) {
-      console.log(`⚠️ Not enough candles for MACD: ${candles?.length || 0}`);
+      // Removed: High-frequency "Not enough candles for MACD" warning
       return { macdLine: 0, signalLine: 0, histogram: 0 };
     }
 
@@ -173,7 +248,7 @@ class OptimizedIndicators {
     const signalLine = this.calculateEMA(macdValues, signalPeriod);
     const histogram = macdLine - signalLine;
 
-    console.log(`📊 MACD: ${macdLine.toFixed(2)}, Signal: ${signalLine.toFixed(2)}, Histogram: ${histogram.toFixed(2)}`);
+    // Removed: High-frequency MACD calculation log
 
     return {
       macdLine,
@@ -374,6 +449,26 @@ class OptimizedIndicators {
     }
 
     return { valid: true, indicators: { rsi, macd, bb, trend } };
+  }
+
+  /**
+   * Enable or disable caching
+   * @param {boolean} enabled - Whether to enable caching
+   */
+  setCache(enabled) {
+    this.cacheEnabled = enabled;
+    console.log(`📊 Indicators caching ${enabled ? 'enabled' : 'disabled'}`);
+  }
+
+  /**
+   * Get cache statistics
+   * @returns {Object} Cache statistics
+   */
+  getCacheStats() {
+    return {
+      size: this.cache.size,
+      enabled: this.cacheEnabled || false
+    };
   }
 }
 

@@ -5,7 +5,7 @@ class ControlServer {
   constructor(ogzPrime, config = {}) {
     this.ogzPrime = ogzPrime;
     this.config = {
-      port: 3003,
+      port: 3023,                // FIXED: Changed from 3003 to avoid conflict with main bot
       logCommands: true,
       ...config
     };

@@ -1,0 +1,37 @@
+{
+  "version": "10.2.0",
+  "assetName": "BTC-USD",
+  "profileName": "scalper",
+  "timeframes": [
+    "1m",
+    "5m",
+    "15m"
+  ],
+  "primaryTimeframe": "1m",
+  "minPatternMatches": 1,
+  "patternSimilarityThreshold": 0.8,
+  "minConfidenceThreshold": 0.4,
+  "maxPositionSize": 0.1,
+  "enableScalping": true,
+  "enableMicroProfits": true,
+  "enableQuickExits": true,
+  "cacheTTL": 5000,
+  "enableMultiTimeframe": true,
+  "enableFibonacciLevels": true,
+  "enableSupportResistance": true,
+  "fibLevels": [
+    0.236,
+    0.382,
+    0.5,
+    0.618,
+    0.786
+  ],
+  "goldenZone": [
+    0.618,
+    0.65
+  ],
+  "maxSwingLookback": 100,
+  "srLevelStrength": 3,
+  "srProximityPercent": 0.5,
+  "lastModified": "2025-07-02T16:54:30.721Z"
+}
