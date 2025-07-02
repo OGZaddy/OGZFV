@@ -112,7 +112,7 @@ process.on('unhandledRejection', (reason, promise) => {
 // Core Dependencies - The Foundation of Intelligence
 
 // Trading Engine Components
-const { indicators } = require('./core/OptimizedIndicators');
+const indicators = require('./core/OptimizedIndicators');
 const { OptimizedTradingBrain } = require('./core/OptimizedTradingBrain');
 const { EnhancedPatternChecker, FeatureExtractor, PatternMemorySystem } = require('./core/EnhancedPatternRecognition');
 const MaxProfitManager = require('./core/MaxProfitManager');
@@ -165,6 +165,14 @@ class OGZPrimeV10 {
    * @param {Object} config - Configuration options for the trading system
    */
   constructor(config = {}) {
+    // ========================================================================
+    // DIAGNOSTIC LOGGING FOR MULTIPLE INSTANCE ISSUE
+    // ========================================================================
+    const caller = new Error().stack.split('\n')[2].trim();
+    console.log(`🔍 INSTANCE DEBUG: OGZPrimeV10 constructor called from: ${caller}`);
+    console.log(`🔍 INSTANCE DEBUG: Config ports - GUI: ${config.guiWebSocketPort || 3002}, Data: ${config.dataWebSocketPort || 3001}, Control: ${config.controlWebSocketPort || 3003}`);
+    console.log(`🔍 INSTANCE DEBUG: Asset: ${config.assetName || 'BTC-USD'}, Profile: ${config.profileName || 'default'}`);
+    
     // ========================================================================
     // CONFIGURATION MANAGEMENT
     // ========================================================================
@@ -682,122 +690,62 @@ class OGZPrimeV10 {
     return milliseconds;
   }
   
-  /**
-   * Initialize WebSocket servers for real-time communication with resilience
-   */
   initializeWebSockets() {
-    console.log('🔌 Initializing WebSocket servers with connection resilience...');
+    console.log('🔌 Initializing WebSocket servers with cascade protection...');
     
-    // Create data WebSocket server for streaming market data
-    try {
-      this.dataServer = this.webSocketManager.getServer(this.config.dataWebSocketPort, {
-        // Enhanced server options for stability
-        perMessageDeflate: true,
-        maxPayload: 16 * 1024,
-        clientTracking: true,
-        skipUTF8Validation: false
-      });
-      
-      if (!this.dataServer) {
-        throw new Error('Data WebSocket server could not be created (possibly port in use)');
-      }
-      
-      // Add connection event handlers for resilience monitoring
-      this.dataServer.on('connection', (ws) => {
-        console.log(`[BOT-${Date.now()}] Data client connected`);
-        console.log('📡 Data client connected');
-        
-        // Setup ping/pong for connection health
-        ws.isAlive = true;
-        ws.on('pong', () => { ws.isAlive = true; });
-        
-        // Send welcome message with connection info
-        ws.send(JSON.stringify({
-          type: 'welcome',
-          server: 'data',
-          timestamp: Date.now(),
-          message: 'Connected to OGZ Prime data stream'
-        }));
-      });
-      
-      console.log(`📡 Data WebSocket server on port ${this.config.dataWebSocketPort} ✅`);
-    } catch (err) {
-      console.error(`❌ Failed to initialize Data WebSocket server: ${err.message}`);
-      this.dataServer = null;
-    }
+    // Initialize each server with error isolation
+    const servers = [
+      { name: 'Data', port: this.config.dataWebSocketPort, var: 'dataServer' },
+      { name: 'GUI', port: this.config.guiWebSocketPort, var: 'guiServer' },
+      { name: 'Control', port: this.config.controlWebSocketPort, var: 'controlServer' }
+    ];
     
-    // Create GUI WebSocket server for dashboard communication
-    try {
-      this.guiServer = this.webSocketManager.getServer(this.config.guiWebSocketPort, {
-        // Enhanced server options for dashboard stability
-        perMessageDeflate: true,
-        maxPayload: 32 * 1024, // Larger payload for dashboard data
-        clientTracking: true,
-        skipUTF8Validation: false
-      });
-      
-      // Add GUI connection handlers with enhanced monitoring
-      this.guiServer.on('connection', (ws) => {
-        console.log(`[BOT-${Date.now()}] GUI client connected`);
-        console.log('🖥️  GUI client connected');
+    for (const server of servers) {
+      try {
+        console.log(`🔧 Initializing ${server.name} WebSocket on port ${server.port}...`);
         
-        // Setup connection health monitoring
-        ws.isAlive = true;
-        ws.on('pong', () => { ws.isAlive = true; });
-        
-        // Send initial status to new GUI clients
-        ws.send(JSON.stringify({
-          type: 'welcome',
-          server: 'gui',
-          timestamp: Date.now(),
-          status: this.getStatus()
-        }));
-        
-        // Immediately send current system status
-        setTimeout(() => {
-          this.broadcastStatus();
-        }, 1000);
-      });
-      
-      console.log(`🖥️  GUI WebSocket server on port ${this.config.guiWebSocketPort} ✅`);
-    } catch (err) {
-      console.error(`❌ Failed to initialize GUI WebSocket server: ${err.message}`);
-      this.guiServer = null;
-    }
-    
-    // Create control WebSocket server for receiving trading commands
-    try {
-      this.controlServer = this.webSocketManager.getServer(this.config.controlWebSocketPort);
-      
-      // Set up control message handler for GUI commands
-      this.controlServer.on('connection', (ws) => {
-        console.log('🎮 Control connection established');
-        
-        // Setup connection health
-        ws.isAlive = true;
-        ws.on('pong', () => { ws.isAlive = true; });
-        
-        ws.on('message', (message) => {
-          try {
-            const command = JSON.parse(message);
-            this.handleControlCommand(command);
-          } catch (err) {
-            console.error('❌ Invalid control command:', err.message);
-          }
+        this[server.var] = this.webSocketManager.getServer(server.port, {
+          perMessageDeflate: false,  // Disable compression for stability
+          maxPayload: 16 * 1024 * 1024,
+          clientTracking: true,
+          skipUTF8Validation: false
         });
-      });
-      
-      console.log(`🎮 Control WebSocket server on port ${this.config.controlWebSocketPort} ✅`);
-    } catch (err) {
-      console.error(`❌ Failed to initialize Control WebSocket server: ${err.message}`);
-      this.controlServer = null;
+        
+        if (this[server.var]) {
+          console.log(`✅ ${server.name} WebSocket server ready on port ${server.port}`);
+          
+          // Add connection handler without crashing on errors
+          this[server.var].on('connection', (ws) => {
+            console.log(`📡 ${server.name} client connected`);
+            
+            // Wrap all handlers in try-catch
+            ws.on('error', (error) => {
+              console.error(`⚠️ ${server.name} client error:`, error.message);
+              // Don't propagate - just log
+            });
+            
+            ws.on('message', (message) => {
+              try {
+                if (server.name === 'Control') {
+                  const command = JSON.parse(message);
+                  this.handleControlCommand(command);
+                }
+              } catch (err) {
+                console.error(`❌ Error processing ${server.name} message:`, err.message);
+              }
+            });
+          });
+        } else {
+          console.warn(`⚠️ ${server.name} WebSocket server could not be created on port ${server.port}`);
+        }
+        
+      } catch (err) {
+        console.error(`❌ Failed to initialize ${server.name} WebSocket:`, err.message);
+        // Continue with other servers - don't crash
+      }
     }
     
-    // DISABLED: Duplicate heartbeat system - WebSocketManager handles this
-    // Setup heartbeat system for all servers
-    // this.setupWebSocketHeartbeat();
-    
-    console.log('💓 WebSocket heartbeat delegated to WebSocketManager');
+    console.log('💓 WebSocket initialization complete (with cascade protection)');
   }
   
   /**
@@ -1089,25 +1037,62 @@ class OGZPrimeV10 {
     
     sendDiscordMessage(`🟢 OGZ Prime started with ${this.config.profileName} profile for ${this.config.assetName}`);
     
-    // Connect to live Polygon.io data instead of simulation
+    // Connect to live Polygon.io data
+    console.log('🔗 Starting live data feed...');
     this.connectToLiveData();
   }
   
-  /**
-   * Connect to live Polygon.io market data
-   */
   connectToLiveData() {
     const PolygonWebSocket = require('./core/PolygonWebSocket');
     
     console.log('🔗 Connecting to live Polygon.io Bitcoin data...');
     this.logBotThought('Connecting to live Polygon.io market data feed', 'CONNECTING', 0.8);
     
-    this.polygonSocket = new PolygonWebSocket((tick) => {
-      // Process real market tick from Polygon.io
-      this.processTick(tick);
-    });
-    
-    this.polygonSocket.connect();
+    try {
+      // Create Polygon socket with error isolation
+      this.polygonSocket = new PolygonWebSocket((tick) => {
+        try {
+          // Update connection state
+          if (this.connectionResilience) {
+            this.connectionResilience.updateDataTimestamp();
+          }
+          
+          // Process tick safely
+          this.processTick(tick);
+        } catch (error) {
+          console.error('❌ Error processing tick:', error.message);
+          // Don't crash - just skip this tick
+        }
+      });
+      
+      // Setup Polygon event handlers
+      this.polygonSocket.on('connected', () => {
+        console.log('✅ Polygon data feed connected');
+        this.logBotThought('Successfully connected to Polygon.io data feed', 'CONNECTED', 0.9);
+      });
+      
+      this.polygonSocket.on('disconnected', ({ code, reason }) => {
+        console.log(`⚠️ Polygon disconnected - Code: ${code}, Reason: ${reason}`);
+        this.logBotThought('Polygon data feed disconnected - will auto-reconnect', 'DISCONNECTED', 0.3);
+        // Don't panic - PolygonWebSocket handles its own reconnection
+      });
+      
+      this.polygonSocket.on('error', (error) => {
+        console.error('❌ Polygon error:', error.message);
+        // Don't crash - just log
+      });
+      
+      // Connect to Polygon
+      this.polygonSocket.connect().catch(error => {
+        console.error('❌ Failed to connect to Polygon:', error.message);
+        // Don't crash - system can still function
+      });
+      
+    } catch (error) {
+      console.error('❌ Failed to initialize Polygon connection:', error.message);
+      this.logBotThought('Failed to initialize Polygon connection - bot can still function', 'ERROR', 0.2);
+      // Don't crash - bot can still work with manual trades
+    }
   }
   
   /**
@@ -1164,76 +1149,66 @@ class OGZPrimeV10 {
  * @param {Object} tick - Market tick data
  */
 processTick(tick) {
-  // Basic log
-  console.log('📊 processTick called:', {
-    type: tick.type,
-    price: tick.price,
-    timestamp: new Date(tick.timestamp || Date.now()).toISOString(),
-    isRunning: this.isRunning
-  });
-
-  // Support real-time XA candles from Polygon
-  if (tick.type === 'candle') {
-    // Initialize if needed
-    this.candles = this.candles || [];
-    this.candles.push(tick);
-    if (this.candles.length > 500) this.candles.shift();
-
-    this.tradingBrain?.setCandles?.(this.candles);
-
-    // Convert candle tick to analysis format and process
-    const analysis = {
-      timestamp: tick.timestamp,
-      price: tick.close,
-      open: tick.open,
-      high: tick.high,
-      low: tick.low,
-      close: tick.close,
-      volume: tick.volume
-    };
-    this.tradingBrain?.processAnalysis?.(analysis, tick.close);
-    return;
-  }
-
-  // Legacy price tick handler (used in simulation)
-  const price = parseFloat(tick.price);
-  const timestamp = tick.timestamp || Date.now();
-
-  if (isNaN(price) || price <= 0) {
-    console.error('❌ Invalid price in processTick:', tick);
-    return;
-  }
-
-  // Log transparency thought
-  this.logBotThought(`Processing market tick: $${price.toLocaleString()}`, 'ANALYZING', 0.6);
-
-  for (const tf of Object.keys(this.timeframeData)) {
-    this.updateTimeframeCandle(tf, price, timestamp);
-  }
-
-  const primaryCandles = this.timeframeData[this.config.primaryTimeframe].candles;
-  console.log(`📈 Candles accumulated: ${primaryCandles.length}`);
-
-  const broadcastSuccess = this.broadcastTick({
-    timestamp,
-    price,
-    trailingStop: this.tradingBrain.isInPosition()
-      ? this.tradingBrain.maxProfitManager.getState().currentStop
-      : null
-  });
-
-  if (!broadcastSuccess) {
-    console.warn('⚠️ Failed to broadcast tick to GUI');
-  }
-
-  const now = Date.now();
-  if (now - this.lastAnalysis.time >= 2000) {
-    console.log(`🧠 Time to analyze! (${primaryCandles.length} candles available)`);
-    this.runAnalysis();
-  }
-
-  if (this.tradingBrain.isInPosition()) {
-    this.tradingBrain.managePosition(price);
+  try {
+    // Validate tick data
+    if (!tick || (!tick.price && !tick.close)) {
+      console.warn('⚠️ Invalid tick data received');
+      return;
+    }
+    
+    // Extract price safely
+    const price = parseFloat(tick.price || tick.close || 0);
+    const timestamp = tick.timestamp || Date.now();
+    
+    if (isNaN(price) || price <= 0) {
+      console.error('❌ Invalid price in tick:', price);
+      return;
+    }
+    
+    // Update connection resilience timestamp
+    if (this.connectionResilience) {
+      this.connectionResilience.updateDataTimestamp();
+    }
+    
+    // Log transparency thought
+    this.logBotThought(`Processing market tick: $${price.toLocaleString()}`, 'ANALYZING', 0.6);
+    
+    // Update timeframes
+    for (const tf of Object.keys(this.timeframeData)) {
+      this.updateTimeframeCandle(tf, price, timestamp);
+    }
+    
+    // Broadcast to GUI (with error protection)
+    try {
+      this.broadcastTick({
+        timestamp,
+        price,
+        trailingStop: this.tradingBrain.isInPosition()
+          ? this.tradingBrain.maxProfitManager?.getState()?.currentStop
+          : null
+      });
+    } catch (error) {
+      console.error('❌ Error broadcasting tick:', error.message);
+    }
+    
+    // Run analysis if needed
+    const now = Date.now();
+    if (now - this.lastAnalysis.time >= 2000) {
+      this.runAnalysis();
+    }
+    
+    // Manage position if in trade
+    if (this.tradingBrain.isInPosition()) {
+      try {
+        this.tradingBrain.managePosition(price);
+      } catch (error) {
+        console.error('❌ Error managing position:', error.message);
+      }
+    }
+    
+  } catch (error) {
+    console.error('❌ Critical error in processTick:', error.message);
+    // Don't crash - just skip this tick
   }
 }
 
@@ -1744,124 +1719,101 @@ processTick(tick) {
     };
   }
   
-  /**
-   * Safely shutdown the trading system
-   */
   shutdown() {
-    console.log('⚠️ Shutdown initiated');
-    this.logBotThought('System shutdown initiated - closing positions and saving state', 'SHUTDOWN', 0.9);
+    console.log('⚠️ Initiating graceful shutdown...');
+    this.logBotThought('System shutdown initiated - closing all connections safely', 'SHUTDOWN', 0.9);
     
-    // Close position if open
-    if (this.tradingBrain.isInPosition()) {
-      const candles = this.timeframeData[this.config.primaryTimeframe].candles;
-      if (candles && candles.length > 0) {
-        const price = candles[candles.length - 1].close;
-        const tradeResult = this.tradingBrain.closePosition(price, 'System shutdown');
-        
-        // Log final trade
-        if (tradeResult) {
-          this.logBotThought(`Position closed for shutdown - PnL: $${tradeResult.pnl.toFixed(2)}`, 'SHUTDOWN', 0.8);
-          
-          logTrade({
-            type: 'EXIT',
-            direction: 'SELL',
-            price: price,
-            pnl: tradeResult.pnl,
-            balance: this.tradingBrain.balance,
-            reason: 'System shutdown',
-            entryPrice: tradeResult.entryPrice,
-            holdTimeMs: new Date() - tradeResult.entryTime,
-            assetName: this.config.assetName,
-            profileName: this.config.profileName
-          });
-          
-          // Process with risk manager
-          if (this.riskManager) {
-            this.riskManager.processTrade(tradeResult, this.tradingBrain.balance);
-          }
-          
-          // Process with performance analyzer
-          if (this.performanceAnalyzer) {
-            const analysisData = this.lastAnalysis?.result || {};
-            this.performanceAnalyzer.processTrade(tradeResult, analysisData);
-          }
+    // Set shutdown flag
+    this.isShuttingDown = true;
+    this.isRunning = false;
+    
+    // 1. Disconnect data feeds first (with error protection)
+    try {
+      if (this.polygonSocket) {
+        this.polygonSocket.disconnect();
+        this.polygonSocket = null;
+      }
+    } catch (error) {
+      console.error('⚠️ Error disconnecting Polygon:', error.message);
+    }
+    
+    // 2. Stop connection monitoring
+    try {
+      if (this.connectionResilience) {
+        this.connectionResilience.cleanup();
+      }
+    } catch (error) {
+      console.error('⚠️ Error cleaning up connection resilience:', error.message);
+    }
+    
+    // 3. Close any open positions
+    try {
+      if (this.tradingBrain && this.tradingBrain.isInPosition()) {
+        const candles = this.timeframeData[this.config.primaryTimeframe]?.candles;
+        if (candles && candles.length > 0) {
+          const price = candles[candles.length - 1].close;
+          this.tradingBrain.closePosition(price, 'System shutdown');
         }
       }
+    } catch (error) {
+      console.error('⚠️ Error closing position:', error.message);
     }
     
-    // Save profile
-    this.saveProfile();
-    
-    // Clean up pattern checker
-    if (this.patternChecker) {
-      this.patternChecker.cleanup();
+    // 4. Save state
+    try {
+      this.saveProfile();
+    } catch (error) {
+      console.error('⚠️ Error saving profile:', error.message);
     }
     
-    // Clean up WebSockets and heartbeat
-    if (this.simulationInterval) {
-      clearInterval(this.simulationInterval);
+    // 5. Clean up pattern checker
+    try {
+      if (this.patternChecker) {
+        this.patternChecker.cleanup();
+      }
+    } catch (error) {
+      console.error('⚠️ Error cleaning up pattern checker:', error.message);
     }
     
-    if (this.heartbeatInterval) {
-      clearInterval(this.heartbeatInterval);
-    }
-    
-    // Clean up connection resilience
-    if (this.connectionResilience) {
-      this.connectionResilience.cleanup();
-    }
-    
-    // 🔒 CRITICAL SAFETY: Release singleton lock
-    if (singletonLock) {
-      singletonLock.releaseLock();
-      console.log('🔓 Singleton lock released - safe to start new instance');
-    }
-    
-    // SS-TIER ENHANCEMENT: Save performance data
-    if (this.performanceAnalyzer) {
-      this.performanceAnalyzer.saveToFile();
-      console.log("📊 Performance data saved");
-    }
-    
-    // SS-TIER ENHANCEMENT: Log final risk status
-    if (this.riskManager) {
-      console.log("💰 Final Risk Status:", this.riskManager.getRiskSummary());
-    }
-    
-    // SS-TIER ENHANCEMENT: Clear maintenance interval
+    // 6. Clear intervals
     if (this.maintenanceInterval) {
       clearInterval(this.maintenanceInterval);
     }
     
-    // Send final status
-    this.isRunning = false;
-    this.broadcastStatus();
+    // 7. Close WebSocket servers gracefully
+    console.log('🔌 Closing WebSocket servers...');
+    const ports = [
+      this.config.dataWebSocketPort,
+      this.config.guiWebSocketPort,
+      this.config.controlWebSocketPort
+    ];
     
-    // Send shutdown message
-    const shutdownMsg = {
-      type: 'system',
-      action: 'shutdown',
-      message: 'Trading system safely shutdown',
-      timestamp: Date.now()
-    };
+    for (const port of ports) {
+      try {
+        this.webSocketManager.closeServer(port);
+      } catch (error) {
+        console.error(`⚠️ Error closing server on port ${port}:`, error.message);
+      }
+    }
     
-    // Broadcast shutdown
-    this.webSocketManager.broadcast(this.config.guiWebSocketPort, shutdownMsg);
+    // 8. Release singleton lock
+    try {
+      if (this.singletonLock) {
+        this.singletonLock.releaseLock();
+        console.log('🔓 Singleton lock released');
+      }
+    } catch (error) {
+      console.error('⚠️ Error releasing singleton lock:', error.message);
+    }
     
-    // Generate and send daily summary
-    this.sendDailySummary();
-    
-    // Log shutdown
-    console.log('💤 OGZ Prime has been safely shutdown');
+    // 9. Final notifications
+    console.log('💤 OGZ Prime shutdown complete');
     this.logBotThought('OGZ Prime successfully shutdown - all systems safe', 'SHUTDOWN', 1.0);
-    sendDiscordMessage('🔴 OGZ Prime has been safely shutdown');
     
-    // Return final state for potential persistence
-    return {
-      balance: this.tradingBrain.balance,
-      trades: this.status.dailyStats.trades,
-      pnl: this.status.dailyStats.totalPnL
-    };
+    // Exit after giving time for cleanup
+    setTimeout(() => {
+      process.exit(0);
+    }, 2000);
   }
 }
 // ========================================================================

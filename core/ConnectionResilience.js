@@ -1,601 +1,445 @@
-// ConnectionResilience.js - Never lose connection, never lose money
-// This module ensures OGZ Prime ALWAYS reconnects and NEVER loses positions
+/**
+ * @fileoverview ConnectionResilience - Smart Connection Recovery System
+ * @description Handles disconnections without causing cascades or panic closes
+ * @version 2.0.0 - NO-CASCADE EDITION
+ * @author OGZ Prime Development Team
+ */
 
+const EventEmitter = require('events');
 const fs = require('fs');
 const path = require('path');
 
-/**
- * Connection Resilience System
- * Monitors all connections and ensures automatic recovery
- */
-class ConnectionResilience {
-  /**
-   * Initialize connection resilience system with OGZPrime instance
-   * Sets up monitoring state, configuration, and starts connection monitoring
-   * @param {Object} ogzPrime - Main trading bot instance to monitor
-   */
+class ConnectionResilience extends EventEmitter {
   constructor(ogzPrime) {
-    // Reference to main trading bot instance for monitoring and recovery
+    super();
+    
     this.ogzPrime = ogzPrime;
     
-    // Real-time connection state tracking
-    this.connectionState = {
-      dataFeed: 'unknown',        // status of market data connection
-      guiSocket: 'unknown',       // status of GUI WebSocket connection
-      lastDataReceived: Date.now(), // timestamp of last market data tick
-      reconnectAttempts: 0,       // current reconnection attempt counter
-      isReconnecting: false       // flag to prevent duplicate reconnection attempts
-    };
-    
-    // Connection monitoring and recovery configuration
+    // Configuration with sane defaults
     this.config = {
-      heartbeatInterval: 5000,      // connection health check frequency (5 seconds)
-      dataStaleTimeout: 30000,      // consider data stale after 30 seconds
-      maxReconnectDelay: 30000,     // maximum delay between reconnection attempts
-      emergencyStateFile: path.join(process.cwd(), 'data', 'emergency_state.json') // emergency state backup location
+      checkInterval: 10000,           // Check every 10 seconds
+      dataStaleTimeout: 60000,        // 1 minute before considering stale
+      maxReconnectAttempts: 5,        // Per connection type
+      reconnectDelay: 2000,           // Initial delay
+      maxReconnectDelay: 30000,       // Max backoff
+      emergencyCloseTimeout: 300000,  // 5 minutes before emergency close
+      enableAutoClose: false          // DISABLED by default - no panic!
     };
     
-    // Order queue for executing pending trades during disconnections
-    this.orderQueue = [];
+    // Connection tracking
+    this.connectionState = {
+      dataFeed: { 
+        status: 'unknown', 
+        lastData: Date.now(),
+        reconnectAttempts: 0,
+        isReconnecting: false
+      },
+      guiWebSocket: { 
+        status: 'unknown', 
+        lastPing: Date.now(),
+        reconnectAttempts: 0,
+        isReconnecting: false
+      },
+      controlWebSocket: { 
+        status: 'unknown', 
+        lastPing: Date.now(),
+        reconnectAttempts: 0,
+        isReconnecting: false
+      }
+    };
     
-    // Start connection monitoring immediately
-    this.startMonitoring();
+    // Recovery state
+    this.emergencyState = null;
+    this.ordersQueue = [];
+    this.checkInterval = null;
     
-    console.log('🛡️ Connection Resilience System: INITIALIZED');
+    console.log('🛡️ ConnectionResilience initialized - NO-CASCADE VERSION');
   }
-  
+
   /**
-   * Start monitoring all connections with heartbeat checks and WebSocket monitoring
-   * Initializes main monitoring loop and hooks into WebSocket events
+   * Start monitoring connections
    */
   startMonitoring() {
-    // Main heartbeat monitor - checks all connections periodically
-    this.heartbeatInterval = setInterval(() => {
+    if (this.checkInterval) {
+      console.log('⚠️ Connection monitoring already active');
+      return;
+    }
+    
+    console.log('🔍 Starting connection monitoring...');
+    
+    // Initial check
+    this.checkAllConnections();
+    
+    // Schedule periodic checks
+    this.checkInterval = setInterval(() => {
       this.checkAllConnections();
-    }, this.config.heartbeatInterval);
+    }, this.config.checkInterval);
     
-    // Hook into WebSocket connection events for real-time monitoring
-    this.setupWebSocketMonitoring();
-    
-    // Monitor data feed for staleness detection
-    this.monitorDataFeed();
-  }
-  
-  /**
-   * Setup WebSocket monitoring for data and GUI connections
-   * Hooks into connection/disconnection events for immediate response
-   */
-  setupWebSocketMonitoring() {
-    // Monitor data WebSocket (market data feed)
-    const dataPort = this.ogzPrime.config.dataWebSocketPort;
-    const dataServer = this.ogzPrime.webSocketManager.getServer(dataPort);
-    
-    if (dataServer) {
-      // Track data WebSocket connections
-      dataServer.on('connection', (ws) => {
-        console.log('📡 Data WebSocket client connected');
-        this.connectionState.dataFeed = 'connected';
-        
-        // Handle client disconnection
-        ws.on('close', () => {
-          console.log('⚠️ Data WebSocket client disconnected');
-          this.connectionState.dataFeed = 'disconnected';
-        });
-        
-        // Handle WebSocket errors and trigger recovery
-        ws.on('error', (error) => {
-          console.error('❌ Data WebSocket error:', error.message);
-          this.handleConnectionError('dataFeed', error);
-        });
-      });
+    // Listen to Polygon events if available
+    if (this.ogzPrime.polygonSocket) {
+      this.setupPolygonListeners();
     }
     
-    // Monitor GUI WebSocket (dashboard connection)
-    const guiPort = this.ogzPrime.config.guiWebSocketPort;
-    const guiServer = this.ogzPrime.webSocketManager.getServer(guiPort);
-    
-    if (guiServer) {
-      // Track GUI WebSocket connections
-      guiServer.on('connection', (ws) => {
-        this.connectionState.guiSocket = 'connected';
-        
-        // Update state on disconnection
-        ws.on('close', () => {
-          this.connectionState.guiSocket = 'disconnected';
-        });
-      });
-    }
+    this.emit('monitoring_started');
   }
-  
+
   /**
-   * Monitor incoming data feed by overriding processTick method
-   * Tracks data flow timestamps and resets reconnection attempts on success
+   * Stop monitoring connections
    */
-  monitorDataFeed() {
-    // Override processTick to track data flow timing
-    const originalProcessTick = this.ogzPrime.processTick.bind(this.ogzPrime);
+  stopMonitoring() {
+    if (this.checkInterval) {
+      clearInterval(this.checkInterval);
+      this.checkInterval = null;
+    }
     
-    this.ogzPrime.processTick = (tick) => {
-      // Update last data received timestamp for staleness detection
-      this.connectionState.lastDataReceived = Date.now();
-      this.connectionState.dataFeed = 'connected';
+    console.log('🛑 Connection monitoring stopped');
+    this.emit('monitoring_stopped');
+  }
+
+  /**
+   * Setup Polygon WebSocket listeners
+   */
+  setupPolygonListeners() {
+    const polygon = this.ogzPrime.polygonSocket;
+    
+    polygon.on('connected', () => {
+      console.log('✅ Polygon connected - updating resilience state');
+      this.updateConnectionState('dataFeed', 'connected');
+    });
+    
+    polygon.on('disconnected', ({ code, reason }) => {
+      console.log(`⚠️ Polygon disconnected - Code: ${code}, Reason: ${reason}`);
+      this.updateConnectionState('dataFeed', 'disconnected');
+      // Don't panic - Polygon will handle its own reconnection
+    });
+    
+    polygon.on('trade', (data) => {
+      this.updateDataTimestamp();
+    });
+    
+    polygon.on('candle', (data) => {
+      this.updateDataTimestamp();
+    });
+  }
+
+  /**
+   * Update connection state
+   */
+  updateConnectionState(connection, status) {
+    const state = this.connectionState[connection];
+    if (state) {
+      state.status = status;
+      state.lastUpdate = Date.now();
       
-      // Reset reconnect attempts counter on successful data reception
-      if (this.connectionState.reconnectAttempts > 0) {
-        console.log('✅ Connection restored after', this.connectionState.reconnectAttempts, 'attempts');
-        this.connectionState.reconnectAttempts = 0;
+      if (status === 'connected') {
+        state.reconnectAttempts = 0;
+        state.isReconnecting = false;
       }
-      
-      // Call original function to maintain normal operation
-      return originalProcessTick(tick);
-    };
+    }
   }
-  
+
   /**
-   * Check all connections for health and trigger recovery if needed
-   * Main monitoring loop that detects stale data and unhealthy WebSockets
+   * Update last data timestamp
+   */
+  updateDataTimestamp() {
+    this.connectionState.dataFeed.lastData = Date.now();
+  }
+
+  /**
+   * Check all connections health
    */
   checkAllConnections() {
     const now = Date.now();
-    const timeSinceLastData = now - this.connectionState.lastDataReceived;
     
-    // Check if data feed has become stale (no recent market data)
-    if (timeSinceLastData > this.config.dataStaleTimeout && !this.connectionState.isReconnecting) {
-      console.log(`⚠️ Data feed stale for ${(timeSinceLastData/1000).toFixed(1)}s`);
-      this.handleDisconnection('dataFeed');
+    // Check data feed staleness
+    const dataState = this.connectionState.dataFeed;
+    const timeSinceData = now - dataState.lastData;
+    
+    if (timeSinceData > this.config.dataStaleTimeout && !dataState.isReconnecting) {
+      console.log(`⚠️ Data feed stale for ${(timeSinceData/1000).toFixed(1)}s`);
+      this.handleStaleData('dataFeed');
+    } else if (timeSinceData < this.config.dataStaleTimeout && dataState.status !== 'connected') {
+      // Data is flowing again
+      this.updateConnectionState('dataFeed', 'connected');
     }
     
-    // Check WebSocket server health status
+    // Check WebSocket health (non-critical)
     this.checkWebSocketHealth();
+    
+    // Emit status for monitoring
+    this.emit('health_check', this.getHealthStatus());
   }
-  
+
   /**
-   * Check WebSocket server health and restart if not listening
-   * Verifies that WebSocket servers are properly running on configured ports
+   * Check WebSocket server health
    */
   checkWebSocketHealth() {
-    // DISABLED: WebSocket servers don't have .listening property like HTTP servers
-    // This was causing false positives and unnecessary reconnection attempts
+    const wsManager = this.ogzPrime.webSocketManager;
+    if (!wsManager) return;
     
-    // Check both data and GUI WebSocket ports
-    const ports = [
-      this.ogzPrime?.config?.dataWebSocketPort || 3001,
-      this.ogzPrime?.config?.guiWebSocketPort || 3002
-    ];
+    // Check GUI WebSocket
+    const guiHealth = wsManager.getHealth(this.ogzPrime.config.guiWebSocketPort);
+    if (guiHealth) {
+      this.connectionState.guiWebSocket.status = guiHealth.connections > 0 ? 'connected' : 'no_clients';
+      this.connectionState.guiWebSocket.lastPing = guiHealth.lastActivity || Date.now();
+    }
+    
+    // Check Control WebSocket
+    const controlHealth = wsManager.getHealth(this.ogzPrime.config.controlWebSocketPort);
+    if (controlHealth) {
+      this.connectionState.controlWebSocket.status = controlHealth.connections > 0 ? 'connected' : 'no_clients';
+      this.connectionState.controlWebSocket.lastPing = controlHealth.lastActivity || Date.now();
+    }
+  }
 
-    ports.forEach(port => {
-      try {
-        const server = this.ogzPrime.webSocketManager.getServer(port);
-        if (!server) {
-          console.log(`⚠️ WebSocket server on port ${port} not found`);
-          // Only reconnect if server doesn't exist at all
-          this.reconnectWebSocket(port);
-        }
-        // REMOVED: server.listening check - WebSocket servers don't have this property
-      } catch (error) {
-        console.error(`❌ Error checking WebSocket health on port ${port}:`, error.message);
-      }
-    });
-  }
-  
   /**
-   * Handle disconnection event with emergency procedures
-   * Saves state, queues protective orders, and attempts reconnection
-   * @param {string} connectionType - Type of connection that failed
+   * Handle stale data situation
    */
-  async handleDisconnection(connectionType) {
-    // Prevent multiple simultaneous reconnection attempts
-    if (this.connectionState.isReconnecting) {
-      return; // Already handling reconnection
+  handleStaleData(connection) {
+    const state = this.connectionState[connection];
+    
+    if (state.isReconnecting) {
+      return; // Already handling
     }
     
-    console.log(`🚨 DISCONNECTION DETECTED: ${connectionType}`);
-    this.connectionState.isReconnecting = true;
+    console.log(`🔄 Handling stale ${connection} connection`);
     
-    // Step 1: Save emergency state for recovery
-    this.saveEmergencyState();
+    // Save current state (non-critical)
+    this.saveCurrentState();
     
-    // Step 2: Queue protective orders if currently holding position
-    if (this.ogzPrime.tradingBrain.isInPosition()) {
-      this.queueProtectiveOrders();
-    }
-    
-    // Step 3: Attempt reconnection with exponential backoff
-    const reconnected = await this.reconnectWithBackoff(connectionType);
-    
-    if (reconnected) {
-      // Step 4: Restore state and process any queued orders
-      await this.restoreStateAndResume();
-    }
-    
-    this.connectionState.isReconnecting = false;
-  }
-  
-  /**
-   * Reconnect with exponential backoff strategy
-   * Attempts reconnection with increasing delays, up to maximum attempts
-   * @param {string} connectionType - Type of connection to reconnect
-   * @param {number} attempt - Current attempt number for backoff calculation
-   */
-  async reconnectWithBackoff(connectionType, attempt = 1) {
-    // Calculate exponential backoff delay with maximum cap
-    const delay = Math.min(1000 * Math.pow(2, attempt), this.config.maxReconnectDelay);
-    console.log(`🔄 Reconnection attempt ${attempt} in ${delay}ms...`);
-    
-    // Track reconnection attempts for monitoring
-    this.connectionState.reconnectAttempts = attempt;
-    
-    // Notify GUI of reconnection progress
-    this.ogzPrime.webSocketManager.broadcast(this.ogzPrime.config.guiWebSocketPort, {
-      type: 'connection_status',
-      status: 'reconnecting',
-      attempt,
-      nextRetryIn: delay
-    });
-    
-    // Wait for backoff delay before attempting reconnection
-    await new Promise(resolve => setTimeout(resolve, delay));
-    
-    try {
-      if (connectionType === 'dataFeed') {
-        // For simulation mode, restart the data simulation
-        if (this.ogzPrime.simulationInterval) {
-          clearInterval(this.ogzPrime.simulationInterval);
-          this.ogzPrime.simulateMarketData();
-          console.log('✅ Simulation data feed restarted');
-          return true;
-        }
+    // For data feed, check if we need emergency measures
+    if (connection === 'dataFeed' && this.ogzPrime.tradingBrain.isInPosition()) {
+      const timeSinceData = Date.now() - state.lastData;
+      
+      if (timeSinceData > this.config.emergencyCloseTimeout && this.config.enableAutoClose) {
+        console.log('🚨 EMERGENCY: Data lost for too long - considering position closure');
+        this.considerEmergencyClose('Extended data feed loss');
+      } else {
+        console.log(`⏰ Position open with stale data (${(timeSinceData/1000).toFixed(0)}s) - monitoring...`);
         
-        // For live mode, recreate WebSocket connection to data provider
-        console.log('🔌 Attempting to reconnect data feed...');
-        
-        // Recreate the WebSocket server if needed
-        this.reconnectWebSocket(this.ogzPrime.config.dataWebSocketPort);
-      }
-      
-      // Verify that reconnection was successful
-      await this.verifyConnection(connectionType);
-      
-      console.log('✅ Reconnection successful!');
-      return true;
-      
-    } catch (error) {
-      console.error(`❌ Reconnection attempt ${attempt} failed:`, error.message);
-      
-      // Retry with increased delay if under maximum attempts
-      if (attempt < 10) { // Max 10 attempts
-        return this.reconnectWithBackoff(connectionType, attempt + 1);
-      } else {
-        console.error('💀 Max reconnection attempts reached');
-        this.handleCriticalFailure();
-        return false;
+        // Queue protective order but don't execute yet
+        this.queueProtectiveOrder();
       }
     }
-  }
-  
-  /**
-   * Reconnect specific WebSocket server
-   * Attempts to restart WebSocket server on specified port
-   * @param {number} port - WebSocket port to reconnect
-   */
-  reconnectWebSocket(port) {
-    console.log(`🔌 Checking WebSocket on port ${port}`);
     
-    try {
-      // Get server instance from WebSocketManager
-      const server = this.ogzPrime.webSocketManager.getServer(port);
-      
-      if (server) {
-        console.log(`✅ WebSocket on port ${port} is active`);
-        return true;
-      } else {
-        console.log(`⚠️ WebSocket on port ${port} not found - WebSocketManager will handle creation`);
-        return false;
-      }
-    } catch (error) {
-      console.error(`❌ Failed to check WebSocket on port ${port}:`, error.message);
-      return false;
+    // Attempt reconnection for data feed
+    if (connection === 'dataFeed') {
+      this.attemptDataReconnection();
     }
   }
-  
-  /**
-   * Verify connection is working properly after reconnection
-   * Waits for data flow or connection confirmation within timeout period
-   * @param {string} connectionType - Type of connection to verify
-   */
-  async verifyConnection(connectionType) {
-    return new Promise((resolve, reject) => {
-      // Set timeout for connection verification
-      const timeout = setTimeout(() => {
-        reject(new Error('Connection verification timeout'));
-      }, 10000); // 10 second timeout
-      
-      // For data feed, wait for next market data tick
-      if (connectionType === 'dataFeed') {
-        const checkInterval = setInterval(() => {
-          const timeSinceData = Date.now() - this.connectionState.lastDataReceived;
-          
-          // Consider connection verified if recent data received
-          if (timeSinceData < 5000) { // Got data in last 5 seconds
-            clearTimeout(timeout);
-            clearInterval(checkInterval);
-            resolve();
-          }
-        }, 1000);
-      } else {
-        // For other connections, just check they exist
-        clearTimeout(timeout);
-        resolve();
-      }
-    });
-  }
-  
-  /**
-   * Save emergency state to disk for recovery after reconnection
-   * Creates comprehensive backup of critical trading state data
-   */
-  saveEmergencyState() {
-    console.log('💾 Saving emergency state...');
-    
-    // Create comprehensive emergency state snapshot
-    const emergencyState = {
-  timestamp: Date.now(),
-  version: this.ogzPrime?.config?.version || '10.2.0',
-  tradingBrain: {
-    balance: this.ogzPrime?.tradingBrain?.balance ?? 0,
-    position: this.ogzPrime?.tradingBrain?.position ?? null,
-    lastTradeResult: this.ogzPrime?.tradingBrain?.lastTradeResult ?? null
-  },
-  lastAnalysis: this.ogzPrime?.lastAnalysis ?? null,
-  timeframeData: {
-    '1m': {
-      lastCandle: this.ogzPrime?.timeframeData?.['1m']?.candles?.slice(-1)[0] ?? null,
-      candleCount: this.ogzPrime?.timeframeData?.['1m']?.candles?.length ?? 0
-    }
-  },
-  pendingOrders: this.ogzPrime?.orderQueue ?? [],
-  checksum: null
-};
 
+  /**
+   * Attempt to reconnect data feed
+   */
+  async attemptDataReconnection() {
+    const state = this.connectionState.dataFeed;
     
-    // Calculate checksum for data integrity verification
-    const crypto = require('crypto');
-    const dataString = JSON.stringify({
-      balance: emergencyState.tradingBrain.balance,
-      position: emergencyState.tradingBrain.position
-    });
-    emergencyState.checksum = crypto.createHash('sha256').update(dataString).digest('hex');
+    if (state.reconnectAttempts >= this.config.maxReconnectAttempts) {
+      console.error('❌ Max reconnection attempts reached for data feed');
+      this.emit('data_feed_failed');
+      return;
+    }
+    
+    state.isReconnecting = true;
+    state.reconnectAttempts++;
+    
+    console.log(`🔄 Data reconnection attempt ${state.reconnectAttempts}/${this.config.maxReconnectAttempts}`);
     
     try {
-      // Ensure emergency state directory exists
-      const dir = path.dirname(this.config.emergencyStateFile);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+      // If Polygon socket exists, let it handle reconnection
+      if (this.ogzPrime.polygonSocket) {
+        // Polygon has its own reconnection logic
+        console.log('📡 Polygon handling its own reconnection...');
       }
       
-      // Write emergency state to disk
-      fs.writeFileSync(
-        this.config.emergencyStateFile,
-        JSON.stringify(emergencyState, null, 2)
-      );
-      
-      console.log('✅ Emergency state saved successfully');
+      // Just wait and monitor
+      setTimeout(() => {
+        if (Date.now() - state.lastData > this.config.dataStaleTimeout) {
+          // Still no data
+          this.attemptDataReconnection();
+        } else {
+          // Data is flowing again!
+          console.log('✅ Data feed recovered!');
+          state.isReconnecting = false;
+          state.reconnectAttempts = 0;
+          this.updateConnectionState('dataFeed', 'connected');
+        }
+      }, this.calculateBackoffDelay(state.reconnectAttempts));
       
     } catch (error) {
-      console.error('❌ Failed to save emergency state:', error);
+      console.error('❌ Reconnection error:', error.message);
+      state.isReconnecting = false;
     }
   }
-  
+
   /**
-   * Queue protective orders to limit losses during disconnection
-   * Creates stop-loss and time-based exit orders for open positions
+   * Calculate exponential backoff delay
    */
-  queueProtectiveOrders() {
-    // Only queue orders if currently holding a position
-    if (!this.ogzPrime.tradingBrain.position) return;
+  calculateBackoffDelay(attempt) {
+    return Math.min(
+      this.config.reconnectDelay * Math.pow(2, attempt - 1),
+      this.config.maxReconnectDelay
+    );
+  }
+
+  /**
+   * Consider emergency position closure
+   */
+  considerEmergencyClose(reason) {
+    if (!this.config.enableAutoClose) {
+      console.log('🛡️ Auto-close disabled - position remains open');
+      return;
+    }
+    
+    if (!this.ogzPrime.tradingBrain.isInPosition()) {
+      console.log('✅ No position to close');
+      return;
+    }
+    
+    console.log(`🚨 EMERGENCY CLOSE CONSIDERATION: ${reason}`);
+    
+    // Queue emergency close order
+    this.queueOrder({
+      type: 'emergency_close',
+      reason: reason,
+      timestamp: Date.now(),
+      priority: 'CRITICAL'
+    });
+    
+    // Emit event for monitoring
+    this.emit('emergency_close_queued', { reason });
+  }
+
+  /**
+   * Queue protective order (stop loss)
+   */
+  queueProtectiveOrder() {
+    if (!this.ogzPrime.tradingBrain.isInPosition()) return;
     
     const position = this.ogzPrime.tradingBrain.position;
-    const maxProfitManager = this.ogzPrime.tradingBrain.maxProfitManager;
+    const currentPrice = position.entryPrice; // Use entry as fallback
     
-    // Queue stop loss order based on current trailing stop
-    if (maxProfitManager.state.currentStop) {
-      const stopOrder = {
-        id: Date.now().toString(),
-        type: 'stop_loss',
-        direction: position.direction === 'buy' ? 'sell' : 'buy', // opposite direction to close
-        price: maxProfitManager.state.currentStop,
-        size: position.size,
-        reason: 'Protective stop during disconnection',
-        priority: 'CRITICAL',
-        createdAt: Date.now()
-      };
-      
-      this.orderQueue.push(stopOrder);
-      console.log('🛡️ Protective stop loss queued at', stopOrder.price.toFixed(2));
-    }
+    // Calculate protective stop (2% below entry)
+    const stopPrice = position.direction === 'buy' 
+      ? currentPrice * 0.98 
+      : currentPrice * 1.02;
     
-    // Queue time-based exit for old positions (risk management)
-    const positionAge = Date.now() - new Date(position.entryTime).getTime();
-    if (positionAge > 3 * 60 * 60 * 1000) { // 3 hours old
-      const timeExitOrder = {
-        id: (Date.now() + 1).toString(),
-        type: 'time_exit',
-        direction: position.direction === 'buy' ? 'sell' : 'buy', // opposite direction to close
-        price: null, // Market order for immediate execution
-        size: position.size,
-        reason: 'Time-based exit during disconnection',
-        priority: 'HIGH',
-        createdAt: Date.now()
-      };
-      
-      this.orderQueue.push(timeExitOrder);
-      console.log('⏰ Time-based exit queued');
-    }
+    this.queueOrder({
+      type: 'protective_stop',
+      price: stopPrice,
+      timestamp: Date.now(),
+      priority: 'HIGH'
+    });
+    
+    console.log(`🛡️ Protective stop queued at $${stopPrice.toFixed(2)}`);
   }
-  
+
   /**
-   * Restore state and resume trading operations after reconnection
-   * Loads emergency state, verifies integrity, and processes queued orders
+   * Queue order for later execution
    */
-  async restoreStateAndResume() {
-    console.log('🔄 Restoring state and resuming operations...');
+  queueOrder(order) {
+    // Remove duplicates
+    this.ordersQueue = this.ordersQueue.filter(o => o.type !== order.type);
     
+    // Add new order
+    this.ordersQueue.push(order);
+    
+    // Sort by priority
+    this.ordersQueue.sort((a, b) => {
+      const priority = { CRITICAL: 0, HIGH: 1, NORMAL: 2 };
+      return priority[a.priority] - priority[b.priority];
+    });
+  }
+
+  /**
+   * Save current state for recovery
+   */
+  saveCurrentState() {
     try {
-      // Load emergency state if it exists
-      if (fs.existsSync(this.config.emergencyStateFile)) {
-        const savedState = JSON.parse(fs.readFileSync(this.config.emergencyStateFile));
-        
-        // Verify data integrity using checksum
-        const expectedChecksum = savedState.checksum;
-        savedState.checksum = null;
-        
-        const crypto = require('crypto');
-        const dataString = JSON.stringify({
-          balance: savedState.tradingBrain.balance,
-          position: savedState.tradingBrain.position
-        });
-        const actualChecksum = crypto.createHash('sha256').update(dataString).digest('hex');
-        
-        // Abort if data integrity check fails
-        if (expectedChecksum !== actualChecksum) {
-          console.error('❌ Emergency state checksum mismatch!');
-          return;
-        }
-        
-        // Restore position if it was lost during disconnection
-        if (savedState.tradingBrain.position && !this.ogzPrime.tradingBrain.position) {
-          console.log('📍 Restoring position from emergency state');
-          this.ogzPrime.tradingBrain.position = savedState.tradingBrain.position;
-          
-          // Reinitialize MaxProfitManager with restored position
-          this.ogzPrime.tradingBrain.maxProfitManager.start(
-            savedState.tradingBrain.position.entryPrice,
-            savedState.tradingBrain.position.direction
-          );
-        }
-        
-        // Process any orders that were queued during disconnection
-        if (this.orderQueue.length > 0) {
-          console.log(`📋 Processing ${this.orderQueue.length} queued orders`);
-          await this.processOrderQueue();
-        }
-        
-        // Clean up emergency state file after successful restoration
-        fs.unlinkSync(this.config.emergencyStateFile);
-        
-        console.log('✅ State restoration complete');
-        
-      } else {
-        console.log('ℹ️ No emergency state found - clean reconnection');
-      }
+      this.emergencyState = {
+        timestamp: Date.now(),
+        position: this.ogzPrime.tradingBrain.position,
+        balance: this.ogzPrime.tradingBrain.balance,
+        candles: this.ogzPrime.timeframeData[this.ogzPrime.config.primaryTimeframe]?.candles?.slice(-100),
+        connectionStates: { ...this.connectionState }
+      };
+      
+      // Save to file
+      const statePath = path.join(
+        this.ogzPrime.config.logDirectory,
+        `emergency_state_${Date.now()}.json`
+      );
+      
+      fs.writeFileSync(statePath, JSON.stringify(this.emergencyState, null, 2));
+      console.log(`💾 Emergency state saved to ${statePath}`);
       
     } catch (error) {
-      console.error('❌ State restoration failed:', error);
+      console.error('❌ Failed to save emergency state:', error.message);
     }
   }
-  
+
   /**
-   * Process queued orders that accumulated during disconnection
-   * Executes protective orders and manages retry logic for failed orders
+   * Process queued orders when connection restored
    */
-  async processOrderQueue() {
-    // Process all queued orders in FIFO order
-    while (this.orderQueue.length > 0) {
-      const order = this.orderQueue.shift();
-      
-      console.log(`⚡ Processing ${order.type} order (Priority: ${order.priority})`);
+  processQueuedOrders() {
+    if (this.ordersQueue.length === 0) return;
+    
+    console.log(`📋 Processing ${this.ordersQueue.length} queued orders...`);
+    
+    while (this.ordersQueue.length > 0) {
+      const order = this.ordersQueue.shift();
       
       try {
-        // Handle critical stop-loss orders with immediate execution
-        if (order.type === 'stop_loss' && order.priority === 'CRITICAL') {
-          // Get current market price for stop trigger evaluation
-          const currentCandles = this.ogzPrime.timeframeData['1m']?.candles;
-          if (currentCandles && currentCandles.length > 0) {
-            const currentPrice = currentCandles[currentCandles.length - 1].close;
-            
-            // Check if stop-loss should trigger based on current price
-            const shouldTrigger = this.ogzPrime.tradingBrain.position && (
-              (this.ogzPrime.tradingBrain.position.direction === 'buy' && currentPrice <= order.price) ||
-              (this.ogzPrime.tradingBrain.position.direction === 'sell' && currentPrice >= order.price)
-            );
-            
-            if (shouldTrigger) {
-              console.log('🛑 Executing protective stop loss');
-              await this.ogzPrime.tradingBrain.closePosition(currentPrice, order.reason);
-            } else {
-              console.log('ℹ️ Stop loss not triggered - price still safe');
-              // Re-queue the order for continued monitoring
-              this.orderQueue.push(order);
+        switch (order.type) {
+          case 'emergency_close':
+            if (this.ogzPrime.tradingBrain.isInPosition()) {
+              console.log('🚨 Executing queued emergency close');
+              this.ogzPrime.executeManualSell();
             }
-          }
+            break;
+            
+          case 'protective_stop':
+            console.log('🛡️ Protective stop order - monitoring implementation needed');
+            // TODO: Implement stop order logic
+            break;
+            
+          default:
+            console.log(`❓ Unknown order type: ${order.type}`);
         }
-        
       } catch (error) {
-        console.error('❌ Order execution failed:', error);
-        
-        // Re-queue critical orders with retry logic
-        if (order.priority === 'CRITICAL') {
-          order.retryCount = (order.retryCount || 0) + 1;
-          if (order.retryCount < 3) {
-            this.orderQueue.push(order);
-            console.log('🔄 Re-queued critical order for retry');
-          }
-        }
+        console.error(`❌ Failed to process order: ${error.message}`);
       }
-      
-      // Rate limiting between order executions to prevent overwhelming
-      await new Promise(resolve => setTimeout(resolve, 1000));
     }
   }
-  
+
   /**
-   * Handle critical failure when maximum reconnection attempts are reached
-   * Performs emergency position closure and system shutdown procedures
+   * Get health status summary
    */
-  handleCriticalFailure() {
-    console.error('💀 CRITICAL FAILURE - Manual intervention required');
+  getHealthStatus() {
+    const now = Date.now();
     
-    // Force close any open positions at market for capital protection
-    if (this.ogzPrime.tradingBrain.isInPosition()) {
-      console.log('🚨 EMERGENCY POSITION CLOSE');
-      
-      // Use last known price for emergency closure
-      const lastCandle = this.ogzPrime.timeframeData['1m']?.candles?.slice(-1)[0];
-      if (lastCandle) {
-        this.ogzPrime.tradingBrain.closePosition(
-          lastCandle.close,
-          'EMERGENCY CLOSE - Connection failure'
-        );
-      }
-    }
-    
-    // Send emergency notification via Discord if enabled
-    if (this.ogzPrime.config.enableDiscordNotifications) {
-      const { sendDiscordMessage } = require('../utils/discordNotifier');
-      sendDiscordMessage(
-        '🚨🚨🚨 CRITICAL FAILURE 🚨🚨🚨\n' +
-        'OGZ Prime lost connection and cannot recover!\n' +
-        'Manual intervention required!\n' +
-        `Balance: $${this.ogzPrime.tradingBrain.balance.toFixed(2)}\n` +
-        `Position: ${this.ogzPrime.tradingBrain.position ? 'EMERGENCY CLOSED' : 'None'}`
-      );
-    }
-    
-    // Shut down system safely to prevent further damage
-    this.ogzPrime.shutdown();
+    return {
+      dataFeed: {
+        ...this.connectionState.dataFeed,
+        staleTime: now - this.connectionState.dataFeed.lastData,
+        isStale: now - this.connectionState.dataFeed.lastData > this.config.dataStaleTimeout
+      },
+      guiWebSocket: this.connectionState.guiWebSocket,
+      controlWebSocket: this.connectionState.controlWebSocket,
+      hasPosition: this.ogzPrime.tradingBrain.isInPosition(),
+      queuedOrders: this.ordersQueue.length,
+      emergencyCloseEnabled: this.config.enableAutoClose
+    };
   }
-  
+
   /**
-   * Cleanup resources when shutting down connection resilience system
-   * Clears monitoring intervals and performs graceful shutdown
+   * Cleanup and stop monitoring
    */
   cleanup() {
-    // Clear heartbeat monitoring interval
-    if (this.heartbeatInterval) {
-      clearInterval(this.heartbeatInterval);
-    }
-    
-    console.log('🛡️ Connection Resilience System: SHUTDOWN');
+    this.stopMonitoring();
+    this.ordersQueue = [];
+    this.emergencyState = null;
+    console.log('🧹 ConnectionResilience cleaned up');
   }
 }
 
