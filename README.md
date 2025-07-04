@@ -1,4 +1,4 @@
-# OGZ Prime Valhalla Edition
+i# OGZ Prime Valhalla Edition
 
 **AI-Powered Trading Operating System**  
 _Modular. Memory-based. Designed in pressure. Forged for precision._

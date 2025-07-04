@@ -1,4 +1,4 @@
-// ===================================================================
+vvvaaaa// ===================================================================
 // PROFILE-SPECIFIC PATTERN MEMORY MANAGER
 // ===================================================================
 // Each trading profile gets its own pattern memory for optimal learning
