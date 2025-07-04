@@ -149,6 +149,9 @@ const QuantumCosmicTradingCore = require('./core/QuantumCosmicTradingCore');
 const TradingSafetyNet = require('./core/TradingSafetyNet');
 const PerformanceValidator = require('./core/PerformanceValidator');
 
+// 🧠 HITCH NLP SYSTEM - Natural Language Trading Interface
+const { HitchNLP, HitchLogger, HitchPlay } = require('./core/HitchNLP');
+
 // Check if SSL server is running and adjust ports accordingly
 function getWebSocketPorts(config) {
   // If SSL server is running, check if we should skip WebSocket init
@@ -808,6 +811,26 @@ class OGZPrimeV10 {
     console.log('📊 Performance Validator: ACTIVATED - 55% win rate minimum threshold');
     
     // ========================================================================
+    // 🧠 HITCH NLP SYSTEM INTEGRATION
+    // ========================================================================
+    
+    /**
+     * Hitch NLP - Natural Language Trading Interface
+     * @type {HitchNLP}
+     */
+    this.hitch = new HitchNLP(this);
+    
+    /**
+     * HitchPlay - Command replay and analysis system
+     * @type {HitchPlay}
+     */
+    this.hitchplay = new HitchPlay(this.hitch);
+    
+    console.log('🧠 HITCH NLP SYSTEM: ACTIVATED - Natural language trading interface ready');
+    console.log('🎤 Voice commands, text commands, and natural language processing online');
+    console.log('📊 Command impact tracking and replay analysis system operational');
+    
+    // ========================================================================
     // CONNECTION RESILIENCE SYSTEM INTEGRATION
     // ========================================================================
     
@@ -894,7 +917,8 @@ class OGZPrimeV10 {
     const servers = [
       { name: 'Data', port: this.config.dataWebSocketPort, var: 'dataServer' },
       { name: 'GUI', port: this.config.guiWebSocketPort, var: 'guiServer' },
-      { name: 'Control', port: this.config.controlWebSocketPort, var: 'controlServer' }
+      { name: 'Control', port: this.config.controlWebSocketPort, var: 'controlServer' },
+      { name: 'Hitch', port: 3008, var: 'hitchServer' }
     ];
     
     for (const server of servers) {
@@ -926,6 +950,9 @@ class OGZPrimeV10 {
                 if (server.name === 'Control') {
                   const command = JSON.parse(message);
                   this.handleControlCommand(command);
+                } else if (server.name === 'Hitch') {
+                  const hitchCommand = JSON.parse(message);
+                  this.handleHitchCommand(hitchCommand, ws);
                 }
               } catch (err) {
                 console.error(`❌ Error processing ${server.name} message:`, err.message);
@@ -1023,6 +1050,93 @@ class OGZPrimeV10 {
         
       default:
         console.log(`❓ Unknown command: ${command.action}`);
+    }
+  }
+  
+  /**
+   * Handle Hitch NLP commands received from the web interface
+   *
+   * @param {Object} command - Hitch command object from web interface
+   * @param {WebSocket} ws - WebSocket connection for responses
+   */
+  async handleHitchCommand(command, ws) {
+    console.log(`🧠 Received Hitch command: ${command.type}`);
+    this.logBotThought(`Processing Hitch NLP command: ${command.text || command.type}`, 'HITCH', 0.8);
+    
+    try {
+      switch (command.type) {
+        case 'voice_command':
+        case 'text_command':
+          // Process natural language command through Hitch NLP
+          const result = await this.hitch.processCommand(command.text || command.command, {
+            currentPrice: this.getCurrentPrice(),
+            balance: this.tradingBrain.balance,
+            inPosition: this.tradingBrain.isInPosition(),
+            position: this.tradingBrain.position
+          });
+          
+          // Send response back to web interface
+          ws.send(JSON.stringify({
+            type: 'command_result',
+            success: result.success,
+            message: result.message,
+            action: result.action,
+            confidence: result.confidence,
+            timestamp: Date.now()
+          }));
+          
+          console.log(`🧠 Hitch command processed: ${result.message}`);
+          break;
+          
+        case 'get_suggestions':
+          // Send command suggestions for the interface
+          const suggestions = this.hitch.getCommandSuggestions();
+          ws.send(JSON.stringify({
+            type: 'suggestions',
+            suggestions: suggestions,
+            timestamp: Date.now()
+          }));
+          break;
+          
+        case 'get_impact_history':
+          // Send recent command impact history
+          const history = this.hitch.getRecentImpacts();
+          ws.send(JSON.stringify({
+            type: 'impact_history',
+            history: history,
+            timestamp: Date.now()
+          }));
+          break;
+          
+        case 'get_status':
+          // Send Hitch system status
+          ws.send(JSON.stringify({
+            type: 'hitch_status',
+            status: {
+              active: true,
+              commandsProcessed: this.hitch.getCommandCount ? this.hitch.getCommandCount() : 0,
+              lastCommand: this.hitch.getLastCommand ? this.hitch.getLastCommand() : null,
+              impactTracking: true
+            },
+            timestamp: Date.now()
+          }));
+          break;
+          
+        default:
+          console.log(`❓ Unknown Hitch command: ${command.type}`);
+          ws.send(JSON.stringify({
+            type: 'error',
+            message: `Unknown command type: ${command.type}`,
+            timestamp: Date.now()
+          }));
+      }
+    } catch (error) {
+      console.error(`❌ Error processing Hitch command:`, error.message);
+      ws.send(JSON.stringify({
+        type: 'error',
+        message: `Error processing command: ${error.message}`,
+        timestamp: Date.now()
+      }));
     }
   }
   
@@ -2229,6 +2343,17 @@ processTick(tick) {
         active: true,
         analysisCount: this.quantumCosmicCore.getAnalysisCount ? this.quantumCosmicCore.getAnalysisCount() : 0,
         lastCosmicDecision: this.quantumCosmicCore.getLastDecision ? this.quantumCosmicCore.getLastDecision() : null
+      };
+    }
+    
+    // 🧠 Add Hitch NLP system status
+    if (this.hitch) {
+      data.status.hitchNLP = {
+        active: true,
+        commandsProcessed: this.hitch.getCommandCount ? this.hitch.getCommandCount() : 0,
+        lastCommand: this.hitch.getLastCommand ? this.hitch.getLastCommand() : null,
+        impactTracking: true,
+        webSocketPort: 3008
       };
     }
     

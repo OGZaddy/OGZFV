@@ -1,4 +1,4 @@
-vvvaaaa// ===================================================================
+// ===================================================================
 // PROFILE-SPECIFIC PATTERN MEMORY MANAGER
 // ===================================================================
 // Each trading profile gets its own pattern memory for optimal learning
@@ -142,6 +142,56 @@ class ProfilePatternManager {
       console.log(`   Win Rate: ${(patternData.performance.winRate * 100).toFixed(1)}%`);
       console.log(`   Avg Profit: ${(patternData.performance.avgProfit * 100).toFixed(2)}%`);
     }
+  }
+  
+  /**
+   * Check if the profile pattern manager is properly initialized
+   */
+  isInitialized() {
+    return this.currentProfile !== null && this.patterns instanceof Map;
+  }
+  
+  /**
+   * Evaluate pattern for trading decision (used by OGZPrimeV10.2.js)
+   */
+  async evaluatePattern(features, marketContext) {
+    if (!this.isInitialized()) {
+      return {
+        confidence: 0,
+        direction: 'hold',
+        reason: 'Profile pattern manager not initialized'
+      };
+    }
+    
+    const patternResult = this.getPatternConfidence(features);
+    
+    // Convert to expected format for OGZPrimeV10.2.js
+    let direction = 'hold';
+    let confidence = patternResult.confidence;
+    
+    // Determine direction based on pattern and market context
+    if (confidence > 0.6) {
+      // Use market context to determine direction
+      if (marketContext.rsi < 30 && marketContext.macd > 0) {
+        direction = 'buy';
+      } else if (marketContext.rsi > 70 && marketContext.macd < 0) {
+        direction = 'sell';
+      } else if (marketContext.trend === 'uptrend' && marketContext.rsi < 50) {
+        direction = 'buy';
+        confidence *= 0.8; // Reduce confidence for trend-only signals
+      } else if (marketContext.trend === 'downtrend' && marketContext.rsi > 50) {
+        direction = 'sell';
+        confidence *= 0.8; // Reduce confidence for trend-only signals
+      }
+    }
+    
+    return {
+      confidence: confidence,
+      direction: direction,
+      reason: patternResult.reason,
+      profileMatch: patternResult.profileMatch,
+      pattern: patternResult.pattern
+    };
   }
   
   /**

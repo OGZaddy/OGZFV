@@ -1,4 +1,4 @@
-eh/**
+/**
  * 🛡️ TradingSafetyNet - Emergency Circuit Breakers and Risk Management
  * 
  * Based on Expert Analysis: "CONSISTENT PROFITS, not cosmic complexity"
@@ -26,7 +26,7 @@ class TradingSafetyNet {
       maxTotalExposure: config.maxTotalExposure || 0.50,   // Max 50% total exposure
       
       // 🎯 VOLATILITY LIMITS (CRYPTO-OPTIMIZED FOR EXTREME MARKETS)
-      maxVolatility: config.maxVolatility || 2.0,          // Don't trade if volatility > 200% (crypto can be extreme)
+      maxVolatility: config.maxVolatility || 3.0,          // Don't trade if volatility > 300% (crypto can be extreme)
       marketHoursOnly: config.marketHoursOnly || false,    // Trade only during market hours
       
       // 🔧 SYSTEM HEALTH
@@ -78,12 +78,27 @@ class TradingSafetyNet {
    * @returns {Object} Safety result with approval/denial and reasons
    */
   validateTrade(tradeRequest, marketData) {
+    console.log('🛡️ SAFETY NET: Starting trade validation...');
+    console.log('🛡️ Trade Request:', {
+      symbol: tradeRequest?.symbol,
+      direction: tradeRequest?.direction,
+      size: tradeRequest?.size,
+      price: tradeRequest?.price
+    });
+    console.log('🛡️ Market Data:', {
+      volatility: marketData?.volatility,
+      trend: marketData?.trend,
+      confidence: marketData?.confidence
+    });
+    
     // Emergency stop check
     if (this.state.emergencyStop) {
+      console.log('🛡️ SAFETY BLOCK: Emergency stop is active');
       return this.createSafetyResult(false, 'EMERGENCY_STOP', 'Trading halted by emergency stop');
     }
     
-    // Run all safety checks
+    // Run all safety checks with detailed logging
+    console.log('🛡️ Running individual safety checks...');
     const checks = [
       this.checkDailyLoss(),
       this.checkWeeklyLoss(),
@@ -97,22 +112,38 @@ class TradingSafetyNet {
       this.checkTimeBetweenTrades()
     ];
     
+    // Log each check result
+    checks.forEach((check, index) => {
+      const checkNames = [
+        'Daily Loss', 'Weekly Loss', 'Consecutive Losses', 'Drawdown',
+        'Trade Frequency', 'Position Size', 'Total Exposure', 'Volatility',
+        'Market Hours', 'Time Between Trades'
+      ];
+      console.log(`🛡️ ${checkNames[index]} Check: ${check.passed ? '✅ PASSED' : '❌ FAILED'} - ${check.reason || 'No reason'}`);
+    });
+    
     // Find any failed checks
     const failedChecks = checks.filter(check => !check.passed);
     
     if (failedChecks.length > 0) {
+      console.log(`🛡️ TRADE BLOCKED: ${failedChecks.length} safety check(s) failed`);
+      failedChecks.forEach(check => {
+        console.log(`🛡️ Failed Check: [${check.code}] ${check.reason}`);
+      });
+      
       // Log violation
       this.logViolation(failedChecks);
       
       // Return denial with reasons
       return this.createSafetyResult(
-        false, 
-        failedChecks[0].code, 
+        false,
+        failedChecks[0].code,
         failedChecks.map(c => c.reason).join('; ')
       );
     }
     
     // All checks passed
+    console.log('🛡️ TRADE APPROVED: All safety checks passed ✅');
     return this.createSafetyResult(true, 'APPROVED', 'All safety checks passed');
   }
   

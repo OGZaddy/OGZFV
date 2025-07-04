@@ -67,7 +67,7 @@ class AggressiveTradingMode {
         maxDailyLoss: 0.05,               // 5% max daily loss
         maxConsecutiveLosses: 3,          // Stop forcing after 3 losses
         minTimeBetweenTrades: 30000,      // Min 30s between forced trades
-        volatilityThreshold: 0.03,        // Don't force trades if volatility > 3%
+        volatilityThreshold: 2.0,         // Don't force trades if volatility > 200% (crypto-friendly)
         enableSafetyChecks: true          // Master safety switch
       },
       

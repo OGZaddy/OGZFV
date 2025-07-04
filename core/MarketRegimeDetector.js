@@ -1,10 +1,17 @@
-// MarketRegimeDetector.js - Identifies market conditions and adapts strategy
-// This is what separates amateur bots from PROFESSIONAL SYSTEMS
+// ===================================================================
+// ULTIMATE MARKET REGIME DETECTOR - THE MARKET ORACLE! 🔮💎
+// ===================================================================
+// Combines TECHNICAL + CORRELATION + MACRO analysis for MAXIMUM EDGE
+// This is what separates AMATEUR bots from HEDGE FUND SYSTEMS!
 
-class MarketRegimeDetector {
+const EventEmitter = require('events');
+
+class MarketRegimeDetector extends EventEmitter {
   constructor(config = {}) {
+    super();
+    
     this.config = {
-      // Regime detection parameters
+      // Technical regime detection parameters
       lookbackPeriod: 100,          // Candles to analyze
       updateFrequency: 10,          // Update regime every N candles
       
@@ -12,7 +19,7 @@ class MarketRegimeDetector {
       lowVolThreshold: 0.5,         // Below = quiet market
       highVolThreshold: 2.0,        // Above = volatile market
       
-      // Trend strength thresholds  
+      // Trend strength thresholds
       strongTrendThreshold: 0.7,    // ADX > 70 = strong trend
       weakTrendThreshold: 0.3,      // ADX < 30 = ranging
       
@@ -20,39 +27,95 @@ class MarketRegimeDetector {
       volumeMALength: 20,           // Volume moving average
       highVolumeMultiple: 1.5,      // 1.5x average = high volume
       
+      // Correlation-based regime detection
+      correlationAssets: config.correlationAssets || [
+        'ETH', 'BNB', 'SOL', 'MATIC', 'AVAX',
+        'DXY', 'SPX', 'GOLD', 'VIX'
+      ],
+      riskOnThreshold: 0.6,         // Crypto correlation for risk-on
+      flightToQualityThreshold: -0.5, // DXY inverse correlation
+      
+      // Macro regime indicators
+      crashRSIThreshold: 20,        // RSI below 20 = crash conditions
+      panicVolumeMultiple: 3.0,     // 3x volume = panic
+      
+      // Advanced features
+      enableCorrelationAnalysis: config.enableCorrelationAnalysis !== false,
+      enableMacroAnalysis: config.enableMacroAnalysis !== false,
+      enableAdaptiveParameters: config.enableAdaptiveParameters !== false,
+      
       ...config
     };
     
-    // Regime states
+    // ENHANCED REGIME STATES - Best of all systems combined!
     this.regimes = {
+      // Technical regimes
       TRENDING_UP: 'trending_up',
       TRENDING_DOWN: 'trending_down',
       RANGING: 'ranging',
       VOLATILE: 'volatile',
       QUIET: 'quiet',
       BREAKOUT: 'breakout',
-      BREAKDOWN: 'breakdown'
+      BREAKDOWN: 'breakdown',
+      
+      // Macro regimes (from CorrelationAnalyzer)
+      RISK_ON: 'risk_on',
+      RISK_OFF: 'risk_off',
+      DECORRELATED: 'decorrelated',
+      
+      // Crisis regimes (from MultiDirectionalTrader)
+      CRASH: 'crash',
+      RECOVERY: 'recovery',
+      EUPHORIA: 'euphoria'
     };
     
-    // Current state
+    // Enhanced state tracking
     this.currentRegime = this.regimes.RANGING;
     this.previousRegime = this.regimes.RANGING;
     this.regimeStrength = 0;
     this.lastUpdate = 0;
     this.updateCount = 0;
     
-    // Metrics
+    // Multi-dimensional metrics
     this.metrics = {
+      // Technical metrics
       volatility: 0,
       trendStrength: 0,
       trendDirection: 0,
       volumeRatio: 1,
       pricePosition: 0.5, // 0 = bottom of range, 1 = top
-      momentum: 0
+      momentum: 0,
+      
+      // Correlation metrics
+      correlationStrength: 0,
+      riskOnIndicator: 0,
+      flightToQuality: 0,
+      cryptoCorrelation: 0,
+      macroCorrelation: 0,
+      
+      // Macro metrics
+      marketStress: 0,
+      liquidityConditions: 1,
+      sentimentScore: 0.5,
+      fearGreedIndex: 50
     };
     
-    // Regime-specific parameters
+    // Correlation data storage (from CorrelationAnalyzer integration)
+    this.correlationData = new Map();
+    this.priceData = new Map();
+    this.returns = new Map();
+    
+    // Regime history for pattern recognition
+    this.regimeHistory = [];
+    this.regimeTransitions = new Map();
+    
+    // Enhanced regime-specific parameters
     this.regimeParameters = this.initializeRegimeParameters();
+    
+    console.log('🔮 ULTIMATE Market Regime Detector initialized');
+    console.log(`📊 Tracking ${this.config.correlationAssets.length} correlation assets`);
+    console.log(`🧠 Correlation Analysis: ${this.config.enableCorrelationAnalysis ? 'ENABLED' : 'DISABLED'}`);
+    console.log(`🌍 Macro Analysis: ${this.config.enableMacroAnalysis ? 'ENABLED' : 'DISABLED'}`);
   }
   
   initializeRegimeParameters() {

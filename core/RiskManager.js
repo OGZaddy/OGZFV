@@ -368,15 +368,24 @@ class RiskManager {
    * @returns {number} - Calculated position size in dollars
    */
   calculatePositionSize(accountBalance, currentPrice, marketConditions = {}) {
+    console.log('🛡️ RISK MANAGER: Starting position size calculation...');
+    console.log('🛡️ Input Parameters:', {
+      accountBalance: accountBalance,
+      currentPrice: currentPrice,
+      marketConditions: marketConditions
+    });
+    
     // ====================================================================
     // INPUT VALIDATION
     // ====================================================================
     if (!accountBalance || accountBalance <= 0) {
+      console.log('🛡️ RISK BLOCK: Invalid account balance provided');
       this.log('Invalid account balance provided', 'error');
       return 0;
     }
     
     if (!currentPrice || currentPrice <= 0) {
+      console.log('🛡️ RISK BLOCK: Invalid current price provided');
       this.log('Invalid current price provided', 'error');
       return 0;
     }
@@ -387,35 +396,53 @@ class RiskManager {
     // ====================================================================
     // SAFETY CHECKS - HARD STOPS
     // ====================================================================
+    console.log('🛡️ Running risk manager safety checks...');
+    console.log('🛡️ Current Risk State:', {
+      currentDrawdown: this.state.currentDrawdown,
+      maxDrawdownPercent: this.config.maxDrawdownPercent,
+      dailyLimitBreached: this.state.dailyStats.breachedLimit,
+      weeklyLimitBreached: this.state.weeklyStats.breachedLimit,
+      monthlyLimitBreached: this.state.monthlyStats.breachedLimit,
+      recoveryMode: this.state.recoveryMode,
+      consecutiveLosses: this.state.consecutiveLosses,
+      consecutiveWins: this.state.consecutiveWins
+    });
     
     // Check if trading is disabled due to excessive drawdown
     if (this.state.currentDrawdown >= this.config.maxDrawdownPercent) {
+      console.log(`🛡️ RISK BLOCK: Max drawdown exceeded (${this.state.currentDrawdown.toFixed(2)}% >= ${this.config.maxDrawdownPercent}%)`);
       this.log(`Trading DISABLED: Max drawdown (${this.config.maxDrawdownPercent}%) exceeded`, 'error');
       return 0;
     }
     
     // Check daily loss limits (FIXED: Proper UTC-based period tracking)
     if (this.state.dailyStats.breachedLimit) {
+      console.log('🛡️ RISK BLOCK: Daily loss limit exceeded');
       this.log('Trading DISABLED: Daily loss limit exceeded', 'warning');
       return 0;
     }
     
     // Check weekly loss limits (FIXED: Proper UTC-based period tracking)
     if (this.state.weeklyStats.breachedLimit) {
+      console.log('🛡️ RISK BLOCK: Weekly loss limit exceeded');
       this.log('Trading DISABLED: Weekly loss limit exceeded', 'warning');
       return 0;
     }
     
     // Check monthly loss limits (FIXED: Proper UTC-based period tracking)
     if (this.state.monthlyStats.breachedLimit) {
+      console.log('🛡️ RISK BLOCK: Monthly loss limit exceeded');
       this.log('Trading DISABLED: Monthly loss limit exceeded', 'warning');
       return 0;
     }
+    
+    console.log('🛡️ All hard stops passed ✅');
     
     // ====================================================================
     // BASE POSITION SIZE CALCULATION
     // ====================================================================
     let riskPercent = this.config.baseRiskPercent;
+    console.log(`🛡️ Starting with base risk: ${riskPercent}%`);
     
     // ====================================================================
     // RECOVERY MODE ADJUSTMENTS (FIXED: Added backoff mechanism)
@@ -505,13 +532,21 @@ class RiskManager {
     // ====================================================================
     // FINAL SIZE CALCULATION AND LIMITS
     // ====================================================================
+    console.log(`🛡️ Final risk percent before limits: ${riskPercent.toFixed(2)}%`);
     
     // Apply minimum and maximum limits
+    const originalRiskPercent = riskPercent;
     riskPercent = Math.max(this.config.minPositionSizePercent, riskPercent);
     riskPercent = Math.min(this.config.maxPositionSizePercent, riskPercent);
     
+    console.log(`🛡️ Risk percent after limits: ${riskPercent.toFixed(2)}% (min: ${this.config.minPositionSizePercent}%, max: ${this.config.maxPositionSizePercent}%)`);
+    if (originalRiskPercent !== riskPercent) {
+      console.log(`🛡️ Risk percent was adjusted from ${originalRiskPercent.toFixed(2)}% to ${riskPercent.toFixed(2)}%`);
+    }
+    
     // Calculate dollar amount
     const positionSize = (accountBalance * riskPercent) / 100;
+    console.log(`🛡️ Calculated position size: $${positionSize.toFixed(2)} (${riskPercent.toFixed(2)}% of $${accountBalance.toFixed(2)})`);
     
     // ====================================================================
     // FINAL VALIDATION
@@ -521,13 +556,23 @@ class RiskManager {
     const availableBalance = accountBalance * 0.95; // Leave 5% buffer
     const finalSize = Math.min(positionSize, availableBalance);
     
+    console.log(`🛡️ Available balance: $${availableBalance.toFixed(2)} (95% of account)`);
+    console.log(`🛡️ Final position size: $${finalSize.toFixed(2)}`);
+    
     // ====================================================================
     // LOGGING AND REPORTING
     // ====================================================================
     this.log(`Position size calculated: $${finalSize.toFixed(2)} (${riskPercent.toFixed(2)}% of account)`, 'info');
     
     if (finalSize !== positionSize) {
+      console.log(`🛡️ Position size was limited by available balance from $${positionSize.toFixed(2)} to $${finalSize.toFixed(2)}`);
       this.log(`Position size limited by available balance`, 'warning');
+    }
+    
+    if (finalSize === 0) {
+      console.log('🛡️ RISK MANAGER RETURNING 0 POSITION SIZE - THIS WILL BLOCK TRADING');
+    } else {
+      console.log(`🛡️ RISK MANAGER APPROVED: Position size $${finalSize.toFixed(2)} ✅`);
     }
     
     return finalSize;

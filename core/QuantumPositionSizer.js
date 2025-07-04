@@ -1,536 +1,335 @@
-/**
- * @fileoverview Quantum Position Sizer - Advanced Position Sizing with Market State Analysis
- * @description Revolutionary position sizing that adapts to market quantum states using
- *              Kelly Criterion, Fibonacci ratios, and risk management integration
- * @version 1.0.0
- * @author OGZ Prime Development Team
- * 
- * INTEGRATION WITH OGZPRIME:
- * This module replaces simple percentage-based position sizing with an advanced
- * quantum-inspired algorithm that maximizes returns while protecting capital.
- * 
- * Place this file in: ./core/QuantumPositionSizer.js
- */
+// ===================================================================
+// FIXED KELLY CRITERION - NO QUANTUM BS, JUST MATH THAT WORKS!
+// ===================================================================
 
-const EventEmitter = require('events');
-
-/**
- * Quantum Position Sizer
- * Uses advanced mathematical models to calculate optimal position sizes
- */
-class QuantumPositionSizer extends EventEmitter {
+class FixedQuantumPositionSizer {
   constructor(riskManager, config = {}) {
-    super();
-    
     this.riskManager = riskManager;
     
     this.config = {
-      quantumThreshold: config.quantumThreshold || 0.382,     // Fibonacci golden ratio
-      kellyMultiplier: config.kellyMultiplier || 0.25,        // Conservative Kelly (25%)
-      minPositionPercent: config.minPositionPercent || 0.01,  // Minimum 1% position
-      maxPositionPercent: config.maxPositionPercent || 0.25,  // Maximum 25% position
-      volatilityWindow: config.volatilityWindow || 20,        // Candles for volatility calc
-      confidenceBoost: config.confidenceBoost || 1.5,         // Confidence multiplier
-      fibonacciLevels: config.fibonacciLevels || [
-        0.236, 0.382, 0.5, 0.618, 0.786, 1.0
-      ],
+      maxPositionSize: 0.25,      // Maximum 25% of balance
+      minPositionSize: 0.001,     // Minimum 0.1% of balance
+      defaultWinRate: 0.55,       // Default 55% win rate
+      defaultRiskReward: 1.5,     // Default 1.5:1 risk/reward
+      kellySafetyFactor: 0.25,    // Use 25% of Kelly suggestion (Kelly/4)
       ...config
     };
-
-    // Market state tracking
-    this.marketStates = new Map();
-    this.stateHistory = [];
-    this.maxHistorySize = 100;
     
-    // Performance tracking
-    this.sizingStats = {
-      calculations: 0,
-      averageSize: 0,
-      largestPosition: 0,
-      smallestPosition: Infinity,
-      quantumBoosts: 0
+    // Track historical performance for better Kelly
+    this.tradeHistory = [];
+    this.performanceStats = {
+      winRate: this.config.defaultWinRate,
+      avgWin: 0.02,    // 2% average win
+      avgLoss: 0.01,   // 1% average loss
+      totalTrades: 0
     };
-
-    console.log('⚛️ Quantum Position Sizer initialized with config:', this.config);
+    
+    console.log('💰 Kelly Criterion Position Sizer initialized (WITHOUT quantum nonsense!)');
   }
-
+  
   /**
    * Set RiskManager reference for integration
-   * @param {RiskManager} riskManager - RiskManager instance
    */
   setRiskManager(riskManager) {
     this.riskManager = riskManager;
-    console.log('⚛️ RiskManager linked to Quantum Position Sizer');
+    console.log('💰 RiskManager linked to Kelly Position Sizer');
   }
-
+  
   /**
-   * Validate RiskManager integration
-   * @returns {boolean} True if RiskManager is properly integrated
+   * Calculate position size using REAL Kelly Criterion
    */
-  validateRiskManager() {
-    if (!this.riskManager) {
-      console.log('⚠️ RiskManager not set in QuantumPositionSizer');
-      return false;
+  calculateOptimalPosition(price, volatility, confidence, balance, marketData = {}) {
+    console.log('🎲 Calculating Kelly position size...');
+    
+    // Build analysis object from inputs
+    const analysis = {
+      confidence: confidence || 0.5,
+      decision: marketData.signal > 0 ? 'buy' : 'sell',
+      patternStrength: confidence || 0.5,
+      marketRegime: this.determineMarketRegime(volatility, marketData)
+    };
+    
+    // Step 1: Get win probability from analysis
+    const winProbability = this.calculateWinProbability(analysis);
+    
+    // Step 2: Get risk/reward ratio
+    const riskReward = this.calculateRiskReward(analysis, { volatility, ...marketData });
+    
+    // Step 3: Calculate Kelly Fraction
+    const kellyFraction = this.calculateKellyFraction(winProbability, riskReward);
+    
+    // Step 4: Apply safety factors and limits
+    const safePosition = this.applySafetyLimits(kellyFraction, balance);
+    
+    // Step 5: Final position size in dollars
+    const positionValue = balance * safePosition;
+    const positionSize = positionValue / price;
+    
+    console.log(`
+💰 KELLY CALCULATION:
+├─ Balance: $${balance.toFixed(2)}
+├─ Win Probability: ${(winProbability * 100).toFixed(1)}%
+├─ Risk/Reward: ${riskReward.toFixed(2)}:1
+├─ Kelly Fraction: ${(kellyFraction * 100).toFixed(2)}%
+├─ Safe Fraction: ${(safePosition * 100).toFixed(2)}%
+└─ Position Size: $${positionValue.toFixed(2)} (${positionSize.toFixed(6)} shares)
+    `);
+    
+    // CRITICAL: Never return 0!
+    if (positionSize === 0 || isNaN(positionSize)) {
+      console.log('⚠️ Kelly returned 0, using minimum position');
+      const minPosition = balance * this.config.minPositionSize / price;
+      return {
+        size: minPosition,
+        value: minPosition * price,
+        kellyScore: this.config.minPositionSize,
+        optimalShares: minPosition,
+        positionSizePercent: this.config.minPositionSize,
+        confidence: 0.3,
+        method: 'kelly_fallback'
+      };
     }
     
-    if (typeof this.riskManager.getMaxPositionSize !== 'function') {
-      console.log('⚠️ RiskManager missing getMaxPositionSize method');
-      return false;
-    }
-    
-    return true;
-  }
-
-  /**
-   * Calculate optimal position size using quantum market analysis
-   *
-   * @param {number} price - Current market price
-   * @param {number} volatility - Current market volatility (0-1)
-   * @param {number} patternStrength - Pattern confidence (0-1)
-   * @param {number} balance - Current account balance
-   * @param {Object} marketData - Additional market data
-   * @returns {Object} Position sizing recommendation
-   */
-  calculateOptimalPosition(price, volatility, patternStrength, balance, marketData = {}) {
-    try {
-      // Calculate market quantum state
-      const marketQuantum = this.calculateMarketQuantum(volatility, patternStrength, marketData);
-      
-      // Calculate base Kelly fraction
-      const kellyFraction = this.calculateKellyFraction(patternStrength, marketData.winRate);
-      
-      // Apply quantum adjustment to Kelly
-      const quantumKelly = this.applyQuantumAdjustment(kellyFraction, marketQuantum);
-      
-      // Get risk-adjusted maximum from RiskManager with bulletproof fallback
-      let riskLimit;
-      try {
-        // Triple validation to ensure RiskManager is properly integrated
-        if (this.riskManager &&
-            this.riskManager !== null &&
-            typeof this.riskManager === 'object' &&
-            typeof this.riskManager.getMaxPositionSize === 'function') {
-          
-          riskLimit = this.riskManager.getMaxPositionSize(balance);
-          if (typeof riskLimit === 'number' && !isNaN(riskLimit)) {
-            console.log(`⚛️ RiskManager provided max position limit: $${riskLimit.toFixed(2)}`);
-          } else {
-            console.log(`⚠️ RiskManager returned invalid value: ${riskLimit}, using fallback`);
-            throw new Error('Invalid riskLimit from RiskManager');
-          }
-        } else {
-          throw new Error('RiskManager not properly integrated or missing getMaxPositionSize method');
-        }
-      } catch (error) {
-        // Comprehensive fallback calculation
-        console.log(`⚠️ RiskManager integration failed (${error.message}), using safe fallback calculation`);
-        riskLimit = balance * this.config.maxPositionPercent; // Direct percentage without /100 division
-        if (typeof riskLimit === 'number' && !isNaN(riskLimit)) {
-          console.log(`⚛️ Fallback risk limit: $${riskLimit.toFixed(2)} (${(this.config.maxPositionPercent * 100).toFixed(1)}% of balance)`);
-        } else {
-          console.log(`⚠️ Fallback calculation failed, using emergency default`);
-          riskLimit = 100; // Emergency fallback value
-        }
+    return {
+      size: positionSize,
+      value: positionValue,
+      kellyScore: safePosition,
+      optimalShares: positionSize,
+      positionSizePercent: safePosition,
+      confidence: analysis.confidence,
+      method: 'kelly',
+      kelly: {
+        base: kellyFraction,
+        adjusted: safePosition,
+        multiplier: this.config.kellySafetyFactor
       }
-      
-      // Validate all numeric values before calculation
-      const validBalance = typeof balance === 'number' && !isNaN(balance) && balance > 0 ? balance : 1000;
-      const validPrice = typeof price === 'number' && !isNaN(price) && price > 0 ? price : 50000;
-      const validQuantumKelly = typeof quantumKelly === 'number' && !isNaN(quantumKelly) ? quantumKelly : 0.02;
-      const validRiskLimit = typeof riskLimit === 'number' && !isNaN(riskLimit) && riskLimit > 0 ? riskLimit : validBalance * 0.1;
-      
-      console.log(`⚛️ Quantum sizing inputs validated: balance=${validBalance.toFixed(2)}, price=${validPrice.toFixed(2)}, kelly=${validQuantumKelly.toFixed(4)}, riskLimit=${validRiskLimit.toFixed(2)}`);
-      
-      // Calculate final position size with validated inputs
-      const positionValue = Math.min(
-        validQuantumKelly * validBalance,
-        validRiskLimit,
-        validBalance * this.config.maxPositionPercent
-      );
-      
-      // Ensure minimum position size
-      const finalValue = Math.max(
-        positionValue,
-        validBalance * this.config.minPositionPercent
-      );
-      
-      const positionSize = finalValue / validPrice;
-      
-      // 🔧 BULLETPROOF VALIDATION: Ensure all return values are valid numbers
-      const validPositionSize = typeof positionSize === 'number' && !isNaN(positionSize) && isFinite(positionSize) ? positionSize : 0.001;
-      const validFinalValue = typeof finalValue === 'number' && !isNaN(finalValue) && isFinite(finalValue) ? finalValue : validBalance * 0.01;
-      const validQuantumKellyReturn = typeof quantumKelly === 'number' && !isNaN(quantumKelly) && isFinite(quantumKelly) ? quantumKelly : 0.02;
-      const validKellyFractionReturn = typeof kellyFraction === 'number' && !isNaN(kellyFraction) && isFinite(kellyFraction) ? kellyFraction : 0.02;
-      
-      // Calculate position risk metrics with validated values
-      const riskMetrics = this.calculateRiskMetrics(
-        validFinalValue,
-        validBalance,
-        typeof volatility === 'number' && !isNaN(volatility) ? volatility : 0.02,
-        marketQuantum
-      );
-      
-      // Update statistics with validated values
-      this.updateStatistics(validPositionSize, validFinalValue, marketQuantum);
-      
-      // Emit position sizing event
-      this.emit('position_calculated', {
-        size: validPositionSize,
-        value: validFinalValue,
-        quantum: marketQuantum,
-        kelly: validQuantumKellyReturn,
-        risk: riskMetrics
-      });
-      
-      console.log(`⚛️ Quantum Position Size: ${validPositionSize.toFixed(6)} shares ($${validFinalValue.toFixed(2)} value)`);
-      console.log(`   Kelly Score: ${validQuantumKellyReturn.toFixed(4)} | Quantum State: ${marketQuantum.isQuantum ? 'ACTIVE' : 'NORMAL'}`);
-      
-      return {
-        optimalShares: validPositionSize,
-        positionSizePercent: validFinalValue / validBalance,
-        kellyScore: validQuantumKellyReturn,
-        quantumState: marketQuantum.isQuantum ? 'ACTIVE' : 'NORMAL',
-        size: validPositionSize,
-        value: validFinalValue,
-        confidence: marketQuantum.confidence || 0.5,
-        riskLevel: riskMetrics.level || 'medium',
-        quantum: marketQuantum,
-        kelly: {
-          base: validKellyFractionReturn,
-          adjusted: validQuantumKellyReturn,
-          multiplier: this.config.kellyMultiplier
-        },
-        risk: riskMetrics,
-        recommendation: this.generateRecommendation(marketQuantum, riskMetrics)
-      };
-      
-    } catch (error) {
-      console.error('❌ Quantum position sizing error:', error);
-      this.emit('error', error);
-      
-      // Fallback to safe position size
-      const safeSize = (balance * 0.02) / price;
-      return {
-        size: safeSize,
-        value: safeSize * price,
-        confidence: 0.1,
-        riskLevel: 'low',
-        error: error.message
-      };
-    }
+    };
   }
-
+  
   /**
-   * Calculate market quantum state
-   * Combines multiple market factors into a quantum probability
+   * Calculate win probability from analysis
    */
-  calculateMarketQuantum(volatility, patternStrength, marketData = {}) {
-    // Stability factor (inverse of volatility)
-    const stability = 1 / (1 + volatility * 2);
+  calculateWinProbability(analysis) {
+    // Start with historical win rate
+    let winProb = this.performanceStats.winRate;
     
-    // Momentum factor from pattern strength
-    const momentum = patternStrength;
+    // Adjust based on analysis confidence
+    if (analysis.confidence) {
+      // Blend historical with current confidence
+      winProb = (winProb * 0.7) + (analysis.confidence * 0.3);
+    }
     
-    // Calculate trend alignment
-    const trendAlignment = this.calculateTrendAlignment(marketData);
+    // Adjust for specific patterns
+    if (analysis.patternStrength) {
+      winProb *= (1 + analysis.patternStrength * 0.1);
+    }
     
-    // Volume confirmation
-    const volumeConfirmation = this.calculateVolumeConfirmation(marketData);
+    // Market regime adjustment
+    if (analysis.marketRegime === 'trending' && analysis.decision === 'buy') {
+      winProb *= 1.1; // 10% boost in trending markets
+    } else if (analysis.marketRegime === 'choppy') {
+      winProb *= 0.9; // 10% reduction in choppy markets
+    }
     
-    // Fibonacci resonance
-    const fibResonance = this.calculateFibonacciResonance(marketData.price, marketData.levels);
+    // Ensure valid probability
+    return Math.max(0.3, Math.min(0.8, winProb));
+  }
+  
+  /**
+   * Calculate risk/reward ratio
+   */
+  calculateRiskReward(analysis, marketConditions) {
+    // Base risk/reward from historical data
+    let riskReward = this.performanceStats.avgWin / this.performanceStats.avgLoss;
     
-    // Combine factors using quantum superposition formula
-    const quantumValue = (
-      stability * 0.25 +
-      momentum * 0.35 +
-      trendAlignment * 0.20 +
-      volumeConfirmation * 0.10 +
-      fibResonance * 0.10
+    // If no history, use default
+    if (isNaN(riskReward) || riskReward === 0) {
+      riskReward = this.config.defaultRiskReward;
+    }
+    
+    // Adjust for volatility
+    const volatility = marketConditions.volatility || 0.01;
+    if (volatility > 0.02) {
+      riskReward *= 1.2; // Higher volatility = potentially bigger moves
+    } else if (volatility < 0.005) {
+      riskReward *= 0.8; // Low volatility = smaller moves
+    }
+    
+    // Adjust for time of day (if provided)
+    const hour = new Date().getHours();
+    if (hour >= 9 && hour <= 11) {
+      riskReward *= 1.1; // Better risk/reward during active hours
+    }
+    
+    return Math.max(0.5, Math.min(3.0, riskReward));
+  }
+  
+  /**
+   * The ACTUAL Kelly Criterion formula
+   */
+  calculateKellyFraction(winProbability, riskReward) {
+    // Kelly Formula: f = (p * b - q) / b
+    // Where:
+    // f = fraction of capital to bet
+    // p = probability of winning
+    // b = ratio of win to loss (risk/reward)
+    // q = probability of losing (1 - p)
+    
+    const p = winProbability;
+    const q = 1 - winProbability;
+    const b = riskReward;
+    
+    // The classic Kelly formula
+    const kellyFraction = (p * b - q) / b;
+    
+    // Alternative Kelly formula for verification
+    const kellyAlt = p - (q / b);
+    
+    console.log(`🎲 Kelly Math: (${p.toFixed(3)} * ${b.toFixed(2)} - ${q.toFixed(3)}) / ${b.toFixed(2)} = ${kellyFraction.toFixed(4)}`);
+    
+    // Use the average of both formulas for robustness
+    const finalKelly = (kellyFraction + kellyAlt) / 2;
+    
+    // Kelly can suggest negative values (don't bet) or huge values (bet everything)
+    // We need to be reasonable here
+    return Math.max(0, finalKelly);
+  }
+  
+  /**
+   * Apply safety limits to Kelly suggestion
+   */
+  applySafetyLimits(kellyFraction, balance) {
+    // Step 1: Apply Kelly safety factor (Kelly/4 is common)
+    let safePosition = kellyFraction * this.config.kellySafetyFactor;
+    
+    // Step 2: Apply maximum position size limit
+    safePosition = Math.min(safePosition, this.config.maxPositionSize);
+    
+    // Step 3: Apply minimum position size
+    safePosition = Math.max(safePosition, this.config.minPositionSize);
+    
+    // Step 4: Reduce size if in drawdown
+    const drawdown = this.calculateDrawdown();
+    if (drawdown > 0.05) { // 5% drawdown
+      safePosition *= (1 - drawdown); // Reduce position by drawdown percentage
+    }
+    
+    // Step 5: Account for existing positions (if any)
+    // This prevents over-leveraging
+    const existingExposure = this.getExistingExposure();
+    if (existingExposure > 0) {
+      const remainingCapacity = this.config.maxPositionSize - existingExposure;
+      safePosition = Math.min(safePosition, remainingCapacity);
+    }
+    
+    return safePosition;
+  }
+  
+  /**
+   * Update performance stats after trade
+   */
+  updatePerformance(trade) {
+    this.tradeHistory.push(trade);
+    
+    // Keep only last 100 trades for calculations
+    if (this.tradeHistory.length > 100) {
+      this.tradeHistory.shift();
+    }
+    
+    // Recalculate statistics
+    const wins = this.tradeHistory.filter(t => t.profit > 0);
+    const losses = this.tradeHistory.filter(t => t.profit <= 0);
+    
+    this.performanceStats.totalTrades = this.tradeHistory.length;
+    this.performanceStats.winRate = wins.length / this.tradeHistory.length;
+    
+    if (wins.length > 0) {
+      this.performanceStats.avgWin = wins.reduce((sum, t) => sum + t.profit, 0) / wins.length;
+    }
+    
+    if (losses.length > 0) {
+      this.performanceStats.avgLoss = Math.abs(losses.reduce((sum, t) => sum + t.profit, 0) / losses.length);
+    }
+    
+    console.log(`📊 Updated performance: Win Rate ${(this.performanceStats.winRate * 100).toFixed(1)}%`);
+  }
+  
+  /**
+   * Calculate current drawdown
+   */
+  calculateDrawdown() {
+    if (this.tradeHistory.length === 0) return 0;
+    
+    let peak = 0;
+    let currentValue = 0;
+    let maxDrawdown = 0;
+    
+    for (const trade of this.tradeHistory) {
+      currentValue += trade.profit;
+      peak = Math.max(peak, currentValue);
+      const drawdown = peak > 0 ? (peak - currentValue) / peak : 0;
+      maxDrawdown = Math.max(maxDrawdown, drawdown);
+    }
+    
+    return maxDrawdown;
+  }
+  
+  /**
+   * Get existing position exposure
+   */
+  getExistingExposure() {
+    // This would check actual open positions
+    // For now, return 0 (no positions)
+    return 0;
+  }
+  
+  /**
+   * Emergency position size (when all else fails)
+   */
+  getEmergencyPositionSize(balance) {
+    // Simple 1% of balance
+    return balance * 0.01;
+  }
+  
+  /**
+   * Determine market regime from conditions
+   */
+  determineMarketRegime(volatility, marketData) {
+    if (!volatility) return 'normal';
+    
+    if (volatility > 0.03) return 'choppy';
+    if (volatility < 0.005) return 'stable';
+    if (marketData.trend === 'uptrend' || marketData.trend === 'downtrend') return 'trending';
+    
+    return 'normal';
+  }
+  
+  /**
+   * Legacy method compatibility - main calculation entry point
+   */
+  async calculate(params) {
+    const { price, confidence, marketData, balance } = params;
+    
+    // Use the FIXED Kelly calculator
+    const result = this.calculateOptimalPosition(
+      price, 
+      marketData.volatility, 
+      confidence, 
+      balance, 
+      marketData
     );
     
-    // Apply quantum threshold
-    const isQuantumState = quantumValue > this.config.quantumThreshold;
-    
-    // Calculate confidence with boost for quantum states
-    const confidence = isQuantumState 
-      ? Math.min(0.95, quantumValue * this.config.confidenceBoost)
-      : quantumValue;
-    
-    // Store state for history tracking
-    const state = {
-      timestamp: Date.now(),
-      value: quantumValue,
-      confidence: confidence,
-      isQuantum: isQuantumState,
-      components: {
-        stability,
-        momentum,
-        trendAlignment,
-        volumeConfirmation,
-        fibResonance
-      }
-    };
-    
-    this.updateStateHistory(state);
-    
-    return state;
-  }
-
-  /**
-   * Calculate Kelly Criterion fraction
-   * f* = (p * b - q) / b
-   * where p = win probability, q = loss probability, b = win/loss ratio
-   */
-  calculateKellyFraction(patternStrength, historicalWinRate = 0.5) {
-    // Estimate win probability from pattern strength and historical data
-    const winProbability = (patternStrength + historicalWinRate) / 2;
-    const lossProbability = 1 - winProbability;
-    
-    // Assume 1:1 risk/reward ratio (can be enhanced with actual data)
-    const winLossRatio = 1;
-    
-    // Kelly formula
-    const kellyFraction = (winProbability * winLossRatio - lossProbability) / winLossRatio;
-    
-    // Apply conservative multiplier
-    const conservativeKelly = Math.max(0, kellyFraction * this.config.kellyMultiplier);
-    
-    return conservativeKelly;
-  }
-
-  /**
-   * Apply quantum adjustment to Kelly fraction
-   */
-  applyQuantumAdjustment(kellyFraction, marketQuantum) {
-    if (marketQuantum.isQuantum) {
-      // Boost position size in quantum states
-      this.sizingStats.quantumBoosts++;
-      return kellyFraction * (1 + (marketQuantum.confidence - this.config.quantumThreshold));
-    }
-    
-    // Reduce position size in non-quantum states
-    return kellyFraction * marketQuantum.confidence;
-  }
-
-  /**
-   * Calculate trend alignment factor
-   */
-  calculateTrendAlignment(marketData) {
-    if (!marketData.trend || !marketData.timeframes) {
-      return 0.5;
-    }
-    
-    // Check alignment across multiple timeframes
-    const alignedTimeframes = marketData.timeframes.filter(tf => tf.trend === marketData.trend);
-    const alignmentRatio = alignedTimeframes.length / marketData.timeframes.length;
-    
-    return alignmentRatio;
-  }
-
-  /**
-   * Calculate volume confirmation factor
-   */
-  calculateVolumeConfirmation(marketData) {
-    if (!marketData.volume || !marketData.averageVolume) {
-      return 0.5;
-    }
-    
-    const volumeRatio = marketData.volume / marketData.averageVolume;
-    
-    // Higher volume confirms the move
-    if (volumeRatio > 1.5) return 0.8;
-    if (volumeRatio > 1.2) return 0.7;
-    if (volumeRatio > 0.8) return 0.5;
-    return 0.3; // Low volume = low confirmation
-  }
-
-  /**
-   * Calculate Fibonacci resonance
-   * Checks if price is near key Fibonacci levels
-   */
-  calculateFibonacciResonance(currentPrice, fibLevels) {
-    if (!currentPrice || !fibLevels || fibLevels.length === 0) {
-      return 0.5;
-    }
-    
-    let closestDistance = Infinity;
-    let closestLevel = null;
-    
-    // Find closest Fibonacci level
-    fibLevels.forEach(level => {
-      const distance = Math.abs(currentPrice - level.price) / currentPrice;
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestLevel = level;
-      }
-    });
-    
-    // Calculate resonance based on proximity
-    if (closestDistance < 0.002) return 1.0;  // Within 0.2%
-    if (closestDistance < 0.005) return 0.8;  // Within 0.5%
-    if (closestDistance < 0.01) return 0.6;   // Within 1%
-    if (closestDistance < 0.02) return 0.4;   // Within 2%
-    return 0.2; // Far from Fibonacci levels
-  }
-
-  /**
-   * Calculate risk metrics for position
-   */
-  calculateRiskMetrics(positionValue, balance, volatility, marketQuantum) {
-    const positionPercent = positionValue / balance;
-    const volatilityAdjustedRisk = positionPercent * (1 + volatility);
-    
-    // Determine risk level
-    let level = 'low';
-    if (volatilityAdjustedRisk > 0.15) level = 'high';
-    else if (volatilityAdjustedRisk > 0.08) level = 'medium';
-    
-    // Calculate potential drawdown
-    const maxDrawdown = positionValue * volatility * 2; // 2 standard deviations
-    const drawdownPercent = maxDrawdown / balance;
-    
+    // Return both dollar amount and percentage
     return {
-      level: level,
-      positionPercent: positionPercent,
-      volatilityAdjusted: volatilityAdjustedRisk,
-      maxDrawdown: maxDrawdown,
-      drawdownPercent: drawdownPercent,
-      quantumProtection: marketQuantum.isQuantum, // Extra confidence in quantum states
-      recommendation: this.getRiskRecommendation(level, marketQuantum)
+      size: result.size,
+      percentage: result.positionSizePercent,
+      method: 'kelly',
+      confidence: result.confidence,
+      kellyScore: result.kellyScore,
+      optimalShares: result.optimalShares,
+      value: result.value
     };
-  }
-
-  /**
-   * Generate position sizing recommendation
-   */
-  generateRecommendation(marketQuantum, riskMetrics) {
-    if (marketQuantum.isQuantum && riskMetrics.level !== 'high') {
-      return {
-        action: 'QUANTUM_BOOST',
-        message: 'Market in quantum state - position size optimized for maximum opportunity',
-        confidence: 'high'
-      };
-    }
-    
-    if (riskMetrics.level === 'high') {
-      return {
-        action: 'RISK_LIMITED',
-        message: 'Position size limited due to high volatility risk',
-        confidence: 'medium'
-      };
-    }
-    
-    if (marketQuantum.confidence < 0.3) {
-      return {
-        action: 'MINIMAL_POSITION',
-        message: 'Low market confidence - minimal position recommended',
-        confidence: 'low'
-      };
-    }
-    
-    return {
-      action: 'STANDARD',
-      message: 'Standard position sizing applied',
-      confidence: 'medium'
-    };
-  }
-
-  /**
-   * Get risk recommendation based on level and quantum state
-   */
-  getRiskRecommendation(level, marketQuantum) {
-    if (level === 'high' && !marketQuantum.isQuantum) {
-      return 'Consider reducing position or waiting for better setup';
-    }
-    
-    if (level === 'high' && marketQuantum.isQuantum) {
-      return 'High risk offset by quantum market state - proceed with tight stops';
-    }
-    
-    if (level === 'low' && marketQuantum.isQuantum) {
-      return 'Optimal conditions - consider scaling in if momentum continues';
-    }
-    
-    return 'Standard risk parameters apply';
-  }
-
-  /**
-   * Update state history with size limit
-   */
-  updateStateHistory(state) {
-    this.stateHistory.push(state);
-    
-    if (this.stateHistory.length > this.maxHistorySize) {
-      this.stateHistory.shift();
-    }
-    
-    // Update market states map
-    const stateKey = `${state.isQuantum ? 'quantum' : 'normal'}_${Date.now()}`;
-    this.marketStates.set(stateKey, state);
-    
-    // Clean old states
-    if (this.marketStates.size > this.maxHistorySize) {
-      const oldestKey = this.marketStates.keys().next().value;
-      this.marketStates.delete(oldestKey);
-    }
-  }
-
-  /**
-   * Update sizing statistics
-   */
-  updateStatistics(size, value, quantum) {
-    this.sizingStats.calculations++;
-    
-    // Update average size (moving average)
-    this.sizingStats.averageSize = (
-      (this.sizingStats.averageSize * (this.sizingStats.calculations - 1) + size) /
-      this.sizingStats.calculations
-    );
-    
-    // Track extremes
-    if (value > this.sizingStats.largestPosition) {
-      this.sizingStats.largestPosition = value;
-    }
-    
-    if (value < this.sizingStats.smallestPosition) {
-      this.sizingStats.smallestPosition = value;
-    }
-  }
-
-  /**
-   * Get quantum state analysis
-   */
-  getQuantumAnalysis() {
-    const recentStates = this.stateHistory.slice(-20);
-    const quantumStates = recentStates.filter(s => s.isQuantum);
-    
-    return {
-      recentQuantumRatio: recentStates.length > 0 
-        ? quantumStates.length / recentStates.length 
-        : 0,
-      currentState: this.stateHistory[this.stateHistory.length - 1],
-      statistics: this.sizingStats,
-      marketCondition: this.assessMarketCondition()
-    };
-  }
-
-  /**
-   * Assess overall market condition based on quantum states
-   */
-  assessMarketCondition() {
-    const recentStates = this.stateHistory.slice(-10);
-    if (recentStates.length === 0) return 'unknown';
-    
-    const avgQuantumValue = recentStates.reduce((sum, s) => sum + s.value, 0) / recentStates.length;
-    const quantumCount = recentStates.filter(s => s.isQuantum).length;
-    
-    if (quantumCount >= 7) return 'highly_favorable';
-    if (quantumCount >= 5) return 'favorable';
-    if (quantumCount >= 3) return 'neutral';
-    if (quantumCount >= 1) return 'challenging';
-    return 'unfavorable';
   }
 }
 
-module.exports = QuantumPositionSizer;
+module.exports = FixedQuantumPositionSizer;

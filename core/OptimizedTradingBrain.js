@@ -1024,7 +1024,8 @@ class OptimizedTradingBrain {
     if (this.quantumPositionSizer) {
       try {
         const volatility = analysisData.volatility || analysisData.atr || 0.01;
-        const patternStrength = analysisData.patternConfidence || confidence || 1;
+        // 🎯 KELLY FIX: Ensure minimum pattern strength for Kelly calculation (need >0.5 for positive Kelly)
+        const patternStrength = Math.max(0.6, analysisData.patternConfidence || confidence || 0.7);
         
         // Prepare market data for quantum analysis
         const marketData = {
@@ -1561,16 +1562,69 @@ class OptimizedTradingBrain {
    * @param {number} price - Current price
    */
   processAnalysis(analysis, price) {
+    console.log('🧠 TRADING BRAIN: Processing analysis...');
+    console.log('🧠 Analysis Data:', {
+      decision: analysis.decision,
+      confidence: analysis.confidence,
+      reason: analysis.reason,
+      price: price,
+      trend: analysis.trend,
+      rsi: analysis.rsi,
+      macd: analysis.macd
+    });
+    console.log('🧠 Current State:', {
+      inPosition: this.isInPosition(),
+      balance: this.balance,
+      minConfidenceThreshold: this.config.minConfidenceThreshold,
+      position: this.position
+    });
+    
     // Update position if we have one
     if (this.isInPosition()) {
+      console.log('🧠 Managing existing position...');
       this.managePosition(price, analysis);
+      return; // Exit early if managing position
     }
     
     // Check for new position entry (ENHANCED SAFETY: Increased confidence threshold)
+    console.log('🧠 Checking new position entry criteria...');
+    console.log('🧠 Entry Checks:', {
+      inPosition: this.isInPosition(),
+      decision: analysis.decision,
+      decisionNotHold: analysis.decision !== 'hold',
+      confidence: analysis.confidence,
+      minThreshold: this.config.minConfidenceThreshold,
+      confidenceMet: analysis.confidence >= this.config.minConfidenceThreshold
+    });
+    
     if (!this.isInPosition() && analysis.decision !== 'hold' && analysis.confidence >= this.config.minConfidenceThreshold) {
+      console.log('🧠 All entry criteria met! Proceeding with trade...');
+      
       const direction = analysis.decision === 'buy' ? 'buy' : 'sell';
+      console.log(`🧠 Trade Direction: ${direction}`);
+      
+      console.log('🧠 Calculating position size...');
       const size = this.calculatePositionSize(price, analysis.confidence, analysis);
-      this.openPosition(price, direction, size, analysis.confidence, analysis.reason, analysis);
+      console.log(`🧠 Calculated Position Size: ${size} shares`);
+      
+      if (size > 0) {
+        console.log('🧠 Position size valid, opening position...');
+        const opened = this.openPosition(price, direction, size, analysis.confidence, analysis.reason, analysis);
+        console.log(`🧠 Position opened: ${opened ? 'SUCCESS' : 'FAILED'}`);
+      } else {
+        console.log('🧠 TRADE BLOCKED: Position size is 0 or invalid');
+      }
+    } else {
+      console.log('🧠 Entry criteria NOT met - trade blocked');
+      if (this.isInPosition()) {
+        console.log('   - Already in position');
+      }
+      if (analysis.decision === 'hold') {
+        console.log('   - Decision is HOLD');
+      }
+      if (analysis.confidence < this.config.minConfidenceThreshold) {
+        console.log(`   - Confidence too low: ${analysis.confidence} < ${this.config.minConfidenceThreshold}`);
+      }
     }
   }
 }

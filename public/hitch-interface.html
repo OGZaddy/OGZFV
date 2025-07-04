@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hitch - OGZPrime Voice Control</title>
+  <style>
+    body { 
+      background: #0a0a0a; 
+      color: #00ff00; 
+      font-family: 'Courier New', monospace;
+      padding: 20px;
+      margin: 0;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .header h1 {
+      color: #00ff00;
+      text-shadow: 0 0 10px #00ff00;
+      margin: 0;
+    }
+    
+    .subtitle {
+      color: #888;
+      margin-top: 5px;
+    }
+    
+    .input-section {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid #00ff00;
+      margin-bottom: 20px;
+    }
+    
+    #command-input {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      background: #0a0a0a;
+      color: #00ff00;
+      border: 2px solid #333;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      font-family: 'Courier New', monospace;
+    }
+    
+    #command-input:focus {
+      outline: none;
+      border-color: #00ff00;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: 'Courier New', monospace;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+      background: #00ff00;
+      color: #000;
+    }
+    
+    .btn-primary:hover {
+      background: #00cc00;
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    }
+    
+    .btn-voice {
+      background: #ff0066;
+      color: white;
+    }
+    
+    .btn-voice:hover {
+      background: #cc0055;
+      box-shadow: 0 0 15px rgba(255, 0, 102, 0.5);
+    }
+    
+    .btn-voice.listening {
+      background: #00ff00;
+      color: #000;
+      animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 5px rgba(0, 255, 0, 0.5); }
+      50% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.8); }
+      100% { box-shadow: 0 0 5px rgba(0, 255, 0, 0.5); }
+    }
+    
+    .btn-secondary {
+      background: #333;
+      color: #ccc;
+    }
+    
+    .btn-secondary:hover {
+      background: #555;
+    }
+    
+    .suggestions {
+      background: #1a1a1a;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      margin-bottom: 20px;
+    }
+    
+    .suggestions h3 {
+      color: #888;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    
+    .command-suggestion {
+      color: #666;
+      font-size: 14px;
+      margin: 8px 0;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 3px;
+      transition: all 0.3s ease;
+    }
+    
+    .command-suggestion:hover {
+      color: #00ff00;
+      background: #2a2a2a;
+      transform: translateX(5px);
+    }
+    
+    #output {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      min-height: 400px;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 600px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    
+    .status-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.9);
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #333;
+      z-index: 1000;
+    }
+    
+    .status-connected {
+      color: #00ff00;
+    }
+    
+    .status-disconnected {
+      color: #ff0066;
+    }
+    
+    .main-content {
+      margin-top: 60px;
+    }
+    
+    .response-success {
+      color: #00ff00;
+    }
+    
+    .response-error {
+      color: #ff0066;
+    }
+    
+    .response-warning {
+      color: #ffaa00;
+    }
+    
+    .response-info {
+      color: #0088ff;
+    }
+    
+    .impact-tracker {
+      background: #1a2a1a;
+      border: 1px solid #00ff00;
+      border-radius: 5px;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    
+    .command-id {
+      color: #888;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="status-bar">
+    <span id="connection-status" class="status-disconnected">🔴 Disconnected from OGZPrime</span>
+  </div>
+  
+  <div class="main-content">
+    <div class="header">
+      <h1>🧠 HITCH</h1>
+      <div class="subtitle">Natural Language Trading Interface for OGZPrime</div>
+    </div>
+    
+    <div class="input-section">
+      <input type="text" id="command-input" placeholder="Tell OGZPrime what to do..." autocomplete="off" />
+      
+      <div class="button-group">
+        <button class="btn btn-voice" id="voice-button">🎤 Voice Input</button>
+        <button class="btn btn-primary" onclick="sendCommand()">Send Command</button>
+        <button class="btn btn-secondary" onclick="showHistory()">Command History</button>
+        <button class="btn btn-secondary" onclick="clearOutput()">Clear Output</button>
+      </div>
+    </div>
+    
+    <div class="suggestions">
+      <h3>💡 Example Commands:</h3>
+      <div class="command-suggestion" onclick="setCommand(this)">Only trade when RSI is below 30</div>
+      <div class="command-suggestion" onclick="setCommand(this)">Activate scalper profile</div>
+      <div class="command-suggestion" onclick="setCommand(this)">Stop trading after 3pm CST</div>
+      <div class="command-suggestion" onclick="setCommand(this)">Set risk to 0.5%</div>
+      <div class="command-suggestion" onclick="setCommand(this)">Summarize today's performance</div>
+      <div class="command-suggestion" onclick="setCommand(this)">Avoid trades when MACD is negative</div>
+      <div class="command-suggestion" onclick="setCommand(this)">Switch to conservative profile</div>
+      <div class="command-suggestion" onclick="setCommand(this)">Increase position size to 2%</div>
+      <div class="command-suggestion" onclick="setCommand(this)">Only trade during market hours</div>
+      <div class="command-suggestion" onclick="setCommand(this)">Pause trading for 30 minutes</div>
+    </div>
+    
+    <div id="output">🚀 Hitch Natural Language Interface Ready
+
+Welcome to Hitch! You can control OGZPrime using natural language commands.
+
+Try commands like:
+• "Stop trading" - Immediately halt all trading
+• "Set risk to 1%" - Adjust position sizing
+• "Only trade when RSI below 30" - Add conditional trading rules
+• "Activate conservative profile" - Switch trading strategies
+• "Summarize today's performance" - Get analysis and insights
+
+Type your command above or click the microphone for voice input.
+</div>
+  </div>
+  
+  <script>
+    let ws = null;
+    let reconnectInterval = null;
+    let commandHistory = [];
+    let isConnected = false;
+    
+    // WebSocket connection
+    function connectWebSocket() {
+      try {
+        ws = new WebSocket('ws://localhost:3008'); // Hitch WebSocket port
+        
+        ws.onopen = () => {
+          isConnected = true;
+          updateConnectionStatus(true);
+          appendOutput('✅ Connected to OGZPrime Hitch Interface\n', 'response-success');
+          
+          if (reconnectInterval) {
+            clearInterval(reconnectInterval);
+            reconnectInterval = null;
+          }
+        };
+        
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            handleResponse(data);
+          } catch (e) {
+            appendOutput('📨 ' + event.data + '\n', 'response-info');
+          }
+        };
+        
+        ws.onclose = () => {
+          isConnected = false;
+          updateConnectionStatus(false);
+          appendOutput('🔌 Connection lost. Attempting to reconnect...\n', 'response-warning');
+          
+          if (!reconnectInterval) {
+            reconnectInterval = setInterval(connectWebSocket, 5000);
+          }
+        };
+        
+        ws.onerror = (error) => {
+          appendOutput('❌ WebSocket error: ' + error.message + '\n', 'response-error');
+        };
+        
+      } catch (error) {
+        appendOutput('❌ Failed to connect: ' + error.message + '\n', 'response-error');
+        if (!reconnectInterval) {
+          reconnectInterval = setInterval(connectWebSocket, 5000);
+        }
+      }
+    }
+    
+    function updateConnectionStatus(connected) {
+      const statusElement = document.getElementById('connection-status');
+      if (connected) {
+        statusElement.textContent = '🟢 Connected to OGZPrime';
+        statusElement.className = 'status-connected';
+      } else {
+        statusElement.textContent = '🔴 Disconnected from OGZPrime';
+        statusElement.className = 'status-disconnected';
+      }
+    }
+    
+    function sendCommand() {
+      const input = document.getElementById('command-input').value.trim();
+      if (!input) return;
+      
+      if (!isConnected) {
+        appendOutput('❌ Not connected to OGZPrime. Please wait for reconnection.\n', 'response-error');
+        return;
+      }
+      
+      // Add to history
+      commandHistory.unshift(input);
+      if (commandHistory.length > 50) commandHistory.pop();
+      
+      appendOutput(`\n> ${input}\n`, 'response-info');
+      appendOutput('🔄 Processing command...\n', 'response-warning');
+      
+      const message = {
+        type: 'hitch_command',
+        input: input,
+        timestamp: Date.now(),
+        source: 'web_interface'
+      };
+      
+      ws.send(JSON.stringify(message));
+      document.getElementById('command-input').value = '';
+    }
+    
+    function handleResponse(data) {
+      if (data.success) {
+        appendOutput(`✅ ${data.message}\n`, 'response-success');
+        
+        if (data.commandId) {
+          appendOutput(`📝 Command ID: ${data.commandId}\n`, 'command-id');
+        }
+        
+        if (data.updates) {
+          appendOutput('\n📊 Updates Applied:\n', 'response-info');
+          
+          if (data.updates.config && Object.keys(data.updates.config).length > 0) {
+            appendOutput('  Config Changes:\n', 'response-info');
+            Object.entries(data.updates.config).forEach(([key, value]) => {
+              appendOutput(`    • ${key}: ${value}\n`, 'response-success');
+            });
+          }
+          
+          if (data.updates.rules && data.updates.rules.length > 0) {
+            appendOutput(`  Trading Rules Added: ${data.updates.rules.length}\n`, 'response-success');
+          }
+          
+          if (data.updates.actions && data.updates.actions.length > 0) {
+            appendOutput(`  Actions Executed: ${data.updates.actions.length}\n`, 'response-success');
+          }
+        }
+        
+        if (data.impact) {
+          displayImpactTracker(data.commandId, data.impact);
+        }
+        
+      } else {
+        appendOutput(`❌ Error: ${data.error}\n`, 'response-error');
+        
+        if (data.suggestions && data.suggestions.length > 0) {
+          appendOutput('\n💡 Suggestions:\n', 'response-info');
+          data.suggestions.forEach(suggestion => {
+            appendOutput(`  • ${suggestion}\n`, 'response-warning');
+          });
+        }
+      }
+      
+      appendOutput('\n' + '─'.repeat(60) + '\n', 'response-info');
+    }
+    
+    function displayImpactTracker(commandId, impact) {
+      const tracker = document.createElement('div');
+      tracker.className = 'impact-tracker';
+      tracker.innerHTML = `
+        <strong>📈 Impact Tracking Started</strong><br>
+        Command: ${commandId}<br>
+        Baseline Balance: $${impact.tracking.startBalance.toFixed(2)}<br>
+        Monitoring for 24 hours...
+      `;
+      
+      const output = document.getElementById('output');
+      output.appendChild(tracker);
+      output.scrollTop = output.scrollHeight;
+    }
+    
+    function appendOutput(text, className = '') {
+      const output = document.getElementById('output');
+      const span = document.createElement('span');
+      span.textContent = text;
+      if (className) span.className = className;
+      output.appendChild(span);
+      output.scrollTop = output.scrollHeight;
+    }
+    
+    function setCommand(element) {
+      document.getElementById('command-input').value = element.textContent;
+      document.getElementById('command-input').focus();
+    }
+    
+    function clearOutput() {
+      document.getElementById('output').innerHTML = '🚀 Hitch Natural Language Interface Ready\n\nOutput cleared. Ready for new commands.\n';
+    }
+    
+    function showHistory() {
+      if (commandHistory.length === 0) {
+        appendOutput('\n📚 No command history available.\n', 'response-info');
+        return;
+      }
+      
+      appendOutput('\n📚 Recent Commands:\n', 'response-info');
+      commandHistory.slice(0, 10).forEach((cmd, i) => {
+        appendOutput(`  ${i + 1}. ${cmd}\n`, 'response-warning');
+      });
+      appendOutput('\n', 'response-info');
+    }
+    
+    // Voice input functionality
+    let recognition = null;
+    
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+      
+      const voiceButton = document.getElementById('voice-button');
+      
+      voiceButton.onclick = () => {
+        if (recognition) {
+          recognition.start();
+          voiceButton.classList.add('listening');
+          voiceButton.textContent = '🎤 Listening...';
+        }
+      };
+      
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('command-input').value = transcript;
+        voiceButton.classList.remove('listening');
+        voiceButton.textContent = '🎤 Voice Input';
+        
+        appendOutput(`🎤 Voice captured: "${transcript}"\n`, 'response-info');
+      };
+      
+      recognition.onerror = (event) => {
+        voiceButton.classList.remove('listening');
+        voiceButton.textContent = '🎤 Voice Input';
+        appendOutput(`❌ Voice recognition error: ${event.error}\n`, 'response-error');
+      };
+      
+      recognition.onend = () => {
+        voiceButton.classList.remove('listening');
+        voiceButton.textContent = '🎤 Voice Input';
+      };
+    } else {
+      document.getElementById('voice-button').style.display = 'none';
+    }
+    
+    // Enter key support
+    document.getElementById('command-input').onkeypress = (e) => {
+      if (e.key === 'Enter') {
+        sendCommand();
+      }
+    };
+    
+    // Auto-focus input
+    document.getElementById('command-input').focus();
+    
+    // Initialize connection
+    connectWebSocket();
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key) {
+          case 'l':
+            e.preventDefault();
+            clearOutput();
+            break;
+          case 'h':
+            e.preventDefault();
+            showHistory();
+            break;
+          case '/':
+            e.preventDefault();
+            document.getElementById('command-input').focus();
+            break;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
