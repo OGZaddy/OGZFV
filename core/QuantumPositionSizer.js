@@ -55,8 +55,35 @@ class QuantumPositionSizer extends EventEmitter {
   }
 
   /**
+   * Set RiskManager reference for integration
+   * @param {RiskManager} riskManager - RiskManager instance
+   */
+  setRiskManager(riskManager) {
+    this.riskManager = riskManager;
+    console.log('⚛️ RiskManager linked to Quantum Position Sizer');
+  }
+
+  /**
+   * Validate RiskManager integration
+   * @returns {boolean} True if RiskManager is properly integrated
+   */
+  validateRiskManager() {
+    if (!this.riskManager) {
+      console.log('⚠️ RiskManager not set in QuantumPositionSizer');
+      return false;
+    }
+    
+    if (typeof this.riskManager.getMaxPositionSize !== 'function') {
+      console.log('⚠️ RiskManager missing getMaxPositionSize method');
+      return false;
+    }
+    
+    return true;
+  }
+
+  /**
    * Calculate optimal position size using quantum market analysis
-   * 
+   *
    * @param {number} price - Current market price
    * @param {number} volatility - Current market volatility (0-1)
    * @param {number} patternStrength - Pattern confidence (0-1)
@@ -75,55 +102,102 @@ class QuantumPositionSizer extends EventEmitter {
       // Apply quantum adjustment to Kelly
       const quantumKelly = this.applyQuantumAdjustment(kellyFraction, marketQuantum);
       
-      // Get risk-adjusted maximum from RiskManager
-      const riskLimit = this.riskManager 
-        ? this.riskManager.getMaxPositionSize(balance) 
-        : balance * this.config.maxPositionPercent;
+      // Get risk-adjusted maximum from RiskManager with bulletproof fallback
+      let riskLimit;
+      try {
+        // Triple validation to ensure RiskManager is properly integrated
+        if (this.riskManager &&
+            this.riskManager !== null &&
+            typeof this.riskManager === 'object' &&
+            typeof this.riskManager.getMaxPositionSize === 'function') {
+          
+          riskLimit = this.riskManager.getMaxPositionSize(balance);
+          if (typeof riskLimit === 'number' && !isNaN(riskLimit)) {
+            console.log(`⚛️ RiskManager provided max position limit: $${riskLimit.toFixed(2)}`);
+          } else {
+            console.log(`⚠️ RiskManager returned invalid value: ${riskLimit}, using fallback`);
+            throw new Error('Invalid riskLimit from RiskManager');
+          }
+        } else {
+          throw new Error('RiskManager not properly integrated or missing getMaxPositionSize method');
+        }
+      } catch (error) {
+        // Comprehensive fallback calculation
+        console.log(`⚠️ RiskManager integration failed (${error.message}), using safe fallback calculation`);
+        riskLimit = balance * this.config.maxPositionPercent; // Direct percentage without /100 division
+        if (typeof riskLimit === 'number' && !isNaN(riskLimit)) {
+          console.log(`⚛️ Fallback risk limit: $${riskLimit.toFixed(2)} (${(this.config.maxPositionPercent * 100).toFixed(1)}% of balance)`);
+        } else {
+          console.log(`⚠️ Fallback calculation failed, using emergency default`);
+          riskLimit = 100; // Emergency fallback value
+        }
+      }
       
-      // Calculate final position size
+      // Validate all numeric values before calculation
+      const validBalance = typeof balance === 'number' && !isNaN(balance) && balance > 0 ? balance : 1000;
+      const validPrice = typeof price === 'number' && !isNaN(price) && price > 0 ? price : 50000;
+      const validQuantumKelly = typeof quantumKelly === 'number' && !isNaN(quantumKelly) ? quantumKelly : 0.02;
+      const validRiskLimit = typeof riskLimit === 'number' && !isNaN(riskLimit) && riskLimit > 0 ? riskLimit : validBalance * 0.1;
+      
+      console.log(`⚛️ Quantum sizing inputs validated: balance=${validBalance.toFixed(2)}, price=${validPrice.toFixed(2)}, kelly=${validQuantumKelly.toFixed(4)}, riskLimit=${validRiskLimit.toFixed(2)}`);
+      
+      // Calculate final position size with validated inputs
       const positionValue = Math.min(
-        quantumKelly * balance,
-        riskLimit,
-        balance * this.config.maxPositionPercent
+        validQuantumKelly * validBalance,
+        validRiskLimit,
+        validBalance * this.config.maxPositionPercent
       );
       
       // Ensure minimum position size
       const finalValue = Math.max(
         positionValue,
-        balance * this.config.minPositionPercent
+        validBalance * this.config.minPositionPercent
       );
       
-      const positionSize = finalValue / price;
+      const positionSize = finalValue / validPrice;
       
-      // Calculate position risk metrics
+      // 🔧 BULLETPROOF VALIDATION: Ensure all return values are valid numbers
+      const validPositionSize = typeof positionSize === 'number' && !isNaN(positionSize) && isFinite(positionSize) ? positionSize : 0.001;
+      const validFinalValue = typeof finalValue === 'number' && !isNaN(finalValue) && isFinite(finalValue) ? finalValue : validBalance * 0.01;
+      const validQuantumKellyReturn = typeof quantumKelly === 'number' && !isNaN(quantumKelly) && isFinite(quantumKelly) ? quantumKelly : 0.02;
+      const validKellyFractionReturn = typeof kellyFraction === 'number' && !isNaN(kellyFraction) && isFinite(kellyFraction) ? kellyFraction : 0.02;
+      
+      // Calculate position risk metrics with validated values
       const riskMetrics = this.calculateRiskMetrics(
-        finalValue,
-        balance,
-        volatility,
+        validFinalValue,
+        validBalance,
+        typeof volatility === 'number' && !isNaN(volatility) ? volatility : 0.02,
         marketQuantum
       );
       
-      // Update statistics
-      this.updateStatistics(positionSize, finalValue, marketQuantum);
+      // Update statistics with validated values
+      this.updateStatistics(validPositionSize, validFinalValue, marketQuantum);
       
       // Emit position sizing event
       this.emit('position_calculated', {
-        size: positionSize,
-        value: finalValue,
+        size: validPositionSize,
+        value: validFinalValue,
         quantum: marketQuantum,
-        kelly: quantumKelly,
+        kelly: validQuantumKellyReturn,
         risk: riskMetrics
       });
       
+      console.log(`⚛️ Quantum Position Size: ${validPositionSize.toFixed(6)} shares ($${validFinalValue.toFixed(2)} value)`);
+      console.log(`   Kelly Score: ${validQuantumKellyReturn.toFixed(4)} | Quantum State: ${marketQuantum.isQuantum ? 'ACTIVE' : 'NORMAL'}`);
+      
       return {
-        size: positionSize,
-        value: finalValue,
-        confidence: marketQuantum.confidence,
-        riskLevel: riskMetrics.level,
+        optimalShares: validPositionSize,
+        positionSizePercent: validFinalValue / validBalance,
+        kellyScore: validQuantumKellyReturn,
+        quantumState: marketQuantum.isQuantum ? 'ACTIVE' : 'NORMAL',
+        size: validPositionSize,
+        value: validFinalValue,
+        confidence: marketQuantum.confidence || 0.5,
+        riskLevel: riskMetrics.level || 'medium',
         quantum: marketQuantum,
         kelly: {
-          base: kellyFraction,
-          adjusted: quantumKelly,
+          base: validKellyFractionReturn,
+          adjusted: validQuantumKellyReturn,
           multiplier: this.config.kellyMultiplier
         },
         risk: riskMetrics,

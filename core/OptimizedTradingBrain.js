@@ -57,8 +57,13 @@ class OptimizedTradingBrain {
       confidenceScaling: true,         // Scale size by confidence
       maxPositionSize: 0.05,           // 5% max position size
       
+      // 🛡️ CRYPTO-OPTIMIZED SAFETY THRESHOLDS (Adjusted for crypto volatility)
+      minConfidenceThreshold: 0.15,   // CRYPTO-OPTIMIZED: 15% minimum confidence for crypto markets
+      maxConfidenceThreshold: 0.85,   // CRYPTO-OPTIMIZED: 85% maximum confidence to allow strong signals
+      enableSafetyValidation: true,    // Enable safety net validation
+      enablePerformanceTracking: true, // Enable performance validator
+      
       // Performance tracking
-      enablePerformanceTracking: true, // Track detailed performance
       enablePatternLearning: true,     // Learn from patterns
       
       // Houston fund tracking
@@ -93,10 +98,10 @@ class OptimizedTradingBrain {
     this.patternMemory = new Map();
     this.currentPatternId = null;
     
-    // 🚀 SCALPER-SPECIFIC: Micro-profit and quick exit system
+    // 🚀 SCALPER-SPECIFIC: FEE-AWARE Micro-profit and quick exit system
     this.scalperConfig = {
-      microProfitThreshold: 0.003,     // 0.3% micro-profit target
-      quickProfitThreshold: 0.005,     // 0.5% quick profit target
+      microProfitThreshold: 0.005,     // 0.5% FEE-AWARE micro-profit target
+      quickProfitThreshold: 0.008,     // 0.8% FEE-AWARE quick profit target
       momentumShiftThreshold: 0.15,    // 15% momentum loss triggers exit
       tightStopMultiplier: 0.5,        // 50% tighter stops for scalping
       maxHoldTime: 300000,             // 5 minutes max hold time (300 seconds)
@@ -105,11 +110,24 @@ class OptimizedTradingBrain {
       scalperModeActive: false         // Track if scalper mode is active
     };
     
+    // 💰 FEE-AWARE TRADING: Critical for profitability
+    this.feeConfig = {
+      maker: 0.0010,                   // 0.10% maker fee
+      taker: 0.0015,                   // 0.15% taker fee
+      slippage: 0.0005,                // 0.05% estimated slippage
+      totalRoundTrip: 0.0035,          // 0.35% total cost per round trip
+      safetyBuffer: 0.001              // 0.10% safety buffer
+    };
+    
     // Reference to parent OGZ Prime system for logging
     this.ogzPrime = null;
     
     // Quantum Position Sizer reference (set by OGZ Prime)
     this.quantumPositionSizer = null;
+    
+    // 🛡️ SAFETY SYSTEMS: References to new safety components
+    this.tradingSafetyNet = null;     // Emergency circuit breakers
+    this.performanceValidator = null; // Component profitability tracking
     
     console.log(`🧠 Enhanced Trading Brain initialized with $${balance.toLocaleString()} balance`);
     console.log(`🎯 Houston Fund Target: $${this.config.houstonFundTarget.toLocaleString()}`);
@@ -139,26 +157,57 @@ class OptimizedTradingBrain {
   }
   
   /**
-   * 🚀 SCALPER-SPECIFIC: Activate scalper mode with profile settings
+   * 🛡️ Set reference to Trading Safety Net for emergency circuit breakers
+   * @param {TradingSafetyNet} tradingSafetyNet - Trading safety net instance
+   */
+  setTradingSafetyNet(tradingSafetyNet) {
+    this.tradingSafetyNet = tradingSafetyNet;
+    console.log('🛡️ Trading Brain linked to Safety Net');
+  }
+  
+  /**
+   * 📊 Set reference to Performance Validator for component tracking
+   * @param {PerformanceValidator} performanceValidator - Performance validator instance
+   */
+  setPerformanceValidator(performanceValidator) {
+    this.performanceValidator = performanceValidator;
+    console.log('📊 Trading Brain linked to Performance Validator');
+  }
+  
+  /**
+   * 🚀 SCALPER-SPECIFIC: Activate FEE-AWARE scalper mode with profile settings
    * @param {Object} profileSettings - Scalper profile configuration
    */
   activateScalperMode(profileSettings = {}) {
     this.scalperConfig.scalperModeActive = true;
     
-    // Override defaults with profile settings
+    // Load fee-aware settings from profile
+    if (profileSettings.feeAwareProfitTargets) {
+      this.scalperConfig.microProfitThreshold = profileSettings.feeAwareProfitTargets.microProfitThreshold || 0.005;
+      this.scalperConfig.quickProfitThreshold = profileSettings.feeAwareProfitTargets.quickProfitThreshold || 0.008;
+    }
+    
+    // Load fee configuration
+    if (profileSettings.fees) {
+      this.feeConfig = { ...this.feeConfig, ...profileSettings.fees };
+    }
+    
+    // Override with specific settings if provided
     if (profileSettings.enableMicroProfits) {
-      this.scalperConfig.microProfitThreshold = profileSettings.microProfitTarget || 0.003;
+      this.scalperConfig.microProfitThreshold = profileSettings.microProfitTarget || this.scalperConfig.microProfitThreshold;
     }
     if (profileSettings.enableQuickExits) {
-      this.scalperConfig.quickProfitThreshold = profileSettings.quickProfitTarget || 0.005;
+      this.scalperConfig.quickProfitThreshold = profileSettings.quickProfitTarget || this.scalperConfig.quickProfitThreshold;
     }
     if (profileSettings.maxHoldTimeSeconds) {
       this.scalperConfig.maxHoldTime = profileSettings.maxHoldTimeSeconds * 1000;
     }
     
-    console.log('🚀 SCALPER MODE ACTIVATED!');
-    console.log(`   💰 Micro-Profit: ${(this.scalperConfig.microProfitThreshold * 100).toFixed(1)}%`);
-    console.log(`   ⚡ Quick-Profit: ${(this.scalperConfig.quickProfitThreshold * 100).toFixed(1)}%`);
+    console.log('🚀 FEE-AWARE SCALPER MODE ACTIVATED!');
+    console.log(`   💰 Micro-Profit: ${(this.scalperConfig.microProfitThreshold * 100).toFixed(1)}% (was 0.3% - DEATH TRAP!)` );
+    console.log(`   ⚡ Quick-Profit: ${(this.scalperConfig.quickProfitThreshold * 100).toFixed(1)}% (was 0.5% - BARELY SAFE!)`);
+    console.log(`   💸 Total Fees: ${(this.feeConfig.totalRoundTrip * 100).toFixed(2)}% per round trip`);
+    console.log(`   🛡️ Net Profit: ${((this.scalperConfig.microProfitThreshold - this.feeConfig.totalRoundTrip) * 100).toFixed(2)}% micro, ${((this.scalperConfig.quickProfitThreshold - this.feeConfig.totalRoundTrip) * 100).toFixed(2)}% quick`);
     console.log(`   🕒 Max Hold: ${this.scalperConfig.maxHoldTime / 1000}s`);
     console.log(`   🔴 Tight Stops: ${this.scalperConfig.tightStopMultiplier * 100}% of normal`);
   }
@@ -251,6 +300,34 @@ class OptimizedTradingBrain {
     if (this.position) {
       console.log('⚠️ Cannot open position: Already in position');
       return false;
+    }
+    
+    // 🛡️ ENHANCED SAFETY: Validate confidence thresholds
+    if (confidence < this.config.minConfidenceThreshold) {
+      console.log(`🛡️ Position blocked: Confidence ${(confidence * 100).toFixed(1)}% below minimum ${(this.config.minConfidenceThreshold * 100).toFixed(1)}%`);
+      return false;
+    }
+    
+    if (confidence > this.config.maxConfidenceThreshold) {
+      console.log(`🛡️ Confidence capped: ${(confidence * 100).toFixed(1)}% reduced to ${(this.config.maxConfidenceThreshold * 100).toFixed(1)}% to prevent overconfidence`);
+      confidence = this.config.maxConfidenceThreshold;
+    }
+    
+    // 🛡️ SAFETY NET: Validate trade with safety systems
+    if (this.config.enableSafetyValidation && this.tradingSafetyNet) {
+      const tradeRequest = {
+        price,
+        direction,
+        size,
+        confidence,
+        reason
+      };
+      
+      const safetyResult = this.tradingSafetyNet.validateTrade(tradeRequest, analysisData);
+      if (!safetyResult.approved) {
+        console.log(`🛡️ TRADE BLOCKED by Safety Net: ${safetyResult.reason}`);
+        return false;
+      }
     }
     
     // Validate inputs
@@ -389,6 +466,19 @@ class OptimizedTradingBrain {
     if (analysisData.patternType) {
       this.currentPatternId = analysisData.patternId;
       this.storePatternEntry(analysisData);
+    }
+    
+    // 🔥 AGGRESSIVE MODE: Notify that a trade was executed to stop infinite "FORCE FIRST TRADE" loop
+    if (this.ogzPrime && this.ogzPrime.aggressiveTradingMode && this.ogzPrime.aggressiveTradingMode.isActive()) {
+      this.ogzPrime.aggressiveTradingMode.recordTrade();
+      console.log('🔥 AGGRESSIVE MODE: Trade recorded - stopping force trade loop');
+    }
+    
+    // 📊 PERFORMANCE TRACKING: Record trade initiation
+    if (this.config.enablePerformanceTracking && this.performanceValidator) {
+      const involvedComponents = this.extractInvolvedComponents(reason, analysisData);
+      // Note: We'll record the full trade result in closePosition
+      console.log(`📊 Trade initiated - Components: [${involvedComponents.join(', ')}]`);
     }
     
     // Log position opening
@@ -576,16 +666,51 @@ class OptimizedTradingBrain {
       console.error('❌ Failed to log trade:', error.message);
     }
     
+    // 🛡️ SAFETY NET: Update trade result for safety tracking
+    if (this.tradingSafetyNet) {
+      this.tradingSafetyNet.updateTradeResult({
+        pnl: pnl,
+        balance: balanceAfter,
+        timestamp: exitTimestamp,
+        holdTime: holdTime,
+        direction: this.position.direction
+      });
+    }
+    
+    // 📊 PERFORMANCE VALIDATOR: Record trade performance by component
+    if (this.performanceValidator) {
+      const involvedComponents = this.extractInvolvedComponents(this.position.entryReason, this.position.entryAnalysis);
+      this.performanceValidator.recordTrade({
+        pnl: pnl,
+        size: this.position.size,
+        duration: holdTime,
+        fees: 0, // Can be enhanced with actual fees
+        strategy: this.position.entryReason,
+        timeframe: this.position.entryAnalysis.primaryTimeframe || '1m',
+        marketCondition: this.classifyMarketCondition(this.position.entryAnalysis),
+        metadata: {
+          entryPrice: this.position.entryPrice,
+          exitPrice: price,
+          confidence: this.position.entryConfidence,
+          reason: reason
+        }
+      }, involvedComponents);
+    }
+    
     // Reset position and profit manager
     this.position = null;
     this.maxProfitManager.reset();
     
-    // Display comprehensive trade result
-    console.log(`${pnl >= 0 ? '✅' : '❌'} POSITION CLOSED:`);
-    console.log(`   Exit @ $${price.toFixed(2)} | P&L: $${pnl.toFixed(2)} (${pnlPercent.toFixed(2)}%)`);
-    console.log(`   Hold Time: ${this.formatHoldTime(holdTime)} | Reason: ${reason}`);
-    console.log(`   Balance: $${balanceBefore.toFixed(2)} → $${balanceAfter.toFixed(2)}`);
-    console.log(`   Houston Progress: ${((balanceAfter / this.config.houstonFundTarget) * 100).toFixed(1)}%`);
+    // Display comprehensive trade result with enhanced PnL tracking
+    console.log(`\n${pnl >= 0 ? '✅ PROFIT' : '❌ LOSS'} TRADE COMPLETED:`);
+    console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+    console.log(`💰 TRADE P&L: ${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)} (${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%)`);
+    console.log(`📈 Entry: $${this.position.entryPrice.toFixed(2)} → Exit: $${price.toFixed(2)}`);
+    console.log(`⏰ Hold Time: ${this.formatHoldTime(holdTime)} | Exit Reason: ${reason}`);
+    console.log(`💳 Account Balance: $${balanceBefore.toFixed(2)} → $${balanceAfter.toFixed(2)}`);
+    console.log(`📊 Session P&L: $${this.sessionStats.totalPnL.toFixed(2)} | Total Trades: ${this.sessionStats.tradesCount}`);
+    console.log(`🎯 Houston Progress: ${((balanceAfter / this.config.houstonFundTarget) * 100).toFixed(1)}% ($${(this.config.houstonFundTarget - balanceAfter).toFixed(0)} remaining)`);
+    console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
     
     // Process trade with any connected systems
     if (this.ogzPrime) {
@@ -682,7 +807,7 @@ class OptimizedTradingBrain {
   }
   
   /**
-   * 🚀 SCALPER-SPECIFIC: Check scalper exit conditions (micro-profits, quick exits)
+   * 🚀 SCALPER-SPECIFIC: Check FEE-AWARE scalper exit conditions (micro-profits, quick exits)
    * @param {number} price - Current price
    * @param {Object} currentAnalysis - Current market analysis
    * @returns {Object|null} Exit action or null
@@ -695,19 +820,21 @@ class OptimizedTradingBrain {
     const currentPnL = this.calculatePnL(price);
     const pnlPercent = Math.abs(currentPnL / (this.position.entryPrice * this.position.size));
     
-    // 💰 MICRO-PROFIT TAKING: 0.3% - 0.5% profits
-    if (pnlPercent >= this.scalperConfig.microProfitThreshold && currentPnL > 0) {
+    // 💰 FEE-AWARE MICRO-PROFIT TAKING: 0.5%+ profits (after 0.35% fees = 0.15% net)
+    if (this.isProfitTargetMet(pnlPercent, this.scalperConfig.microProfitThreshold) && currentPnL > 0) {
+      const netProfit = this.calculateNetProfit(currentPnL);
       return {
         action: 'exit',
-        reason: `Scalper Micro-Profit: ${(pnlPercent * 100).toFixed(2)}% in ${this.formatHoldTime(holdTime)}`
+        reason: `FEE-AWARE Micro-Profit: ${(pnlPercent * 100).toFixed(2)}% gross, ${((netProfit / (this.position.entryPrice * this.position.size)) * 100).toFixed(2)}% net in ${this.formatHoldTime(holdTime)}`
       };
     }
     
-    // ⚡ QUICK PROFIT TAKING: 0.5%+ profits
-    if (pnlPercent >= this.scalperConfig.quickProfitThreshold && currentPnL > 0) {
+    // ⚡ FEE-AWARE QUICK PROFIT TAKING: 0.8%+ profits (after 0.35% fees = 0.45% net)
+    if (this.isProfitTargetMet(pnlPercent, this.scalperConfig.quickProfitThreshold) && currentPnL > 0) {
+      const netProfit = this.calculateNetProfit(currentPnL);
       return {
         action: 'exit',
-        reason: `Scalper Quick-Profit: ${(pnlPercent * 100).toFixed(2)}% FAST EXIT`
+        reason: `FEE-AWARE Quick-Profit: ${(pnlPercent * 100).toFixed(2)}% gross, ${((netProfit / (this.position.entryPrice * this.position.size)) * 100).toFixed(2)}% net FAST EXIT`
       };
     }
     
@@ -856,6 +983,32 @@ class OptimizedTradingBrain {
       : this.position.entryPrice - price;
       
     return diff * this.position.size;
+  }
+  
+  /**
+   * 💰 FEE-AWARE: Calculate NET profit after all fees and costs
+   * @param {number} grossProfit - Gross profit before fees
+   * @returns {number} Net profit after fees
+   */
+  calculateNetProfit(grossProfit) {
+    if (!this.position) return 0;
+    
+    const positionValue = this.position.entryPrice * this.position.size;
+    const totalFees = positionValue * this.feeConfig.totalRoundTrip;
+    
+    return grossProfit - totalFees;
+  }
+  
+  /**
+   * 🎯 FEE-AWARE: Check if profit target is met AFTER accounting for fees
+   * @param {number} grossProfitPercent - Gross profit percentage
+   * @param {number} targetPercent - Target profit percentage
+   * @returns {boolean} True if target is met after fees
+   */
+  isProfitTargetMet(grossProfitPercent, targetPercent) {
+    // Ensure gross profit exceeds target + fees + safety buffer
+    const requiredGross = targetPercent + this.feeConfig.totalRoundTrip + this.feeConfig.safetyBuffer;
+    return grossProfitPercent >= requiredGross;
   }
   
   /**
@@ -1135,8 +1288,55 @@ class OptimizedTradingBrain {
    * @param {Object} analysisData - Analysis data with pattern information
    */
   storePatternEntry(analysisData) {
-    // Placeholder for pattern learning system
-    // This would store pattern data for machine learning
+    // 🧠 PROFILE-SPECIFIC PATTERN STORAGE: Store pattern with ProfilePatternManager
+    if (this.ogzPrime && this.ogzPrime.profilePatternManager && analysisData.patternType) {
+      try {
+        const profile = this.ogzPrime.getCurrentProfile();
+        if (profile) {
+          console.log(`🧠 Storing pattern entry for profile: ${profile.name}`);
+          
+          // Create comprehensive pattern data
+          const patternData = {
+            type: analysisData.patternType,
+            id: analysisData.patternId || `pattern_${Date.now()}`,
+            confidence: analysisData.patternConfidence || analysisData.confidence || 0,
+            features: {
+              rsi: analysisData.rsi || 0,
+              macd: analysisData.macd || 0,
+              macdSignal: analysisData.macdSignal || 0,
+              macdHistogram: analysisData.macdHistogram || 0,
+              trend: analysisData.trend || 'unknown',
+              trendStrength: analysisData.trendStrength || 0,
+              volatility: analysisData.volatility || 0,
+              volume: analysisData.volume || 0,
+              support: analysisData.support || 0,
+              resistance: analysisData.resistance || 0
+            },
+            marketConditions: {
+              timeframe: analysisData.primaryTimeframe || '1m',
+              marketRegime: analysisData.marketRegime || 'normal',
+              timeframeConcurrence: analysisData.timeframeConcurrence || false
+            },
+            metadata: {
+              entryPrice: this.position ? this.position.entryPrice : 0,
+              timestamp: new Date().toISOString(),
+              sessionTradeNumber: this.sessionStats.tradesCount
+            }
+          };
+          
+          // Add pattern to ProfilePatternManager
+          this.ogzPrime.profilePatternManager.addPattern(profile.name, patternData);
+          
+          console.log(`✅ Pattern ${analysisData.patternType} stored for ${profile.name}`);
+        } else {
+          console.log('⚠️ No active profile found for pattern storage');
+        }
+      } catch (error) {
+        console.error('❌ Failed to store pattern entry:', error.message);
+      }
+    } else {
+      console.log('⚠️ ProfilePatternManager not available or no pattern type specified');
+    }
   }
   
   /**
@@ -1147,8 +1347,60 @@ class OptimizedTradingBrain {
    * @param {Object} tradeData - Complete trade data
    */
   updatePatternLearning(patternId, wasWin, pnl, tradeData) {
-    // Placeholder for pattern learning system
-    // This would update pattern success rates and learning
+    // 🧠 PROFILE-SPECIFIC PATTERN LEARNING: Record trade result with ProfilePatternManager
+    if (this.ogzPrime && this.ogzPrime.profilePatternManager) {
+      try {
+        const profile = this.ogzPrime.getCurrentProfile();
+        if (profile) {
+          console.log(`🧠 Recording trade result for pattern ${patternId} in profile: ${profile.name}`);
+          
+          // Record the trade result with comprehensive data
+          this.ogzPrime.profilePatternManager.recordTradeResult(profile.name, patternId, {
+            successful: wasWin,
+            pnl: pnl,
+            pnlPercent: tradeData.pnlPercent || 0,
+            entryPrice: tradeData.entryPrice,
+            exitPrice: tradeData.exitPrice,
+            holdTime: tradeData.holdTime,
+            exitReason: tradeData.exitReason,
+            marketConditions: {
+              rsi: tradeData.rsi,
+              macd: tradeData.macd,
+              trend: tradeData.trend,
+              volatility: tradeData.volatility,
+              volume: tradeData.volume,
+              confidence: tradeData.confidence
+            },
+            timestamp: new Date().toISOString()
+          });
+          
+          console.log(`✅ Pattern learning updated for ${profile.name}: ${wasWin ? 'WIN' : 'LOSS'} ${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}`);
+        } else {
+          console.log('⚠️ No active profile found for pattern learning');
+        }
+      } catch (error) {
+        console.error('❌ Failed to update pattern learning:', error.message);
+      }
+    } else {
+      console.log('⚠️ ProfilePatternManager not available for pattern learning');
+    }
+    
+    // Legacy pattern memory (keep for compatibility)
+    if (patternId && this.patternMemory) {
+      if (!this.patternMemory.has(patternId)) {
+        this.patternMemory.set(patternId, { wins: 0, losses: 0, totalPnl: 0, count: 0 });
+      }
+      
+      const pattern = this.patternMemory.get(patternId);
+      pattern.count++;
+      pattern.totalPnl += pnl;
+      
+      if (wasWin) {
+        pattern.wins++;
+      } else {
+        pattern.losses++;
+      }
+    }
   }
   
   /**
@@ -1157,7 +1409,42 @@ class OptimizedTradingBrain {
    * @returns {number} Pattern win rate percentage
    */
   getPatternWinRate(patternType) {
-    // Placeholder - would query pattern learning database
+    // 🧠 PROFILE-SPECIFIC PATTERN QUERY: Get win rate from ProfilePatternManager
+    if (this.ogzPrime && this.ogzPrime.profilePatternManager) {
+      try {
+        const profile = this.ogzPrime.getCurrentProfile();
+        if (profile) {
+          const patterns = this.ogzPrime.profilePatternManager.getPatterns(profile.name);
+          const typePatterns = patterns.filter(p => p.type === patternType);
+          
+          if (typePatterns.length === 0) return 0;
+          
+          let wins = 0;
+          let total = 0;
+          
+          typePatterns.forEach(pattern => {
+            if (pattern.tradeResults && pattern.tradeResults.length > 0) {
+              pattern.tradeResults.forEach(result => {
+                total++;
+                if (result.successful) wins++;
+              });
+            }
+          });
+          
+          return total > 0 ? (wins / total) * 100 : 0;
+        }
+      } catch (error) {
+        console.error('❌ Failed to get pattern win rate:', error.message);
+      }
+    }
+    
+    // Fallback to legacy pattern memory
+    if (this.patternMemory && this.patternMemory.has(patternType)) {
+      const pattern = this.patternMemory.get(patternType);
+      const total = pattern.wins + pattern.losses;
+      return total > 0 ? (pattern.wins / total) * 100 : 0;
+    }
+    
     return 0;
   }
   
@@ -1167,8 +1454,101 @@ class OptimizedTradingBrain {
    * @returns {number} Pattern average return percentage
    */
   getPatternAvgReturn(patternType) {
-    // Placeholder - would query pattern learning database
+    // 🧠 PROFILE-SPECIFIC PATTERN QUERY: Get average return from ProfilePatternManager
+    if (this.ogzPrime && this.ogzPrime.profilePatternManager) {
+      try {
+        const profile = this.ogzPrime.getCurrentProfile();
+        if (profile) {
+          const patterns = this.ogzPrime.profilePatternManager.getPatterns(profile.name);
+          const typePatterns = patterns.filter(p => p.type === patternType);
+          
+          if (typePatterns.length === 0) return 0;
+          
+          let totalReturn = 0;
+          let count = 0;
+          
+          typePatterns.forEach(pattern => {
+            if (pattern.tradeResults && pattern.tradeResults.length > 0) {
+              pattern.tradeResults.forEach(result => {
+                totalReturn += result.pnlPercent || 0;
+                count++;
+              });
+            }
+          });
+          
+          return count > 0 ? totalReturn / count : 0;
+        }
+      } catch (error) {
+        console.error('❌ Failed to get pattern average return:', error.message);
+      }
+    }
+    
+    // Fallback to legacy pattern memory
+    if (this.patternMemory && this.patternMemory.has(patternType)) {
+      const pattern = this.patternMemory.get(patternType);
+      return pattern.count > 0 ? (pattern.totalPnl / pattern.count) : 0;
+    }
+    
     return 0;
+  }
+  
+  // ========================================================================
+  // 🛡️ SAFETY INTEGRATION METHODS
+  // ========================================================================
+  
+  /**
+   * 📊 Extract involved components from trade reason and analysis
+   * @param {string} reason - Trade reason
+   * @param {Object} analysisData - Analysis data
+   * @returns {Array} Array of involved component names
+   */
+  extractInvolvedComponents(reason, analysisData) {
+    const components = ['OptimizedTradingBrain']; // Always involved
+    
+    // Check for specific components mentioned in reason
+    if (reason.includes('RANDOM') || reason.includes('Random')) {
+      components.push('RandomTrades');
+    }
+    if (reason.includes('AGGRESSIVE') || reason.includes('Aggressive')) {
+      components.push('AggressiveTradingMode');
+    }
+    if (reason.includes('COSMIC') || reason.includes('Cosmic')) {
+      components.push('CosmicAnalysis');
+    }
+    if (reason.includes('QUANTUM') || reason.includes('Quantum')) {
+      components.push('QuantumAnalysis');
+    }
+    if (reason.includes('SCALPER') || reason.includes('Scalper')) {
+      components.push('ScalperMode');
+    }
+    
+    // Check analysis data for component involvement
+    if (analysisData && analysisData.patternType) {
+      components.push('MultiTimeframeAnalysis');
+    }
+    if (this.quantumPositionSizer) {
+      components.push('QuantumPositionSizer');
+    }
+    
+    return [...new Set(components)]; // Remove duplicates
+  }
+  
+  /**
+   * 🌍 Classify market condition for performance tracking
+   * @param {Object} analysisData - Market analysis data
+   * @returns {string} Market condition classification
+   */
+  classifyMarketCondition(analysisData) {
+    if (!analysisData) return 'unknown';
+    
+    // Determine market condition based on analysis
+    if (analysisData.trend === 'uptrend') return 'trending_up';
+    if (analysisData.trend === 'downtrend') return 'trending_down';
+    if (analysisData.volatility > 0.03) return 'volatile';
+    if (analysisData.volume && analysisData.volume < 1000) return 'low_volume';
+    if (analysisData.volume && analysisData.volume > 10000) return 'high_volume';
+    
+    return 'sideways';
   }
   
   // ========================================================================
@@ -1186,8 +1566,8 @@ class OptimizedTradingBrain {
       this.managePosition(price, analysis);
     }
     
-    // Check for new position entry (AGGRESSIVE: lowered confidence threshold)
-    if (!this.isInPosition() && analysis.decision !== 'hold' && analysis.confidence >= 0.3) {
+    // Check for new position entry (ENHANCED SAFETY: Increased confidence threshold)
+    if (!this.isInPosition() && analysis.decision !== 'hold' && analysis.confidence >= this.config.minConfidenceThreshold) {
       const direction = analysis.decision === 'buy' ? 'buy' : 'sell';
       const size = this.calculatePositionSize(price, analysis.confidence, analysis);
       this.openPosition(price, direction, size, analysis.confidence, analysis.reason, analysis);

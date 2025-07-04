@@ -326,22 +326,45 @@ class RiskManager {
   }
   
   /**
+   * Get Maximum Position Size - Quantum Compatibility Method
+   *
+   * QUANTUM COMPATIBILITY: Provides maximum allowed position size for quantum
+   * position sizing calculations. Used by QuantumPositionSizer.
+   *
+   * @param {number} accountBalance - Current account balance
+   * @returns {number} - Maximum position size in dollars
+   */
+  getMaxPositionSize(accountBalance) {
+    if (!accountBalance || accountBalance <= 0) {
+      return 0;
+    }
+    
+    // Maximum position size is based on maxPositionSizePercent
+    const maxSize = (accountBalance * this.config.maxPositionSizePercent) / 100;
+    
+    // Apply safety buffer (95% of available balance)
+    const availableBalance = accountBalance * 0.95;
+    
+    return Math.min(maxSize, availableBalance);
+  }
+
+  /**
    * Calculate Position Size - Core Risk Management Function
-   * 
+   *
    * CRITICAL ALGORITHM: This is where all risk factors combine to determine
    * the appropriate position size for a trade. It considers account balance,
    * current performance, market volatility, and various risk factors.
-   * 
+   *
    * SCALING IMPORTANCE: New developers can adjust individual risk factors
    * without breaking the overall risk calculation framework.
-   * 
+   *
    * @param {number} accountBalance - Current account balance
    * @param {number} currentPrice - Current market price
    * @param {Object} marketConditions - Market analysis data
    * @param {number} marketConditions.volatility - Current market volatility
    * @param {string} marketConditions.trend - Market trend direction
    * @param {number} marketConditions.confidence - AI confidence score
-   * 
+   *
    * @returns {number} - Calculated position size in dollars
    */
   calculatePositionSize(accountBalance, currentPrice, marketConditions = {}) {

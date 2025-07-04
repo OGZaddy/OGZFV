@@ -33,5 +33,16 @@
   "maxSwingLookback": 100,
   "srLevelStrength": 3,
   "srProximityPercent": 0.5,
-  "lastModified": "2025-07-02T16:54:30.721Z"
+  "fees": {
+    "maker": 0.0010,
+    "taker": 0.0015,
+    "slippage": 0.0005,
+    "totalRoundTrip": 0.0035
+  },
+  "feeAwareProfitTargets": {
+    "microProfitThreshold": 0.005,
+    "quickProfitThreshold": 0.008,
+    "safetyBuffer": 0.001
+  },
+  "lastModified": "2025-07-02T17:45:30.000Z"
 }
