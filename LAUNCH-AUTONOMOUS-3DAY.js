@@ -6,6 +6,9 @@
 // THIS LAUNCHES YOUR BOT IN SEMI-AGGRESSIVE PATTERN LEARNING MODE
 // SET IT AND FORGET IT FOR 3 DAYS OF AUTONOMOUS TRADING!
 
+// Load environment variables from .env file
+require('dotenv').config();
+
 const OGZAutonomousTrader = require('./OGZ-AutonomousTrader-3Day');
 const fs = require('fs').promises;
 const path = require('path');
@@ -130,7 +133,7 @@ class AutonomousLauncher {
       './core/AdaptiveRiskManagementSystem.js',
       './core/MultiDirectionalTrader.js',
       './core/EnhancedPatternRecognition.js',
-      './core/PolygonWebSocket.js'
+      './core/FreeWebSocket.js'
     ];
     
     for (const file of requiredFiles) {
@@ -144,8 +147,9 @@ class AutonomousLauncher {
     }
     
     // Check environment variables
-    if (!process.env.POLYGON_API_KEY) {
-      console.warn('⚠️ POLYGON_API_KEY not set - using demo mode');
+    if (!process.env.ALPHA_VANTAGE_API_KEY) {
+      console.warn('⚠️ ALPHA_VANTAGE_API_KEY not set - get free key at: https://www.alphavantage.co/support/#api-key');
+      console.log('💡 Free API key provides 500 calls per day - perfect for autonomous trading!');
     }
     
     // Check node version

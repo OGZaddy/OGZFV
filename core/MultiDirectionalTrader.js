@@ -1008,6 +1008,102 @@ class MultiDirectionalTrader extends EventEmitter {
   }
   
   /**
+   * Execute trade (interface method for autonomous trader)
+   */
+  async executeTrade(tradeParams) {
+    try {
+      const { symbol, direction, quantity, price, stopLoss, metadata } = tradeParams;
+      
+      console.log(`🎯 MultiDirectionalTrader executing: ${direction} ${symbol} @ ${price}`);
+      console.log(`📊 Quantity: ${quantity}, Stop: ${stopLoss}`);
+      console.log(`🧠 Metadata: ${JSON.stringify(metadata)}`);
+      
+      // Calculate take profit (simple 2:1 risk/reward)
+      const riskAmount = Math.abs(price - stopLoss);
+      const takeProfit = direction === 'BUY'
+        ? price + (riskAmount * 2)
+        : price - (riskAmount * 2);
+      
+      // Create trade object for position opening
+      const trade = {
+        direction: direction === 'BUY' ? 'long' : 'short',
+        asset: symbol,
+        size: quantity / price, // Convert dollar amount to percentage
+        entry: price,
+        stopLoss: stopLoss,
+        takeProfit: takeProfit,
+        type: metadata?.patternType || 'standard',
+        regime: metadata?.regime || 'unknown',
+        confidence: metadata?.confidence || 0.5,
+        reasoning: `${metadata?.regime || 'Unknown'} regime trade with ${((metadata?.confidence || 0.5) * 100).toFixed(0)}% confidence`
+      };
+      
+      // Open the position
+      const position = await this.openPosition(trade);
+      
+      if (position) {
+        console.log(`✅ Trade executed successfully: Position ${position.id}`);
+        
+        // Emit trade executed event for the autonomous trader
+        this.emit('trade_executed', {
+          success: true,
+          orderId: position.id,
+          symbol: symbol,
+          direction: direction,
+          quantity: quantity,
+          price: price,
+          stopLoss: stopLoss,
+          takeProfit: takeProfit,
+          position: position,
+          timestamp: Date.now()
+        });
+        
+        return {
+          success: true,
+          orderId: position.id,
+          executedPrice: price,
+          executedQuantity: quantity,
+          position: position,
+          message: `${direction} ${symbol} position opened successfully`
+        };
+      } else {
+        console.log('❌ Position opening failed');
+        
+        this.emit('trade_executed', {
+          success: false,
+          error: 'Position opening failed',
+          symbol: symbol,
+          direction: direction,
+          timestamp: Date.now()
+        });
+        
+        return {
+          success: false,
+          error: 'Position opening failed',
+          message: 'Unable to open position'
+        };
+      }
+      
+    } catch (error) {
+      console.error('❌ Trade execution error:', error);
+      
+      this.emit('trade_executed', {
+        success: false,
+        error: error.message,
+        symbol: tradeParams.symbol,
+        direction: tradeParams.direction,
+        timestamp: Date.now()
+      });
+      
+      return {
+        success: false,
+        error: error.message,
+        message: 'Trade execution failed'
+      };
+    }
+  }
+
+  /**
    * Get current status
    */
   getStatus() {

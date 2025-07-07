@@ -1,0 +1,16 @@
+{
+  "timestamp": 1751660807502,
+  "runtime": 37,
+  "isRunning": false,
+  "currentBalance": 10000,
+  "totalTrades": 0,
+  "winRate": 0,
+  "currentPrice": 0,
+  "openPositions": 0,
+  "emergencyStop": false,
+  "healthStatus": {
+    "lastUpdate": 1751660767470,
+    "websocketConnected": false,
+    "dataFlowing": false
+  }
+}

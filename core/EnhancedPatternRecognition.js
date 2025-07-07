@@ -655,9 +655,9 @@ class EnhancedPatternChecker {
    */
   constructor(options = {}) {
     this.options = {
-      similarityThreshold: 0.8,
-      minTradeHistory: 3,
-      confidenceThreshold: 0.6,
+      similarityThreshold: 0.75, // Slightly more lenient similarity matching
+      minTradeHistory: 2,        // Lower minimum history for faster adaptation
+      confidenceThreshold: 0.45, // More aggressive confidence threshold
       ...options
     };
     

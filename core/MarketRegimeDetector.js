@@ -602,6 +602,69 @@ class MarketRegimeDetector extends EventEmitter {
   }
   
   /**
+   * Restart the regime detector
+   */
+  async restart() {
+    try {
+      console.log('🔄 Restarting Market Regime Detector...');
+      
+      // Reset state
+      this.currentRegime = this.regimes.RANGING;
+      this.previousRegime = this.regimes.RANGING;
+      this.regimeStrength = 0;
+      this.lastUpdate = 0;
+      this.updateCount = 0;
+      
+      // Reset metrics
+      this.metrics = {
+        volatility: 0,
+        trendStrength: 0,
+        trendDirection: 0,
+        volumeRatio: 1,
+        pricePosition: 0.5,
+        momentum: 0,
+        correlationStrength: 0,
+        riskOnIndicator: 0,
+        flightToQuality: 0,
+        cryptoCorrelation: 0,
+        macroCorrelation: 0,
+        marketStress: 0,
+        liquidityConditions: 1,
+        sentimentScore: 0.5,
+        fearGreedIndex: 50
+      };
+      
+      // Clear history
+      this.regimeHistory = [];
+      this.regimeTransitions.clear();
+      this.correlationData.clear();
+      this.priceData.clear();
+      this.returns.clear();
+      
+      console.log('✅ Market Regime Detector restarted successfully');
+      return true;
+      
+    } catch (error) {
+      console.error('❌ Failed to restart regime detector:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get candles for pattern analysis
+   * @returns {Array} Array of candle data
+   */
+  getCandles() {
+    // Return the stored price history as candles
+    if (!this.priceHistory || this.priceHistory.length === 0) {
+      return [];
+    }
+    
+    // Convert price history to proper candle format
+    return Array.from(this.priceHistory.values()).flat();
+  }
+
+  /**
    * Get current state for external use
    */
   getState() {

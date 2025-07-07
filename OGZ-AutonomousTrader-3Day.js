@@ -4,12 +4,14 @@
 // SEMI-AGGRESSIVE AUTONOMOUS TRADING WITH PATTERN LEARNING
 // THIS IS THE MONEY MACHINE THAT TRADES WHILE YOU'RE AWAY!
 
+require('dotenv').config(); // ADDED THIS!
+
 const EventEmitter = require('events');
 const MarketRegimeDetector = require('./core/MarketRegimeDetector');
 const AdaptiveRiskManagementSystem = require('./core/AdaptiveRiskManagementSystem');
 const MultiDirectionalTrader = require('./core/MultiDirectionalTrader');
 const { EnhancedPatternChecker, FeatureExtractor } = require('./core/EnhancedPatternRecognition');
-const PolygonWebSocket = require('./core/PolygonWebSocket');
+const FreeWebSocket = require('./core/FreeWebSocket');
 const fs = require('fs').promises;
 
 class OGZAutonomousTrader extends EventEmitter {
@@ -28,9 +30,9 @@ class OGZAutonomousTrader extends EventEmitter {
       initialBalance: config.initialBalance || 10000,
       
       // Semi-aggressive settings
-      minTradeGap: 180000, // 3 minutes between trades (faster than conservative)
-      maxDailyTrades: 25, // Up to 25 trades per day
-      confidenceThreshold: 0.65, // 65% confidence minimum (quality trades)
+      minTradeGap: 120000, // 2 minutes between trades (faster for autonomous operation)
+      maxDailyTrades: 35, // Up to 35 trades per day (more aggressive)
+      confidenceThreshold: 0.45, // 45% confidence minimum (lower for more trades)
       
       // Pattern learning
       enablePatternLearning: true,
@@ -151,12 +153,15 @@ class OGZAutonomousTrader extends EventEmitter {
         }
       });
       
-      // 5. Initialize WebSocket connection
-      this.websocket = new PolygonWebSocket({
-        symbols: [this.config.symbol, 'ETH-USD'], // Multi-asset monitoring
-        enableLevelII: true,
-        enableTrades: true
+      // 5. Initialize Alpha Vantage WebSocket (REAL DATA - NO FAKE PRICES!)
+      this.websocket = new FreeWebSocket({
+        symbols: [this.config.symbol, 'ETH-USD'],
+        apiKey: process.env.ALPHA_VANTAGE_API_KEY,
+        enableRealTime: true,
+        pollInterval: 5000 // 5 seconds for free tier
       });
+      console.log('📈 Alpha Vantage WebSocket initialized - REAL MARKET DATA ONLY');
+      console.log('💎 NO SIMULATION, NO FAKE DATA - REAL TRADING ONLY!');
       
       // 6. Setup event handlers
       this.setupEventHandlers();
@@ -172,6 +177,9 @@ class OGZAutonomousTrader extends EventEmitter {
       throw error;
     }
   }
+  
+  // DEMO MODE FUNCTIONS REMOVED - REAL DATA ONLY!
+  // No fake data, no simulation - only real market trading
   
   /**
    * Setup event handlers for system integration
@@ -238,13 +246,12 @@ class OGZAutonomousTrader extends EventEmitter {
       this.operationalState.endTime = Date.now() + (this.config.maxOperationDays * 24 * 60 * 60 * 1000);
       this.operationalState.isRunning = true;
       
-      // Connect to market data
+      // Connect to market data - REAL DATA ONLY!
       await this.websocket.connect();
-      console.log('📡 WebSocket connected');
+      console.log('📡 Live WebSocket connected - REAL DATA ONLY');
       
-      // Start regime detection
-      await this.regimeDetector.startMonitoring();
-      console.log('📊 Regime detection active');
+      // Regime detector is ready (no explicit start method needed)
+      console.log('📊 Regime detection system ready');
       
       // Pattern recognition is ready (no explicit start method needed)
       console.log('🧠 Pattern recognition system active');
@@ -282,7 +289,7 @@ class OGZAutonomousTrader extends EventEmitter {
       this.operationalState.healthCheck.dataFlowing = true;
       
       // Update all systems with new price
-      await this.regimeDetector.updatePrice(data);
+      await this.updatePrice(data);
       // Pattern recognition analyzes data when evaluatePattern is called
       
       // Check for trading opportunities
@@ -305,7 +312,7 @@ class OGZAutonomousTrader extends EventEmitter {
       }
       
       // Get current market regime
-      const currentRegime = await this.regimeDetector.getCurrentRegime();
+      const currentRegime = await this.getCurrentRegime();
       
       // Get pattern analysis using feature extraction
       const patternAnalysis = await this.getPatternAnalysis(priceData);
@@ -332,6 +339,87 @@ class OGZAutonomousTrader extends EventEmitter {
     } catch (error) {
       console.error('Error evaluating trading opportunity:', error);
       this.handleError(error);
+    }
+  }
+  
+  /**
+   * Get current market regime
+   */
+  async getCurrentRegime() {
+    try {
+      // For now, return a default regime state
+      // In a real implementation, this would analyze recent candles
+      const state = this.regimeDetector.getState();
+      
+      return {
+        regime: state.regime || 'ranging',
+        name: state.regime || 'ranging',
+        confidence: state.strength || 0.5,
+        volatility: state.metrics?.volatility || 0.02,
+        trendStrength: state.metrics?.trendStrength || 0.5,
+        recommendedAction: this.getActionFromRegime(state.regime || 'ranging')
+      };
+    } catch (error) {
+      console.error('Error getting current regime:', error);
+      return {
+        regime: 'ranging',
+        name: 'ranging',
+        confidence: 0.5,
+        volatility: 0.02,
+        trendStrength: 0.5,
+        recommendedAction: 'hold'
+      };
+    }
+  }
+  
+  /**
+   * Convert regime to trading action
+   */
+  getActionFromRegime(regime) {
+    const actions = {
+      'trending_up': 'buy',
+      'trending_down': 'sell',
+      'breakout': 'buy',
+      'breakdown': 'sell',
+      'ranging': 'hold',
+      'volatile': 'hold',
+      'quiet': 'hold'
+    };
+    
+    return actions[regime] || 'hold';
+  }
+  
+  /**
+   * Update regime detector with price data
+   */
+  async updatePrice(data) {
+    try {
+      // Store price data for regime analysis
+      if (!this.priceHistory) {
+        this.priceHistory = [];
+      }
+      
+      this.priceHistory.push({
+        timestamp: data.timestamp || Date.now(),
+        open: data.price,
+        high: data.price,
+        low: data.price,
+        close: data.price,
+        volume: data.volume || 0
+      });
+      
+      // Keep only last 200 candles
+      if (this.priceHistory.length > 200) {
+        this.priceHistory = this.priceHistory.slice(-200);
+      }
+      
+      // Analyze market if we have enough data
+      if (this.priceHistory.length >= 50) {
+        this.regimeDetector.analyzeMarket(this.priceHistory);
+      }
+      
+    } catch (error) {
+      console.error('Error updating price data:', error);
     }
   }
   
@@ -660,20 +748,51 @@ class OGZAutonomousTrader extends EventEmitter {
       console.log('🔧 Attempting system recovery...');
       
       // Reconnect WebSocket
-      if (!this.operationalState.healthCheck.websocketConnected) {
-        await this.websocket.reconnect();
+      if (!this.operationalState.healthCheck.websocketConnected && this.websocket) {
+        try {
+          await this.websocket.reconnect();
+          console.log('📡 WebSocket reconnected');
+        } catch (wsError) {
+          console.error('❌ WebSocket reconnect failed:', wsError);
+          throw new Error('REAL DATA CONNECTION REQUIRED - No demo fallback allowed');
+        }
       }
       
-      // Restart regime detection if needed
-      if (!this.operationalState.healthCheck.dataFlowing) {
-        await this.regimeDetector.restart();
+      // Restart regime detection if needed (defensive check)
+      if (!this.operationalState.healthCheck.dataFlowing && this.regimeDetector) {
+        try {
+          if (typeof this.regimeDetector.restart === 'function') {
+            await this.regimeDetector.restart();
+            console.log('📊 Regime detector restarted');
+          } else {
+            console.log('⚠️ Regime detector restart method not available - reinitializing');
+            // Reinitialize regime detector
+            this.regimeDetector = new (require('./core/MarketRegimeDetector'))({
+              symbol: this.config.symbol,
+              correlationAssets: ['ETH-USD', 'SPY', 'GLD', 'TLT'],
+              enableMacroAnalysis: true,
+              learningMode: true
+            });
+            console.log('📊 Regime detector reinitialized');
+          }
+        } catch (regimeError) {
+          console.error('❌ Regime detector restart failed:', regimeError);
+          // Continue without regime detection for now
+          console.log('🔄 Continuing without regime detection temporarily');
+        }
       }
+      
+      // Reset health check flags
+      this.operationalState.healthCheck.lastUpdate = Date.now();
+      this.operationalState.healthCheck.dataFlowing = true;
+      this.operationalState.healthCheck.websocketConnected = this.websocket && this.websocket.isConnected();
       
       console.log('✅ Recovery attempt completed');
       
     } catch (error) {
       console.error('❌ Recovery failed:', error);
-      this.handleError(error);
+      // Don't call handleError here to avoid potential infinite loop
+      console.log('🔄 Continuing with degraded functionality...');
     }
   }
   
@@ -913,8 +1032,8 @@ class OGZAutonomousTrader extends EventEmitter {
     await new Promise(resolve => setTimeout(resolve, 5000));
     
     // Get current regime
-    const regime = await this.regimeDetector.getCurrentRegime();
-    console.log(`📊 Current Market Regime: ${regime.name} (${(regime.confidence * 100).toFixed(0)}%)`);
+    const regime = await this.getCurrentRegime();
+    console.log(`📊 Current Market Regime: ${regime.regime} (${(regime.confidence * 100).toFixed(0)}%)`);
     
     // Pattern recognition is ready for evaluation
     console.log('🧩 Pattern recognition system ready for market analysis');

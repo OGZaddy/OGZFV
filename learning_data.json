@@ -1,0 +1,38 @@
+{
+  "timestamp": 1751898668733,
+  "regimeSuccessRates": [],
+  "timeOfDayPerformance": [
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5
+  ],
+  "patternDatabase": [],
+  "performanceLog": [],
+  "operationalMetrics": {
+    "totalTrades": 0,
+    "winningTrades": 0,
+    "totalProfit": 0,
+    "currentBalance": 10000
+  }
+}
