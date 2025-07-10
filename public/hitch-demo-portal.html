@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HITCH NLP - OGZPrime Demo Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Matrix rain effect */
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        /* PIN Entry Screen */
+        .pin-screen {
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .pin-screen h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px #00ff00;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        .pin-screen p {
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .pin-input {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .pin-digit {
+            width: 60px;
+            height: 80px;
+            font-size: 36px;
+            text-align: center;
+            background: transparent;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .pin-digit:focus {
+            outline: none;
+            box-shadow: 0 0 20px #00ff00;
+            transform: scale(1.1);
+        }
+
+        .pin-error {
+            color: #ff0000;
+            margin-top: 20px;
+            animation: shake 0.5s;
+        }
+
+        /* Demo Interface */
+        .demo-interface {
+            display: none;
+            width: 90%;
+            max-width: 800px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .demo-header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px #00ff00;
+        }
+
+        .demo-header p {
+            color: #888;
+        }
+
+        .command-input-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        #command-input {
+            width: 100%;
+            padding: 20px;
+            font-size: 18px;
+            background: #111;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+
+        #command-input:focus {
+            outline: none;
+            box-shadow: 0 0 30px #00ff00;
+        }
+
+        .voice-button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ff0066;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .voice-button:hover {
+            background: #ff3388;
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .voice-button.recording {
+            background: #00ff00;
+            color: #000;
+            animation: pulse 1s infinite;
+        }
+
+        .suggestions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .suggestion {
+            padding: 15px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .suggestion:hover {
+            border-color: #00ff00;
+            transform: translateX(-5px);
+            box-shadow: 5px 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .output-panel {
+            background: #111;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            padding: 20px;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .output-message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-left: 3px solid #00ff00;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .output-message.error {
+            border-color: #ff0000;
+            color: #ff6666;
+        }
+
+        .output-message.success {
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+
+        .demo-result {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 3px;
+        }
+
+        .cta-panel {
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(45deg, #001100, #003300);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 255, 0, 0.1) 0%, transparent 70%);
+            animation: rotate 10s linear infinite;
+        }
+
+        .cta-panel h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+            text-transform: uppercase;
+            margin: 10px;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px #00ff00;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px #00ff00; }
+            50% { text-shadow: 0 0 40px #00ff00, 0 0 60px #00ff00; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 600px) {
+            .pin-digit { width: 50px; height: 60px; font-size: 24px; }
+            .demo-header h1 { font-size: 24px; }
+            .suggestions { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Matrix Background -->
+    <canvas id="matrix-bg"></canvas>
+
+    <!-- PIN Entry Screen -->
+    <div class="pin-screen" id="pinScreen">
+        <h1>🧠 HITCH NLP</h1>
+        <p>Natural Language Trading Interface Demo</p>
+        <p style="color: #666; font-size: 14px;">Enter PIN to access demo</p>
+        
+        <div class="pin-input">
+            <input type="text" class="pin-digit" maxlength="1" data-index="0">
+            <input type="text" class="pin-digit" maxlength="1" data-index="1">
+            <input type="text" class="pin-digit" maxlength="1" data-index="2">
+            <input type="text" class="pin-digit" maxlength="1" data-index="3">
+        </div>
+        
+        <div class="pin-error" id="pinError" style="display: none;">
+            Incorrect PIN. Try again.
+        </div>
+    </div>
+
+    <!-- Demo Interface -->
+    <div class="demo-interface" id="demoInterface">
+        <div class="demo-header">
+            <h1>🧠 HITCH NLP DEMO</h1>
+            <p>Trade with natural language. No coding required.</p>
+        </div>
+
+        <div class="command-input-container">
+            <input 
+                type="text" 
+                id="command-input" 
+                placeholder="Tell the bot what to do... (e.g., 'only trade when RSI is below 30')"
+                autocomplete="off"
+            >
+            <button class="voice-button" id="voiceButton" title="Click to speak">
+                🎤 Voice
+            </button>
+        </div>
+
+        <div class="suggestions">
+            <div class="suggestion" onclick="setCommand('Only trade when RSI is below 30')">
+                📊 "Only trade when RSI is below 30"
+            </div>
+            <div class="suggestion" onclick="setCommand('Set risk to 0.5 percent')">
+                ⚖️ "Set risk to 0.5 percent"
+            </div>
+            <div class="suggestion" onclick="setCommand('Stop trading after 3pm')">
+                ⏰ "Stop trading after 3pm"
+            </div>
+            <div class="suggestion" onclick="setCommand('Activate scalper profile')">
+                ⚡ "Activate scalper profile"
+            </div>
+            <div class="suggestion" onclick="setCommand('Avoid trades during high volatility')">
+                📈 "Avoid trades during high volatility"
+            </div>
+            <div class="suggestion" onclick="setCommand('Show me today\'s performance')">
+                📊 "Show me today's performance"
+            </div>
+        </div>
+
+        <div class="output-panel" id="outputPanel">
+            <div class="output-message">
+                <strong>🤖 HITCH:</strong> Ready for your commands. Try speaking naturally about your trading strategy.
+            </div>
+        </div>
+
+        <div class="cta-panel">
+            <h2>🚀 Ready to Trade with AI?</h2>
+            <p style="margin-bottom: 20px; color: #aaa;">
+                This is just a taste of what HITCH can do. Get the full OGZPrime system and trade like the future.
+            </p>
+            <button class="cta-button" onclick="window.location.href='https://ogzprime.com/pricing'">
+                Get Full Access
+            </button>
+            <button class="cta-button" style="background: transparent; border: 2px solid #00ff00; color: #00ff00;">
+                Watch Demo Video
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Demo PIN (you can change this)
+        const DEMO_PIN = '1234';
+        
+        // Matrix rain effect
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+        const matrixArray = matrix.split("");
+        
+        const fontSize = 10;
+        const columns = canvas.width / fontSize;
+        
+        const drops = [];
+        for(let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+        
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ff00';
+            ctx.font = fontSize + 'px monospace';
+            
+            for(let i = 0; i < drops.length; i++) {
+                const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        
+        setInterval(drawMatrix, 35);
+        
+        // PIN input handling
+        const pinInputs = document.querySelectorAll('.pin-digit');
+        let currentPin = '';
+        
+        pinInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1) {
+                    if (index < pinInputs.length - 1) {
+                        pinInputs[index + 1].focus();
+                    }
+                }
+                
+                // Check if all digits entered
+                currentPin = Array.from(pinInputs).map(i => i.value).join('');
+                if (currentPin.length === 4) {
+                    checkPin();
+                }
+            });
+            
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                    pinInputs[index - 1].focus();
+                }
+            });
+        });
+        
+        function checkPin() {
+            if (currentPin === DEMO_PIN) {
+                document.getElementById('pinScreen').style.display = 'none';
+                document.getElementById('demoInterface').style.display = 'block';
+            } else {
+                document.getElementById('pinError').style.display = 'block';
+                pinInputs.forEach(input => {
+                    input.value = '';
+                    input.style.borderColor = '#ff0000';
+                });
+                pinInputs[0].focus();
+                
+                setTimeout(() => {
+                    document.getElementById('pinError').style.display = 'none';
+                    pinInputs.forEach(input => {
+                        input.style.borderColor = '#00ff00';
+                    });
+                }, 2000);
+            }
+        }
+        
+        // Demo command processing
+        const commandInput = document.getElementById('command-input');
+        const outputPanel = document.getElementById('outputPanel');
+        
+        function setCommand(command) {
+            commandInput.value = command;
+            commandInput.focus();
+        }
+        
+        commandInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                processCommand();
+            }
+        });
+        
+        function processCommand() {
+            const command = commandInput.value.trim();
+            if (!command) return;
+            
+            // Add user message
+            addOutput(`👤 USER: ${command}`, 'user');
+            
+            // Simulate processing
+            setTimeout(() => {
+                const response = generateDemoResponse(command);
+                addOutput(`🤖 HITCH: ${response.message}`, response.type);
+                
+                if (response.details) {
+                    addDemoResult(response.details);
+                }
+            }, 1000);
+            
+            commandInput.value = '';
+        }
+        
+        function addOutput(message, type = 'success') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `output-message ${type}`;
+            messageDiv.innerHTML = message;
+            outputPanel.appendChild(messageDiv);
+            outputPanel.scrollTop = outputPanel.scrollHeight;
+        }
+        
+        function addDemoResult(details) {
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'demo-result';
+            resultDiv.innerHTML = `
+                <strong>📋 Demo Result:</strong><br>
+                ${details}
+            `;
+            outputPanel.appendChild(resultDiv);
+            outputPanel.scrollTop = outputPanel.scrollHeight;
+        }
+        
+        function generateDemoResponse(command) {
+            const lower = command.toLowerCase();
+            
+            // Pattern matching for demo
+            if (lower.includes('rsi') && (lower.includes('below') || lower.includes('under'))) {
+                return {
+                    type: 'success',
+                    message: 'Trading condition added: Only enter trades when RSI < 30',
+                    details: 'Config updated:<br>• Entry condition: RSI < 30<br>• This would filter out overbought conditions<br>• Backtesting shows 73% win rate with this filter'
+                };
+            }
+            
+            if (lower.includes('risk') && lower.includes('%')) {
+                const match = lower.match(/(\d+(?:\.\d+)?)\s*%?/);
+                const risk = match ? match[1] : '0.5';
+                return {
+                    type: 'success',
+                    message: `Risk management updated to ${risk}% per trade`,
+                    details: `Config updated:<br>• Risk per trade: ${risk}%<br>• Max position size: ${risk * 2}%<br>• Stop loss: -${risk}%`
+                };
+            }
+            
+            if (lower.includes('stop') && lower.includes('trading')) {
+                return {
+                    type: 'success',
+                    message: 'Trading halted immediately',
+                    details: 'All positions closed<br>• Active trades: 0<br>• Bot status: STOPPED<br>• P&L saved to history'
+                };
+            }
+            
+            if (lower.includes('profile')) {
+                return {
+                    type: 'success',
+                    message: 'Profile switching available in full version',
+                    details: 'Full version includes:<br>• Scalper Profile<br>• Conservative Profile<br>• Aggressive Profile<br>• Custom profiles'
+                };
+            }
+            
+            if (lower.includes('performance') || lower.includes('today')) {
+                return {
+                    type: 'success',
+                    message: "Today's performance summary",
+                    details: 'Demo metrics:<br>• Trades: 47<br>• Win rate: 68.1%<br>• Profit: +4.7%<br>• Best trade: +1.2%'
+                };
+            }
+            
+            return {
+                type: 'success',
+                message: 'Command understood! Full processing available in the complete version.',
+                details: 'Natural language processing recognizes:<br>• Trading conditions<br>• Risk parameters<br>• Time restrictions<br>• Performance queries<br>• And much more...'
+            };
+        }
+        
+        // Voice input simulation
+        const voiceButton = document.getElementById('voiceButton');
+        let recognition;
+        
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+            
+            recognition.onstart = () => {
+                voiceButton.classList.add('recording');
+                voiceButton.textContent = '🔴 Listening...';
+            };
+            
+            recognition.onend = () => {
+                voiceButton.classList.remove('recording');
+                voiceButton.textContent = '🎤 Voice';
+            };
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                commandInput.value = transcript;
+                processCommand();
+            };
+            
+            voiceButton.addEventListener('click', () => {
+                recognition.start();
+            });
+        } else {
+            voiceButton.style.display = 'none';
+        }
+        
+        // Window resize handling
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>

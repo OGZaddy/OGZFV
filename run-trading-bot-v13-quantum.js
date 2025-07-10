@@ -35,6 +35,9 @@ const MultiDirectionalTrader = require('./core/MultiDirectionalTrader');
 const LogLearningSystem = require('./core/LogLearningSystem');
 const MLLogProcessor = require('./core/MLLogProcessor');
 
+// 🧠 HITCH NLP ADVANCED MODULES
+const { HitchModuleLoader } = require('./core/HitchModuleLoader');
+
 // Enhanced WebSocket and management
 const PolygonWebSocket = require('./core/PolygonWebSocket');
 const TimeFrameManager = require('./core/TimeFrameManager');
@@ -269,6 +272,17 @@ class QuantumSingularityLauncher {
       neuromorphicTiming: this.config.enableSubNanosecondTiming
     });
 
+    // 🧠 Initialize Hitch NLP Advanced Module System
+    console.log('🗣️⚛️ Initializing Hitch NLP Quantum Integration...');
+    this.hitchModuleLoader = new HitchModuleLoader({
+      quantumEnhanced: true,
+      neuromorphicProcessing: this.config.enableNeuromorphicProcessing,
+      realityBendingCommands: this.config.enableRealityBending
+    });
+    
+    await this.hitchModuleLoader.initializeQuantumHitchSystems();
+    console.log('✅ Hitch NLP Quantum systems online!');
+
     // Initialize correlation analyzer with quantum enhancement
     this.correlationAnalyzer = new CorrelationAnalyzer({
       primaryAsset: this.config.primaryAsset,
@@ -292,7 +306,8 @@ class QuantumSingularityLauncher {
     this.quantumTradingSystem.connectExternalSystems({
       tradingSystem: this.tradingSystem,
       correlationAnalyzer: this.correlationAnalyzer,
-      multiDirectionalTrader: this.multiDirectionalTrader
+      multiDirectionalTrader: this.multiDirectionalTrader,
+      hitchModuleLoader: this.hitchModuleLoader
     });
 
     console.log('✅ Quantum Trading Systems initialized successfully!');
@@ -329,7 +344,8 @@ class QuantumSingularityLauncher {
       atomicTimekeeping: this.config.enableSubNanosecondTiming
     });
 
-    this.patternRecognition = new EnhancedPatternRecognition({
+    const { EnhancedPatternChecker } = require('./core/EnhancedPatternRecognition');
+    this.patternRecognition = new EnhancedPatternChecker({
       quantumPatternDetection: this.config.enableQuantumSupremacy,
       neuromorphicAnalysis: this.config.enableNeuromorphicProcessing,
       realityBendingPatterns: this.config.enableRealityBending
@@ -357,7 +373,6 @@ class QuantumSingularityLauncher {
     this.app = express();
     this.setupQuantumMiddleware();
     this.setupQuantumAPIRoutes();
-    this.setupQuantumWebSocketHandlers();
     
     // Create HTTP server
     this.httpServer = http.createServer(this.app);

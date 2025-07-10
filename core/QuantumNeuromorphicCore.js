@@ -113,6 +113,21 @@ class QuantumNeuromorphicCore extends EventEmitter {
       systemUptime: Date.now()
     };
     
+    // Add emergency cascade prevention flag
+    this.emergencyCascadeActive = false;
+    
+    // ⚛️ QUANTUM PATTERN LEARNING SYSTEM
+    this.quantumPatterns = {
+      patternManager: null,
+      currentProfile: 'BTC-USD_quantum_neuromorphic',
+      quantumMemory: new Map(),
+      neuromorphicMemory: new Map(),
+      fusionPatterns: new Map(),
+      realityBendingPatterns: new Map(),
+      learningEnabled: true,
+      adaptiveParameters: true
+    };
+    
     console.log('⚛️🧠🌌 QUANTUM-NEUROMORPHIC CORE INITIALIZING...');
     console.log('💎 INTERDIMENSIONAL TRADING WARFARE SYSTEM ACTIVATED!');
     console.log(`🎯 Target Timing Accuracy: ${this.config.targetAccuracy * 1e9} nanoseconds`);
@@ -229,8 +244,17 @@ class QuantumNeuromorphicCore extends EventEmitter {
     console.log('🌀⚛️ QUANTUM SIGNAL CLASSIFICATION INITIATED...');
     
     try {
+      // Check if features is valid
+      if (!features || !Array.isArray(features) || features.length === 0) {
+        console.log('⚠️ Invalid features provided, using default feature set');
+        features = [0.5, 0.5, 0.5, 0.5]; // Default neutral features
+      }
+      
       // 1. PREPARE VARIATIONAL QUANTUM CIRCUIT
       const vqcCircuit = this.prepareVariationalQuantumCircuit(features);
+      if (!vqcCircuit || !vqcCircuit.parameters) {
+        throw new Error('VQC circuit preparation failed');
+      }
       console.log(`🔗 VQC prepared with ${vqcCircuit.parameters.length} parameters`);
       
       // 2. QUANTUM FEATURE MAPPING
@@ -553,7 +577,13 @@ class QuantumNeuromorphicCore extends EventEmitter {
   async startContinuousSelfVerification() {
     console.log('🔄🛡️ STARTING CONTINUOUS SELF-VERIFICATION SYSTEM...');
     
-    setInterval(async () => {
+    // Add cascade prevention flag
+    if (this.emergencyCascadeActive) {
+      console.log('⚠️ Emergency cascade already active, preventing loop');
+      return;
+    }
+
+    this.verificationInterval = setInterval(async () => {
       try {
         // 1. CHECK QUANTUM COHERENCE
         const quantumCoherence = await this.measureQuantumCoherence();
@@ -586,10 +616,19 @@ class QuantumNeuromorphicCore extends EventEmitter {
         // 5. SYSTEM PERFORMANCE OPTIMIZATION
         await this.optimizeSystemPerformance();
         
-        // 6. EMERGENCY PROTOCOL CHECK
-        if (this.verification.errorCount > 25) {
-          console.error('🚨 ERROR THRESHOLD EXCEEDED - ACTIVATING EMERGENCY PROTOCOLS');
+        // 6. EMERGENCY PROTOCOL CHECK - FIXED: Add guard to prevent infinite emergency cascades
+        if (this.verification.errorCount > 25 && !this.emergencyCascadeActive) {
+          this.emergencyCascadeActive = true; // Set flag
+          console.error('🚨 EMERGENCY: Too many verification failures!');
           await this.activateEmergencyProtocols();
+          
+          // Reset after emergency handling
+          setTimeout(() => {
+            this.emergencyCascadeActive = false;
+            this.verification.errorCount = 0; // Reset counter
+          }, 300000); // 5 minute cooldown
+        } else if (this.verification.errorCount <= 25) {
+          this.verification.errorCount = Math.max(0, this.verification.errorCount - 1);
         }
         
         // Update system health metrics
@@ -599,7 +638,7 @@ class QuantumNeuromorphicCore extends EventEmitter {
         console.error('❌ Self-verification error:', error);
         this.verification.errorCount++;
       }
-    }, 50); // Every 50ms for ultra-responsive monitoring
+    }, 30000); // FIXED: Changed from 50ms to 30 seconds
   }
   
   /**
@@ -944,6 +983,324 @@ class QuantumNeuromorphicCore extends EventEmitter {
   async optimizeSystemPerformance() { /* Performance optimization logic */ }
   updateSystemHealthMetrics() { this.metrics.lastUpdate = Date.now(); }
   async optimizeNeuromorphicLatency() { console.log('⚡ Neuromorphic latency optimized'); }
+  
+  // ============================================================================
+  // QUANTUM PATTERN LEARNING INTEGRATION
+  // ============================================================================
+  
+  /**
+   * 🧠⚛️ Initialize pattern manager for quantum profile
+   */
+  async initializeQuantumPatternManager() {
+    try {
+      const ProfilePatternManager = require('./ProfilePatternManager');
+      this.quantumPatterns.patternManager = new ProfilePatternManager();
+      
+      // Initialize with quantum neuromorphic profile
+      await this.quantumPatterns.patternManager.initialize(this.quantumPatterns.currentProfile);
+      
+      console.log(`🧠⚛️ Quantum pattern manager initialized for profile: ${this.quantumPatterns.currentProfile}`);
+      console.log(`📊 Loaded quantum pattern memory: ${this.quantumPatterns.patternManager.patterns.size} patterns`);
+      
+      return true;
+    } catch (error) {
+      console.error('❌ Failed to initialize quantum pattern manager:', error);
+      this.quantumPatterns.learningEnabled = false;
+      return false;
+    }
+  }
+  
+  /**
+   * ⚛️📈 Store quantum trading pattern with advanced features
+   */
+  async storeQuantumPattern(quantumFeatures, neuromorphicFeatures, trade, decisionContext = {}) {
+    if (!this.quantumPatterns.learningEnabled || !this.quantumPatterns.patternManager) {
+      return false;
+    }
+    
+    try {
+      // Create enhanced feature set for quantum patterns
+      const enhancedFeatures = this.createQuantumFeatureSet(
+        quantumFeatures, 
+        neuromorphicFeatures, 
+        decisionContext
+      );
+      
+      // Create quantum-enhanced trade data
+      const quantumTrade = {
+        ...trade,
+        quantumState: this.quantumState.fidelity,
+        neuromorphicEfficiency: this.calculateAverageNeuromorphicEfficiency(),
+        quantumVolume: this.quantumState.quantumVolume,
+        realityBendingFactor: decisionContext.realityBendingFactor || 0,
+        fusionAdvantage: decisionContext.fusionAdvantage || 'none',
+        verificationLevel: decisionContext.verificationLevel || 0,
+        latencyNs: decisionContext.latencyNs || 0,
+        
+        // Quantum-specific metadata
+        wasQuantumDecision: true,
+        quantumContribution: decisionContext.quantumContribution || 0,
+        neuromorphicContribution: decisionContext.neuromorphicContribution || 0,
+        cosmicInfluence: decisionContext.cosmicAlignment || 0,
+        supremacyAchieved: this.quantumState.quantumVolume > 64
+      };
+      
+      // Store in pattern manager
+      await this.quantumPatterns.patternManager.storePattern(enhancedFeatures, quantumTrade);
+      
+      // Store in quantum-specific memory for faster access
+      const patternKey = this.generateQuantumPatternKey(enhancedFeatures);
+      this.quantumPatterns.quantumMemory.set(patternKey, {
+        features: enhancedFeatures,
+        trade: quantumTrade,
+        timestamp: Date.now(),
+        confidence: trade.confidence || 0.5,
+        success: trade.success || false
+      });
+      
+      console.log(`🧠⚛️ Quantum pattern stored: ${patternKey}`);
+      
+      return true;
+    } catch (error) {
+      console.error('❌ Error storing quantum pattern:', error);
+      return false;
+    }
+  }
+  
+  /**
+   * 🔍⚛️ Evaluate quantum pattern for trading decision
+   */
+  async evaluateQuantumPattern(quantumFeatures, neuromorphicFeatures, marketContext) {
+    if (!this.quantumPatterns.patternManager) {
+      return {
+        confidence: 0,
+        direction: 'hold',
+        reason: 'Quantum pattern manager not initialized',
+        quantumAdvantage: 0
+      };
+    }
+    
+    try {
+      // Create enhanced feature set
+      const enhancedFeatures = this.createQuantumFeatureSet(
+        quantumFeatures,
+        neuromorphicFeatures,
+        marketContext
+      );
+      
+      // Get pattern evaluation from manager
+      const baseEvaluation = await this.quantumPatterns.patternManager.evaluatePattern(
+        enhancedFeatures, 
+        marketContext
+      );
+      
+      // Apply quantum enhancements
+      const quantumEnhancement = this.calculateQuantumPatternEnhancement(
+        enhancedFeatures,
+        baseEvaluation
+      );
+      
+      // Check quantum-specific memories
+      const quantumMemoryResult = this.checkQuantumMemory(enhancedFeatures);
+      const neuromorphicMemoryResult = this.checkNeuromorphicMemory(enhancedFeatures);
+      
+      // Fusion confidence calculation
+      const fusionConfidence = this.calculateFusionConfidence(
+        baseEvaluation.confidence,
+        quantumEnhancement.confidence,
+        quantumMemoryResult.confidence,
+        neuromorphicMemoryResult.confidence
+      );
+      
+      return {
+        confidence: fusionConfidence,
+        direction: baseEvaluation.direction,
+        reason: `Quantum-Enhanced: ${baseEvaluation.reason}`,
+        quantumAdvantage: quantumEnhancement.advantage,
+        neuromorphicBoost: neuromorphicMemoryResult.boost,
+        fusionFactor: quantumEnhancement.fusionFactor,
+        realityBendingPotential: quantumEnhancement.realityBending,
+        patternMatch: baseEvaluation.profileMatch,
+        quantumPattern: quantumMemoryResult.pattern,
+        verificationLevel: this.calculatePatternVerificationLevel(fusionConfidence)
+      };
+      
+    } catch (error) {
+      console.error('❌ Error evaluating quantum pattern:', error);
+      return {
+        confidence: 0.1,
+        direction: 'hold',
+        reason: 'Quantum pattern evaluation error',
+        quantumAdvantage: 0
+      };
+    }
+  }
+  
+  /**
+   * 🧬⚛️ Create enhanced quantum feature set
+   */
+  createQuantumFeatureSet(quantumFeatures, neuromorphicFeatures, context = {}) {
+    // Combine traditional and quantum features
+    const baseFeatures = Array.isArray(quantumFeatures) ? quantumFeatures : [0.5, 0.5, 0.5];
+    const neuroFeatures = Array.isArray(neuromorphicFeatures) ? neuromorphicFeatures : [0.5, 0.5];
+    
+    return [
+      ...baseFeatures.slice(0, 5), // Traditional indicators (RSI, MACD, etc)
+      this.quantumState.fidelity,
+      this.quantumState.quantumVolume / 100, // Normalized
+      this.calculateAverageNeuromorphicEfficiency(),
+      ...neuroFeatures.slice(0, 2), // Neuromorphic features
+      context.realityBendingFactor || 0,
+      context.fusionAdvantage ? 1 : 0,
+      this.timingState.synchronizationError * 1e9, // Nanoseconds
+      this.verification.errorCount / 100 // Normalized error rate
+    ];
+  }
+  
+  /**
+   * 🔑⚛️ Generate quantum pattern key
+   */
+  generateQuantumPatternKey(enhancedFeatures) {
+    const keyComponents = [
+      `quantum_${Math.round(enhancedFeatures[5] * 100)}`, // Quantum fidelity
+      `volume_${Math.round(enhancedFeatures[6] * 100)}`, // Quantum volume
+      `neuro_${Math.round(enhancedFeatures[7] * 100)}`, // Neuromorphic efficiency
+      `reality_${Math.round((enhancedFeatures[10] || 0) * 100)}`, // Reality bending
+      `fusion_${enhancedFeatures[11] || 0}`, // Fusion advantage
+      `sync_${Math.round(enhancedFeatures[12] || 0)}` // Timing sync
+    ];
+    
+    return keyComponents.join('_');
+  }
+  
+  /**
+   * ⚡⚛️ Calculate quantum pattern enhancement
+   */
+  calculateQuantumPatternEnhancement(features, baseEvaluation) {
+    const quantumFidelity = features[5] || 0.5;
+    const quantumVolume = features[6] || 0;
+    const neuromorphicEff = features[7] || 0.5;
+    const realityBending = features[10] || 0;
+    
+    // Quantum advantage calculation
+    let advantage = 0;
+    if (quantumFidelity > 0.8) advantage += 0.3;
+    if (quantumVolume > 0.5) advantage += 0.2;
+    if (neuromorphicEff > 0.8) advantage += 0.25;
+    if (realityBending > 0.5) advantage += 0.4;
+    
+    // Fusion factor
+    const fusionFactor = (quantumFidelity + neuromorphicEff) / 2;
+    
+    // Enhanced confidence
+    const quantumConfidence = baseEvaluation.confidence * (1 + advantage);
+    
+    return {
+      confidence: Math.min(quantumConfidence, 0.95),
+      advantage: advantage,
+      fusionFactor: fusionFactor,
+      realityBending: realityBending,
+      supremacyBoost: quantumVolume > 0.64 ? 0.2 : 0
+    };
+  }
+  
+  /**
+   * 🧠⚛️ Check quantum memory for patterns
+   */
+  checkQuantumMemory(features) {
+    const patternKey = this.generateQuantumPatternKey(features);
+    const pattern = this.quantumPatterns.quantumMemory.get(patternKey);
+    
+    if (!pattern) {
+      return { confidence: 0, pattern: null };
+    }
+    
+    // Calculate pattern age decay
+    const ageHours = (Date.now() - pattern.timestamp) / (1000 * 60 * 60);
+    const ageDecay = Math.exp(-ageHours / 168); // 1 week half-life
+    
+    return {
+      confidence: pattern.confidence * ageDecay,
+      pattern: pattern,
+      ageDecay: ageDecay
+    };
+  }
+  
+  /**
+   * 🧠⚡ Check neuromorphic memory
+   */
+  checkNeuromorphicMemory(features) {
+    // Simplified neuromorphic memory check
+    const neuroKey = `neuro_${Math.round(features[7] * 100)}`;
+    const neuroPattern = this.quantumPatterns.neuromorphicMemory.get(neuroKey);
+    
+    if (!neuroPattern) {
+      return { confidence: 0, boost: 0 };
+    }
+    
+    return {
+      confidence: neuroPattern.efficiency || 0.5,
+      boost: neuroPattern.boost || 0.1
+    };
+  }
+  
+  /**
+   * 🌀⚛️ Calculate fusion confidence
+   */
+  calculateFusionConfidence(base, quantum, quantumMemory, neuromorphic) {
+    // Weighted fusion of all confidence sources
+    const weights = {
+      base: 0.4,
+      quantum: 0.3,
+      quantumMemory: 0.2,
+      neuromorphic: 0.1
+    };
+    
+    const fusionConfidence = 
+      base * weights.base +
+      quantum * weights.quantum +
+      quantumMemory * weights.quantumMemory +
+      neuromorphic * weights.neuromorphic;
+    
+    return Math.min(fusionConfidence, 0.95);
+  }
+  
+  /**
+   * 🛡️⚛️ Calculate pattern verification level
+   */
+  calculatePatternVerificationLevel(confidence) {
+    if (confidence > 0.9) return 5; // Quintuple verification
+    if (confidence > 0.8) return 4; // Quadruple verification
+    if (confidence > 0.7) return 3; // Triple verification
+    if (confidence > 0.6) return 2; // Double verification
+    return 1; // Single verification
+  }
+  
+  /**
+   * 🔄⚛️ Connect external pattern manager
+   */
+  connectPatternManager(patternManager) {
+    this.quantumPatterns.patternManager = patternManager;
+    console.log('🔗⚛️ External pattern manager connected to quantum core');
+    return true;
+  }
+  
+  /**
+   * 📊⚛️ Get quantum pattern statistics
+   */
+  getQuantumPatternStats() {
+    return {
+      quantumMemorySize: this.quantumPatterns.quantumMemory.size,
+      neuromorphicMemorySize: this.quantumPatterns.neuromorphicMemory.size,
+      fusionPatternsSize: this.quantumPatterns.fusionPatterns.size,
+      realityBendingPatternsSize: this.quantumPatterns.realityBendingPatterns.size,
+      learningEnabled: this.quantumPatterns.learningEnabled,
+      currentProfile: this.quantumPatterns.currentProfile,
+      patternManagerConnected: !!this.quantumPatterns.patternManager,
+      totalQuantumPatterns: this.quantumPatterns.patternManager ? 
+        this.quantumPatterns.patternManager.patterns.size : 0
+    };
+  }
 }
 
 module.exports = QuantumNeuromorphicCore;

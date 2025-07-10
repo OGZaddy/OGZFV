@@ -48,10 +48,10 @@ class UltimateQuantumTradingSystem extends EventEmitter {
       enableLearning: config.enableLearning !== false,
       enableArbitrage: config.enableArbitrage !== false,
       
-      // Advanced features
-      analysisInterval: config.analysisInterval || 10000,    // 10 seconds for quantum
-      rebalanceInterval: config.rebalanceInterval || 60000,  // 1 minute quantum rebalance
-      quantumInterval: config.quantumInterval || 5000,       // 5 seconds quantum processing
+      // Advanced features - FIXED: Much more reasonable intervals
+      analysisInterval: config.analysisInterval || 300000,   // 5 minutes for enhanced analysis
+      rebalanceInterval: config.rebalanceInterval || 900000, // 15 minutes quantum rebalance  
+      quantumInterval: config.quantumInterval || 180000,     // 3 minutes quantum processing
       
       // Risk management with quantum enhancement
       maxSystemExposure: config.maxSystemExposure || 0.9,   // 90% max with quantum precision
