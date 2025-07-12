@@ -1,3 +1,4 @@
+
 /**
  * ============================================================================
  * DOCUMENTED_WebsocketManager.js - Singleton WebSocket Connection Management
@@ -44,50 +45,13 @@ const { WebSocketServer } = require('ws');
  * 6. Error handling and logging
  */
 class WebSocketManager {
+  // Private field declarations (required for # syntax)
+  #clients = new Map();
+  #messageQueues = new Map();
+  #connectionHealth = new Map();
   
-  /**
-   * Private Instance Variables - Singleton State Management
-   * 
-   * Using private fields to ensure encapsulation and prevent external
-   * modification of critical connection state.
-   */
-  #servers = new Map();           // Map of port -> WebSocket server
-  #clients = new Map();           // Map of port -> Set of connected clients
-  #messageQueues = new Map();     // Map of port -> Array of queued messages
-  #connectionHealth = new Map();  // Map of port -> Connection health metrics
-  
-  static #instance;               // Singleton instance storage
-  
-  /**
-   * Constructor - Singleton Implementation
-   * 
-   * SINGLETON PATTERN: Ensures only one WebSocketManager instance can exist
-   * in the entire application, preventing the iteration issue permanently.
-   */
   constructor() {
-    // ====================================================================
-    // SINGLETON ENFORCEMENT
-    // ====================================================================
-    if (WebSocketManager.#instance) {
-      console.log('🔌 Returning existing WebSocketManager singleton instance');
-      return WebSocketManager.#instance;
-    }
-    
-    // ====================================================================
-    // FIRST-TIME INITIALIZATION
-    // ====================================================================
-    WebSocketManager.#instance = this;
-    
-    console.log('🔌 WebSocketManager singleton initialized - iteration issue SOLVED!');
-    
-    // ====================================================================
-    // CLEANUP HANDLERS
-    // ====================================================================
-    // Ensure clean shutdown of all servers
-    process.on('SIGINT', () => this.shutdown());
-    process.on('SIGTERM', () => this.shutdown());
-    
-    return this;
+    this.servers = {};
   }
   
   /**
@@ -114,15 +78,13 @@ class WebSocketManager {
     // ====================================================================
     // EXISTING SERVER CHECK
     // ====================================================================
-    if (this.#servers.has(serverKey)) {
-      console.log(`🔌 Returning existing WebSocket server on port ${port}`);
-      return this.#servers.get(serverKey);
+    if (this.servers[port]) {
+      return this.servers[port];
     }
     
     // ====================================================================
     // NEW SERVER CREATION
     // ====================================================================
-    console.log(`🔌 Creating new WebSocket server on port ${port}`);
     return this.#createServer(serverKey, port, options);
   }
   
@@ -159,7 +121,7 @@ class WebSocketManager {
       // ================================================================
       // STATE INITIALIZATION
       // ================================================================
-      this.#servers.set(key, server);
+      this.servers[key] = server;
       this.#clients.set(key, new Set());
       this.#messageQueues.set(key, []);
       this.#connectionHealth.set(key, {
@@ -416,7 +378,7 @@ class WebSocketManager {
     const reasonStr = reason ? reason.toString() : 'Unknown';
     const connectionDuration = Date.now() - (client.connectedAt || Date.now());
     
-    console.log(`🔌 Client disconnected: ${client.id} (Code: ${code}, Reason: ${reasonStr}, Duration: ${Math.round(connectionDuration / 1000)}s)`);
+    // Removed: High-frequency client disconnection logs
     
     // Remove client from active connections
     this.#clients.get(key).delete(client);
@@ -496,7 +458,7 @@ class WebSocketManager {
     // Clear queue after successful flush
     if (flushedCount === queue.length) {
       this.#messageQueues.set(key, []);
-      console.log(`✅ Successfully flushed all ${flushedCount} messages`);
+      // Removed: High-frequency message flushing success logs
     } else {
       console.warn(`⚠️ Only flushed ${flushedCount}/${queue.length} messages`);
     }
@@ -570,7 +532,7 @@ class WebSocketManager {
           }
           
           this.#updateHealth(serverKey, 'message_queued');
-          console.log(`📨 Message queued for port ${port} (no clients connected)`);
+          // Removed: High-frequency message queuing log
         }
       }
       
@@ -612,7 +574,7 @@ class WebSocketManager {
     // ====================================================================
     this.#updateHealth(serverKey, 'broadcast_sent');
     
-    console.log(`📡 Broadcast to port ${port}: ${sentCount} sent, ${errorCount} errors`);
+    // Removed: High-frequency broadcast statistics log
     
     return {
       success: true,
@@ -727,7 +689,7 @@ class WebSocketManager {
    */
   closeServer(port) {
     const serverKey = `ws-${port}`;
-    const server = this.#servers.get(serverKey);
+    const server = this.servers[port];
     
     if (!server) {
       console.warn(`⚠️ No server found on port ${port} to close`);
@@ -774,7 +736,7 @@ class WebSocketManager {
    * @param {string} key - Server key to clean up
    */
   #cleanupServer(key) {
-    this.#servers.delete(key);
+    delete this.servers[key];
     this.#clients.delete(key);
     this.#messageQueues.delete(key);
     this.#connectionHealth.delete(key);
@@ -810,7 +772,7 @@ class WebSocketManager {
    */
   getStatistics() {
     const stats = {
-      totalServers: this.#servers.size,
+      totalServers: Object.keys(this.servers).length,
       totalConnections: 0,
       totalMessages: 0,
       totalErrors: 0,
