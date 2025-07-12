@@ -339,9 +339,14 @@ class PatternMemorySystem {
       this.pruneMemory();
     }
     
-    // Save to disk periodically
+    // 🚀 SCALPER OPTIMIZATION: Skip disk saves during active scalping for speed
     const timeSinceLastSave = Date.now() - this.lastSaveTime;
-    if (this.options.persistToDisk && timeSinceLastSave > 5 * 60 * 1000) {
+    const isScalperActive = this.scalperModeActive || false; // Will be set by trading brain
+    
+    if (this.options.persistToDisk && timeSinceLastSave > 5 * 60 * 1000 && !isScalperActive) {
+      this.saveToDisk();
+    } else if (isScalperActive && timeSinceLastSave > 30 * 60 * 1000) {
+      // Save every 30 minutes during scalping instead of 5 minutes
       this.saveToDisk();
     }
     
@@ -650,9 +655,9 @@ class EnhancedPatternChecker {
    */
   constructor(options = {}) {
     this.options = {
-      similarityThreshold: 0.8,
-      minTradeHistory: 3,
-      confidenceThreshold: 0.6,
+      similarityThreshold: 0.75, // Slightly more lenient similarity matching
+      minTradeHistory: 2,        // Lower minimum history for faster adaptation
+      confidenceThreshold: 0.45, // More aggressive confidence threshold
       ...options
     };
     
@@ -686,6 +691,11 @@ class EnhancedPatternChecker {
       ...options
     };
     
+    // 🚀 SCALPER FAST PATH: Skip complex similarity matching for speed
+    if (evalOptions.scalperMode || evalOptions.fastPath) {
+      return this.evaluatePatternFastPath(features, evalOptions);
+    }
+    
     // Delegate to memory system for evaluation
     const evaluation = this.memory.evaluatePattern(features, evalOptions);
     
@@ -695,6 +705,58 @@ class EnhancedPatternChecker {
     }
     
     return evaluation;
+  }
+  
+  /**
+   * 🚀 SCALPER FAST PATH: Lightning-fast pattern evaluation for high-frequency trading
+   * @param {Array} features - Feature vector
+   * @param {Object} options - Evaluation options
+   * @returns {Object} Fast evaluation result
+   */
+  evaluatePatternFastPath(features, options = {}) {
+    // Check for exact match first (O(1) lookup)
+    const exactStats = this.memory.getPatternStats(features);
+    
+    if (exactStats && exactStats.timesSeen >= 2) { // Lower threshold for speed
+      const winRate = exactStats.wins / exactStats.timesSeen;
+      const avgPnL = exactStats.totalPnL / exactStats.timesSeen;
+      
+      const direction = avgPnL > 0 ? 'buy' : avgPnL < 0 ? 'sell' : 'hold';
+      
+      // Fast confidence calculation
+      let confidence = winRate;
+      
+      // Quick recency bonus (only last 3 results)
+      if (exactStats.results.length > 0) {
+        const recentResults = exactStats.results.slice(-3);
+        const recentSuccesses = recentResults.filter(r => r.success).length;
+        const recentWinRate = recentSuccesses / recentResults.length;
+        confidence = (winRate * 0.7) + (recentWinRate * 0.3);
+      }
+      
+      this.stats.highConfidenceSignals++;
+      
+      return {
+        confidence: confidence >= options.confidenceThreshold ? confidence : 0,
+        direction,
+        exactMatch: true,
+        timesSeen: exactStats.timesSeen,
+        winRate,
+        avgPnL,
+        reason: `FAST: Exact match, ${exactStats.timesSeen} trades, ${(winRate * 100).toFixed(1)}% WR`,
+        fastPath: true
+      };
+    }
+    
+    // No exact match - return minimal confidence for speed
+    return {
+      confidence: 0.1, // Very low confidence for new patterns in scalper mode
+      direction: 'hold',
+      exactMatch: false,
+      timesSeen: 0,
+      reason: "FAST: No exact pattern match, minimal confidence for speed",
+      fastPath: true
+    };
   }
   
   /**
