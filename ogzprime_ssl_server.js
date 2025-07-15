@@ -4,6 +4,7 @@ const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const stripe = require('stripe')('sk_test_51Rc2VnGai7JiFhNgxpk4VPgzuLwgymGkGDW4fZCDzfqjDmYCCvKxF9i3g9ebOlPQexaR9qxx7xIv7bqfpDXfkRGu00qy9cjKBS');
 
 // 🔥 Set flag to bypass singleton lock for SSL server
 process.env.OGZ_SSL_SERVER = 'true';
@@ -14,9 +15,9 @@ const OGZPrimeV10 = require('./OGZPrimeV10.2');
 // Create a minimal instance for SSL server (no WebSocket conflicts)
 const ogzPrime = new OGZPrimeV10({
   // Override WebSocket ports to avoid conflicts with main bot
-  dataWebSocketPort: 9001,    // Different from main bot's 3001
-  guiWebSocketPort: 9002,     // Different from main bot's 3002
-  controlWebSocketPort: 9003, // Different from main bot's 3003
+  dataWebSocketPort: 8001,    // Safe ports away from main bot's 3001
+  guiWebSocketPort: 8002,     // Safe ports away from main bot's 3002
+  controlWebSocketPort: 8003, // Safe ports away from main bot's 3003
   // Disable features that aren't needed for SSL server
   enableMultiTimeframe: false,
   enableFibonacciLevels: false,
@@ -40,8 +41,21 @@ app.use((req, res, next) => {
   next();
 });
 
-// Store the last known price
-let lastKnownPrice = 50000;
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve main dashboard at root
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'ogz-ultimate-dashboard.html'));
+});
+
+// Also serve dashboard at /dashboard
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'ogz-ultimate-dashboard.html'));
+});
+
+// Store the last known price - will be updated with real Polygon.io data only
+let lastKnownPrice = null;
 let tickCount = 0;
 
 // API endpoints
@@ -74,6 +88,138 @@ app.get('/api/current-price', (req, res) => {
     price: lastKnownPrice,
     timestamp: new Date().toISOString()
   });
+});
+
+// Stripe checkout session endpoint (replacing PHP)
+app.post('/create-checkout-session', async (req, res) => {
+  try {
+    const { priceId } = req.body;
+    
+    if (!priceId) {
+      return res.status(400).json({ error: 'Missing priceId' });
+    }
+
+    console.log(`🔥 Creating Stripe checkout session for price: ${priceId}`);
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'subscription',
+      line_items: [{
+        price: priceId,
+        quantity: 1
+      }],
+      success_url: `${req.protocol}://${req.get('host')}/success.html`,
+      cancel_url: `${req.protocol}://${req.get('host')}/pricing.html`,
+      metadata: {
+        priceId: priceId,
+        timestamp: new Date().toISOString()
+      }
+    });
+
+    console.log(`✅ Stripe session created: ${session.id}`);
+    res.json({ sessionId: session.id });
+
+  } catch (error) {
+    console.error('❌ Stripe checkout error:', error);
+    res.status(500).json({ 
+      error: 'Failed to create checkout session',
+      message: error.message 
+    });
+  }
+});
+
+// Create success and cancel pages endpoints
+app.get('/success.html', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Payment Successful - OGZ Prime</title>
+      <style>
+        body { 
+          font-family: Arial, sans-serif; 
+          background: linear-gradient(135deg, #0a0a0a, #1a0a0a); 
+          color: white; 
+          text-align: center; 
+          padding: 50px; 
+        }
+        .success-box { 
+          background: rgba(34, 197, 94, 0.1); 
+          border: 2px solid #22c55e; 
+          border-radius: 20px; 
+          padding: 40px; 
+          max-width: 600px; 
+          margin: 0 auto; 
+        }
+        h1 { color: #22c55e; }
+        .back-btn { 
+          background: #dc2626; 
+          color: white; 
+          padding: 15px 30px; 
+          border: none; 
+          border-radius: 10px; 
+          font-size: 16px; 
+          margin-top: 20px; 
+          cursor: pointer;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="success-box">
+        <h1>🎉 Payment Successful!</h1>
+        <p>Welcome to OGZ Prime! Your subscription is now active.</p>
+        <p>You will receive setup instructions via email shortly.</p>
+        <button class="back-btn" onclick="window.location.href='/'">Return to Dashboard</button>
+      </div>
+    </body>
+    </html>
+  `);
+});
+
+app.get('/cancel.html', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Payment Cancelled - OGZ Prime</title>
+      <style>
+        body { 
+          font-family: Arial, sans-serif; 
+          background: linear-gradient(135deg, #0a0a0a, #1a0a0a); 
+          color: white; 
+          text-align: center; 
+          padding: 50px; 
+        }
+        .cancel-box { 
+          background: rgba(220, 38, 38, 0.1); 
+          border: 2px solid #dc2626; 
+          border-radius: 20px; 
+          padding: 40px; 
+          max-width: 600px; 
+          margin: 0 auto; 
+        }
+        h1 { color: #dc2626; }
+        .back-btn { 
+          background: #dc2626; 
+          color: white; 
+          padding: 15px 30px; 
+          border: none; 
+          border-radius: 10px; 
+          font-size: 16px; 
+          margin-top: 20px; 
+          cursor: pointer;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="cancel-box">
+        <h1>💳 Payment Cancelled</h1>
+        <p>No worries! You can try again whenever you're ready.</p>
+        <button class="back-btn" onclick="window.location.href='/pricing.html'">Back to Pricing</button>
+      </div>
+    </body>
+    </html>
+  `);
 });
 
 // Check for SSL certificates
@@ -116,14 +262,14 @@ if (hasSSLCerts) {
   console.warn(`⚠️ For development: npm install -g mkcert && mkcert -install && mkcert localhost`);
 }
 
-// Start regular HTTP server
+// Start regular HTTP server - bind to all interfaces for external access
 const httpServer = http.createServer(app);
-httpServer.listen(apiPort, () => {
-  console.log(`🌐 HTTP API Server running on port ${apiPort}`);
+httpServer.listen(apiPort, '0.0.0.0', () => {
+  console.log(`🌐 HTTP API Server running on port ${apiPort} (all interfaces)`);
 });
 
-// 📡 Regular WebSocket Server
-const wss = new WebSocket.Server({ port: wsPort });
+// 📡 Regular WebSocket Server - attach to HTTP server instead of separate port
+const wss = new WebSocket.Server({ server: httpServer });
 setupWebSocketHandlers(wss, 'Regular');
 
 function setupWebSocketHandlers(websocketServer, serverType) {
@@ -202,6 +348,9 @@ function setupWebSocketHandlers(websocketServer, serverType) {
 const POLYGON_API_KEY = '0gp6oKkWwriN0WInvwu539Ch6iJAOcLK';
 const POLYGON_CRYPTO_SOCKET = 'wss://socket.polygon.io/crypto';
 
+// Store prices for multiple assets - will be populated with real Polygon.io data
+let assetPrices = {};
+let currentAsset = 'BTC-USD';
 let isAuthenticated = false;
 
 const polygonSocket = new WebSocket(POLYGON_CRYPTO_SOCKET);
@@ -222,11 +371,17 @@ polygonSocket.on('message', (data) => {
     for (const msg of msgArray) {
       if (msg.status === 'auth_success') {
         isAuthenticated = true;
-        console.log('✅ Polygon authenticated - subscribing to XA.BTC-USD');
-        polygonSocket.send(JSON.stringify({
-          action: 'subscribe', 
-          params: 'XA.BTC-USD'
-        }));
+        console.log('✅ Polygon authenticated - subscribing to multiple assets');
+        
+        // Subscribe to all supported assets
+        const assets = ['XA.BTC-USD', 'XA.ETH-USD', 'XA.SOL-USD', 'XA.ADA-USD'];
+        assets.forEach(asset => {
+          polygonSocket.send(JSON.stringify({
+            action: 'subscribe', 
+            params: asset
+          }));
+          console.log(`📡 Subscribed to ${asset}`);
+        });
       }
       
       if (msg.ev === 'XA' && msg.c && msg.e) {
@@ -234,19 +389,32 @@ polygonSocket.on('message', (data) => {
         const price = parseFloat(msg.c);
         const timestamp = new Date(msg.e).toISOString();
         
-        // Store last known price
-        lastKnownPrice = price;
+        // Determine which asset this price is for
+        let asset = 'BTC-USD'; // default
+        if (msg.pair) {
+          asset = msg.pair.replace('USD', '-USD');
+        }
+        
+        // Store price for the asset
+        assetPrices[asset] = price;
+        
+        // Update lastKnownPrice if this is the current asset
+        if (asset === currentAsset) {
+          lastKnownPrice = price;
+        }
 
         if (tickCount % 10 === 0 || tickCount <= 5) {
-          console.log(`🎯 TICK #${tickCount}: $${price.toFixed(2)} @ ${new Date(msg.e).toLocaleTimeString()}`);
+          console.log(`🎯 TICK #${tickCount}: ${asset} $${price.toFixed(2)} @ ${new Date(msg.e).toLocaleTimeString()}`);
         }
 
         // Broadcast to all clients (both regular and secure)
         const pricePayload = JSON.stringify({
           type: 'price',
           data: {
+            asset: asset,
             price: price,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            allPrices: assetPrices
           }
         });
 
@@ -270,7 +438,7 @@ polygonSocket.on('message', (data) => {
         
         // Also send to bot for processing (if needed)
         if (ogzPrime && ogzPrime.processPrice) {
-          ogzPrime.processPrice(price);
+          ogzPrime.processPrice(price, asset);
         }
       }
     }

@@ -38,12 +38,12 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "ws": "^8.0.0",
-    "express": "^4.18.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
-    "node-fetch": "^3.0.0"
+    "express": "^4.18.0",
+    "node-fetch": "^3.0.0",
+    "stripe": "^18.3.0",
+    "ws": "^8.0.0"
   },
-  "devDependencies": {},
   "private": false
 }

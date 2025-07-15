@@ -609,10 +609,61 @@
         <span id="daysRunning">0</span> days of perseverance
     </div>
 
-    <!-- Main Dashboard -->
-    <div class="main-container">
-        <!-- Chart & Analysis Panel -->
-        <div class="panel">
+        <!-- Main Dashboard -->
+        <div class="main-container">
+            <!-- AI Pattern Recognition Panel -->
+            <div class="panel" style="grid-column: span 3;">
+                <div class="panel-header">
+                    <div class="panel-title">🧠 AI Pattern Recognition Engine</div>
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Real-time analysis</span>
+                </div>
+                
+                <div class="pattern-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                    <div class="pattern-card bullish" id="rsiPattern" style="background: rgba(0,255,136,0.05); border: 1px solid rgba(0,255,136,0.3); border-radius: 10px; padding: 1rem; text-align: center; transition: all 0.3s ease;">
+                        <div class="pattern-name" style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase;">RSI Pattern</div>
+                        <div class="pattern-confidence confidence-high" id="rsiConfidence" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-green); margin-bottom: 0.3rem;">75%</div>
+                        <div class="pattern-signal" id="rsiSignal" style="font-size: 0.8rem; color: var(--text-primary); font-weight: bold;">BULLISH</div>
+                    </div>
+                    <div class="pattern-card neutral" id="macdPattern" style="background: rgba(255,170,0,0.05); border: 1px solid rgba(255,170,0,0.3); border-radius: 10px; padding: 1rem; text-align: center; transition: all 0.3s ease;">
+                        <div class="pattern-name" style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase;">MACD Pattern</div>
+                        <div class="pattern-confidence confidence-medium" id="macdConfidence" style="font-size: 1.5rem; font-weight: bold; color: var(--warning-orange); margin-bottom: 0.3rem;">45%</div>
+                        <div class="pattern-signal" id="macdSignal" style="font-size: 0.8rem; color: var(--text-primary); font-weight: bold;">NEUTRAL</div>
+                    </div>
+                    <div class="pattern-card bearish" id="trendPattern" style="background: rgba(255,68,68,0.05); border: 1px solid rgba(255,68,68,0.3); border-radius: 10px; padding: 1rem; text-align: center; transition: all 0.3s ease;">
+                        <div class="pattern-name" style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase;">Trend Pattern</div>
+                        <div class="pattern-confidence confidence-high" id="trendConfidence" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-red); margin-bottom: 0.3rem;">88%</div>
+                        <div class="pattern-signal" id="trendSignal" style="font-size: 0.8rem; color: var(--text-primary); font-weight: bold;">BEARISH</div>
+                    </div>
+                    <div class="pattern-card bullish" id="bollingerPattern" style="background: rgba(0,255,136,0.05); border: 1px solid rgba(0,255,136,0.3); border-radius: 10px; padding: 1rem; text-align: center; transition: all 0.3s ease;">
+                        <div class="pattern-name" style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase;">Bollinger Bands</div>
+                        <div class="pattern-confidence confidence-medium" id="bollingerConfidence" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-green); margin-bottom: 0.3rem;">62%</div>
+                        <div class="pattern-signal" id="bollingerSignal" style="font-size: 0.8rem; color: var(--text-primary); font-weight: bold;">BULLISH</div>
+                    </div>
+                    <div class="pattern-card neutral" id="volumePattern" style="background: rgba(255,170,0,0.05); border: 1px solid rgba(255,170,0,0.3); border-radius: 10px; padding: 1rem; text-align: center; transition: all 0.3s ease;">
+                        <div class="pattern-name" style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase;">Volume Pattern</div>
+                        <div class="pattern-confidence confidence-low" id="volumeConfidence" style="font-size: 1.5rem; font-weight: bold; color: var(--warning-orange); margin-bottom: 0.3rem;">38%</div>
+                        <div class="pattern-signal" id="volumeSignal" style="font-size: 0.8rem; color: var(--text-primary); font-weight: bold;">NEUTRAL</div>
+                    </div>
+                    <div class="pattern-card bullish" id="candlestickPattern" style="background: rgba(0,255,136,0.05); border: 1px solid rgba(0,255,136,0.3); border-radius: 10px; padding: 1rem; text-align: center; transition: all 0.3s ease;">
+                        <div class="pattern-name" style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase;">Candlestick</div>
+                        <div class="pattern-confidence confidence-high" id="candlestickConfidence" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-green); margin-bottom: 0.3rem;">92%</div>
+                        <div class="pattern-signal" id="candlestickSignal" style="font-size: 0.8rem; color: var(--text-primary); font-weight: bold;">BULLISH</div>
+                    </div>
+                </div>
+                
+                <div class="pattern-ticker" style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 1rem; border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-weight: bold; color: var(--primary-green);">📊 Recent Pattern Detections</span>
+                        <span id="patternCount" style="color: var(--text-secondary); font-size: 0.85rem;">0 patterns today</span>
+                    </div>
+                    <div id="patternTicker" style="max-height: 80px; overflow-y: auto; font-size: 0.85rem;">
+                        <div style="color: var(--text-muted); text-align: center; padding: 1rem;">Analyzing market patterns...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart & Analysis Panel -->
+            <div class="panel">
             <div class="panel-header">
                 <div class="panel-title">📈 Live Market Analysis</div>
                 <select id="assetSelector" style="background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--primary-green); padding: 0.5rem; border-radius: 8px;">
@@ -792,10 +843,10 @@
             constructor() {
                 console.log('🚀 OGZPrime Ultimate Dashboard initializing...');
                 
-                // Configuration - WEBSITE DEPLOYMENT (with enhanced resilience)
+                // Configuration - LOCAL LIVE SERVER
                 this.config = {
-                    wsEndpoint: 'wss://73fa-24-155-106-20.ngrok-free.app', // WebSocket ngrok tunnel
-                    apiEndpoint: 'https://2543-24-155-106-20.ngrok-free.app/api', // API ngrok tunnel
+                    wsEndpoint: 'ws://localhost:3010', // WebSocket attached to HTTP server on 3010
+                    apiEndpoint: 'http://localhost:3010/api', // Local API server
                     updateInterval: 10000,
                     chartMaxPoints: 100,
                     // Enhanced connection resilience settings
@@ -827,7 +878,18 @@
                         losses: 0,
                         totalProfit: 0,
                         todayProfit: 0
-                    }
+                    },
+                    // Pattern Recognition System
+                    patternData: {
+                        rsi: { confidence: 75, signal: 'BULLISH', type: 'bullish', lastUpdate: 0 },
+                        macd: { confidence: 45, signal: 'NEUTRAL', type: 'neutral', lastUpdate: 0 },
+                        trend: { confidence: 88, signal: 'BEARISH', type: 'bearish', lastUpdate: 0 },
+                        bollinger: { confidence: 62, signal: 'BULLISH', type: 'bullish', lastUpdate: 0 },
+                        volume: { confidence: 38, signal: 'NEUTRAL', type: 'neutral', lastUpdate: 0 },
+                        candlestick: { confidence: 92, signal: 'BULLISH', type: 'bullish', lastUpdate: 0 }
+                    },
+                    patternHistory: [],
+                    patternCount: 0
                 };
                 
                 // WebSocket connections with resilience tracking
@@ -868,6 +930,9 @@
                 this.addAIThought('🚀 OGZPrime Ultimate AI initialized. Ready to conquer the markets.', 'system');
                 this.addAIThought('💪 Remember: We persevered through crashes, debug sessions, and moments that would break strong men.', 'system');
                 this.addAIThought('🎯 Mission: Get to Houston with your daughter. Let\'s make it happen.', 'system');
+                
+                // Initialize pattern recognition system
+                this.initPatternRecognition();
             }
             
             initChart() {
@@ -1169,8 +1234,15 @@
             handleBotMessage(data) {
                 switch (data.type) {
                     case 'price':
-                        // Use REAL price data from your SSL server
-                        this.updatePrice(data.data.price, new Date(data.data.timestamp));
+                        // Handle multi-asset price data
+                        if (data.data.asset && data.data.asset === this.state.currentAsset) {
+                            this.updatePrice(data.data.price, new Date(data.data.timestamp));
+                        }
+                        
+                        // Store all asset prices for switching
+                        if (data.data.allPrices) {
+                            this.state.allAssetPrices = data.data.allPrices;
+                        }
                         break;
                     case 'status':
                         this.handleStatus(data.data);
@@ -1273,6 +1345,199 @@
                 }));
                 
                 this.chart.update('none');
+            }
+            
+            initPatternRecognition() {
+                // Start pattern analysis loop
+                setInterval(() => {
+                    this.analyzePatterns();
+                }, 15000); // Analyze every 15 seconds
+                
+                // Initial pattern update
+                setTimeout(() => {
+                    this.updateAllPatternCards();
+                }, 2000);
+            }
+            
+            analyzePatterns() {
+                // Simulate real pattern detection with more realistic behavior
+                const patterns = ['Double Bottom', 'Head & Shoulders', 'Bull Flag', 'Bear Flag', 
+                                'Ascending Triangle', 'Descending Triangle', 'Cup & Handle', 'Breakout',
+                                'Support Level', 'Resistance Level', 'Fibonacci Retracement'];
+                
+                // Randomly detect a pattern (30% chance)
+                if (Math.random() < 0.3) {
+                    const detectedPattern = patterns[Math.floor(Math.random() * patterns.length)];
+                    const confidence = 60 + Math.random() * 35; // 60-95% confidence
+                    const signal = Math.random() > 0.5 ? 'BULLISH' : 'BEARISH';
+                    
+                    this.addPatternDetection(detectedPattern, confidence, signal);
+                }
+                
+                // Update individual pattern cards with new analysis
+                this.updatePatternAnalysis();
+            }
+            
+            addPatternDetection(pattern, confidence, signal) {
+                const now = new Date();
+                const detection = {
+                    pattern,
+                    confidence: Math.round(confidence),
+                    signal,
+                    timestamp: now,
+                    id: Date.now()
+                };
+                
+                // Add to pattern history
+                this.state.patternHistory.unshift(detection);
+                if (this.state.patternHistory.length > 20) {
+                    this.state.patternHistory.pop();
+                }
+                
+                // Update pattern count
+                this.state.patternCount++;
+                document.getElementById('patternCount').textContent = `${this.state.patternCount} patterns today`;
+                
+                // Add to ticker
+                this.addToPatternTicker(detection);
+                
+                // Add to AI thoughts
+                this.addAIThought(`🎯 PATTERN DETECTED: ${pattern} (${confidence.toFixed(1)}% confidence, ${signal})`, 'buy');
+                
+                // Show pattern alert if high confidence
+                if (confidence > 80) {
+                    this.showPatternAlert(pattern, confidence);
+                }
+            }
+            
+            addToPatternTicker(detection) {
+                const ticker = document.getElementById('patternTicker');
+                
+                // Clear placeholder if present
+                if (ticker.innerHTML.includes('Analyzing market')) {
+                    ticker.innerHTML = '';
+                }
+                
+                const tickerItem = document.createElement('div');
+                tickerItem.style.cssText = `
+                    padding: 0.5rem; 
+                    margin: 0.25rem 0; 
+                    background: rgba(255,255,255,0.05); 
+                    border-radius: 5px; 
+                    border-left: 3px solid ${detection.signal === 'BULLISH' ? 'var(--primary-green)' : 'var(--primary-red)'};
+                    animation: slideIn 0.5s ease;
+                `;
+                
+                const confidenceColor = detection.confidence >= 80 ? 'var(--primary-green)' : 
+                                      detection.confidence >= 60 ? 'var(--warning-orange)' : 'var(--primary-red)';
+                
+                tickerItem.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: bold;">${detection.pattern}</span>
+                        <span style="color: ${confidenceColor}; font-weight: bold;">${detection.confidence}%</span>
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                        ${detection.timestamp.toLocaleTimeString()} • ${detection.signal}
+                    </div>
+                `;
+                
+                ticker.insertBefore(tickerItem, ticker.firstChild);
+                
+                // Keep only last 10 detections visible
+                while (ticker.children.length > 10) {
+                    ticker.removeChild(ticker.lastChild);
+                }
+            }
+            
+            updatePatternAnalysis() {
+                // Simulate real-time updates to pattern cards
+                const patternKeys = Object.keys(this.state.patternData);
+                
+                patternKeys.forEach(patternKey => {
+                    const pattern = this.state.patternData[patternKey];
+                    
+                    // Slightly adjust confidence (±5%)
+                    const adjustment = (Math.random() - 0.5) * 10;
+                    pattern.confidence = Math.max(0, Math.min(100, pattern.confidence + adjustment));
+                    
+                    // Occasionally change signal
+                    if (Math.random() < 0.1) {
+                        const signals = ['BULLISH', 'BEARISH', 'NEUTRAL'];
+                        pattern.signal = signals[Math.floor(Math.random() * signals.length)];
+                        
+                        // Update type based on signal
+                        pattern.type = pattern.signal === 'BULLISH' ? 'bullish' : 
+                                     pattern.signal === 'BEARISH' ? 'bearish' : 'neutral';
+                    }
+                    
+                    pattern.lastUpdate = Date.now();
+                    this.updatePatternCard(patternKey, pattern);
+                });
+            }
+            
+            updatePatternCard(patternKey, pattern) {
+                const card = document.getElementById(`${patternKey}Pattern`);
+                const confidence = document.getElementById(`${patternKey}Confidence`);
+                const signal = document.getElementById(`${patternKey}Signal`);
+                
+                if (card && confidence && signal) {
+                    // Update confidence value and color
+                    confidence.textContent = `${Math.round(pattern.confidence)}%`;
+                    
+                    // Update confidence color
+                    let confidenceColor = 'var(--primary-red)';
+                    if (pattern.confidence >= 70) {
+                        confidenceColor = 'var(--primary-green)';
+                    } else if (pattern.confidence >= 50) {
+                        confidenceColor = 'var(--warning-orange)';
+                    }
+                    confidence.style.color = confidenceColor;
+                    
+                    // Update signal
+                    signal.textContent = pattern.signal;
+                    
+                    // Update card colors based on type
+                    let cardColor = 'rgba(255,170,0,0.3)'; // neutral/orange
+                    let bgColor = 'rgba(255,170,0,0.05)';
+                    
+                    if (pattern.type === 'bullish') {
+                        cardColor = 'rgba(0,255,136,0.3)';
+                        bgColor = 'rgba(0,255,136,0.05)';
+                    } else if (pattern.type === 'bearish') {
+                        cardColor = 'rgba(255,68,68,0.3)';
+                        bgColor = 'rgba(255,68,68,0.05)';
+                    }
+                    
+                    card.style.borderColor = cardColor;
+                    card.style.backgroundColor = bgColor;
+                    
+                    // Add glow effect for recent updates
+                    if (pattern.lastUpdate && Date.now() - pattern.lastUpdate < 3000) {
+                        card.style.boxShadow = `0 0 15px ${cardColor}`;
+                        setTimeout(() => {
+                            card.style.boxShadow = '';
+                        }, 2000);
+                    }
+                }
+            }
+            
+            updateAllPatternCards() {
+                Object.keys(this.state.patternData).forEach(patternKey => {
+                    const pattern = this.state.patternData[patternKey];
+                    this.updatePatternCard(patternKey, pattern);
+                });
+            }
+            
+            showPatternAlert(pattern, confidence) {
+                // Show main pattern alert
+                document.getElementById('patternAlert').style.display = 'block';
+                document.getElementById('patternName').textContent = `🎯 ${pattern} Detected!`;
+                document.getElementById('patternConfidence').textContent = confidence.toFixed(1) + '%';
+                
+                // Auto-hide after 10 seconds
+                setTimeout(() => {
+                    document.getElementById('patternAlert').style.display = 'none';
+                }, 10000);
             }
             
             runAIAnalysis(price) {

@@ -46,20 +46,41 @@ class OptimizedTradingBrain {
     
     // Configuration with intelligent defaults
     this.config = {
-      // Risk management
+      // Risk management - ENHANCED WITH BREAKEVEN WITHDRAWAL + LOOSE TRAILING
       maxRiskPerTrade: 0.02,           // 2% max risk per trade
       stopLossPercent: 0.02,           // 2% stop loss
       takeProfitPercent: 0.04,         // 4% take profit
       enableTrailingStop: true,        // Enable trailing stops
+      trailingStopPercent: 0.035,      // 3.5% trailing stop distance (MUCH LOOSER)
+      trailingStopActivation: 0.025,   // Activate trailing after 2.5% profit
+      profitProtectionLevel: 0.015,    // Lock in 1.5% profit minimum
+      dynamicTrailingAdjustment: true, // Adjust trailing based on volatility
       
-      // Position sizing
+      // 💰 BREAKEVEN WITHDRAWAL SYSTEM
+      enableBreakevenWithdrawal: true, // Auto-withdraw at breakeven
+      breakevenTrigger: 0.005,         // 0.5% profit triggers breakeven withdrawal
+      breakevenPercentage: 0.50,       // Withdraw 50% of position at breakeven
+      postBreakevenTrailing: 0.05,     // 5% trailing after breakeven withdrawal (VERY LOOSE)
+      freeProfitMode: false,           // Track if position is in "free profit" mode
+      
+      // Position sizing - VOLATILITY ENHANCED
       basePositionSize: 0.01,          // 1% base position size
       confidenceScaling: true,         // Scale size by confidence
       maxPositionSize: 0.05,           // 5% max position size
+      volatilityScaling: true,         // Scale size based on volatility
+      lowVolatilityMultiplier: 1.5,    // Increase size in low volatility
+      highVolatilityMultiplier: 0.6,   // Reduce size in high volatility
+      volatilityThresholds: {
+        low: 0.015,                    // 1.5% volatility threshold
+        high: 0.035                    // 3.5% volatility threshold
+      },
       
-      // 🛡️ CRYPTO-OPTIMIZED SAFETY THRESHOLDS (Adjusted for crypto volatility)
-      minConfidenceThreshold: 0.15,   // CRYPTO-OPTIMIZED: 15% minimum confidence for crypto markets
-      maxConfidenceThreshold: 0.85,   // CRYPTO-OPTIMIZED: 85% maximum confidence to allow strong signals
+      // 🛡️ ENHANCED CONFIDENCE THRESHOLDS (Win Rate Optimized)
+      minConfidenceThreshold: 0.45,   // ADJUSTED: 45% minimum confidence for live trading
+      maxConfidenceThreshold: 0.95,   // ENHANCED: 95% maximum confidence for high-quality signals
+      dynamicConfidenceAdjustment: true, // Enable dynamic confidence based on performance
+      confidencePenalty: 0.1,         // Reduce confidence after losses
+      confidenceBoost: 0.05,          // Increase confidence after wins
       enableSafetyValidation: true,    // Enable safety net validation
       enablePerformanceTracking: true, // Enable performance validator
       
@@ -68,6 +89,22 @@ class OptimizedTradingBrain {
       
       // Houston fund tracking
       houstonFundTarget: 25000,        // $25k target for Houston move
+      
+      // Multi-asset support - PRODUCTION READY
+      supportedAssets: ['BTC-USD', 'ETH-USD', 'SOL-USD', 'ADA-USD'],
+      currentAsset: 'BTC-USD',         // Default asset
+      assetSpecificConfidence: {
+        'BTC-USD': 0.65,               // Standard confidence for BTC
+        'ETH-USD': 0.70,               // Slightly higher for ETH volatility
+        'SOL-USD': 0.75,               // Higher for SOL volatility
+        'ADA-USD': 0.68                // Standard for ADA
+      },
+      assetSpecificRisk: {
+        'BTC-USD': 0.02,               // 2% risk for BTC
+        'ETH-USD': 0.018,              // 1.8% risk for ETH
+        'SOL-USD': 0.015,              // 1.5% risk for SOL (more volatile)
+        'ADA-USD': 0.022               // 2.2% risk for ADA
+      },
       
       // Merge user config
       ...config
@@ -128,6 +165,38 @@ class OptimizedTradingBrain {
     // 🛡️ SAFETY SYSTEMS: References to new safety components
     this.tradingSafetyNet = null;     // Emergency circuit breakers
     this.performanceValidator = null; // Component profitability tracking
+    
+    // 🛡️ ENHANCED RISK MANAGEMENT - Loss Limits & Emergency Controls
+    this.riskLimits = {
+      dailyLossLimit: balance * 0.05,    // 5% daily loss limit
+      weeklyLossLimit: balance * 0.15,   // 15% weekly loss limit
+      monthlyLossLimit: balance * 0.30,  // 30% monthly loss limit
+      maxDrawdownLimit: balance * 0.20,  // 20% maximum drawdown
+      emergencyStopTrigger: balance * 0.10, // 10% loss triggers emergency stop
+      
+      // Loss tracking
+      dailyLosses: 0,
+      weeklyLosses: 0,
+      monthlyLosses: 0,
+      currentDrawdown: 0,
+      peakBalance: balance,
+      
+      // Time tracking for limits
+      dayStartTime: new Date().setHours(0,0,0,0),
+      weekStartTime: this.getWeekStart(),
+      monthStartTime: new Date().setDate(1),
+      
+      // Emergency controls
+      emergencyStopActive: false,
+      emergencyStopReason: null,
+      tradingHalted: false,
+      haltReason: null,
+      
+      // Recovery mechanisms
+      accountRecoveryMode: false,
+      recoveryStartBalance: 0,
+      recoveryTargetReached: false
+    };
     
     console.log(`🧠 Enhanced Trading Brain initialized with $${balance.toLocaleString()} balance`);
     console.log(`🎯 Houston Fund Target: $${this.config.houstonFundTarget.toLocaleString()}`);
@@ -219,6 +288,90 @@ class OptimizedTradingBrain {
     this.scalperConfig.scalperModeActive = false;
     this.scalperConfig.entryMomentum = null;
     console.log('⏹️ Scalper mode deactivated');
+  }
+  
+  /**
+   * 💰 BREAKEVEN WITHDRAWAL: Check if breakeven withdrawal should be executed
+   * @param {number} price - Current market price
+   * @param {Object} currentAnalysis - Current market analysis
+   * @returns {Object|null} Breakeven action result
+   */
+  checkBreakevenWithdrawal(price, currentAnalysis) {
+    if (!this.position || this.position.breakevenWithdrawn) return null;
+    
+    const currentPnL = this.calculatePnL(price);
+    const pnlPercent = Math.abs(currentPnL / (this.position.entryPrice * this.position.size));
+    
+    // Check if we've hit the breakeven trigger threshold
+    if (currentPnL > 0 && pnlPercent >= this.config.breakevenTrigger) {
+      console.log(`💰 BREAKEVEN TRIGGER ACTIVATED: ${(pnlPercent * 100).toFixed(2)}% profit reached`);
+      
+      return {
+        action: 'withdraw',
+        currentPnL: currentPnL,
+        pnlPercent: pnlPercent,
+        withdrawalSize: this.position.size * this.config.breakevenPercentage,
+        remainingSize: this.position.size * (1 - this.config.breakevenPercentage),
+        withdrawalValue: currentPnL * this.config.breakevenPercentage,
+        reason: `Breakeven withdrawal at ${(pnlPercent * 100).toFixed(2)}% profit`
+      };
+    }
+    
+    return null;
+  }
+  
+  /**
+   * 💰 BREAKEVEN WITHDRAWAL: Execute the breakeven withdrawal
+   * @param {number} price - Current market price
+   * @param {Object} breakevenAction - Breakeven action from check
+   * @param {Object} currentAnalysis - Current market analysis
+   */
+  executeBreakevenWithdrawal(price, breakevenAction, currentAnalysis) {
+    if (!this.position || this.position.breakevenWithdrawn) return;
+    
+    // Calculate withdrawal details
+    const withdrawalSize = breakevenAction.withdrawalSize;
+    const withdrawalPnL = (price - this.position.entryPrice) * withdrawalSize;
+    const withdrawalFees = withdrawalSize * this.position.entryPrice * this.feeConfig.totalRoundTrip;
+    const netWithdrawal = withdrawalPnL - withdrawalFees;
+    
+    // Update account balance with withdrawal
+    this.balance += netWithdrawal;
+    
+    // Update position to reflect partial exit
+    this.position.size = breakevenAction.remainingSize;
+    this.position.breakevenWithdrawn = true;
+    this.position.breakevenWithdrawalPrice = price;
+    this.position.breakevenWithdrawalAmount = netWithdrawal;
+    this.position.freeProfitMode = true;
+    
+    // Adjust stop loss to breakeven for remaining position
+    this.position.stopLossPrice = this.position.entryPrice;
+    
+    // Switch to MUCH LOOSER trailing stops for the free profit portion
+    this.position.postBreakevenTrailing = true;
+    
+    console.log(`💰 BREAKEVEN WITHDRAWAL EXECUTED!`);
+    console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+    console.log(`💸 WITHDRAWAL: $${netWithdrawal.toFixed(2)} (${(this.config.breakevenPercentage * 100).toFixed(0)}% of position)`);
+    console.log(`🎯 REMAINING SIZE: ${this.position.size.toFixed(6)} shares (NOW 100% FREE PROFIT)`);
+    console.log(`🛡️ STOP LOSS: Moved to breakeven at $${this.position.entryPrice.toFixed(2)}`);
+    console.log(`📈 TRAILING STOPS: Now ${(this.config.postBreakevenTrailing * 100).toFixed(1)}% (VERY LOOSE for max profit)`);
+    console.log(`💳 BALANCE: +$${netWithdrawal.toFixed(2)} → $${this.balance.toFixed(2)}`);
+    console.log(`🚀 FREE PROFIT MODE: Everything from here is pure profit!`);
+    console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+    
+    // Record partial exit in trade history for tracking
+    this.tradeHistory.push({
+      type: 'partial_exit_breakeven',
+      exitPrice: price,
+      size: withdrawalSize,
+      pnl: netWithdrawal,
+      timestamp: new Date().toISOString(),
+      reason: 'Breakeven withdrawal - securing initial capital',
+      balanceAfter: this.balance,
+      remainingPositionSize: this.position.size
+    });
   }
   
   /**
@@ -438,7 +591,14 @@ class OptimizedTradingBrain {
       
       // Position metadata
       positionId: `pos_${Date.now()}`, // Unique position identifier
-      sessionTradeNumber: this.sessionStats.tradesCount + 1
+      sessionTradeNumber: this.sessionStats.tradesCount + 1,
+      
+      // 💰 BREAKEVEN WITHDRAWAL TRACKING
+      breakevenWithdrawn: false,        // Track if breakeven withdrawal was executed
+      breakevenWithdrawalPrice: 0,      // Price at which breakeven withdrawal occurred
+      breakevenWithdrawalAmount: 0,     // Amount withdrawn at breakeven
+      originalSize: size,               // Original position size before any withdrawals
+      freeProfitMode: false            // Track if position is now in "free profit" mode
     };
     
     // 🚀 SCALPER-SPECIFIC: Capture entry momentum for shift detection
@@ -751,6 +911,15 @@ class OptimizedTradingBrain {
       }
     }
     
+    // 💰 BREAKEVEN WITHDRAWAL: Check for breakeven withdrawal opportunity
+    if (this.config.enableBreakevenWithdrawal && !this.position.breakevenWithdrawn) {
+      const breakevenAction = this.checkBreakevenWithdrawal(price, currentAnalysis);
+      if (breakevenAction) {
+        this.executeBreakevenWithdrawal(price, breakevenAction, currentAnalysis);
+        return; // Continue managing the remaining position
+      }
+    }
+    
     // Update position tracking metrics
     this.updatePositionMetrics(price);
     
@@ -770,7 +939,7 @@ class OptimizedTradingBrain {
       this.executePartialExit(price, profitResult, currentAnalysis);
     }
     
-    // Check for manual stop loss or take profit
+    // Check for manual stop loss or take profit with FREE PROFIT ADJUSTMENTS
     this.checkBasicExitConditions(price, currentAnalysis);
   }
   
@@ -964,6 +1133,75 @@ class OptimizedTradingBrain {
     // Calculate and update maximum drawdown
     const drawdownFromPeak = this.position.maxProfitReached - currentPnl;
     this.position.maxDrawdown = Math.max(this.position.maxDrawdown, drawdownFromPeak);
+  }
+  
+  // ========================================================================
+  // 🛡️ RISK MANAGEMENT UTILITY METHODS
+  // ========================================================================
+  
+  /**
+   * Get the start of the current week (Monday)
+   * @returns {number} Week start timestamp
+   */
+  getWeekStart() {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Sunday = 0, Monday = 1
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - daysToMonday);
+    monday.setHours(0, 0, 0, 0);
+    return monday.getTime();
+  }
+  
+  /**
+   * Check if trading should be halted due to risk limits
+   * @returns {Object} Risk check result
+   */
+  checkRiskLimits() {
+    const currentLoss = this.initialBalance - this.balance;
+    const currentTime = Date.now();
+    
+    // Check emergency stop
+    if (currentLoss >= this.riskLimits.emergencyStopTrigger) {
+      this.activateEmergencyStop('Emergency loss limit reached');
+      return { halt: true, reason: 'Emergency stop triggered' };
+    }
+    
+    // Check daily limits
+    if (this.riskLimits.dailyLosses >= this.riskLimits.dailyLossLimit) {
+      return { halt: true, reason: 'Daily loss limit exceeded' };
+    }
+    
+    // Check weekly limits
+    if (this.riskLimits.weeklyLosses >= this.riskLimits.weeklyLossLimit) {
+      return { halt: true, reason: 'Weekly loss limit exceeded' };
+    }
+    
+    // Check monthly limits
+    if (this.riskLimits.monthlyLosses >= this.riskLimits.monthlyLossLimit) {
+      return { halt: true, reason: 'Monthly loss limit exceeded' };
+    }
+    
+    // Check drawdown
+    if (this.riskLimits.currentDrawdown >= this.riskLimits.maxDrawdownLimit) {
+      return { halt: true, reason: 'Maximum drawdown exceeded' };
+    }
+    
+    return { halt: false, reason: null };
+  }
+  
+  /**
+   * Activate emergency stop mechanism
+   * @param {string} reason - Reason for emergency stop
+   */
+  activateEmergencyStop(reason) {
+    this.riskLimits.emergencyStopActive = true;
+    this.riskLimits.emergencyStopReason = reason;
+    this.riskLimits.tradingHalted = true;
+    this.riskLimits.haltReason = reason;
+    
+    console.log(`🚨 EMERGENCY STOP ACTIVATED: ${reason}`);
+    console.log(`📊 Account Status: $${this.balance.toFixed(2)} (${((this.balance/this.initialBalance-1)*100).toFixed(1)}%)`);
   }
   
   // ========================================================================

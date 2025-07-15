@@ -1,8 +1,31 @@
 {
-  "timestamp": "6/28/2025, 4:52:46 AM",
-  "thought": "Connecting to live Polygon.io market data feed",
-  "decision": "CONNECTING",
-  "confidence": 80,
+  "timestamp": "7/15/2025, 12:51:55 PM",
+  "thought": "Calculating risk-adjusted returns...",
+  "decision": "ANALYZING - Waiting for opportunity (0.0%)",
+  "confidence": 0,
   "balance": 10000,
-  "price": 0
+  "price": 99168.47717821668,
+  "winRate": 0,
+  "totalTrades": 0,
+  "dailyPnL": 0,
+  "systemState": {
+    "active": true,
+    "mode": "trading",
+    "startTime": 1752602235937,
+    "totalTrades": 0,
+    "successfulTrades": 0,
+    "failedTrades": 0,
+    "totalPnL": 0,
+    "dailyPnL": 0,
+    "currentBalance": 10000,
+    "averageTradeTime": 0,
+    "averageConfidence": 0,
+    "winRate": 0,
+    "currentDrawdown": 0,
+    "maxDrawdownReached": 0,
+    "emergencyMode": false,
+    "riskLimitExceeded": false,
+    "lastTradeTime": 0,
+    "lastRiskCheck": 1752609111230
+  }
 }
