@@ -1119,18 +1119,18 @@ class OGZPrimeV13Simplified {
   }
 
   /**
-   * 🧮 Calculate trading confidence with OPTIMIZED logic - FIXED FOR ACTUAL TRADING
+   * 🧮 Calculate trading confidence with OPTIMIZED logic
    */
   calculateTradingConfidence(marketData, patterns) {
-    let confidence = 0.65; // FIXED: Start with 65% base confidence (was 30%)
+    let confidence = 0.3; // Start with base confidence of 30%
     
     try {
-      // Pattern strength bonus - MUCH MORE AGGRESSIVE
+      // Pattern strength bonus
       const patternBonus = patterns.reduce((sum, pattern) => {
         return sum + (pattern.strength * pattern.confidence);
       }, 0);
       
-      confidence += patternBonus * 0.8; // FIXED: Max 80% from patterns (was 40%)
+      confidence += patternBonus * 0.4; // Max 40% from patterns
       
       // Market conditions bonus
       if (marketData.volume > 500000) {
@@ -1141,9 +1141,9 @@ class OGZPrimeV13Simplified {
         confidence += 0.1; // Optimal volatility bonus
       }
       
-      // RSI confirmation bonus - WIDENED THRESHOLDS
-      if ((marketData.rsi < 45 && patterns.some(p => p.direction === 'buy')) ||
-          (marketData.rsi > 55 && patterns.some(p => p.direction === 'sell'))) {
+      // RSI confirmation bonus
+      if ((marketData.rsi < 40 && patterns.some(p => p.direction === 'buy')) ||
+          (marketData.rsi > 60 && patterns.some(p => p.direction === 'sell'))) {
         confidence += 0.15; // RSI confirmation bonus
       }
       
@@ -1153,19 +1153,12 @@ class OGZPrimeV13Simplified {
         confidence += 0.1; // MACD confirmation bonus
       }
       
-      // ALWAYS ADD VOLATILITY PATTERN TO GUARANTEE PATTERNS
-      if (patterns.length === 0) {
-        // Create artificial volatility pattern to ensure trading
-        confidence += 0.2; // Volatility trading bonus
-        console.log('⚡ Added volatility trading bonus: +20%');
-      }
-      
       // Cap confidence at 95%
       confidence = Math.min(confidence, 0.95);
       
     } catch (error) {
       console.error('❌ Confidence calculation error:', error);
-      confidence = 0.6; // FIXED: Higher safe fallback (was 0.2)
+      confidence = 0.2; // Safe fallback
     }
     
     return confidence;

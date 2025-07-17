@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Runtime data
+data/
+*.log
+
+# Environment variables
+.env
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Operating System
+.DS_Store
+Thumbs.db
