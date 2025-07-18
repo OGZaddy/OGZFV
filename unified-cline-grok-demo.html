@@ -337,48 +337,12 @@
             }, 500);
         };
 
-        // Generate contextual Grok responses
-        function generateGrokResponse(userMessage) {
-            const msg = userMessage.toLowerCase();
+        // REAL AI-Powered Grok Response System
+        async function generateGrokResponse(userMessage) {
+            // TODO: Connect to real AI API (OpenAI, Claude, etc.)
+            // This is a placeholder until real AI integration is implemented
             
-            if (msg.includes('status') || msg.includes('how') && msg.includes('doing')) {
-                return '🟢 All systems nominal! OGZPrime V10.2 running smoothly with 5 core components active.';
-            }
-            
-            if (msg.includes('risk') || msg.includes('safety')) {
-                return '⚠️ RiskManager.js is maintaining tight stop-losses. Current portfolio risk: OPTIMAL';
-            }
-            
-            if (msg.includes('performance') || msg.includes('profit')) {
-                return '📊 PerformanceAnalyzer.js shows 127% improvement in Sharpe ratio this quarter. Solid gains!';
-            }
-            
-            if (msg.includes('pattern') || msg.includes('signal')) {
-                return '🔍 EnhancedPatternRecognition.js detected 3 bullish formations in the last hour. High confidence trades incoming.';
-            }
-            
-            if (msg.includes('integration') || msg.includes('dashboard')) {
-                return '🔗 Dashboard integration stable. WebSocket connections optimal, real-time data flowing perfectly.';
-            }
-            
-            if (msg.includes('trade') || msg.includes('market')) {
-                return '💹 Market conditions favorable. OGZPrime brain processing 1,247 signals/second. Ready to execute.';
-            }
-            
-            if (msg.includes('quantum') || msg.includes('brain')) {
-                return '🧠 Quantum decision matrix operating at 99.7% efficiency. Neural pathways optimized for maximum alpha generation.';
-            }
-            
-            if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey')) {
-                return '👋 Hey there! I\'m Grok, your AI trading companion. I monitor OGZPrime\'s systems 24/7. What would you like to know?';
-            }
-            
-            if (msg.includes('help') || msg.includes('what') && msg.includes('do')) {
-                return '🤖 I provide real-time commentary on your trading system. Ask me about: status, performance, risks, patterns, or market conditions!';
-            }
-            
-            // Default intelligent response
-            return `🤔 Interesting question about "${userMessage}". I'm analyzing OGZPrime's systems... All components functioning within normal parameters!`;
+            return '⚠️ [DEMO MODE] Real AI dialogue not yet implemented. Connect to OpenAI/Claude API for actual Grok intelligence.';
         }
 
         // Allow Enter key to send messages
@@ -406,7 +370,7 @@
         // Boot the unified system
         async function bootSystem() {
             console.log('[SYSTEM] Booting unified runtime...');
-            ogzpSay('🚀 System initialization sequence started');
+            ogzpSay('� System initialization sequence started');
             
             displaySystemMap();
             ogzpSay('📋 SystemMap loaded with 5 core components');
