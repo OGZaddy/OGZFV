@@ -843,10 +843,26 @@
             constructor() {
                 console.log('🚀 OGZPrime Ultimate Dashboard initializing...');
                 
-                // Configuration - LOCAL LIVE SERVER
+                // Configuration - AUTO-DETECT LOCAL vs VPS
+                const isLocal = window.location.hostname === 'localhost' || 
+                               window.location.hostname === '127.0.0.1' || 
+                               window.location.hostname === '';
+                
+                // VPS Configuration - Update these for your VPS
+                const VPS_DOMAIN = 'your-vps-domain.com'; // Replace with your VPS domain/IP
+                const VPS_PORT = '8080';
+                const USE_SSL = false; // Set to true if using HTTPS/WSS
+                
                 this.config = {
-                    wsEndpoint: 'ws://localhost:3010', // WebSocket attached to HTTP server on 3010
-                    apiEndpoint: 'http://localhost:3010/api', // Local API server
+                    // Auto-detect environment and set endpoints accordingly
+                    wsEndpoint: isLocal 
+                        ? 'ws://localhost:8080'  // Local development
+                        : `${USE_SSL ? 'wss' : 'ws'}://${VPS_DOMAIN}:${VPS_PORT}`, // VPS production
+                    
+                    apiEndpoint: isLocal 
+                        ? 'http://localhost:8080/api'  // Local development
+                        : `${USE_SSL ? 'https' : 'http'}://${VPS_DOMAIN}:${VPS_PORT}/api`, // VPS production
+                    
                     updateInterval: 10000,
                     chartMaxPoints: 100,
                     // Enhanced connection resilience settings
@@ -857,6 +873,11 @@
                     pingInterval: 30000,            // Ping interval for keepalive
                     connectionTimeout: 10000        // Connection timeout
                 };
+                
+                // Log the detected configuration
+                console.log(`🌍 Environment: ${isLocal ? 'LOCAL' : 'VPS'}`);
+                console.log(`🔌 WebSocket: ${this.config.wsEndpoint}`);
+                console.log(`📡 API: ${this.config.apiEndpoint}`);
                 
                 // State
                 this.state = {
