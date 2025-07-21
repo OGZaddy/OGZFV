@@ -1,0 +1,72 @@
+// ==========================================
+// FILE: primary_doctrine.json
+// Initial doctrine for The Mover
+// ==========================================
+{
+  "version": "1.0",
+  "name": "Houston Mission Doctrine",
+  "description": "Primary trading doctrine focused on achieving Houston relocation goal",
+  "config": {
+    "riskTolerance": "moderate",
+    "primaryGoal": "houston_relocation",
+    "targetAmount": 25000,
+    "timeframe": "6_months"
+  },
+  "rules": [
+    {
+      "name": "capital_preservation",
+      "priority": "critical",
+      "condition": {
+        "type": "always"
+      },
+      "action": "Never risk more than 2% of account on a single trade"
+    },
+    {
+      "name": "houston_focus",
+      "priority": "high",
+      "condition": {
+        "type": "profit_threshold",
+        "value": 100
+      },
+      "action": "Celebrate progress toward Houston goal"
+    },
+    {
+      "name": "pattern_confidence",
+      "priority": "high",
+      "condition": {
+        "type": "pattern_detected",
+        "minConfidence": 80
+      },
+      "action": "Increase position size by 50% for high-confidence patterns"
+    },
+    {
+      "name": "loss_management",
+      "priority": "critical",
+      "condition": {
+        "type": "consecutive_losses",
+        "count": 3
+      },
+      "action": "Reduce position size by 50% and reassess strategy"
+    }
+  ],
+  "strategies": {
+    "momentum_rider": {
+      "description": "Ride strong trends with trailing stops",
+      "triggers": ["trend_strength > 0.7", "volume_spike"],
+      "exitRules": ["trailing_stop_2_percent", "reversal_pattern"]
+    },
+    "mean_reversion": {
+      "description": "Fade extremes in ranging markets",
+      "triggers": ["rsi_oversold", "bollinger_band_touch"],
+      "exitRules": ["return_to_mean", "stop_loss_1_percent"]
+    }
+  },
+  "personality": {
+    "traits": ["determined", "houston_focused", "risk_aware", "celebratory"],
+    "responses": {
+      "big_win": "That's {profit} closer to Houston! Only ${remaining} to go!",
+      "loss": "Managed loss. Eyes on the prize - Houston awaits.",
+      "milestone": "MILESTONE! Houston fund at {percentage}%! 🚀"
+    }
+  }
+}

@@ -32,8 +32,11 @@ async function loadConfig() {
   } catch (error) {
     console.warn('⚠️ Configuration file not found or failed to load, using defaults:', error);
     const defaultConfig = { fxEnabled: true, commentaryMode: "sassy" };
-    window.OGZ_CONFIG = defaultConfig; 
-    return defaultConfig;
+    // Guard against double assignment
+    if (!window.OGZ_CONFIG) {
+      window.OGZ_CONFIG = defaultConfig; 
+    }
+    return window.OGZ_CONFIG;
   }
 }
 
@@ -261,6 +264,19 @@ function setupGlobalHelpers() {
  * Orchestrates the loading of all necessary scripts and modules.
  */
 async function initOGZPrime() {
+  // Prevent double initialization during bootstorm
+  if (window.OGZ_PRIME_INITIALIZED) {
+    console.log('🔰 OGZ Prime already initialized, skipping duplicate initialization');
+    return;
+  }
+  
+  // Respect bootstorm sequence - don't auto-init if bootstorm is controlling the flow
+  if (window.OGZ_BOOTSTORM_ACTIVE) {
+    console.log('🔰 OGZ Bootstorm active - initialization will be handled by bootstorm sequence');
+    return;
+  }
+  
+  window.OGZ_PRIME_INITIALIZED = true;
   console.log('🔰 OGZ Prime Valhalla Edition - Initialization Starting');
   
   // Setup global helpers very early
