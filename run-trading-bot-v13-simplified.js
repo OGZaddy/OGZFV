@@ -186,25 +186,40 @@ class OGZPrimeV13Simplified {
       
       this.ws.on('message', (data) => {
         try {
-          const message = JSON.parse(data.toString());
+          console.log(`📨 RAW MESSAGE RECEIVED:`, data.toString().substring(0, 100));
           
-          // Handle price data from SSL server (format: {type: 'price', data: {...}})
-          if (message.type === 'price' && message.data) {
-            this.cachedMarketData = {
-              price: parseFloat(message.data.price),
-              volume: 1000, // Default volume as SSL server doesn't provide it
-              timestamp: message.data.timestamp || Date.now(),
-              symbol: message.data.asset || 'BTC-USD'
-            };
-            this.lastDataReceived = Date.now();
-            
-            // Log periodically to confirm data flow
-            if (Math.random() < 0.05) { // 5% of messages
-              console.log(`📊 Live data: ${this.cachedMarketData.symbol} $${this.cachedMarketData.price.toFixed(2)}`);
-            }
+          const message = JSON.parse(data.toString());
+          console.log(`📊 Parsed message type: ${message.type}`);
+          
+          // Handle different message types
+          switch (message.type) {
+            case 'price':
+              if (message.data) {
+                this.cachedMarketData = {
+                  price: parseFloat(message.data.price),
+                  volume: 1000,
+                  timestamp: message.data.timestamp || Date.now(),
+                  symbol: message.data.asset || 'BTC-USD'
+                };
+                this.lastDataReceived = Date.now();
+                console.log(`💰 Price update: ${this.cachedMarketData.symbol} $${this.cachedMarketData.price.toFixed(2)}`);
+              }
+              break;
+              
+            case 'status':
+              console.log(`📋 Status message received:`, message.data);
+              break;
+              
+            case 'heartbeat':
+              console.log(`💓 Heartbeat received at ${new Date().toLocaleTimeString()}`);
+              break;
+              
+            default:
+              console.log(`❓ Unknown message type: ${message.type}`);
           }
         } catch (error) {
           console.error('❌ Error parsing WebSocket message:', error);
+          console.error('Raw data was:', data.toString());
         }
       });
       

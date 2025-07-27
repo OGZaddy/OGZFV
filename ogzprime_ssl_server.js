@@ -12,6 +12,12 @@ process.env.OGZ_SSL_SERVER = 'true';
 // Import the OGZ Prime class
 const OGZPrimeV10 = require('./OGZPrimeV10.2');
 
+// Store connected clients properly
+const connectedClients = {
+  regular: new Set(),
+  secure: new Set()
+};
+
 // Create a minimal instance for SSL server (no WebSocket conflicts)
 const ogzPrime = new OGZPrimeV10({
   // Override WebSocket ports to avoid conflicts with main bot
@@ -273,84 +279,58 @@ const wss = new WebSocket.Server({ server: httpServer });
 setupWebSocketHandlers(wss, 'Regular');
 
 function setupWebSocketHandlers(websocketServer, serverType) {
-  // Initialize global clients arrays if not exists
-  if (serverType === 'Regular' && !global.regularClients) {
-    global.regularClients = [];
-  } else if (serverType === 'Secure' && !global.secureClients) {
-    global.secureClients = [];
-  }
-  
   websocketServer.on('connection', (ws) => {
-    console.log(`[SSL-${Date.now()}] ${serverType} WebSocket: Frontend connected to AI brain stream`);
+    console.log(`[SSL-${Date.now()}] ${serverType} WebSocket: Frontend connected`);
     
-    // Add to appropriate global array
-    if (serverType === 'Regular') {
-      global.regularClients.push(ws);
-      console.log(`🔍 DIAGNOSTIC: ${serverType} client connected. Total clients: ${global.regularClients.length}`);
-    } else {
-      global.secureClients.push(ws);
-      console.log(`🔍 DIAGNOSTIC: ${serverType} client connected. Total clients: ${global.secureClients.length}`);
-    }
+    // Add to appropriate Set
+    const clientSet = serverType === 'Regular' ? connectedClients.regular : connectedClients.secure;
+    clientSet.add(ws);
     
-    // Send initial REAL status to new client
-    const realBalance = ogzPrime && ogzPrime.getBalance ? ogzPrime.getBalance() : 10000;
-    const realTrades = ogzPrime && ogzPrime.getTotalTrades ? ogzPrime.getTotalTrades() : 0;
-    const realDecisions = ogzPrime && ogzPrime.getDecisionsToday ? ogzPrime.getDecisionsToday() : 0;
+    console.log(`✅ ${serverType} client connected. Total: ${clientSet.size}`);
     
+    // Send initial status
     const statusPayload = JSON.stringify({
       type: 'status',
       data: {
         status: 'online',
-        balance: realBalance,
-        tradesCount: realTrades,
-        decisionsToday: realDecisions,
+        balance: ogzPrime?.getBalance?.() || 10000,
         currentPrice: lastKnownPrice,
         serverType: serverType,
-        connectionSecure: serverType === 'Secure'
+        message: 'Connection established'
       }
     });
     
-    console.log(`🔍 DIAGNOSTIC: ${serverType} - Sending initial status to new client`);
+    ws.send(statusPayload);
     
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.send(statusPayload);
-      console.log(`🔍 DIAGNOSTIC: ${serverType} - Initial status sent successfully`);
-    }
-
-    // Handle incoming messages from dashboard
+    // IMPORTANT: Send a test message every 2 seconds to verify connection
+    const testInterval = setInterval(() => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'heartbeat',
+          timestamp: Date.now(),
+          price: lastKnownPrice
+        }));
+      }
+    }, 2000);
+    
     ws.on('message', (message) => {
       try {
         const data = JSON.parse(message);
-        console.log(`🔍 DIAGNOSTIC: ${serverType} - Received message from dashboard:`, data.type);
-        
-        if (data.type === 'ping') {
-          const pongResponse = JSON.stringify({
-            type: 'pong',
-            timestamp: Date.now(),
-            originalTimestamp: data.timestamp,
-            serverType: serverType
-          });
-          ws.send(pongResponse);
-          console.log(`🔍 DIAGNOSTIC: ${serverType} - Sent pong response`);
-        }
+        console.log(`📨 Received from ${serverType} client:`, data.type);
       } catch (err) {
-        console.error(`🔍 DIAGNOSTIC: ${serverType} - Error parsing dashboard message:`, err);
+        console.error(`Error parsing message:`, err);
       }
     });
 
     ws.on('close', () => {
-      console.log(`[SSL-${Date.now()}] ${serverType} WebSocket: Frontend disconnected from AI brain`);
-      
-      // Remove from appropriate global array
-      if (serverType === 'Regular') {
-        global.regularClients = global.regularClients.filter(client => client !== ws);
-      } else {
-        global.secureClients = global.secureClients.filter(client => client !== ws);
-      }
+      console.log(`${serverType} client disconnected`);
+      clientSet.delete(ws);
+      clearInterval(testInterval);
+      console.log(`📉 ${serverType} clients remaining: ${clientSet.size}`);
     });
 
     ws.on('error', (error) => {
-      console.error(`🔍 DIAGNOSTIC: ${serverType} WebSocket client error:`, error);
+      console.error(`${serverType} WebSocket error:`, error.message);
     });
   });
 }
@@ -380,6 +360,11 @@ polygonSocket.on('message', (data) => {
     const msgArray = Array.isArray(messages) ? messages : [messages];
 
     for (const msg of msgArray) {
+      // DEBUG: Log all Polygon messages
+      if (msg.ev || msg.status || msg.message) {
+        console.log(`🔍 POLYGON MSG:`, JSON.stringify(msg).substring(0, 200));
+      }
+      
       if (msg.status === 'auth_success') {
         isAuthenticated = true;
         console.log('✅ Polygon authenticated - subscribing to multiple assets');
@@ -430,22 +415,26 @@ polygonSocket.on('message', (data) => {
         });
 
         // Broadcast to regular clients
-        if (global.regularClients) {
-          global.regularClients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-              client.send(pricePayload);
-            }
-          });
+        let sentCount = 0;
+        connectedClients.regular.forEach(client => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(pricePayload);
+            sentCount++;
+          }
+        });
+
+        if (sentCount > 0) {
+          console.log(`📡 Broadcasted ${asset} $${price.toFixed(2)} to ${sentCount} clients`);
+        } else if (connectedClients.regular.size > 0) {
+          console.log(`⚠️ Have ${connectedClients.regular.size} clients but none ready`);
         }
 
         // Broadcast to secure clients
-        if (global.secureClients) {
-          global.secureClients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-              client.send(pricePayload);
-            }
-          });
-        }
+        connectedClients.secure.forEach(client => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(pricePayload);
+          }
+        });
         
         // Also send to bot for processing (if needed)
         if (ogzPrime && ogzPrime.processPrice) {
@@ -469,8 +458,8 @@ polygonSocket.on('error', (err) => {
 
 // Status logging
 setInterval(() => {
-  const regularClientCount = global.regularClients ? global.regularClients.length : 0;
-  const secureClientCount = global.secureClients ? global.secureClients.length : 0;
+  const regularClientCount = connectedClients.regular.size;
+  const secureClientCount = connectedClients.secure.size;
   
   console.log(`📊 SYSTEM STATUS:`);
   console.log(`   🔌 Polygon: ${isAuthenticated ? 'Connected ✅' : 'Disconnected ❌'}`);
