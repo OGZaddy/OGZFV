@@ -34,22 +34,27 @@ class MoverIntegrationHub extends EventEmitter {
   }
 
   setupIntegrations() {
-    // When Hitch gets market-moving news, adjust trading
-    this.hitch.on('market_moving_news', async (news) => {
-      await this.core.processTradeEvent({
-        type: 'news_alert',
-        ...news,
-        action: 'ADJUST_STRATEGY'
+    // Only setup Hitch integrations if it's available
+    if (this.hitch && typeof this.hitch.on === 'function') {
+      // When Hitch gets market-moving news, adjust trading
+      this.hitch.on('market_moving_news', async (news) => {
+        await this.core.processTradeEvent({
+          type: 'news_alert',
+          ...news,
+          action: 'ADJUST_STRATEGY'
+        });
+        
+        // Create content about it
+        const content = await this.content.generateSocialMediaPost({
+          type: 'breaking_news',
+          ...news
+        });
+        
+        this.broadcast('content_created', content);
       });
-      
-      // Create content about it
-      const content = await this.content.generateSocialMediaPost({
-        type: 'breaking_news',
-        ...news
-      });
-      
-      this.broadcast('content_created', content);
-    });
+    } else {
+      console.log('[MoverIntegrationHub] Hitch integration disabled - running in basic mode');
+    }
 
     // When profitable trade happens, create content
     this.core.on('narration', async (event) => {
@@ -65,15 +70,17 @@ class MoverIntegrationHub extends EventEmitter {
     });
 
     // Customer support integration
-    this.support.on('issue_resolved', async (ticket) => {
-      // Learn from the solution
-      await this.memory.recordEvent('support_solution', ticket);
-      
-      // Create FAQ content
-      const faq = await this.content.generateFAQ(ticket);
-      
-      this.broadcast('new_faq', faq);
-    });
+    if (this.support && typeof this.support.on === 'function') {
+      this.support.on('issue_resolved', async (ticket) => {
+        // Learn from the solution
+        await this.memory.recordEvent('support_solution', ticket);
+        
+        // Create FAQ content
+        const faq = await this.content.generateFAQ(ticket);
+        
+        this.broadcast('new_faq', faq);
+      });
+    }
   }
 
   async handleUserQuery(query, context) {
@@ -104,7 +111,7 @@ class MoverIntegrationHub extends EventEmitter {
 
   async generateDailyReport() {
     const trading = await this.core.getSessionReport();
-    const news = this.hitch.getRecentNews(10);
+    const news = this.hitch && this.hitch.getRecentNews ? this.hitch.getRecentNews(10) : [];
     const support = await this.support.checkSystemHealth();
     const sales = await this.sales.getDailyConversions();
     

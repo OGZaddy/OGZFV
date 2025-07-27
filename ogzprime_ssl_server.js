@@ -273,12 +273,24 @@ const wss = new WebSocket.Server({ server: httpServer });
 setupWebSocketHandlers(wss, 'Regular');
 
 function setupWebSocketHandlers(websocketServer, serverType) {
-  let clients = [];
+  // Initialize global clients arrays if not exists
+  if (serverType === 'Regular' && !global.regularClients) {
+    global.regularClients = [];
+  } else if (serverType === 'Secure' && !global.secureClients) {
+    global.secureClients = [];
+  }
   
   websocketServer.on('connection', (ws) => {
     console.log(`[SSL-${Date.now()}] ${serverType} WebSocket: Frontend connected to AI brain stream`);
-    console.log(`🔍 DIAGNOSTIC: ${serverType} client connected. Total clients: ${clients.length + 1}`);
-    clients.push(ws);
+    
+    // Add to appropriate global array
+    if (serverType === 'Regular') {
+      global.regularClients.push(ws);
+      console.log(`🔍 DIAGNOSTIC: ${serverType} client connected. Total clients: ${global.regularClients.length}`);
+    } else {
+      global.secureClients.push(ws);
+      console.log(`🔍 DIAGNOSTIC: ${serverType} client connected. Total clients: ${global.secureClients.length}`);
+    }
     
     // Send initial REAL status to new client
     const realBalance = ogzPrime && ogzPrime.getBalance ? ogzPrime.getBalance() : 10000;
@@ -328,20 +340,19 @@ function setupWebSocketHandlers(websocketServer, serverType) {
 
     ws.on('close', () => {
       console.log(`[SSL-${Date.now()}] ${serverType} WebSocket: Frontend disconnected from AI brain`);
-      clients = clients.filter(client => client !== ws);
+      
+      // Remove from appropriate global array
+      if (serverType === 'Regular') {
+        global.regularClients = global.regularClients.filter(client => client !== ws);
+      } else {
+        global.secureClients = global.secureClients.filter(client => client !== ws);
+      }
     });
 
     ws.on('error', (error) => {
       console.error(`🔍 DIAGNOSTIC: ${serverType} WebSocket client error:`, error);
     });
   });
-  
-  // Store clients reference for broadcasting
-  if (serverType === 'Regular') {
-    global.regularClients = clients;
-  } else {
-    global.secureClients = clients;
-  }
 }
 
 // 🔌 Polygon.io WebSocket feed (same as original)
