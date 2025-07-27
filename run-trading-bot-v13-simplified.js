@@ -167,7 +167,7 @@ class OGZPrimeV13Simplified {
     console.log('🔌 Connecting to SSL server WebSocket on port 8001...');
     
     try {
-      this.ws = new WebSocket('ws://localhost:8001');
+      this.ws = new WebSocket('ws://127.0.0.1:3010');
       
       this.ws.on('open', () => {
         console.log('✅ WebSocket connected to SSL server');
@@ -184,13 +184,13 @@ class OGZPrimeV13Simplified {
         try {
           const message = JSON.parse(data.toString());
           
-          // Handle ticker data from SSL server
-          if (message.type === 'ticker' || message.ticker) {
+          // Handle price data from SSL server (format: {type: 'price', data: {...}})
+          if (message.type === 'price' && message.data) {
             this.cachedMarketData = {
-              price: parseFloat(message.ticker || message.price),
-              volume: message.volume || 1000,
-              timestamp: message.timestamp || Date.now(),
-              symbol: message.symbol || 'BTC-USD'
+              price: parseFloat(message.data.price),
+              volume: 1000, // Default volume as SSL server doesn't provide it
+              timestamp: message.data.timestamp || Date.now(),
+              symbol: message.data.asset || 'BTC-USD'
             };
             this.lastDataReceived = Date.now();
             
@@ -2091,6 +2091,3 @@ if (require.main === module) {
 }
 
 module.exports = OGZPrimeV13Simplified;
-
-// WebSocket client to connect to SSL server
-const connectToSSLServer = require('./websocket-client-fix');
