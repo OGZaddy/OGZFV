@@ -24,9 +24,6 @@ const fs = require('fs');
 // REAL MARKET DATA DEPENDENCIES  
 // Using built-in fetch (Node.js 18+)
 
-// Enhanced WebSocket Client Integration
-const EnhancedWebSocketClient = require('./trading-bot-websocket-integration');
-
 // Core trading systems (importing existing classes)
 const UltimateTradingSystem = require('./core/UltimateTradingSystem');
 const CorrelationAnalyzer = require('./core/CorrelationAnalyzer');
@@ -149,19 +146,117 @@ class OGZPrimeV13Simplified {
     this.riskCheckInterval = null;
     this.statusUpdateInterval = null;
     
-    // Enhanced WebSocket client
-    this.wsClient = new EnhancedWebSocketClient(this);
+    // Add WebSocket properties
+    this.ws = null;
+    this.wsReconnectInterval = null;
+    this.wsReconnectDelay = 5000; // 5 seconds
+    this.cachedMarketData = {
+      price: null,
+      volume: 0,
+      timestamp: null,
+      symbol: null
+    };
+    this.wsConnected = false;
+    this.lastDataReceived = null;
   }
 
   /**
-   * 🔌 Connect to SSL server WebSocket with enhanced client
+   * 🔌 Connect to SSL server WebSocket
    */
   connectWebSocket() {
-    this.wsClient.connectWebSocket();
+    const sslServerHost = process.env.SSL_SERVER_HOST || '127.0.0.1';
+    const sslServerPort = process.env.SSL_SERVER_PORT || '3010';
+    const wsUrl = `ws://${sslServerHost}:${sslServerPort}`;
+    
+    console.log(`🔌 Connecting to SSL server WebSocket at ${wsUrl}...`);
+    
+    try {
+      this.ws = new WebSocket(wsUrl);
+      
+      this.ws.on('open', () => {
+        console.log('✅ WebSocket connected to SSL server');
+        this.wsConnected = true;
+        
+        // Clear any existing reconnection interval
+        if (this.wsReconnectInterval) {
+          clearInterval(this.wsReconnectInterval);
+          this.wsReconnectInterval = null;
+        }
+      });
+      
+      this.ws.on('message', (data) => {
+        try {
+          console.log(`📨 RAW MESSAGE RECEIVED:`, data.toString().substring(0, 100));
+          
+          const message = JSON.parse(data.toString());
+          console.log(`📊 Parsed message type: ${message.type}`);
+          
+          // Handle different message types
+          switch (message.type) {
+            case 'price':
+              if (message.data) {
+                this.cachedMarketData = {
+                  price: parseFloat(message.data.price),
+                  volume: 1000,
+                  timestamp: message.data.timestamp || Date.now(),
+                  symbol: message.data.asset || 'BTC-USD'
+                };
+                this.lastDataReceived = Date.now();
+                console.log(`💰 Price update: ${this.cachedMarketData.symbol} $${this.cachedMarketData.price.toFixed(2)}`);
+              }
+              break;
+              
+            case 'status':
+              console.log(`📋 Status message received:`, message.data);
+              break;
+              
+            case 'heartbeat':
+              console.log(`💓 Heartbeat received at ${new Date().toLocaleTimeString()}`);
+              break;
+              
+            default:
+              console.log(`❓ Unknown message type: ${message.type}`);
+          }
+        } catch (error) {
+          console.error('❌ Error parsing WebSocket message:', error);
+          console.error('Raw data was:', data.toString());
+        }
+      });
+      
+      this.ws.on('close', () => {
+        console.log('🔌 WebSocket disconnected from SSL server');
+        this.wsConnected = false;
+        this.scheduleReconnect();
+      });
+      
+      this.ws.on('error', (error) => {
+        console.error('❌ WebSocket error:', error.message);
+        this.wsConnected = false;
+      });
+      
+    } catch (error) {
+      console.error('❌ Failed to connect WebSocket:', error);
+      this.scheduleReconnect();
+    }
   }
 
   /**
-   *  Initialize the complete trading system
+   * 🔄 Schedule WebSocket reconnection
+   */
+  scheduleReconnect() {
+    if (!this.wsReconnectInterval) {
+      console.log(`🔄 Scheduling reconnection in ${this.wsReconnectDelay/1000} seconds...`);
+      this.wsReconnectInterval = setInterval(() => {
+        if (!this.wsConnected) {
+          console.log('🔄 Attempting to reconnect to SSL server...');
+          this.connectWebSocket();
+        }
+      }, this.wsReconnectDelay);
+    }
+  }
+
+  /**
+   * 🚀 Initialize the complete trading system
    */
   async initialize() {
     console.log('\n🚀 INITIALIZING OGZ PRIME V13 SIMPLIFIED...');
@@ -176,7 +271,7 @@ class OGZPrimeV13Simplified {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Check if connected
-      if (!this.wsClient.wsConnected) {
+      if (!this.wsConnected) {
         console.warn('⚠️ WebSocket not connected yet, but continuing initialization...');
       }
       
@@ -882,10 +977,43 @@ class OGZPrimeV13Simplified {
   }
 
   /**
-   * 📈 Get market data from enhanced WebSocket client
+   * 📈 Get market data from WebSocket cache
    */
   async getMarketData() {
-    return await this.wsClient.getMarketData();
+    // Check if we have recent cached data from WebSocket
+    if (this.cachedMarketData.price && this.lastDataReceived) {
+      const dataAge = Date.now() - this.lastDataReceived;
+      
+      // If data is less than 5 seconds old, use it
+      if (dataAge < 5000) {
+        return {
+          price: this.cachedMarketData.price,
+          open: this.cachedMarketData.price, // Use price as approximation
+          high: this.cachedMarketData.price * 1.001,
+          low: this.cachedMarketData.price * 0.999,
+          volume: this.cachedMarketData.volume,
+          timestamp: this.cachedMarketData.timestamp,
+          
+          // Default technical indicators (should be calculated from price history)
+          rsi: 50,
+          macd: 0,
+          volatility: 0.02,
+          trend: 'sideways',
+          
+          // Market metadata
+          symbol: this.cachedMarketData.symbol,
+          source: 'WEBSOCKET_CACHE',
+          lastUpdated: this.lastDataReceived,
+          dataAge: dataAge
+        };
+      } else {
+        console.warn(`⚠️ Market data is stale (${(dataAge/1000).toFixed(1)}s old)`);
+      }
+    }
+    
+    // If no recent data, return null
+    console.warn('⚠️ No recent market data available from WebSocket');
+    return null;
   }
 
   /**
@@ -1900,9 +2028,14 @@ class OGZPrimeV13Simplified {
       if (this.patternUpdateInterval) clearInterval(this.patternUpdateInterval);
       if (this.riskCheckInterval) clearInterval(this.riskCheckInterval);
       if (this.statusUpdateInterval) clearInterval(this.statusUpdateInterval);
+      if (this.wsReconnectInterval) clearInterval(this.wsReconnectInterval);
       
-      // Shutdown enhanced WebSocket client
-      await this.wsClient.shutdown();
+      // Close WebSocket client connection to SSL server
+      if (this.ws) {
+        console.log('🔌 Closing WebSocket client connection...');
+        this.ws.close();
+        this.ws = null;
+      }
       
       // Close WebSocket server
       if (this.wsServer) {
