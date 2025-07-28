@@ -5,8 +5,6 @@
 // Streams bot thoughts, patterns, trades, and analysis in real-time
 // ===================================================================
 
-const { getWebSocketUrl, getHttpUrl } = require('../core/WebSocketConfig');
-
 const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
@@ -37,8 +35,8 @@ class LiveTradingDataAPI {
     // SECURITY FIX: Strict CORS policy - only allow specific origins
     this.app.use((req, res, next) => {
       const allowedOrigins = [
-        getHttpUrl('data'),
-        getHttpUrl('transparency'), 
+        'http://localhost:3000',
+        'http://localhost:8080', 
         'https://your-domain.com' // Replace with your actual domain
       ];
       

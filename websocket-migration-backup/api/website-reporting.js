@@ -13,7 +13,7 @@
 // Author: Trey (OGZPrime Technologies)
 // Version: Release 1.0
 
-const { getWebSocketUrl, getHttpUrl } = require('../core/WebSocketConfig');
+const { getWebSocketUrl, getHttpUrl } = require('../../core/WebSocketConfig');
 
 const express = require('express');
 const fs = require('fs');

@@ -1,6 +1,6 @@
 // OGZPrime Live Trading & Streaming - Combined Script
 
-const { getWebSocketUrl, getHttpUrl } = require('core/WebSocketConfig');
+const { getWebSocketUrl, getHttpUrl } = require('../core/WebSocketConfig');
 
 const express = require('express');
 const WebSocket = require('ws');

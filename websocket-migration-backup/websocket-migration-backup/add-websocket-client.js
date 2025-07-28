@@ -1,12 +1,10 @@
 // Add this at the top of run-trading-bot-v13-simplified.js after the requires
-const { getWebSocketUrl, getHttpUrl } = require('core/WebSocketConfig');
-
 const WebSocket = require('ws');
 
 // Add this inside the class after constructor
   connectToSSLServer() {
     console.log('🔌 Connecting to SSL server for market data...');
-    const ws = new WebSocket(getWebSocketUrl('data'));
+    const ws = new WebSocket('ws://localhost:8001');
     
     ws.on('open', () => {
       console.log('✅ Connected to SSL server data feed!');

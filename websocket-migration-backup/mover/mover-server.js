@@ -2,7 +2,7 @@
 // FILE: mover-server.js
 // WebSocket server and API router - COMPLETE VERSION
 // ==========================================
-const { getWebSocketUrl, getHttpUrl } = require('../core/WebSocketConfig');
+const { getWebSocketUrl, getHttpUrl } = require('../../core/WebSocketConfig');
 
 const WebSocket = require('ws');
 const http = require('http');

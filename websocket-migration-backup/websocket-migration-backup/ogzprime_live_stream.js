@@ -1,7 +1,5 @@
 // OGZPrime Live Trading & Streaming - Combined Script
 
-const { getWebSocketUrl, getHttpUrl } = require('core/WebSocketConfig');
-
 const express = require('express');
 const WebSocket = require('ws');
 const fetch = require('node-fetch');
@@ -387,7 +385,7 @@ console.log('🧠 Starting AI Transparency System...');
 const transparency = new TransparencyIntegration({
   websocketPort: 3009,
   apiPort: 3008,
-  botWebSocketUrl: getWebSocketUrl('data'), // Connect to the streamer WebSocket
+  botWebSocketUrl: 'ws://localhost:3005', // Connect to the streamer WebSocket
   enableLogging: true
 });
 console.log('✅ Transparency Dashboard: http://localhost:3008');

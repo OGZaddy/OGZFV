@@ -1,9 +1,7 @@
-const { getWebSocketUrl, getHttpUrl } = require('core/WebSocketConfig');
-
 const WebSocket = require('ws');
 
 console.log('Attempting to connect to SSL server on port 8001...');
-const ws = new WebSocket(getWebSocketUrl('data'));
+const ws = new WebSocket('ws://localhost:8001');
 
 ws.on('open', () => {
   console.log('✅ Connected to SSL server!');

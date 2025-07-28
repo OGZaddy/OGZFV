@@ -1,5 +1,5 @@
 // Add this to the trading bot to connect to SSL server
-const { getWebSocketUrl, getHttpUrl } = require('core/WebSocketConfig');
+const { getWebSocketUrl, getHttpUrl } = require('../core/WebSocketConfig');
 
 const WebSocket = require('ws');
 

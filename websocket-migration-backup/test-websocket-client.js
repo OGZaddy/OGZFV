@@ -1,4 +1,4 @@
-const { getWebSocketUrl, getHttpUrl } = require('core/WebSocketConfig');
+const { getWebSocketUrl, getHttpUrl } = require('../core/WebSocketConfig');
 
 const WebSocket = require('ws');
 

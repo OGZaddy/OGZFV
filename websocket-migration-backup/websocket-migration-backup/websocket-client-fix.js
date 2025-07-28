@@ -1,10 +1,8 @@
 // Add this to the trading bot to connect to SSL server
-const { getWebSocketUrl, getHttpUrl } = require('core/WebSocketConfig');
-
 const WebSocket = require('ws');
 
 function connectToSSLServer(bot) {
-  const ws = new WebSocket(getWebSocketUrl('data'));
+  const ws = new WebSocket('ws://localhost:8001');
   
   ws.on('open', () => {
     console.log('✅ Connected to SSL server data feed!');

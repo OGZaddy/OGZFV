@@ -2,8 +2,6 @@
 // FILE: mover-server.js
 // WebSocket server and API router - COMPLETE VERSION
 // ==========================================
-const { getWebSocketUrl, getHttpUrl } = require('../core/WebSocketConfig');
-
 const WebSocket = require('ws');
 const http = require('http');
 const express = require('express');
@@ -27,7 +25,7 @@ class MoverServer {
     this.config = {
       httpPort: process.env.MOVER_HTTP_PORT || 4000,
       wsPort: process.env.MOVER_WS_PORT || 4001,
-      botWsUrl: process.env.BOT_WS_URL || getWebSocketUrl('transparency'),
+      botWsUrl: process.env.BOT_WS_URL || 'ws://localhost:8080',
       voiceEnabled: process.env.VOICE_ENABLED === 'true',
       ...config
     };
