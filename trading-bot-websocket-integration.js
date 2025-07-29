@@ -123,6 +123,23 @@ class EnhancedWebSocketClient {
                   this.lastDataReceived = Date.now();
                   
                   console.log(`💰 ${actualPriceData.asset} PRICE: $${actualPriceData.price.toFixed(2)}`);
+                  
+                  // Update bot's price history for technical indicators
+                  if (this.bot.priceHistory) {
+                    this.bot.priceHistory.push({
+                      c: parseFloat(actualPriceData.price), // close price
+                      o: parseFloat(actualPriceData.price), // open (same as close for now)
+                      h: parseFloat(actualPriceData.price) * 1.001, // high
+                      l: parseFloat(actualPriceData.price) * 0.999, // low
+                      v: actualPriceData.volume || 1000,
+                      t: actualPriceData.timestamp || Date.now()
+                    });
+                    
+                    // Keep only the last 100 prices
+                    if (this.bot.priceHistory.length > this.bot.maxPriceHistory) {
+                      this.bot.priceHistory.shift();
+                    }
+                  }
                 }
                 
                 // Store all asset prices for correlation analysis
@@ -323,8 +340,11 @@ class EnhancedWebSocketClient {
     if (this.cachedMarketData.price && this.lastDataReceived) {
       const dataAge = Date.now() - this.lastDataReceived;
       
-      // If data is less than 5 seconds old, use it
-      if (dataAge < 5000) {
+      // Use environment variable for data freshness window, default to 45 seconds
+      const dataFreshnessWindow = parseInt(process.env.DATA_FRESHNESS_WINDOW) || 45000;
+      
+      // If data is within the freshness window, use it
+      if (dataAge < dataFreshnessWindow) {
         // Calculate technical indicators from price history
         const technicals = this.bot.calculateTechnicalIndicators();
         
@@ -340,7 +360,7 @@ class EnhancedWebSocketClient {
           rsi: technicals.rsi || 50,
           macd: technicals.macd || 0,
           volatility: technicals.volatility || 0.02,
-          trend: this.bot.determineTrend(),
+          trend: this.bot.determineTrend(this.bot.priceHistory),
           
           // Market metadata
           symbol: this.cachedMarketData.symbol,

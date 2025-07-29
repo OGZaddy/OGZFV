@@ -1,8 +1,31 @@
 {
-  "timestamp": "7/28/2025, 8:28:12 PM",
-  "thought": "Running hourly system maintenance and optimization",
-  "decision": "MAINTENANCE",
-  "confidence": 80,
+  "timestamp": "7/29/2025, 9:19:01 PM",
+  "thought": "Analyzing market patterns for optimal entry points...",
+  "decision": "ANALYZING - Waiting for opportunity (0.0%)",
+  "confidence": 0,
   "balance": 10000,
-  "price": 0
+  "price": 99573.45810659428,
+  "winRate": 0,
+  "totalTrades": 0,
+  "dailyPnL": 0,
+  "systemState": {
+    "active": true,
+    "mode": "trading",
+    "startTime": 1753823544215,
+    "totalTrades": 0,
+    "successfulTrades": 0,
+    "failedTrades": 0,
+    "totalPnL": 0,
+    "dailyPnL": 0,
+    "currentBalance": 10000,
+    "averageTradeTime": 0,
+    "averageConfidence": 0,
+    "winRate": 0,
+    "currentDrawdown": 0,
+    "maxDrawdownReached": 0,
+    "emergencyMode": false,
+    "riskLimitExceeded": false,
+    "lastTradeTime": 0,
+    "lastRiskCheck": 1753823936279
+  }
 }

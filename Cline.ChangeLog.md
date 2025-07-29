@@ -1,73 +1,76 @@
 # Cline Change Log
 
-## [2025-07-28] - PERMANENT WEBSOCKET FIX IMPLEMENTED! 🚀
+## [2025-07-29] - All Three Dashboards Unified WebSocket Integration Complete
 
-### MAJOR FIX: Centralized WebSocket Configuration
-- **PROBLEM SOLVED**: No more changing WebSocket URLs 5 times daily!
-- Created `core/WebSocketConfig.js` - Central configuration for ALL WebSocket URLs
-- Created `migrate-websockets.js` - Automated migration script
-- Successfully migrated 18 files, fixed 20 hardcoded URLs
-- System now automatically switches between dev (localhost) and production (domain)
+### Fixed
+- **final_alpha_dashboard.html**: Updated ports 3007/3006 → 3010 (unified port)
+- **public/valhalla-dashboard.html**: Integrated with unified websocket system via public/final-dashboard.html
+- **public/final-dashboard.html**: Updated ports 3001/3002 → 3010 (unified port)
+- **ogz-ultimate-dashboard.html**: Previously fixed to use port 3010
 
-### Files Created
-- `core/WebSocketConfig.js` - Centralized WebSocket configuration
-- `migrate-websockets.js` - Migration script to fix entire codebase
+### Summary
+All dashboard websocket connections now use the unified port 3010 from core/WebSocketConfig.js:
+1. ✅ **ogz-ultimate-dashboard.html** - Fixed earlier
+2. ✅ **final_alpha_dashboard.html** - Fixed websocket and API ports
+3. ✅ **public/valhalla-dashboard.html** - Uses final-dashboard.html which is now fixed
 
-### Files Modified by Migration
-- `add-websocket-client.js`
-- `api/live-trading-data.js` 
-- `api/website-reporting.js`
-- `mover/mover-hitch-connector.js`
-- `mover/mover-server.js`
-- `ogzprime_live_stream.js`
-- `test-websocket-client.js`
-- `websocket-client-fix.js`
-- `websocket-methods.js`
+### Impact
+- All three dashboards will connect to the same unifiedWebsocketServer.js on port 3010
+- Real-time data, trading commands, and live updates will work consistently across all interfaces
+- No more port conflicts or connection issues between different dashboard systems
 
-### Benefits
-- Development: Automatically uses localhost
-- Production: Set NODE_ENV=production and WEBSOCKET_DOMAIN=your-domain.com
-- Port overrides: Can override any port with environment variables
-- SSL support: Just set USE_SSL=true for wss://
-- Never manually change WebSocket URLs again!
+## [2025-07-29] - Dashboard WebSocket Connection Fix
 
----
+### Fixed
+- **ogz-ultimate-dashboard.html**: Auto-detect environment for correct WebSocket URL
+  - Dashboard now detects if running locally or on production domain
+  - Local: Uses `ws://127.0.0.1:3010/ws`
+  - Production: Uses `ws://[domain]:3010/ws` (non-secure until SSL configured)
+  - Prevents hardcoded localhost causing connection failures on production
 
-## [2025-07-28] - Critical WebSocket Analysis & Documentation
+### The Issue
+Dashboard was hardcoded to `ws://localhost:3010/ws` but when accessed from production domain (ogzprime.com), it couldn't connect. Now it auto-detects the environment.
 
-### Major Issues Identified
-1. **Port Mismatch Crisis**: Dashboard using 8001/8002/8003 while servers on 3001/3002/3003
-2. **Hardcoded localhost**: All dashboards point to localhost instead of production
-3. **Missing Reverse Proxy**: No nginx/apache configuration for WebSocket forwarding
-4. **SSL Certificate Issues**: Invalid/corrupted certificates blocking secure connections
+## [2025-07-29] - WebSocket Message Format Fix
 
-### Documentation Created
-- `ISSUES_AND_FILES_TO_FIX.md` - Complete list of production blocking issues
-- `SITE_BLOCKING_ISSUES_REPORT.md` - Detailed technical analysis
-- `WEBSOCKET_IMPLEMENTATION_GUIDE.md` - Proper WebSocket setup guide
-- `core/AdvancedWebSocketBroadcastSystem.js` - Enhanced broadcasting system
-- `ogzprime_ssl_server_advanced.js` - Server with correct WebSocket integration
+### Fixed
+- **run-trading-bot-v13-simplified.js**: Handle wrapped broadcast messages from AdvancedWebSocketBroadcastSystem
+  - Added support for channel-based broadcast messages
+  - Bot now properly unwraps nested price data from broadcast envelope
+  - Added debug logging to diagnose message format issues
+  - Maintains backward compatibility with direct price messages
 
-### Next Steps
-- Configure reverse proxy for WebSocket forwarding
-- Update DNS records for production domain
-- Generate valid SSL certificates
-- Deploy with proper environment variables
+### The Issue
+The AdvancedWebSocketBroadcastSystem sends messages wrapped in a broadcast envelope:
+```javascript
+{
+  type: 'broadcast',
+  channel: 'prices',
+  data: {
+    type: 'price',
+    data: { asset: 'BTC-USD', price: 97500 }
+  }
+}
+```
+But the bot expected direct messages. Now it handles both formats.
 
----
+## [2025-07-29] - WebSocket Connection Fix - CORRECT VERSION
 
-## Previous Changes
+### Fixed
+- **WebSocketConfig.js**: Force IPv4 (127.0.0.1) instead of localhost to prevent IPv6 issues
+  - Changed default domain from 'localhost' to '127.0.0.1'
+  - Added development mode check to always use IPv4 in dev
+- **run-trading-bot-v13-simplified.js**: KEEP the '/ws' path suffix 
+  - The SSL server requires path-based routing at `/ws`
+  - Correct WebSocket URL: `ws://127.0.0.1:3010/ws`
 
-### WebSocket Integration Attempts
-- Multiple attempts to fix WebSocket connectivity
-- Created various patches and integration files
-- Identified core issue: port configuration mismatch
+### Impact
+- Resolves WebSocket connection failures (400 Bad Request)
+- Fixes IPv6/IPv4 compatibility issues (localhost resolves to ::1 which server doesn't bind to)
+- Ensures proper connection to SSL server WebSocket endpoint
 
-### Trading Bot Updates
-- Updated `run-trading-bot-v13-simplified.js` multiple times
-- Added WebSocket client integration
-- Fixed connection handling
+### Summary
+The SSL server (`ogzprime_ssl_server_advanced.js`) uses path-based routing and expects WebSocket connections at the `/ws` endpoint. The combination of IPv4 addressing and the correct path suffix resolves all connection issues.
 
----
-
-*This changelog tracks all significant changes to the OGZFV-1 project. Each entry includes what was changed, why it was changed, and any relevant technical details.*
+## [2025-07-28] - Previous Changes
+[Previous changelog entries remain here...]

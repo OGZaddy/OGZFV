@@ -25,7 +25,138 @@ const fs = require('fs');
 // Using built-in fetch (Node.js 18+)
 
 // Enhanced WebSocket Client Integration
-const EnhancedWebSocketClient = require('./trading-bot-websocket-integration');
+const { getWebSocketUrl } = require('./core/WebSocketConfig');
+
+// 🛡️ BULLETPROOF MESSAGE HANDLER - NEVER CRASH AGAIN!
+class RobustMessageHandler {
+  constructor(ws, bot) {
+    this.ws = ws;
+    this.bot = bot;
+    this.handlers = new Map();
+    this.setupDefaultHandlers();
+  }
+  
+  extractData(message, path) {
+    try {
+      const keys = path.split('.');
+      let value = message;
+      for (const key of keys) {
+        if (value && typeof value === 'object' && key in value) {
+          value = value[key];
+        } else {
+          return null;
+        }
+      }
+      return value;
+    } catch (e) {
+      return null;
+    }
+  }
+  
+  processMessage(rawData) {
+    let message;
+    try {
+      message = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+    } catch (e) {
+      console.error('❌ Parse error:', e);
+      return;
+    }
+    
+    const messageType = message?.type || 'unknown';
+    console.log(`📨 MSG: ${messageType}`);
+    
+    const handler = this.handlers.get(messageType) || this.handlers.get('default');
+    
+    try {
+      handler.call(this, message);
+    } catch (e) {
+      console.error(`❌ Handler error for ${messageType}:`, e);
+      // DON'T CRASH - KEEP GOING!
+    }
+  }
+  
+  on(messageType, handler) {
+    this.handlers.set(messageType, handler);
+  }
+  
+  setupDefaultHandlers() {
+    // PING/PONG - BULLETPROOF
+    this.on('ping', (message) => {
+      const pong = {
+        type: 'pong',
+        id: message.id || null,
+        timestamp: message.timestamp || Date.now()
+      };
+      this.safeSend(pong);
+      console.log('🏓 Responded to server ping');
+    });
+    
+    // PRICE UPDATES - FLEXIBLE EXTRACTION
+    this.on('price', (message) => {
+      const price = this.extractData(message, 'data.data.price') ||
+                   this.extractData(message, 'data.price') ||
+                   this.extractData(message, 'price');
+                   
+      const asset = this.extractData(message, 'data.data.asset') ||
+                   this.extractData(message, 'data.asset') ||
+                   this.extractData(message, 'asset');
+      
+      if (price && asset && asset === this.bot.config.primaryAsset) {
+        // UPDATE BOT'S CACHED DATA
+        this.bot.cachedMarketData = {
+          price: parseFloat(price),
+          volume: this.extractData(message, 'data.data.volume') || 1000,
+          timestamp: Date.now(),
+          symbol: asset,
+          asset: asset,
+          rsi: 50,
+          macd: 0,  
+          volatility: 0.02,
+          trend: 'sideways'
+        };
+        this.bot.lastDataReceived = Date.now();
+        console.log(`💰 ${asset} PRICE: $${parseFloat(price).toFixed(2)} - CACHED SUCCESSFULLY`);
+        
+        // Update ConnectionResilience
+        if (this.bot.connectionResilience) {
+          this.bot.connectionResilience.updateDataTimestamp();
+        }
+      }
+      
+      // SEND ACK FOR CRITICAL MESSAGES
+      if (message.priority === 'critical' && message.id) {
+        this.safeSend({
+          type: 'ack',
+          messageId: message.id,
+          timestamp: Date.now()
+        });
+        console.log(`📤 ACK SENT: ${message.id}`);
+      }
+    });
+    
+    // WELCOME/IDENTIFICATION
+    this.on('identification_confirmed', (message) => {
+      console.log('✅ Bot identified with priority:', message.priority);
+    });
+    
+    // DEFAULT HANDLER
+    this.on('default', (message) => {
+      console.log(`❓ Unknown message: ${message.type}`);
+    });
+  }
+  
+  safeSend(data) {
+    try {
+      if (this.ws && this.ws.readyState === 1) {
+        this.ws.send(JSON.stringify(data));
+        return true;
+      }
+    } catch (e) {
+      console.error('❌ Send error:', e);
+    }
+    return false;
+  }
+}
 
 // Core trading systems (importing existing classes)
 const UltimateTradingSystem = require('./core/UltimateTradingSystem');
@@ -149,15 +280,50 @@ class OGZPrimeV13Simplified {
     this.riskCheckInterval = null;
     this.statusUpdateInterval = null;
     
-    // Enhanced WebSocket client
-    this.wsClient = new EnhancedWebSocketClient(this);
+    // Add WebSocket properties
+    this.ws = null;
+    this.wsConnected = false;
+    this.wsReconnectInterval = null;
+    this.lastDataReceived = null;
+    this.cachedMarketData = {};
+    this.connectionId = null;
+    
+    // Price history tracking for technical indicators
+    this.priceHistory = [];
+    this.maxPriceHistory = 100; // Keep last 100 price points
   }
 
   /**
    * 🔌 Connect to SSL server WebSocket with enhanced client
    */
   connectWebSocket() {
-    this.wsClient.connectWebSocket();
+    const wsUrl = getWebSocketUrl('unified') + '/ws'; // SSL server requires /ws path
+    console.log(`🔌 Connecting to unified WebSocket at ${wsUrl}...`);
+    
+    this.ws = new WebSocket(wsUrl);
+    this.messageHandler = new RobustMessageHandler(this.ws, this);
+    
+    this.ws.on('open', () => {
+      console.log('✅ WebSocket connected');
+      this.wsConnected = true;
+      
+      // Identify as trading bot for CRITICAL priority
+      this.ws.send(JSON.stringify({
+        type: 'identify',
+        source: 'trading_bot',
+        version: 'V13-SIMPLIFIED',
+        capabilities: ['trading', 'realtime', 'priority']
+      }));
+    });
+    
+    this.ws.on('message', (data) => {
+      this.messageHandler.processMessage(data);
+    });
+    
+    this.ws.on('close', () => {
+      this.wsConnected = false;
+      setTimeout(() => this.connectWebSocket(), 5000);
+    });
   }
 
   /**
@@ -176,7 +342,7 @@ class OGZPrimeV13Simplified {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Check if connected
-      if (!this.wsClient.wsConnected) {
+      if (!this.wsConnected) {
         console.warn('⚠️ WebSocket not connected yet, but continuing initialization...');
       }
       
@@ -885,22 +1051,65 @@ class OGZPrimeV13Simplified {
    * 📈 Get market data from enhanced WebSocket client
    */
   async getMarketData() {
-    return await this.wsClient.getMarketData();
+    console.log(`🔍 DATA CHECK: cached=${!!this.cachedMarketData.price}, lastReceived=${this.lastDataReceived}, age=${this.lastDataReceived ? Date.now() - this.lastDataReceived : 'N/A'}ms`);
+    
+    if (this.cachedMarketData && this.lastDataReceived && this.cachedMarketData.price) {
+      const dataAge = Date.now() - this.lastDataReceived;
+      const maxAge = parseInt(process.env.DATA_FRESHNESS_WINDOW) || 45000;
+      
+      console.log(`✅ MARKET DATA VALID: ${this.cachedMarketData.asset} = $${this.cachedMarketData.price} (age: ${dataAge}ms)`);
+      
+      if (dataAge < maxAge) {
+        return this.cachedMarketData;
+      } else {
+        console.log(`⏰ Data too old: ${dataAge}ms > ${maxAge}ms`);
+      }
+    } else {
+      console.log(`❌ Missing data: cached=${!!this.cachedMarketData}, received=${!!this.lastDataReceived}, price=${this.cachedMarketData?.price}`);
+    }
+    return null;
+  }
+
+  /**
+   * 🎯 Determine trend from price data
+   */
+  determineTrend(priceHistory) {
+    if (!priceHistory || priceHistory.length < 2) {
+      return 'sideways';
+    }
+    
+    const recent = priceHistory[priceHistory.length - 1];
+    const older = priceHistory[0];
+    
+    if (recent > older * 1.01) {
+      return 'up';
+    } else if (recent < older * 0.99) {
+      return 'down';
+    } else {
+      return 'sideways';
+    }
   }
 
   /**
    * 📊 Calculate technical indicators from REAL price data
    */
-  calculateTechnicalIndicators(priceData) {
+  calculateTechnicalIndicators(priceData = null) {
     try {
+      // Use passed data or bot's price history
+      const data = priceData || this.priceHistory;
+      
+      if (!data || data.length < 2) {
+        return { rsi: 50, macd: 0, volatility: 0.02 }; // Safe defaults
+      }
+      
       // Calculate RSI from real data
-      const rsi = this.calculateRSI(priceData.slice(0, 14));
+      const rsi = this.calculateRSI(data.slice(-14));
       
       // Calculate MACD from real data  
-      const macd = this.calculateMACD(priceData.slice(0, 26));
+      const macd = this.calculateMACD(data.slice(-26));
       
       // Calculate volatility from real price movements
-      const volatility = this.calculateVolatility(priceData.slice(0, 20));
+      const volatility = this.calculateVolatility(data.slice(-20));
       
       return { rsi, macd, volatility };
       
@@ -1901,8 +2110,11 @@ class OGZPrimeV13Simplified {
       if (this.riskCheckInterval) clearInterval(this.riskCheckInterval);
       if (this.statusUpdateInterval) clearInterval(this.statusUpdateInterval);
       
-      // Shutdown enhanced WebSocket client
-      await this.wsClient.shutdown();
+      // Close WebSocket connection
+      if (this.ws) {
+        this.ws.close(1000, 'Bot shutdown');
+        this.ws = null;
+      }
       
       // Close WebSocket server
       if (this.wsServer) {

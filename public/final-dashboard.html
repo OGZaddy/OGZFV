@@ -251,7 +251,7 @@ const monteCarloDisplay = document.getElementById('monte-carlo-display');
  * ensuring continuous data flow for trading operations.
  */
 function connectDataWebSocket() {
-  ws = new WebSocket('ws://localhost:3001'); // Backend Data Port: 3001
+  ws = new WebSocket('ws://localhost:3010'); // UNIFIED WebSocket Port: 3010
 
   /**
    * WebSocket connection established successfully
@@ -377,7 +377,7 @@ function connectDataWebSocket() {
  * by the backend trading system.
  */
 function connectGuiWebSocket() {
-  guiSocket = new WebSocket('ws://localhost:3002'); // Backend GUI Command Port: 3002
+  guiSocket = new WebSocket('ws://localhost:3010'); // UNIFIED WebSocket Port: 3010
 
   /**
    * GUI WebSocket connection established

@@ -848,20 +848,43 @@
                                window.location.hostname === '127.0.0.1' || 
                                window.location.hostname === '';
                 
-                // VPS Configuration - Update these for your VPS
-                const VPS_DOMAIN = 'your-vps-domain.com'; // Replace with your VPS domain/IP
-                const VPS_PORT = '8080';
-                const USE_SSL = false; // Set to true if using HTTPS/WSS
+                // Auto-detect environment and use correct ports
+                const getWebSocketUrl = (service) => {
+                    const ports = {
+                        data: 3001,
+                        gui: 3002,
+                        control: 3003,
+                        api: 3010,
+                        transparency: 8080
+                    };
+                    
+                    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+                    const host = window.location.hostname || 'localhost';
+                    const port = ports[service] || ports.transparency;
+                    
+                    return `${protocol}://${host}:${port}`;
+                };
+                
+                const getHttpUrl = (service) => {
+                    const ports = {
+                        data: 3001,
+                        gui: 3002,
+                        control: 3003,
+                        api: 3010,
+                        transparency: 8080
+                    };
+                    
+                    const protocol = window.location.protocol || 'http:';
+                    const host = window.location.hostname || 'localhost';
+                    const port = ports[service] || ports.api;
+                    
+                    return `${protocol}//${host}:${port}`;
+                };
                 
                 this.config = {
-                    // Auto-detect environment and set endpoints accordingly
-                    wsEndpoint: isLocal 
-                        ? 'ws://localhost:8080'  // Local development
-                        : `${USE_SSL ? 'wss' : 'ws'}://${VPS_DOMAIN}:${VPS_PORT}`, // VPS production
-                    
-                    apiEndpoint: isLocal 
-                        ? 'http://localhost:8080/api'  // Local development
-                        : `${USE_SSL ? 'https' : 'http'}://${VPS_DOMAIN}:${VPS_PORT}/api`, // VPS production
+                    // Use centralized configuration
+                    wsEndpoint: getWebSocketUrl('transparency'),
+                    apiEndpoint: getHttpUrl('api') + '/api',
                     
                     updateInterval: 10000,
                     chartMaxPoints: 100,
@@ -1042,76 +1065,93 @@
             
             connectBot() {
                 try {
-                    console.log(`🔌 Attempting bot connection to ${this.config.wsEndpoint} (attempt ${this.botReconnectAttempts + 1})`);
+                    // FIND where wsUrl is set and REPLACE with EXACTLY:
+                    const wsUrl = window.location.protocol === 'https:' 
+                      ? 'wss://' + window.location.hostname + '/ws'
+                      : 'ws://' + window.location.hostname + ':3010/ws';
+
+                    console.log('Dashboard WebSocket URL:', wsUrl);
                     this.updateConnectionStatus('bot', 'connecting');
                     
-                    this.botSocket = new WebSocket(this.config.wsEndpoint);
-                    
-                    // Enhanced connection timeout with exponential backoff
-                    const connectionTimeout = setTimeout(() => {
-                        if (this.botSocket.readyState === WebSocket.CONNECTING) {
-                            console.log('⏰ Bot connection timeout, will retry with backoff...');
-                            this.botSocket.close();
-                            this.handleBotReconnect();
-                        }
-                    }, this.config.connectionTimeout);
+                    this.botSocket = new WebSocket(wsUrl);
                     
                     this.botSocket.onopen = () => {
-                        clearTimeout(connectionTimeout);
-                        console.log('✅ Connected to OGZPrime bot');
-                        this.botReconnectAttempts = 0; // Reset on successful connection
+                        console.log('✅ Dashboard connected to unified WebSocket');
+                        this.botReconnectAttempts = 0;
                         this.updateConnectionStatus('bot', true);
                         this.addAIThought('🔗 Connected to trading engine. Systems nominal.', 'system');
                         
-                        // Enhanced ping system with connection health monitoring
-                        this.botPingInterval = setInterval(() => {
-                            if (this.botSocket.readyState === WebSocket.OPEN) {
-                                this.botSocket.send(JSON.stringify({
-                                    type: 'ping',
-                                    timestamp: Date.now(),
-                                    client: 'dashboard'
-                                }));
-                            } else {
-                                console.warn('⚠️ Bot socket not open during ping, clearing interval');
-                                clearInterval(this.botPingInterval);
-                            }
-                        }, this.config.pingInterval);
-                        
-                        // Request initial status
-                        this.botSocket.send(JSON.stringify({ type: 'status_request' }));
+                        // Identify as dashboard
+                        this.botSocket.send(JSON.stringify({
+                            type: 'identify',
+                            source: 'dashboard',
+                            version: '3.0'
+                        }));
                     };
                     
                     this.botSocket.onmessage = (event) => {
                         try {
-                            const data = JSON.parse(event.data);
-                            this.handleBotMessage(data);
+                            const message = JSON.parse(event.data);
+                            
+                            switch(message.type) {
+                                case 'price':
+                                    if (message.data) {
+                                        this.updatePrice(message.data.price, new Date(message.data.timestamp));
+                                        
+                                        // Store all asset prices
+                                        if (message.data.allPrices) {
+                                            this.state.allAssetPrices = message.data.allPrices;
+                                        }
+                                    }
+                                    break;
+                                    
+                                case 'ping':
+                                    // CRITICAL: Respond to server pings to keep connection alive
+                                    this.botSocket.send(JSON.stringify({
+                                        type: 'pong',
+                                        id: message.id,
+                                        timestamp: message.timestamp || Date.now()
+                                    }));
+                                    console.log('🏓 Dashboard responded to server ping');
+                                    break;
+                                    
+                                case 'identification_confirmed':
+                                    console.log('✅ Dashboard identification confirmed');
+                                    this.addAIThought('✅ Dashboard registered with critical priority', 'system');
+                                    break;
+                                    
+                                case 'system':
+                                    console.log('System message:', message.message);
+                                    this.addAIThought(`📡 ${message.message}`, 'system');
+                                    break;
+                                    
+                                case 'status':
+                                    this.handleStatus(message.data);
+                                    break;
+                                    
+                                default:
+                                    console.log('📡 Received:', message.type, message);
+                            }
                         } catch (err) {
-                            console.error('Bot message parse error:', err);
+                            console.error('Message parse error:', err);
                         }
                     };
                     
-                    this.botSocket.onclose = (event) => {
-                        clearTimeout(connectionTimeout);
-                        if (this.botPingInterval) {
-                            clearInterval(this.botPingInterval);
-                            this.botPingInterval = null;
-                        }
-                        
-                        console.log(`❌ Bot disconnected (code: ${event.code}, reason: ${event.reason})`);
+                    this.botSocket.onclose = () => {
+                        console.log('WebSocket disconnected, reconnecting...');
                         this.updateConnectionStatus('bot', false);
-                        this.addAIThought('⚠️ Lost connection to trading engine. Attempting reconnection...', 'system');
+                        this.addAIThought('⚠️ Lost connection to trading engine. Reconnecting...', 'system');
                         
                         this.handleBotReconnect();
                     };
                     
                     this.botSocket.onerror = (error) => {
-                        clearTimeout(connectionTimeout);
-                        console.error('Bot WebSocket error:', error);
+                        console.error('WebSocket error:', error);
                         this.updateConnectionStatus('bot', false);
                     };
                     
                 } catch (error) {
-                    console.error('Bot connection error:', error);
+                    console.error('Connection error:', error);
                     this.updateConnectionStatus('bot', false);
                     this.handleBotReconnect();
                 }

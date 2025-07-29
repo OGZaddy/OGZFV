@@ -421,8 +421,8 @@
                 
                 // 🔧 CONNECT TO REAL OGZ PRIME SYSTEM
                 const isHTTPS = window.location.protocol === 'https:';
-                this.wsPort = 3007;      // OGZ Prime GUI WebSocket port (from config.guiWebSocketPort)
-                this.apiPort = 3006;     // WORKING API port
+                this.wsPort = 3010;      // UNIFIED WebSocket port (from core/WebSocketConfig.js)
+                this.apiPort = 3010;     // UNIFIED API port (same as WebSocket)
                 this.ws = null;
                 this.chart = null;
                 this.priceData = [];

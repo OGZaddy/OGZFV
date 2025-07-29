@@ -17,12 +17,10 @@ const stripe = require('stripe')('sk_test_51Rc2VnGai7JiFhNgxpk4VPgzuLwgymGkGDW4f
 
 // 🔥 IMPORT THE ADVANCED WEBSOCKET SYSTEM
 const AdvancedWebSocketBroadcastSystem = require('./core/AdvancedWebSocketBroadcastSystem');
+const { CONFIG } = require('./core/WebSocketConfig');
 
 // Set SSL server flag
 process.env.OGZ_SSL_SERVER = 'true';
-
-// Import OGZ Prime for bot integration
-const OGZPrimeV10 = require('./OGZPrimeV10.2');
 
 // Initialize the ADVANCED broadcasting system
 const broadcaster = new AdvancedWebSocketBroadcastSystem({
@@ -61,16 +59,6 @@ broadcaster.on('bot_disconnected', (connection) => {
   console.error('🔔 ALERT: Attempting automatic recovery...');
 });
 
-// Create minimal OGZ instance
-const ogzPrime = new OGZPrimeV10({
-  dataWebSocketPort: 8001,
-  guiWebSocketPort: 8002,
-  controlWebSocketPort: 8003,
-  enableMultiTimeframe: false,
-  enableFibonacciLevels: false,
-  enableSupportResistance: false
-});
-
 console.log(`[SSL-${Date.now()}] Advanced SSL Server starting...`);
 console.log('🚀 OGZPrime SSL Server with ADVANCED BROADCASTING SYSTEM');
 console.log('💪 Built for warriors who don\'t take shortcuts');
@@ -78,7 +66,6 @@ console.log('💪 Built for warriors who don\'t take shortcuts');
 // Express setup
 const app = express();
 const apiPort = 3010;
-const secureApiPort = 3011;
 
 app.use(express.json());
 app.use((req, res, next) => {
@@ -105,11 +92,11 @@ app.get('/api/live-status', (req, res) => {
   const broadcasterStats = broadcaster.getStatistics();
   
   res.json({
-    balance: ogzPrime?.getBalance?.() || 10000,
+    balance: 10000,
     timestamp: new Date().toISOString(),
     isRunning: true,
-    trades: ogzPrime?.getTotalTrades?.() || 0,
-    decisionsToday: ogzPrime?.getDecisionsToday?.() || 0,
+    trades: 0,
+    decisionsToday: 0,
     currentPrice: lastKnownPrice,
     
     // ADVANCED METRICS
@@ -123,11 +110,11 @@ app.get('/api/live-status', (req, res) => {
     },
     
     serverInfo: {
-      supportsSSL: hasSSLCerts,
+      supportsSSL: true,
       wsPort: apiPort,
-      secureWsPort: secureApiPort,
+      secureWsPort: 443,
       apiPort: apiPort,
-      secureApiPort: secureApiPort,
+      secureApiPort: 443,
       advancedBroadcasting: true
     }
   });
@@ -174,34 +161,10 @@ app.post('/create-checkout-session', async (req, res) => {
   }
 });
 
-// SSL certificate checking
-const sslKeyPath = path.join(__dirname, 'ssl', 'key.pem');
-const sslCertPath = path.join(__dirname, 'ssl', 'cert.pem');
-const hasSSLCerts = fs.existsSync(sslKeyPath) && fs.existsSync(sslCertPath);
-
-let httpsServer = null;
-let secureWss = null;
-
-if (hasSSLCerts) {
-  try {
-    const sslOptions = {
-      key: fs.readFileSync(sslKeyPath),
-      cert: fs.readFileSync(sslCertPath)
-    };
-    
-    httpsServer = https.createServer(sslOptions, app);
-    httpsServer.listen(secureApiPort, () => {
-      console.log(`🔒 Secure API Server running on port ${secureApiPort}`);
-    });
-    
-    secureWss = new WebSocket.Server({ server: httpsServer });
-    setupAdvancedWebSocketHandlers(secureWss, 'Secure');
-    
-    console.log(`🔒 SSL certificates found - secure connections available`);
-  } catch (error) {
-    console.warn(`⚠️ SSL setup failed: ${error.message}`);
-  }
-}
+// SSL Configuration - NGINX HANDLES THIS NOW
+// Nginx reverse proxy handles SSL termination
+console.log('🔄 SSL handled by nginx reverse proxy');
+console.log('   WebSocket: wss://ogzprime.com/ws → nginx → ws://localhost:3010/ws');
 
 // Regular HTTP server
 const httpServer = http.createServer(app);
@@ -209,63 +172,64 @@ httpServer.listen(apiPort, '0.0.0.0', () => {
   console.log(`🌐 HTTP API Server running on port ${apiPort} (all interfaces)`);
 });
 
-// Regular WebSocket Server
-const wss = new WebSocket.Server({ server: httpServer });
-setupAdvancedWebSocketHandlers(wss, 'Regular');
+// HTTPS server removed - nginx handles SSL termination
+// All connections come through nginx proxy on port 3010
 
-/**
- * 🚀 ADVANCED WebSocket Handler Setup
- */
-function setupAdvancedWebSocketHandlers(websocketServer, serverType) {
-  websocketServer.on('connection', (ws, req) => {
-    // Extract metadata
-    const metadata = {
-      type: 'unknown', // Will be updated when client identifies
-      ip: req.socket.remoteAddress,
-      userAgent: req.headers['user-agent'],
-      serverType: serverType,
-      priority: 'normal'
-    };
-    
-    // Register with the advanced broadcaster
-    const connectionId = broadcaster.registerConnection(ws, metadata);
-    
-    console.log(`✅ ${serverType} client registered: ${connectionId}`);
-    
-    // Handle incoming messages through broadcaster
-    ws.on('message', (message) => {
-      try {
-        const data = JSON.parse(message.toString());
-        
-        // Special handling for bot identification
-        if (data.type === 'identify' && data.source === 'trading_bot') {
-          console.log('🤖 TRADING BOT IDENTIFIED!');
-          
-          // Update connection metadata
-          const connection = broadcaster.connections.get(connectionId);
-          if (connection) {
-            connection.metadata.type = 'bot';
-            connection.state.priority = 'critical';
-            
-            // Send confirmation
-            broadcaster.sendDirect(connection, {
-              type: 'identification_confirmed',
-              connectionId: connectionId,
-              priority: 'critical',
-              message: 'You are now registered as a critical trading bot connection'
-            });
-          }
-        }
-        
-        // Log all messages for debugging
-        console.log(`📨 Message from ${connectionId} (${metadata.type}):`, data.type);
-        
-      } catch (err) {
-        console.error(`Error parsing message from ${connectionId}:`, err);
-      }
-    });
+// Single WebSocket server on unified port
+const wss = new WebSocket.Server({ 
+  server: httpServer,
+  path: '/ws'  // Optional: use path-based routing
+});
+
+wss.on('connection', (ws, req) => {
+  // Register ALL connections with broadcaster
+  const connectionId = broadcaster.registerConnection(ws, {
+    type: 'unknown',
+    ip: req.socket.remoteAddress,
+    userAgent: req.headers['user-agent']
   });
-}
+  
+  console.log(`✅ New connection registered: ${connectionId}`);
+  
+  // Handle incoming messages
+  ws.on('message', (message) => {
+    try {
+      const data = JSON.parse(message.toString());
+      
+      // Special handling for bot identification
+      if (data.type === 'identify' && data.source === 'trading_bot') {
+        console.log('🤖 TRADING BOT IDENTIFIED!');
+        
+        // Update connection metadata
+        const connection = broadcaster.connections.get(connectionId);
+        if (connection) {
+          connection.metadata.type = 'bot';
+          connection.state.priority = 'critical';
+          
+          // Send confirmation
+          broadcaster.sendDirect(connection, {
+            type: 'identification_confirmed',
+            connectionId: connectionId,
+            priority: 'critical',
+            message: 'You are now registered as a critical trading bot connection'
+          });
+        }
+      }
+      
+      // Special handling for dashboard identification
+      if (data.type === 'identify' && data.source === 'dashboard') {
+        const connection = broadcaster.connections.get(connectionId);
+        if (connection) {
+          connection.metadata.type = 'dashboard';
+          console.log('📊 Dashboard identified');
+        }
+      }
+      
+    } catch (err) {
+      console.error(`Error parsing message from ${connectionId}:`, err);
+    }
+  });
+});
 
 // Market data variables
 let lastKnownPrice = null;
@@ -364,10 +328,7 @@ polygonSocket.on('message', (data) => {
           console.log(`📡 Price broadcast: ${asset} $${price.toFixed(2)} to ${result.sent} clients`);
         }
         
-        // Send to OGZ Prime for processing
-        if (ogzPrime && ogzPrime.processPrice) {
-          ogzPrime.processPrice(price, asset);
-        }
+        // Price processed directly by broadcaster
       }
     }
   } catch (err) {
@@ -398,7 +359,7 @@ setInterval(() => {
   console.log(`📊 SYSTEM STATUS:`);
   console.log(`   🔌 Polygon: ${polygonSocket.readyState === WebSocket.OPEN ? 'Connected ✅' : 'Disconnected ❌'}`);
   console.log(`   📊 Ticks: ${tickCount}`);
-  console.log(`   💰 Balance: $${ogzPrime?.getBalance?.() || 10000}`);
+  console.log(`   💰 Balance: $10000`);
   console.log(`   👥 Total Connections: ${stats.connections.total}`);
   console.log(`   🤖 Bot Connections: ${stats.connections.byType.bot || 0}`);
   console.log(`   📈 Messages/sec: ${stats.performance.messagesPerSecond.toFixed(2)}`);
@@ -438,20 +399,17 @@ Object.keys(networkInterfaces).forEach(interfaceName => {
   });
 });
 
-console.log('\n✅ OGZ Prime ADVANCED SSL Server Running');
+console.log('\n✅ OGZ Prime ADVANCED Server Running (Nginx SSL Proxy)');
 console.log('🚀 Powered by Advanced WebSocket Broadcasting System');
 console.log('\n📡 Available endpoints:');
-console.log(`   Regular WebSocket: ws://localhost:${apiPort}`);
-console.log(`   Regular API: http://localhost:${apiPort}/api/live-status`);
-
-if (hasSSLCerts && httpsServer) {
-  console.log(`   🔒 Secure WebSocket: wss://localhost:${secureApiPort}`);
-  console.log(`   🔒 Secure API: https://localhost:${secureApiPort}/api/live-status`);
-}
+console.log(`   🔒 Secure WebSocket: wss://ogzprime.com/ws (via nginx))`);
+console.log(`   🔒 Secure API: https://ogzprime.com/api/live-status (via nginx)`);
+console.log(`   📡 Local WebSocket: ws://localhost:${apiPort}/ws`);
+console.log(`   🌐 Local API: http://localhost:${apiPort}/api/live-status`);
 
 localIPs.forEach(ip => {
-  console.log(`\n   External access:`);
-  console.log(`   📡 ws://${ip}:${apiPort}`);
+  console.log(`\n   Direct IP access:`);
+  console.log(`   📡 ws://${ip}:${apiPort}/ws`);
   console.log(`   🌐 http://${ip}:${apiPort}/api/live-status`);
 });
 
