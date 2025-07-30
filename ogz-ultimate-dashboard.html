@@ -882,9 +882,14 @@
                 };
                 
                 this.config = {
-                    // Use centralized configuration
-                    wsEndpoint: getWebSocketUrl('transparency'),
-                    apiEndpoint: getHttpUrl('api') + '/api',
+                    // Auto-detect environment and set endpoints accordingly
+                    wsEndpoint: isLocal 
+                        ? 'ws://127.0.0.1:3010/ws'  // Local development - FIXED PORT AND PATH
+                        : `${USE_SSL ? 'wss' : 'ws'}://${VPS_DOMAIN}:3010/ws`, // VPS production - FIXED PORT
+                    
+                    apiEndpoint: isLocal 
+                        ? 'http://127.0.0.1:3010/api'  // Local development - FIXED PORT
+                        : `${USE_SSL ? 'https' : 'http'}://${VPS_DOMAIN}:3010/api`, // VPS production - FIXED PORT
                     
                     updateInterval: 10000,
                     chartMaxPoints: 100,
@@ -936,8 +941,8 @@
                     patternCount: 0
                 };
                 
-                // WebSocket connections with resilience tracking
-                this.botSocket = null;
+                // Single unified WebSocket connection
+                this.ws = null;
                 this.polygonSocket = null;
                 this.botReconnectAttempts = 0;
                 this.polygonReconnectAttempts = 0;
@@ -1073,23 +1078,29 @@
                     console.log('Dashboard WebSocket URL:', wsUrl);
                     this.updateConnectionStatus('bot', 'connecting');
                     
-                    this.botSocket = new WebSocket(wsUrl);
+                    this.ws = new WebSocket(wsUrl);
                     
-                    this.botSocket.onopen = () => {
+                    this.ws.onopen = () => {
                         console.log('✅ Dashboard connected to unified WebSocket');
                         this.botReconnectAttempts = 0;
                         this.updateConnectionStatus('bot', true);
                         this.addAIThought('🔗 Connected to trading engine. Systems nominal.', 'system');
                         
-                        // Identify as dashboard
-                        this.botSocket.send(JSON.stringify({
+                        // CRITICAL: Identify as dashboard to AdvancedWebSocketBroadcastSystem
+                        this.ws.send(JSON.stringify({
                             type: 'identify',
                             source: 'dashboard',
-                            version: '3.0'
+                            version: '3.0',
+                            capabilities: ['trading', 'monitoring', 'analysis']
                         }));
+                        
+                        // Request initial status after identification
+                        setTimeout(() => {
+                            this.ws.send(JSON.stringify({ type: 'status_request' }));
+                        }, 1000);
                     };
                     
-                    this.botSocket.onmessage = (event) => {
+                    this.ws.onmessage = (event) => {
                         try {
                             const message = JSON.parse(event.data);
                             
@@ -1107,7 +1118,7 @@
                                     
                                 case 'ping':
                                     // CRITICAL: Respond to server pings to keep connection alive
-                                    this.botSocket.send(JSON.stringify({
+                                    this.ws.send(JSON.stringify({
                                         type: 'pong',
                                         id: message.id,
                                         timestamp: message.timestamp || Date.now()
@@ -1137,7 +1148,7 @@
                         }
                     };
                     
-                    this.botSocket.onclose = () => {
+                    this.ws.onclose = () => {
                         console.log('WebSocket disconnected, reconnecting...');
                         this.updateConnectionStatus('bot', false);
                         this.addAIThought('⚠️ Lost connection to trading engine. Reconnecting...', 'system');
@@ -1145,7 +1156,7 @@
                         this.handleBotReconnect();
                     };
                     
-                    this.botSocket.onerror = (error) => {
+                    this.ws.onerror = (error) => {
                         console.error('WebSocket error:', error);
                         this.updateConnectionStatus('bot', false);
                     };
@@ -1184,13 +1195,13 @@
                 this.updateConnectionStatus('data', 'connecting');
                 
                 // Check if bot is connected and use it for data
-                if (this.botSocket && this.botSocket.readyState === WebSocket.OPEN) {
+                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
                     this.updateConnectionStatus('data', true);
                     console.log('✅ Data connection established via bot');
                 } else {
                     // Wait for bot connection
                     const checkBotConnection = setInterval(() => {
-                        if (this.botSocket && this.botSocket.readyState === WebSocket.OPEN) {
+                        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
                             this.updateConnectionStatus('data', true);
                             console.log('✅ Data connection established via bot');
                             clearInterval(checkBotConnection);
@@ -1200,7 +1211,7 @@
                     // Timeout after 10 seconds
                     setTimeout(() => {
                         clearInterval(checkBotConnection);
-                        if (!this.botSocket || this.botSocket.readyState !== WebSocket.OPEN) {
+                        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
                             this.updateConnectionStatus('data', false);
                             console.log('❌ Data connection failed - bot not connected');
                         }
@@ -1293,27 +1304,53 @@
             }
             
             handleBotMessage(data) {
+                // CRITICAL FIX: Handle wrapped broadcast messages from AdvancedWebSocketBroadcastSystem
+                if (data.type === 'broadcast' && data.data) {
+                    // Unwrap the nested message
+                    const innerData = data.data;
+                    
+                    // Re-process as if it was a direct message
+                    this.handleBotMessage(innerData);
+                    return;
+                }
+                
+                // CRITICAL FIX: Handle price data with correct format
+                if (data.type === 'price' && data.data) {
+                    // Extract price data from nested structure
+                    const priceData = data.data;
+                    
+                    // Check if this is for our current asset
+                    if (priceData.asset && priceData.asset === this.state.currentAsset) {
+                        this.updatePrice(priceData.price, new Date(priceData.timestamp || Date.now()));
+                    }
+                    
+                    // Store all asset prices if provided
+                    if (priceData.allPrices) {
+                        this.state.allAssetPrices = priceData.allPrices;
+                    }
+                    return;
+                }
+                
+                // Original switch for other message types
                 switch (data.type) {
                     case 'price':
-                        // Handle multi-asset price data
-                        if (data.data.asset && data.data.asset === this.state.currentAsset) {
-                            this.updatePrice(data.data.price, new Date(data.data.timestamp));
+                        // Handle direct price messages (legacy format)
+                        if (data.price !== undefined) {
+                            this.updatePrice(data.price, new Date(data.timestamp || Date.now()));
                         }
+                        break;
                         
-                        // Store all asset prices for switching
-                        if (data.data.allPrices) {
-                            this.state.allAssetPrices = data.data.allPrices;
-                        }
-                        break;
                     case 'status':
-                        this.handleStatus(data.data);
+                        this.handleStatus(data.data || data);
                         break;
+                        
                     case 'pong':
                         // Connection health check response
                         console.log('✅ Bot connection healthy');
                         break;
+                        
                     default:
-                        console.log('📡 Received real data:', data.type, data.data);
+                        console.log('📡 Received data:', data.type, data);
                 }
             }
             
@@ -1906,8 +1943,8 @@
                 
                 // Periodic status updates
                 setInterval(() => {
-                    if (this.botSocket && this.botSocket.readyState === WebSocket.OPEN) {
-                        this.botSocket.send(JSON.stringify({ type: 'ping' }));
+                    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                        this.ws.send(JSON.stringify({ type: 'ping' }));
                     }
                 }, 30000);
             }
