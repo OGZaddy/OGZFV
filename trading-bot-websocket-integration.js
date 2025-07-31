@@ -1,10 +1,17 @@
 /**
- * 🤖 TRADING BOT WEBSOCKET CLIENT INTEGRATION
- * Add this to your run-trading-bot-v13-simplified.js
+ * 🔥 DISABLED: PHANTOM WEBSOCKET CLIENT REMOVED
  * 
- * This shows how to integrate the Advanced WebSocket Broadcasting System
- * into your trading bot for CRITICAL PRIORITY real-time data
+ * This file was creating duplicate WebSocket connections causing:
+ * - Ghost identify messages every few seconds
+ * - Duplicate bot_status pings every 10 seconds  
+ * - Ping-pong spam and connection conflicts
+ * - Exponential backoff reconnection loops
+ * 
+ * DO NOT RE-ENABLE WITHOUT FULL INTEGRATION REVIEW
  */
+
+console.log("🔥 DISABLED: Rogue WebSocket client was here. Do not re-enable.");
+return; // KILL SWITCH - PREVENTS ANY EXECUTION
 
 const WebSocket = require('ws');
 
