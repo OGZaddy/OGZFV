@@ -3,7 +3,13 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 // Set your Stripe Secret Key
-\Stripe\Stripe::setApiKey('sk_test_51Rc2VnGai7JiFhNgxpk4VPgzuLwgymGkGDW4fZCDzfqjDmYCCvKxF9i3g9ebOlPQexaR9qxx7xIv7bqfpDXfkRGu00qy9cjKBS');
+\Stripe\Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY'] ?? getenv('STRIPE_SECRET_KEY'));
+
+if (!$_ENV['STRIPE_SECRET_KEY'] && !getenv('STRIPE_SECRET_KEY')) {
+    http_response_code(500);
+    echo json_encode(['error' => 'STRIPE_SECRET_KEY environment variable not set']);
+    exit;
+}
 
 header('Content-Type: application/json');
 
@@ -27,7 +33,7 @@ curl_setopt($ch, CURLOPT_URL, 'https://api.stripe.com/v1/checkout/sessions');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($session_data));
 curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_USERPWD, 'sk_test_51Rc2VnGai7JiFhNgxpk4VPgzuLwgymGkGDW4fZCDzfqjDmYCCvKxF9i3g9ebOlPQexaR9qxx7xIv7bqfpDXfkRGu00qy9cjKBS' . ':');
+curl_setopt($ch, CURLOPT_USERPWD, ($_ENV['STRIPE_SECRET_KEY'] ?? getenv('STRIPE_SECRET_KEY')) . ':');
 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
 
 $response = curl_exec($ch);

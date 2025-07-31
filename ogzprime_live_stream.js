@@ -392,7 +392,12 @@ console.log('✅ Transparency Dashboard: http://localhost:3008');
 console.log('🔌 Transparency WebSocket: ws://localhost:3009');
 
 // 3. Connect to live Polygon.io BTC/USD trade feed and process incoming data
-const POLYGON_API_KEY = '0gp6oKkWwriN0WInvwu539Ch6iJAOcLK';
+const POLYGON_API_KEY = process.env.POLYGON_API_KEY;
+
+if (!POLYGON_API_KEY) {
+  console.error('❌ POLYGON_API_KEY environment variable not set!');
+  process.exit(1);
+}
 const POLYGON_CRYPTO_SOCKET = 'wss://socket.polygon.io/crypto';
 
 let isAuthenticated = false;

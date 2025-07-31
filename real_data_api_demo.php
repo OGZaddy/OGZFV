@@ -135,15 +135,12 @@ class RealBotDemo {
             const username = prompt('Alpha Tester Username:');
             const password = prompt('Alpha Tester Password:');
             
-            if (username === 'alpha_tester' && password === 'ogzprime2025') {
-                localStorage.setItem('ogz_alpha_auth', 'verified');
-                this.isAuthenticated = true;
-                return true;
-            } else {
-                alert('Invalid credentials. Please contact support for access.');
-                window.location.href = '/';
-                return false;
-            }
+            // TODO: Implement proper authentication system
+            // For security, hardcoded credentials have been removed
+            // Replace with proper user authentication, JWT tokens, or OAuth
+            alert('Authentication system needs to be implemented. Contact developer for setup.');
+            window.location.href = '/';
+            return false;
         }
         this.isAuthenticated = true;
         return true;

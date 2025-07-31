@@ -20,9 +20,144 @@ const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
 const fs = require('fs');
+const net = require('net');
 
 // REAL MARKET DATA DEPENDENCIES  
 // Using built-in fetch (Node.js 18+)
+
+// Enhanced WebSocket Client Integration
+const { getWebSocketUrl } = require('./core/WebSocketConfig');
+
+// 🛡️ BULLETPROOF MESSAGE HANDLER - NEVER CRASH AGAIN!
+class RobustMessageHandler {
+  constructor(ws, bot) {
+    this.ws = ws;
+    this.bot = bot;
+    this.handlers = new Map();
+    this.setupDefaultHandlers();
+  }
+  
+  extractData(message, path) {
+    try {
+      const keys = path.split('.');
+      let value = message;
+      for (const key of keys) {
+        if (value && typeof value === 'object' && key in value) {
+          value = value[key];
+        } else {
+          return null;
+        }
+      }
+      return value;
+    } catch (e) {
+      return null;
+    }
+  }
+  
+  processMessage(rawData) {
+    let message;
+    try {
+      message = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+    } catch (e) {
+      console.error('❌ Parse error:', e);
+      return;
+    }
+    
+    const messageType = message?.type || 'unknown';
+    console.log(`📨 MSG: ${messageType}`);
+    
+    const handler = this.handlers.get(messageType) || this.handlers.get('default');
+    
+    try {
+      handler.call(this, message);
+    } catch (e) {
+      console.error(`❌ Handler error for ${messageType}:`, e);
+      // DON'T CRASH - KEEP GOING!
+    }
+  }
+  
+  on(messageType, handler) {
+    this.handlers.set(messageType, handler);
+  }
+  
+  setupDefaultHandlers() {
+    // PING/PONG - BULLETPROOF
+    this.on('ping', (message) => {
+      const pong = {
+        type: 'pong',
+        id: message.id || null,
+        timestamp: message.timestamp || Date.now()
+      };
+      this.safeSend(pong);
+      console.log('🏓 Responded to server ping');
+    });
+    
+    // PRICE UPDATES - FLEXIBLE EXTRACTION
+    this.on('price', (message) => {
+      const price = this.extractData(message, 'data.data.price') ||
+                   this.extractData(message, 'data.price') ||
+                   this.extractData(message, 'price');
+                   
+      const asset = this.extractData(message, 'data.data.asset') ||
+                   this.extractData(message, 'data.asset') ||
+                   this.extractData(message, 'asset');
+      
+      if (price && asset && asset === this.bot.config.primaryAsset) {
+        // UPDATE BOT'S CACHED DATA
+        this.bot.cachedMarketData = {
+          price: parseFloat(price),
+          volume: this.extractData(message, 'data.data.volume') || 1000,
+          timestamp: Date.now(),
+          symbol: asset,
+          asset: asset,
+          rsi: 50,
+          macd: 0,  
+          volatility: 0.02,
+          trend: 'sideways'
+        };
+        this.bot.lastDataReceived = Date.now();
+        console.log(`💰 ${asset} PRICE: $${parseFloat(price).toFixed(2)} - CACHED SUCCESSFULLY`);
+        
+        // Update ConnectionResilience
+        if (this.bot.connectionResilience) {
+          this.bot.connectionResilience.updateDataTimestamp();
+        }
+      }
+      
+      // SEND ACK FOR CRITICAL MESSAGES
+      if (message.priority === 'critical' && message.id) {
+        this.safeSend({
+          type: 'ack',
+          messageId: message.id,
+          timestamp: Date.now()
+        });
+        console.log(`📤 ACK SENT: ${message.id}`);
+      }
+    });
+    
+    // WELCOME/IDENTIFICATION
+    this.on('identification_confirmed', (message) => {
+      console.log('✅ Bot identified with priority:', message.priority);
+    });
+    
+    // DEFAULT HANDLER
+    this.on('default', (message) => {
+      console.log(`❓ Unknown message: ${message.type}`);
+    });
+  }
+  
+  safeSend(data) {
+    try {
+      if (this.ws && this.ws.readyState === 1) {
+        this.ws.send(JSON.stringify(data));
+        return true;
+      }
+    } catch (e) {
+      console.error('❌ Send error:', e);
+    }
+    return false;
+  }
+}
 
 // Core trading systems (importing existing classes)
 const UltimateTradingSystem = require('./core/UltimateTradingSystem');
@@ -148,121 +283,83 @@ class OGZPrimeV13Simplified {
     
     // Add WebSocket properties
     this.ws = null;
-    this.wsReconnectInterval = null;
-    this.wsReconnectDelay = 5000; // 5 seconds
-    this.cachedMarketData = {
-      price: null,
-      volume: 0,
-      timestamp: null,
-      symbol: null
-    };
     this.wsConnected = false;
+    this.wsReconnectInterval = null;
     this.lastDataReceived = null;
+    this.cachedMarketData = {};
+    this.connectionId = null;
+    
+    // Price history tracking for technical indicators
+    this.priceHistory = [];
+    this.maxPriceHistory = 100; // Keep last 100 price points
   }
 
   /**
-   * 🔌 Connect to SSL server WebSocket
+   * 🔍 Wait for server to be available before connecting
+   */
+  waitForServer(port, host = '127.0.0.1') {
+    return new Promise((resolve) => {
+      const interval = setInterval(() => {
+        const socket = new net.Socket();
+        socket
+          .setTimeout(2000)
+          .once('connect', () => {
+            clearInterval(interval);
+            socket.destroy();
+            resolve();
+          })
+          .once('error', () => socket.destroy())
+          .connect(port, host);
+      }, 1000);
+    });
+  }
+
+  /**
+   * 🔌 Connect to SSL server WebSocket with enhanced client
    */
   connectWebSocket() {
-    const sslServerHost = process.env.SSL_SERVER_HOST || '127.0.0.1';
-    const sslServerPort = process.env.SSL_SERVER_PORT || '3010';
-    const wsUrl = `ws://${sslServerHost}:${sslServerPort}`;
+    const wsUrl = getWebSocketUrl('unified') + '/ws'; // SSL server requires /ws path
+    console.log(`🔌 Connecting to unified WebSocket at ${wsUrl}...`);
     
-    console.log(`🔌 Connecting to SSL server WebSocket at ${wsUrl}...`);
+    this.ws = new WebSocket(wsUrl);
+    this.messageHandler = new RobustMessageHandler(this.ws, this);
     
-    try {
-      this.ws = new WebSocket(wsUrl);
+    this.ws.on('open', () => {
+      console.log('✅ WebSocket connected');
+      this.wsConnected = true;
       
-      this.ws.on('open', () => {
-        console.log('✅ WebSocket connected to SSL server');
-        this.wsConnected = true;
-        
-        // Clear any existing reconnection interval
-        if (this.wsReconnectInterval) {
-          clearInterval(this.wsReconnectInterval);
-          this.wsReconnectInterval = null;
-        }
-      });
-      
-      this.ws.on('message', (data) => {
-        try {
-          console.log(`📨 RAW MESSAGE RECEIVED:`, data.toString().substring(0, 100));
-          
-          const message = JSON.parse(data.toString());
-          console.log(`📊 Parsed message type: ${message.type}`);
-          
-          // Handle different message types
-          switch (message.type) {
-            case 'price':
-              if (message.data) {
-                this.cachedMarketData = {
-                  price: parseFloat(message.data.price),
-                  volume: 1000,
-                  timestamp: message.data.timestamp || Date.now(),
-                  symbol: message.data.asset || 'BTC-USD'
-                };
-                this.lastDataReceived = Date.now();
-                console.log(`💰 Price update: ${this.cachedMarketData.symbol} $${this.cachedMarketData.price.toFixed(2)}`);
-              }
-              break;
-              
-            case 'status':
-              console.log(`📋 Status message received:`, message.data);
-              break;
-              
-            case 'heartbeat':
-              console.log(`💓 Heartbeat received at ${new Date().toLocaleTimeString()}`);
-              break;
-              
-            default:
-              console.log(`❓ Unknown message type: ${message.type}`);
-          }
-        } catch (error) {
-          console.error('❌ Error parsing WebSocket message:', error);
-          console.error('Raw data was:', data.toString());
-        }
-      });
-      
-      this.ws.on('close', () => {
-        console.log('🔌 WebSocket disconnected from SSL server');
-        this.wsConnected = false;
-        this.scheduleReconnect();
-      });
-      
-      this.ws.on('error', (error) => {
-        console.error('❌ WebSocket error:', error.message);
-        this.wsConnected = false;
-      });
-      
-    } catch (error) {
-      console.error('❌ Failed to connect WebSocket:', error);
-      this.scheduleReconnect();
-    }
+      // Identify as trading bot for CRITICAL priority
+      this.ws.send(JSON.stringify({
+        type: 'identify',
+        source: 'trading_bot',
+        version: 'V13-SIMPLIFIED',
+        capabilities: ['trading', 'realtime', 'priority']
+      }));
+    });
+    
+    this.ws.on('message', (data) => {
+      this.messageHandler.processMessage(data);
+    });
+    
+    this.ws.on('close', () => {
+      this.wsConnected = false;
+      setTimeout(() => this.connectWebSocket(), 5000);
+    });
   }
 
   /**
-   * 🔄 Schedule WebSocket reconnection
-   */
-  scheduleReconnect() {
-    if (!this.wsReconnectInterval) {
-      console.log(`🔄 Scheduling reconnection in ${this.wsReconnectDelay/1000} seconds...`);
-      this.wsReconnectInterval = setInterval(() => {
-        if (!this.wsConnected) {
-          console.log('🔄 Attempting to reconnect to SSL server...');
-          this.connectWebSocket();
-        }
-      }, this.wsReconnectDelay);
-    }
-  }
-
-  /**
-   * 🚀 Initialize the complete trading system
+   *  Initialize the complete trading system
    */
   async initialize() {
     console.log('\n🚀 INITIALIZING OGZ PRIME V13 SIMPLIFIED...');
     console.log('═══════════════════════════════════════════════════════════════');
     
     try {
+      // Wait for SSL server to be available before connecting
+      console.log('⏳ Waiting for SSL server (port 3010) to be available...');
+      await this.waitForServer(3010);
+      console.log('✅ SSL server is available, proceeding with connection...');
+      
       // Connect to WebSocket FIRST - this is critical!
       this.connectWebSocket();
       
@@ -977,58 +1074,68 @@ class OGZPrimeV13Simplified {
   }
 
   /**
-   * 📈 Get market data from WebSocket cache
+   * 📈 Get market data from enhanced WebSocket client
    */
   async getMarketData() {
-    // Check if we have recent cached data from WebSocket
-    if (this.cachedMarketData.price && this.lastDataReceived) {
+    console.log(`🔍 DATA CHECK: cached=${!!this.cachedMarketData.price}, lastReceived=${this.lastDataReceived}, age=${this.lastDataReceived ? Date.now() - this.lastDataReceived : 'N/A'}ms`);
+    
+    if (this.cachedMarketData && this.lastDataReceived && this.cachedMarketData.price) {
       const dataAge = Date.now() - this.lastDataReceived;
+      const maxAge = parseInt(process.env.DATA_FRESHNESS_WINDOW) || 45000;
       
-      // If data is less than 5 seconds old, use it
-      if (dataAge < 5000) {
-        return {
-          price: this.cachedMarketData.price,
-          open: this.cachedMarketData.price, // Use price as approximation
-          high: this.cachedMarketData.price * 1.001,
-          low: this.cachedMarketData.price * 0.999,
-          volume: this.cachedMarketData.volume,
-          timestamp: this.cachedMarketData.timestamp,
-          
-          // Default technical indicators (should be calculated from price history)
-          rsi: 50,
-          macd: 0,
-          volatility: 0.02,
-          trend: 'sideways',
-          
-          // Market metadata
-          symbol: this.cachedMarketData.symbol,
-          source: 'WEBSOCKET_CACHE',
-          lastUpdated: this.lastDataReceived,
-          dataAge: dataAge
-        };
+      console.log(`✅ MARKET DATA VALID: ${this.cachedMarketData.asset} = $${this.cachedMarketData.price} (age: ${dataAge}ms)`);
+      
+      if (dataAge < maxAge) {
+        return this.cachedMarketData;
       } else {
-        console.warn(`⚠️ Market data is stale (${(dataAge/1000).toFixed(1)}s old)`);
+        console.log(`⏰ Data too old: ${dataAge}ms > ${maxAge}ms`);
       }
+    } else {
+      console.log(`❌ Missing data: cached=${!!this.cachedMarketData}, received=${!!this.lastDataReceived}, price=${this.cachedMarketData?.price}`);
+    }
+    return null;
+  }
+
+  /**
+   * 🎯 Determine trend from price data
+   */
+  determineTrend(priceHistory) {
+    if (!priceHistory || priceHistory.length < 2) {
+      return 'sideways';
     }
     
-    // If no recent data, return null
-    console.warn('⚠️ No recent market data available from WebSocket');
-    return null;
+    const recent = priceHistory[priceHistory.length - 1];
+    const older = priceHistory[0];
+    
+    if (recent > older * 1.01) {
+      return 'up';
+    } else if (recent < older * 0.99) {
+      return 'down';
+    } else {
+      return 'sideways';
+    }
   }
 
   /**
    * 📊 Calculate technical indicators from REAL price data
    */
-  calculateTechnicalIndicators(priceData) {
+  calculateTechnicalIndicators(priceData = null) {
     try {
+      // Use passed data or bot's price history
+      const data = priceData || this.priceHistory;
+      
+      if (!data || data.length < 2) {
+        return { rsi: 50, macd: 0, volatility: 0.02 }; // Safe defaults
+      }
+      
       // Calculate RSI from real data
-      const rsi = this.calculateRSI(priceData.slice(0, 14));
+      const rsi = this.calculateRSI(data.slice(-14));
       
       // Calculate MACD from real data  
-      const macd = this.calculateMACD(priceData.slice(0, 26));
+      const macd = this.calculateMACD(data.slice(-26));
       
       // Calculate volatility from real price movements
-      const volatility = this.calculateVolatility(priceData.slice(0, 20));
+      const volatility = this.calculateVolatility(data.slice(-20));
       
       return { rsi, macd, volatility };
       
@@ -2028,12 +2135,10 @@ class OGZPrimeV13Simplified {
       if (this.patternUpdateInterval) clearInterval(this.patternUpdateInterval);
       if (this.riskCheckInterval) clearInterval(this.riskCheckInterval);
       if (this.statusUpdateInterval) clearInterval(this.statusUpdateInterval);
-      if (this.wsReconnectInterval) clearInterval(this.wsReconnectInterval);
       
-      // Close WebSocket client connection to SSL server
+      // Close WebSocket connection
       if (this.ws) {
-        console.log('🔌 Closing WebSocket client connection...');
-        this.ws.close();
+        this.ws.close(1000, 'Bot shutdown');
         this.ws = null;
       }
       

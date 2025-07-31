@@ -1268,6 +1268,14 @@
                     case 'status':
                         this.handleStatus(data.data);
                         break;
+                    case 'ping':
+                        this.botSocket.send(JSON.stringify({
+                            type: 'pong',
+                            id: data.id,
+                            timestamp: data.timestamp || Date.now()
+                        }));
+                        console.log('🏓 Dashboard responded to server ping');
+                        break;
                     case 'pong':
                         // Connection health check response
                         console.log('✅ Bot connection healthy');
