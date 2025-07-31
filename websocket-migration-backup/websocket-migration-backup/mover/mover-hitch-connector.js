@@ -2,8 +2,6 @@
 // FILE: mover-hitch-connector.js
 // Connects The Mover to Hitch NLP for news/sentiment
 // ==========================================
-const { getWebSocketUrl, getHttpUrl } = require('../core/WebSocketConfig');
-
 const WebSocket = require('ws');
 const EventEmitter = require('events');
 
@@ -11,7 +9,7 @@ class HitchConnector extends EventEmitter {
   constructor(config = {}) {
     super();
     this.config = {
-      hitchUrl: config.hitchUrl || getWebSocketUrl('data'),
+      hitchUrl: config.hitchUrl || 'ws://localhost:7000',
       reconnectInterval: config.reconnectInterval || 5000,
       ...config
     };

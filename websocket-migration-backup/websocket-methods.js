@@ -1,18 +1,8 @@
-# Add after line 40 (in constructor)
-  latestMarketData = null;
-  lastPrice = null;
-  sslServerConnection = null;
+const { getWebSocketUrl, getHttpUrl } = require('../core/WebSocketConfig');
 
-# Add at the beginning of initializeEnhancedSystems (around line 484)
-    // Connect to SSL server for market data
-    console.log("🔌 Connecting to SSL server for market data...");
-    const WebSocket = require('ws');
-    this.connectToSSLServer();
-
-# Add new method after constructor
   connectToSSLServer() {
     const WebSocket = require('ws');
-    const ws = new WebSocket('ws://localhost:8001');
+    const ws = new WebSocket(getWebSocketUrl('data'));
     
     ws.on('open', () => {
       console.log('✅ Connected to SSL server data feed!');
@@ -65,20 +55,4 @@
         volume: this.latestMarketData.volume
       });
     }
-  }
-
-# Replace getMarketData method (starting around line 867)
-  async getMarketData() {
-    // Use cached data from SSL server instead of direct API call
-    if (!this.latestMarketData) {
-      console.error('❌ No ticker data received from Polygon');
-      return null;
-    }
-    
-    const dataAge = Date.now() - this.latestMarketData.timestamp;
-    if (dataAge > 60000) {
-      console.warn('⚠️ Market data is stale (>1 minute old)');
-    }
-    
-    return this.latestMarketData;
   }

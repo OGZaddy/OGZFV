@@ -1,5 +1,5 @@
 // Add this at the top of run-trading-bot-v13-simplified.js after the requires
-const { getWebSocketUrl, getHttpUrl } = require('core/WebSocketConfig');
+const { getWebSocketUrl, getHttpUrl } = require('../core/WebSocketConfig');
 
 const WebSocket = require('ws');
 

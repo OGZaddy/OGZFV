@@ -13,8 +13,6 @@
 // Author: Trey (OGZPrime Technologies)
 // Version: Release 1.0
 
-const { getWebSocketUrl, getHttpUrl } = require('../core/WebSocketConfig');
-
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -24,7 +22,7 @@ const app = express();
 
 // Enable CORS for website
 app.use(cors({
-  origin: [getHttpUrl('data'), 'https://ogzprime.com', 'https://www.ogzprime.com'],
+  origin: ['http://localhost:3000', 'https://ogzprime.com', 'https://www.ogzprime.com'],
   credentials: true
 }));
 

@@ -5,7 +5,7 @@
 // Streams bot thoughts, patterns, trades, and analysis in real-time
 // ===================================================================
 
-const { getWebSocketUrl, getHttpUrl } = require('../core/WebSocketConfig');
+const { getWebSocketUrl, getHttpUrl } = require('../../core/WebSocketConfig');
 
 const express = require('express');
 const http = require('http');
