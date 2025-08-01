@@ -1,12 +1,12 @@
 {
   "name": "ogz-prime-valhalla-edition",
-  "version": "13.0.0",
-  "description": "AI-Powered Trading Operating System - Simplified Production Ready Version",
-  "main": "run-trading-bot-v13-simplified.js",
+  "version": "10.2.0",
+  "description": "AI-Powered Trading Operating System - Modular, Memory-based, Designed in pressure, Forged for precision",
+  "main": "OGZPrimeV10.2.js",
   "scripts": {
-    "start": "node run-trading-bot-v13-simplified.js",
-    "bot": "node run-trading-bot-v13-simplified.js --profile default --asset BTC-USD",
-    "dashboard": "node ogzprime_ssl_server_advanced.js",
+    "start": "node run-trading-bot-v10.2.js",
+    "bot": "node run-trading-bot-v10.2.js --profile default --asset BTC-USD",
+    "dashboard": "node ogzprime_ssl_server.js",
     "backtest": "node tools/optimized-backtester.js",
     "launch": "node launch-turbo-train.bat",
     "safety": "node CRITICAL_SAFETY.js",

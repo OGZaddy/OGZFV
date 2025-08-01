@@ -1,0 +1,61 @@
+# ACTIVE FILES INVENTORY - OGZ PRIME V13 SIMPLIFIED
+# Generated: $(date)
+# These files are ESSENTIAL for the working trading bot system
+
+## CORE WORKING SYSTEM
+run-trading-bot-v13-simplified.js          # Main trading bot (CURRENT VERSION)
+ogzprime_ssl_server_advanced.js           # SSL WebSocket server
+ogz-ultimate-dashboard.html               # Main dashboard
+ecosystem.config.js                       # PM2 configuration
+package.json                              # Node.js dependencies
+.env                                       # Environment variables (if exists)
+
+## CORE MODULES (core/ directory)
+core/WebSocketConfig.js                   # Simple WebSocket configuration
+core/PolygonWebSocket.js                  # Market data WebSocket
+core/UltimateTradingSystem.js            # Main trading logic
+core/CorrelationAnalyzer.js              # Market correlation analysis
+core/MultiDirectionalTrader.js           # Multi-directional trading
+core/LogLearningSystem.js                # Learning system
+core/MLLogProcessor.js                    # ML log processing
+core/TimeFrameManager.js                 # Timeframe management
+core/EnhancedPatternRecognition.js       # Pattern recognition
+core/ConnectionResilience.js             # Connection stability
+core/RiskManager.js                      # Risk management
+core/AdvancedWebSocketBroadcastSystem.js # Advanced WebSocket (server-side only)
+
+## CONFIGURATION
+config/polygon-config.js                 # Polygon API configuration
+
+## PROFILES
+profiles/BTC-USD_default.json           # Default trading profile
+profiles/BTC-USD_live_stream.json       # Live stream profile
+
+## SSL CERTIFICATES
+ssl/cert.pem                             # SSL certificate
+ssl/key.pem                              # SSL private key
+
+## LOGS (active directories)
+logs/trades/                             # Trade logs
+logs/patterns/                           # Pattern logs
+logs/errors/                             # Error logs (cleaned)
+
+## MEMORY
+memory/                                  # Bot memory files
+
+## PUBLIC DASHBOARD
+public/ogz-ultimate-dashboard.html       # Public dashboard
+public/transparency_dashboard.html       # Transparency dashboard
+
+## SAFETY SYSTEMS
+CRITICAL_SAFETY.js                       # Singleton protection
+process-guardian.js                      # Process management
+
+## BACKUP
+WORKING_BACKUP_20250801_124405_cleanup/  # Current backup
+
+## QUARANTINE
+_CLINE_QUARANTINE/                       # Quarantined files (safe to ignore)
+
+# NOTE: Files in _CLINE_QUARANTINE are old/unused and can be safely removed later
+# The bot is built on simple, clean WebSocket connections - NOT the complex AdvancedWebSocketBroadcastSystem

@@ -19,7 +19,7 @@ echo [✓] Node is available.
 timeout /t 1 >nul
 
 echo [✓] Launching Trading Bot (simulate mode)...
-start cmd /k "echo [Bot] Running run-trading-bot-v10.2.js && node run-trading-bot-v10.2.js --simulate --profile default --asset BTC-USD"
+start cmd /k "echo [Bot] Running run-trading-bot-v13-simplified.js && node run-trading-bot-v13-simplified.js --simulate --profile default --asset BTC-USD"
 
 timeout /t 2 >nul
 

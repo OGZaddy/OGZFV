@@ -4,8 +4,8 @@ echo  OGZ PRIME PUBLIC DEMO LAUNCHER
 echo ========================================
 echo.
 
-echo [1/3] Starting your real trading bot (v10.2)...
-start "OGZ Prime Bot" cmd /c "node run-trading-bot-v10.2.js"
+echo [1/3] Starting your real trading bot (v13-simplified)...
+start "OGZ Prime Bot" cmd /c "node run-trading-bot-v13-simplified.js"
 
 echo [2/3] Waiting 10 seconds for bot to initialize...
 timeout /t 10 /nobreak
