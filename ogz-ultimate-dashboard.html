@@ -13,7 +13,7 @@
         :root {
             --primary-green: #00ff88;
             --primary-cyan: #00ffff;
-            --primary-red: #ff4444  
+            --primary-red: #ff4444;
             --warning-orange: #ffaa00;
             --dark-bg: #0a0a0a;
             --card-bg: #111111;
@@ -856,11 +856,11 @@
                 this.config = {
                     // Auto-detect environment and set endpoints accordingly
                     wsEndpoint: isLocal 
-                        ? 'ws://localhost:8080'  // Local development
+                        ? 'ws://localhost:3010'  // Local development
                         : `${USE_SSL ? 'wss' : 'ws'}://${VPS_DOMAIN}:${VPS_PORT}`, // VPS production
                     
                     apiEndpoint: isLocal 
-                        ? 'http://localhost:8080/api'  // Local development
+                        ? 'http://localhost:3010/api'  // Local development
                         : `${USE_SSL ? 'https' : 'http'}://${VPS_DOMAIN}:${VPS_PORT}/api`, // VPS production
                     
                     updateInterval: 10000,
@@ -913,6 +913,18 @@
                     patternCount: 0
                 };
                 
+                // 🎯 DYNAMIC ENTRY ANALYSIS STATE (from Canvas)
+                this.entryAnalysis = {
+                    active: false,
+                    entryPrice: 0,
+                    entryTime: null,
+                    direction: null,
+                    fibonacci: {},
+                    support: [],
+                    resistance: [],
+                    keyLevels: []
+                };
+                
                 // WebSocket connections with resilience tracking
                 this.botSocket = null;
                 this.polygonSocket = null;
@@ -963,37 +975,141 @@
                     type: 'line',
                     data: {
                         labels: [],
-                        datasets: [{
-                            label: 'Price',
-                            data: [],
-                            borderColor: '#00ffff',
-                            backgroundColor: 'rgba(0, 255, 255, 0.1)',
-                            borderWidth: 2,
-                            fill: true,
-                            tension: 0.1,
-                            pointRadius: 0,
-                            pointHoverRadius: 5
-                        }, {
-                            label: 'Buy Signals',
-                            data: [],
-                            borderColor: '#00ff88',
-                            backgroundColor: '#00ff88',
-                            borderWidth: 0,
-                            pointRadius: 8,
-                            pointHoverRadius: 10,
-                            showLine: false,
-                            pointStyle: 'triangle'
-                        }, {
-                            label: 'Sell Signals',
-                            data: [],
-                            borderColor: '#ff4444',
-                            backgroundColor: '#ff4444',
-                            borderWidth: 0,
-                            pointRadius: 8,
-                            pointHoverRadius: 10,
-                            showLine: false,
-                            pointStyle: 'rectRot'
-                        }]
+                        datasets: [
+                            // 1. MAIN PRICE LINE
+                            {
+                                label: 'Price',
+                                data: [],
+                                borderColor: '#00ffff',
+                                backgroundColor: 'rgba(0, 255, 255, 0.1)',
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.1,
+                                pointRadius: 0,
+                                pointHoverRadius: 5,
+                                order: 1
+                            },
+                            // 2. BOLLINGER UPPER
+                            {
+                                label: 'BB Upper',
+                                data: [],
+                                borderColor: 'rgba(255, 99, 132, 0.5)',
+                                borderWidth: 1,
+                                borderDash: [5, 5],
+                                fill: false,
+                                pointRadius: 0,
+                                order: 2
+                            },
+                            // 3. BOLLINGER MIDDLE (SMA)
+                            {
+                                label: 'BB Middle (SMA)',
+                                data: [],
+                                borderColor: 'rgba(255, 206, 86, 0.7)',
+                                borderWidth: 1,
+                                fill: false,
+                                pointRadius: 0,
+                                order: 3
+                            },
+                            // 4. BOLLINGER LOWER
+                            {
+                                label: 'BB Lower',
+                                data: [],
+                                borderColor: 'rgba(255, 99, 132, 0.5)',
+                                borderWidth: 1,
+                                borderDash: [5, 5],
+                                fill: '+1', // Fill to BB Upper
+                                backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                                pointRadius: 0,
+                                order: 4
+                            },
+                            // 5. SUPPORT LEVEL
+                            {
+                                label: 'Support',
+                                data: [],
+                                borderColor: 'rgba(0, 255, 0, 0.8)',
+                                borderWidth: 2,
+                                borderDash: [10, 5],
+                                fill: false,
+                                pointRadius: 0,
+                                order: 5
+                            },
+                            // 6. RESISTANCE LEVEL
+                            {
+                                label: 'Resistance',
+                                data: [],
+                                borderColor: 'rgba(255, 0, 0, 0.8)',
+                                borderWidth: 2,
+                                borderDash: [10, 5],
+                                fill: false,
+                                pointRadius: 0,
+                                order: 6
+                            },
+                            // 7. FIBONACCI 0.236
+                            {
+                                label: 'Fib 23.6%',
+                                data: [],
+                                borderColor: 'rgba(255, 215, 0, 0.6)',
+                                borderWidth: 1,
+                                borderDash: [3, 3],
+                                fill: false,
+                                pointRadius: 0,
+                                order: 7
+                            },
+                            // 8. FIBONACCI 0.382
+                            {
+                                label: 'Fib 38.2%',
+                                data: [],
+                                borderColor: 'rgba(255, 215, 0, 0.7)',
+                                borderWidth: 1,
+                                borderDash: [3, 3],
+                                fill: false,
+                                pointRadius: 0,
+                                order: 8
+                            },
+                            // 9. FIBONACCI 0.618 (GOLDEN RATIO)
+                            {
+                                label: 'Fib 61.8% (Golden)',
+                                data: [],
+                                borderColor: 'rgba(255, 215, 0, 1)',
+                                borderWidth: 2,
+                                fill: false,
+                                pointRadius: 0,
+                                order: 9
+                            },
+                            // 10. TRENDLINE
+                            {
+                                label: 'Trendline',
+                                data: [],
+                                borderColor: 'rgba(128, 0, 128, 0.8)',
+                                borderWidth: 2,
+                                borderDash: [15, 5],
+                                fill: false,
+                                pointRadius: 0,
+                                order: 10
+                            },
+                            // 11. BUY SIGNALS
+                            {
+                                label: 'Buy Signals',
+                                data: [],
+                                backgroundColor: 'rgba(0, 255, 0, 0.8)',
+                                borderColor: 'rgba(0, 255, 0, 1)',
+                                pointRadius: 8,
+                                pointStyle: 'triangle',
+                                showLine: false,
+                                order: 11
+                            },
+                            // 12. SELL SIGNALS
+                            {
+                                label: 'Sell Signals',
+                                data: [],
+                                backgroundColor: 'rgba(255, 0, 0, 0.8)',
+                                borderColor: 'rgba(255, 0, 0, 1)',
+                                pointRadius: 8,
+                                pointStyle: 'triangleDown',
+                                showLine: false,
+                                order: 12
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,
@@ -1280,6 +1396,25 @@
                         // Connection health check response
                         console.log('✅ Bot connection healthy');
                         break;
+                    
+                    // 🎯 CANVAS DYNAMIC LEVELS INTEGRATION
+                    case 'trade_entry':
+                        // When bot enters a trade, calculate dynamic levels
+                        this.handleTradeEntry(data.data);
+                        break;
+                        
+                    case 'dynamic_levels':
+                        // Receive calculated levels from bot
+                        this.displayDynamicLevels(data.data);
+                        break;
+                        
+                    case 'position_opened':
+                        // Alternative message type your bot might send
+                        if (data.data.price && data.data.direction) {
+                            this.calculateDynamicLevels(data.data.price, data.data.direction);
+                        }
+                        break;
+                    
                     default:
                         console.log('📡 Received real data:', data.type, data.data);
                 }
@@ -1343,40 +1478,18 @@
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 })}`;
-                
-                const changeEl = document.getElementById('priceChange');
-                changeEl.textContent = `${change >= 0 ? '+' : ''}$${Math.abs(change).toFixed(2)} (${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%)`;
-                changeEl.className = `price-change ${change >= 0 ? 'positive' : 'negative'}`;
-                
-                // Update chart
-                this.addPriceToChart(price, timestamp);
-                
-                // Update state
-                this.state.lastPrice = price;
-                
-                // Real price data received - no fake analysis needed
-                console.log(`📈 Real Bitcoin price: $${price.toFixed(2)}`);
-            }
-            
-            addPriceToChart(price, timestamp) {
-                this.state.priceHistory.push({ price, timestamp });
-                
-                // Keep max points
-                if (this.state.priceHistory.length > this.config.chartMaxPoints) {
-                    this.state.priceHistory.shift();
-                }
-                
-                // Update chart data
-                this.chart.data.labels = this.state.priceHistory.map(p => p.timestamp);
-                this.chart.data.datasets[0].data = this.state.priceHistory.map(p => ({
-                    x: p.timestamp,
-                    y: p.price
                 }));
-                
-                this.chart.update('none');
             }
-            
-            initPatternRecognition() {
+        }, this.config.pingInterval);
+    };
+
+    this.polygonSocket.onmessage = (event) => {
+        try {
+            const messages = JSON.parse(event.data);
+            const msgArray = Array.isArray(messages) ? messages : [messages];
+
+            for (const msg of msgArray) {
+                this.handlePolygonMessage(msg);
                 // Start pattern analysis loop
                 setInterval(() => {
                     this.analyzePatterns();
@@ -1878,6 +1991,230 @@
                         this.botSocket.send(JSON.stringify({ type: 'ping' }));
                     }
                 }, 30000);
+            }
+            
+            // 🎯 CANVAS DYNAMIC ENTRY ANALYSIS METHODS
+            
+            handleTradeEntry(data) {
+                console.log('🎯 TRADE ENTRY DETECTED - Calculating Dynamic Levels');
+                
+                const { price, direction, timeframe } = data;
+                
+                this.entryAnalysis = {
+                    active: true,
+                    entryPrice: price,
+                    entryTime: Date.now(),
+                    direction: direction,
+                    fibonacci: {},
+                    support: [],
+                    resistance: [],
+                    keyLevels: []
+                };
+                
+                // Calculate levels based on your price history
+                this.calculateDynamicLevels(price, direction);
+                
+                // Add AI thought about entry
+                this.addAIThought(
+                    `📊 Entry Analysis: ${direction.toUpperCase()} @ $${price.toFixed(2)} - Calculating Fibonacci, S/R, and targets...`,
+                    direction === 'buy' ? 'buy' : 'sell'
+                );
+            }
+            
+            calculateDynamicLevels(entryPrice, direction) {
+                // Use your existing price history from chart
+                const prices = this.state.priceHistory.map(p => p.price);
+                
+                if (prices.length < 20) {
+                    console.warn('Not enough price history for analysis');
+                    return;
+                }
+                
+                // Find recent high and low
+                const recentHigh = Math.max(...prices);
+                const recentLow = Math.min(...prices);
+                const range = recentHigh - recentLow;
+                
+                // Calculate Fibonacci levels
+                const fibLevels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1.0, 1.272, 1.618];
+                this.entryAnalysis.fibonacci = {};
+                
+                fibLevels.forEach(level => {
+                    const price = direction === 'buy' 
+                        ? recentLow + (range * level)
+                        : recentHigh - (range * level);
+                        
+                    this.entryAnalysis.fibonacci[level] = {
+                        price: price,
+                        distance: Math.abs(price - entryPrice),
+                        color: level === 0.618 ? '#ffd700' : '#00ff88' // Golden ratio special color
+                    };
+                });
+                
+                // Calculate Support/Resistance (simplified for your current data)
+                const step = range / 10;
+                for (let i = 1; i <= 5; i++) {
+                    const supportPrice = entryPrice - (step * i);
+                    const resistancePrice = entryPrice + (step * i);
+                    
+                    this.entryAnalysis.support.push({
+                        price: supportPrice,
+                        strength: Math.floor(Math.random() * 3) + 1 // Would be calculated from touches
+                    });
+                    
+                    this.entryAnalysis.resistance.push({
+                        price: resistancePrice,
+                        strength: Math.floor(Math.random() * 3) + 1
+                    });
+                }
+                
+                // Identify key levels near entry
+                this.entryAnalysis.keyLevels = [
+                    { type: 'Entry', price: entryPrice, color: '#ffffff' },
+                    { type: 'Target 1', price: entryPrice + (range * 0.382 * (direction === 'buy' ? 1 : -1)), color: '#00ff88' },
+                    { type: 'Target 2', price: entryPrice + (range * 0.618 * (direction === 'buy' ? 1 : -1)), color: '#00ffff' },
+                    { type: 'Stop Loss', price: entryPrice - (range * 0.236 * (direction === 'buy' ? 1 : -1)), color: '#ff4444' }
+                ];
+                
+                // Draw levels on chart
+                this.drawDynamicLevels();
+                
+                // Show analysis summary
+                this.showEntryAnalysisSummary();
+            }
+            
+            drawDynamicLevels() {
+                if (!this.chart || !this.entryAnalysis.active) return;
+                
+                // Create a custom plugin for Chart.js to draw the levels
+                const dynamicLevelsPlugin = {
+                    id: 'dynamicLevels',
+                    afterDatasetsDraw: (chart) => {
+                        const ctx = chart.ctx;
+                        const chartArea = chart.chartArea;
+                        const yScale = chart.scales.y;
+                        
+                        if (!chartArea || !this.entryAnalysis.active) return;
+                        
+                        ctx.save();
+                        
+                        // Draw Fibonacci levels
+                        Object.entries(this.entryAnalysis.fibonacci).forEach(([level, data]) => {
+                            const y = yScale.getPixelForValue(data.price);
+                            
+                            if (y >= chartArea.top && y <= chartArea.bottom) {
+                                // Draw line
+                                ctx.strokeStyle = data.color || 'rgba(0, 255, 136, 0.3)';
+                                ctx.lineWidth = level === '0.618' ? 2 : 1; // Golden ratio thicker
+                                ctx.setLineDash([5, 5]);
+                                ctx.beginPath();
+                                ctx.moveTo(chartArea.left, y);
+                                ctx.lineTo(chartArea.right, y);
+                                ctx.stroke();
+                                
+                                // Draw label
+                                ctx.fillStyle = data.color || '#00ff88';
+                                ctx.font = '10px Arial';
+                                ctx.fillText(`Fib ${(level * 100).toFixed(1)}%: $${data.price.toFixed(0)}`, chartArea.left + 5, y - 2);
+                            }
+                        });
+                        
+                        // Draw key levels (entry, targets, stop)
+                        this.entryAnalysis.keyLevels.forEach(level => {
+                            const y = yScale.getPixelForValue(level.price);
+                            
+                            if (y >= chartArea.top && y <= chartArea.bottom) {
+                                ctx.strokeStyle = level.color;
+                                ctx.lineWidth = 2;
+                                ctx.setLineDash([]);
+                                ctx.beginPath();
+                                ctx.moveTo(chartArea.left, y);
+                                ctx.lineTo(chartArea.right, y);
+                                ctx.stroke();
+                                
+                                // Label with background
+                                const text = `${level.type}: $${level.price.toFixed(2)}`;
+                                const textWidth = ctx.measureText(text).width;
+                                
+                                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                                ctx.fillRect(chartArea.right - textWidth - 15, y - 10, textWidth + 10, 15);
+                                
+                                ctx.fillStyle = level.color;
+                                ctx.font = 'bold 11px Arial';
+                                ctx.fillText(text, chartArea.right - textWidth - 10, y);
+                            }
+                        });
+                        
+                        ctx.restore();
+                    }
+                };
+                
+                // Register the plugin if not already registered
+                if (!Chart.registry.plugins.get('dynamicLevels')) {
+                    Chart.register(dynamicLevelsPlugin);
+                }
+                
+                // Update chart
+                this.chart.update();
+            }
+            
+            showEntryAnalysisSummary() {
+                const { entryPrice, direction, fibonacci, keyLevels } = this.entryAnalysis;
+                
+                // Create a special AI thought with the analysis
+                const summary = `
+                    <div style="background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,165,0,0.1)); 
+                                padding: 1rem; border-radius: 8px; border: 1px solid #ffd700;">
+                        <div style="font-weight: bold; color: #ffd700; margin-bottom: 0.5rem;">
+                            📊 DYNAMIC ENTRY ANALYSIS COMPLETE
+                        </div>
+                        <div style="font-size: 0.85rem;">
+                            Entry: ${direction.toUpperCase()} @ $${entryPrice.toFixed(2)}<br>
+                            Golden Ratio (0.618): $${fibonacci[0.618]?.price.toFixed(2) || 'N/A'}<br>
+                            Target 1: $${keyLevels.find(l => l.type === 'Target 1')?.price.toFixed(2) || 'N/A'}<br>
+                            Target 2: $${keyLevels.find(l => l.type === 'Target 2')?.price.toFixed(2) || 'N/A'}<br>
+                            Stop Loss: $${keyLevels.find(l => l.type === 'Stop Loss')?.price.toFixed(2) || 'N/A'}
+                        </div>
+                    </div>
+                `;
+                
+                const stream = document.getElementById('aiStream');
+                const thoughtEl = document.createElement('div');
+                thoughtEl.className = 'ai-thought buy';
+                thoughtEl.innerHTML = `
+                    <div class="ai-timestamp">${new Date().toLocaleTimeString()}</div>
+                    ${summary}
+                `;
+                stream.insertBefore(thoughtEl, stream.firstChild);
+                
+                // Also update the pattern alert to show levels are calculated
+                const patternAlert = document.getElementById('patternAlert');
+                patternAlert.style.display = 'block';
+                document.getElementById('patternName').textContent = '📐 Dynamic Levels Active';
+                document.getElementById('patternConfidence').textContent = `Fib/S&R/Targets Calculated`;
+                
+                setTimeout(() => {
+                    patternAlert.style.display = 'none';
+                }, 10000);
+            }
+            
+            displayDynamicLevels(data) {
+                // If your bot sends pre-calculated levels
+                console.log('📊 Received dynamic levels from bot:', data);
+                
+                this.entryAnalysis = {
+                    active: true,
+                    entryPrice: data.entryPrice,
+                    entryTime: data.timestamp,
+                    direction: data.direction,
+                    fibonacci: data.fibonacci || {},
+                    support: data.support || [],
+                    resistance: data.resistance || [],
+                    keyLevels: data.keyLevels || []
+                };
+                
+                this.drawDynamicLevels();
+                this.showEntryAnalysisSummary();
             }
         }
         

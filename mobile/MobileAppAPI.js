@@ -13,7 +13,7 @@ class MobileAppAPI {
     this.ogzPrime = ogzPrime;
     this.config = {
       port: 5000,
-      wsPort: 5001,
+      unifiedWebSocketUrl: 'ws://localhost:3010/ws', // Use unified WebSocket instead of separate server
       secretKey: process.env.MOBILE_SECRET || 'ogz-mobile-valhalla-key',
       corsOrigin: '*',
       maxRequestsPerMinute: 60,
@@ -25,7 +25,7 @@ class MobileAppAPI {
     this.app = express();
     this.setupMiddleware();
     this.setupRoutes();
-    this.setupWebSocket();
+    this.connectToUnifiedWebSocket(); // Connect to unified WebSocket instead of creating server
     
     // Connected mobile clients
     this.mobileClients = new Map();
@@ -99,48 +99,44 @@ class MobileAppAPI {
   }
   
   /**
-   * Set up WebSocket for real-time updates
+   * Connect to unified WebSocket server (port 3010) instead of creating separate server
    */
-  setupWebSocket() {
-    this.wss = new WebSocket.Server({ port: this.config.wsPort });
+  connectToUnifiedWebSocket() {
+    console.log('📱 Mobile API connecting to unified WebSocket on port 3010...');
     
-    this.wss.on('connection', (ws, req) => {
-      // Authenticate WebSocket connection
-      const token = req.url.split('token=')[1];
-      const user = this.verifyToken(token);
+    this.unifiedWs = new WebSocket(this.config.unifiedWebSocketUrl);
+    
+    this.unifiedWs.on('open', () => {
+      console.log('📱 Mobile API connected to unified WebSocket');
       
-      if (!user) {
-        ws.close(1008, 'Invalid token');
-        return;
-      }
-      
-      // Store client
-      const clientId = `mobile-${Date.now()}`;
-      this.mobileClients.set(clientId, { ws, user });
-      
-      console.log(`📱 Mobile client connected: ${clientId}`);
-      
-      // Send initial state
-      this.sendMobileUpdate(clientId, {
-        type: 'connected',
-        data: this.getDashboardData()
-      });
-      
-      // Handle disconnection
-      ws.on('close', () => {
-        this.mobileClients.delete(clientId);
-        console.log(`📱 Mobile client disconnected: ${clientId}`);
-      });
-      
-      // Handle commands
-      ws.on('message', (message) => {
-        try {
-          const command = JSON.parse(message);
-          this.handleWebSocketCommand(clientId, command);
-        } catch (err) {
-          console.error('Invalid WebSocket message:', err);
+      // Identify as mobile API client
+      this.unifiedWs.send(JSON.stringify({
+        type: 'identify',
+        source: 'mobile_api',
+        capabilities: ['mobile_commands', 'push_notifications']
+      }));
+    });
+    
+    this.unifiedWs.on('message', (data) => {
+      try {
+        const message = JSON.parse(data);
+        
+        // Forward relevant messages to mobile clients
+        if (this.shouldForwardToMobile(message)) {
+          this.broadcastToMobileClients(message);
         }
-      });
+      } catch (err) {
+        console.error('📱 Error processing unified WebSocket message:', err);
+      }
+    });
+    
+    this.unifiedWs.on('close', () => {
+      console.log('📱 Mobile API disconnected from unified WebSocket, reconnecting...');
+      setTimeout(() => this.connectToUnifiedWebSocket(), 5000);
+    });
+    
+    this.unifiedWs.on('error', (err) => {
+      console.error('📱 Mobile API WebSocket error:', err);
     });
   }
   
@@ -193,7 +189,7 @@ class MobileAppAPI {
     
     res.json({
       token,
-      wsPort: this.config.wsPort,
+      wsUrl: this.config.unifiedWebSocketUrl, // Use unified WebSocket URL
       features: {
         pushNotifications: this.config.enablePushNotifications,
         voiceCommands: this.config.enableVoiceCommands
@@ -544,10 +540,52 @@ class MobileAppAPI {
     if (this.server) {
       this.server.close();
     }
-    if (this.wss) {
-      this.wss.close();
+    if (this.unifiedWs) {
+      this.unifiedWs.close();
     }
     console.log('📱 Mobile API stopped');
+  }
+  
+  /**
+   * Check if message should be forwarded to mobile clients
+   */
+  shouldForwardToMobile(message) {
+    const forwardTypes = [
+      'trade_executed',
+      'position_update', 
+      'balance_update',
+      'system_status',
+      'risk_alert',
+      'pattern_detected'
+    ];
+    return forwardTypes.includes(message.type);
+  }
+  
+  /**
+   * Broadcast message to all connected mobile clients
+   */
+  broadcastToMobileClients(message) {
+    this.mobileClients.forEach((client, clientId) => {
+      if (client.subscribed && client.ws.readyState === WebSocket.OPEN) {
+        client.ws.send(JSON.stringify({
+          type: 'unified_update',
+          data: message
+        }));
+      }
+    });
+  }
+  
+  /**
+   * Send command to unified WebSocket server
+   */
+  sendToUnifiedWebSocket(command) {
+    if (this.unifiedWs && this.unifiedWs.readyState === WebSocket.OPEN) {
+      this.unifiedWs.send(JSON.stringify({
+        type: 'mobile_command',
+        source: 'mobile_api',
+        data: command
+      }));
+    }
   }
 }
 

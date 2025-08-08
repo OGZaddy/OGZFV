@@ -291,6 +291,164 @@ class OptimizedTradingBrain {
   }
   
   /**
+   * Calculate Optimal Position Size - Enhanced Risk-Adjusted Sizing
+   * 
+   * CRITICAL METHOD: Calculates the optimal position size based on confidence,
+   * volatility, account balance, and risk management parameters.
+   * 
+   * @param {number} basePositionSize - Base position size percentage
+   * @param {number} confidence - Trade confidence (0-1)
+   * @param {Object} marketData - Current market data
+   * @param {number} accountBalance - Current account balance
+   * @returns {number} - Optimal position size percentage
+   */
+  calculateOptimalPositionSize(basePositionSize, confidence, marketData, accountBalance) {
+    let optimalSize = basePositionSize;
+    
+    console.log(`🧠 CALCULATING OPTIMAL SIZE: Base ${(basePositionSize * 100).toFixed(2)}%`);
+    
+    // Confidence scaling
+    if (this.config.confidenceScaling) {
+      const confidenceMultiplier = Math.max(0.5, Math.min(2.0, confidence * 2));
+      optimalSize *= confidenceMultiplier;
+      console.log(`   📊 Confidence scaling: ${(confidenceMultiplier * 100).toFixed(0)}% (confidence: ${(confidence * 100).toFixed(1)}%)`);
+    }
+    
+    // Volatility scaling
+    if (this.config.volatilityScaling && marketData.volatility) {
+      const volatility = marketData.volatility;
+      let volatilityMultiplier = 1.0;
+      
+      if (volatility < this.config.volatilityThresholds.low) {
+        volatilityMultiplier = this.config.lowVolatilityMultiplier;
+        console.log(`   📈 Low volatility boost: ${(volatilityMultiplier * 100).toFixed(0)}%`);
+      } else if (volatility > this.config.volatilityThresholds.high) {
+        volatilityMultiplier = this.config.highVolatilityMultiplier;
+        console.log(`   📉 High volatility reduction: ${(volatilityMultiplier * 100).toFixed(0)}%`);
+      }
+      
+      optimalSize *= volatilityMultiplier;
+    }
+    
+    // Apply limits
+    optimalSize = Math.max(this.config.basePositionSize * 0.5, optimalSize); // Min 50% of base
+    optimalSize = Math.min(this.config.maxPositionSize, optimalSize); // Max position limit
+    
+    console.log(`🧠 OPTIMAL SIZE CALCULATED: ${(optimalSize * 100).toFixed(2)}% (was ${(basePositionSize * 100).toFixed(2)}%)`);
+    
+    return optimalSize;
+  }
+  
+  /**
+   * Calculate Take Profit - Enhanced Profit Target Calculation
+   * 
+   * @param {number} entryPrice - Entry price
+   * @param {string} direction - Trade direction
+   * @param {number} confidence - Trade confidence
+   * @returns {number} - Take profit price
+   */
+  calculateTakeProfit(entryPrice, direction, confidence = 0.5) {
+    let takeProfitPercent = this.config.takeProfitPercent;
+    
+    // Adjust based on confidence
+    if (confidence > 0.8) {
+      takeProfitPercent *= 1.5; // Higher targets for high confidence
+    } else if (confidence < 0.6) {
+      takeProfitPercent *= 0.8; // Lower targets for low confidence
+    }
+    
+    let takeProfit;
+    if (direction === 'buy') {
+      takeProfit = entryPrice * (1 + takeProfitPercent);
+    } else {
+      takeProfit = entryPrice * (1 - takeProfitPercent);
+    }
+    
+    return takeProfit;
+  }
+  
+  /**
+   * Calculate Trailing Stop - Dynamic Trailing Stop Calculation
+   * 
+   * @param {number} entryPrice - Entry price
+   * @param {string} direction - Trade direction
+   * @returns {number} - Initial trailing stop price
+   */
+  calculateTrailingStop(entryPrice, direction) {
+    const trailingPercent = this.config.trailingStopPercent;
+    
+    let trailingStop;
+    if (direction === 'buy') {
+      trailingStop = entryPrice * (1 - trailingPercent);
+    } else {
+      trailingStop = entryPrice * (1 + trailingPercent);
+    }
+    
+    return trailingStop;
+  }
+  
+  /**
+   * Track Trade - Performance Tracking and Analysis
+   * 
+   * @param {Object} tradeData - Trade data to track
+   * @param {number} currentBalance - Current account balance
+   */
+  trackTrade(tradeData, currentBalance) {
+    const {
+      id,
+      direction,
+      entryPrice,
+      positionSize,
+      confidence,
+      patterns,
+      marketData
+    } = tradeData;
+    
+    console.log(`🧠 TRACKING TRADE: ${id} (${direction.toUpperCase()})`);
+    
+    // Update session stats
+    this.sessionStats.tradesCount++;
+    
+    // Store trade for pattern learning
+    if (patterns && patterns.length > 0) {
+      const patternKey = patterns.map(p => p.type).join('_');
+      if (!this.patternMemory.has(patternKey)) {
+        this.patternMemory.set(patternKey, {
+          trades: [],
+          successRate: 0,
+          avgProfit: 0
+        });
+      }
+      
+      this.patternMemory.get(patternKey).trades.push({
+        id,
+        direction,
+        entryPrice,
+        confidence,
+        timestamp: Date.now()
+      });
+    }
+    
+    // Calculate Houston fund progress
+    const progressPercent = (currentBalance / this.config.houstonFundTarget) * 100;
+    console.log(`🎯 Houston Fund Progress: ${progressPercent.toFixed(1)}% ($${currentBalance.toLocaleString()}/$${this.config.houstonFundTarget.toLocaleString()})`);
+    
+    this.log(`Trade tracked: ${id} - Confidence: ${(confidence * 100).toFixed(1)}%, Size: ${(positionSize * 100).toFixed(2)}%`, 'info');
+  }
+  
+  /**
+   * Log Method - Enhanced Logging with Context
+   * 
+   * @param {string} message - Log message
+   * @param {string} level - Log level (info, warning, error)
+   */
+  log(message, level = 'info') {
+    const timestamp = new Date().toISOString();
+    const prefix = level === 'error' ? '❌' : level === 'warning' ? '⚠️' : '📊';
+    console.log(`${prefix} [${timestamp}] OptimizedTradingBrain: ${message}`);
+  }
+  
+  /**
    * 💰 BREAKEVEN WITHDRAWAL: Check if breakeven withdrawal should be executed
    * @param {number} price - Current market price
    * @param {Object} currentAnalysis - Current market analysis
@@ -318,6 +476,24 @@ class OptimizedTradingBrain {
     }
     
     return null;
+  }
+  
+  /**
+   * 🛡️ ENHANCED BREAKEVEN PROTECTION: Calculate breakeven stop loss with fee buffer
+   * @param {number} entryPrice - Trade entry price
+   * @param {string} direction - Trade direction ('buy' or 'sell')
+   * @param {number} fees - Total round-trip fees (default 0.002 = 0.2%)
+   * @returns {number} Breakeven stop loss price
+   */
+  calculateBreakevenStopLoss(entryPrice, direction, fees = 0.002) {
+    // FIXED: 0.3% total buffer for fees + slippage (was 0.1% - too tight!)
+    const breakevenBuffer = fees + 0.001; // 0.3% total buffer
+    
+    if (direction === 'buy') {
+      return entryPrice * (1 + breakevenBuffer);
+    } else {
+      return entryPrice * (1 - breakevenBuffer);
+    }
   }
   
   /**

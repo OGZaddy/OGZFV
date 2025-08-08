@@ -1,0 +1,288 @@
+# Mover Brain Index
+
+_Total files: 284_
+
+- **2023-01-25** [Make Money Quickly With AI.](emotions/2023-01-25_make-money-quickly-with-ai-.md) — _emotions_
+- **2023-01-30** [Inform Customer on Solar Benefits](emotions/2023-01-30_inform-customer-on-solar-benefits.md) — _emotions_
+- **2023-03-08** [Love Letter to Biden](emotions/2023-03-08_love-letter-to-biden.md) — _emotions_
+- **2023-03-08** [Lease Agreement: Triple Net.](training/2023-03-08_lease-agreement-triple-net-.md) — _training_
+- **2023-06-27** [Create Liquid Town Social](training/2023-06-27_create-liquid-town-social.md) — _training_
+- **2023-09-20** [Create Facebook Thumbnail: Steps](training/2023-09-20_create-facebook-thumbnail-steps.md) — _training_
+- **2024-02-07** [LeadGen Biz Names](emotions/2024-02-07_leadgen-biz-names.md) — _emotions_
+- **2024-04-03** [Cinco de Mayo & Patriotic Blend](emotions/2024-04-03_cinco-de-mayo-patriotic-blend.md) — _emotions_
+- **2025-01-30** [Cocktail Recipe Facebook Ad](training/2025-01-30_cocktail-recipe-facebook-ad.md) — _training_
+- **2025-02-06** [Apology and Reconciliation Letter](training/2025-02-06_apology-and-reconciliation-letter.md) — _training_
+- **2025-02-20** [Customized Trading Dashboard](ogzprime/2025-02-20_customized-trading-dashboard.md) — _ogzprime_
+- **2025-02-24** [Custom Trading Program Build](ogzprime/2025-02-24_custom-trading-program-build.md) — _ogzprime_
+- **2025-02-26** [Trading Bot Development](ogzprime/2025-02-26_trading-bot-development.md) — _ogzprime_
+- **2025-03-08** [Computer Crash Recovery Woes](misc/2025-03-08_computer-crash-recovery-woes.md) — _misc_
+- **2025-03-09** [Computer Fix Lost File](architecture/2025-03-09_computer-fix-lost-file.md) — _architecture_
+- **2025-03-15** [Bot Upgrade Discussion](misc/2025-03-15_bot-upgrade-discussion.md) — _misc_
+- **2025-03-15** [Best Saltwater Fishing Rod](training/2025-03-15_best-saltwater-fishing-rod.md) — _training_
+- **2025-03-15** [What's Your Name ChatGPT](training/2025-03-15_what-s-your-name-chatgpt.md) — _training_
+- **2025-03-16** [Excessive Spatter Causes](misc/2025-03-16_excessive-spatter-causes.md) — _misc_
+- **2025-03-16** [Motorcycle Image Inquiry](misc/2025-03-16_motorcycle-image-inquiry.md) — _misc_
+- **2025-03-16** [Welding Wagon Suspension Repair](misc/2025-03-16_welding-wagon-suspension-repair.md) — _misc_
+- **2025-03-16** [Scalable Passive Income Ideas](ogzprime/2025-03-16_scalable-passive-income-ideas.md) — _ogzprime_
+- **2025-03-16** [Motorcycle brand identification](training/2025-03-16_motorcycle-brand-identification.md) — _training_
+- **2025-03-18** [Best Shore Fish Finders](emotions/2025-03-18_best-shore-fish-finders.md) — _emotions_
+- **2025-03-18** [C25 Refill and Transport](emotions/2025-03-18_c25-refill-and-transport.md) — _emotions_
+- **2025-03-18** [Flux Core vs MIG Welding](emotions/2025-03-18_flux-core-vs-mig-welding.md) — _emotions_
+- **2025-03-20** [MIG for Wagon Project](emotions/2025-03-20_mig-for-wagon-project.md) — _emotions_
+- **2025-03-20** [Norfolk Pine Issues](emotions/2025-03-20_norfolk-pine-issues.md) — _emotions_
+- **2025-03-20** [Crape Myrtle Identification](rants/2025-03-20_crape-myrtle-identification.md) — _rants_
+- **2025-03-21** [Firebush Pruning Guide](emotions/2025-03-21_firebush-pruning-guide.md) — _emotions_
+- **2025-03-21** [Strawberry Soil and Nutrients](emotions/2025-03-21_strawberry-soil-and-nutrients.md) — _emotions_
+- **2025-03-21** [Summarize magazine page](emotions/2025-03-21_summarize-magazine-page.md) — _emotions_
+- **2025-03-21** [Tomato Soil Requirements](emotions/2025-03-21_tomato-soil-requirements.md) — _emotions_
+- **2025-03-21** [Tomatoes and Strawberries Together](emotions/2025-03-21_tomatoes-and-strawberries-together.md) — _emotions_
+- **2025-03-21** [Packery Channel Fishing Tips](misc/2025-03-21_packery-channel-fishing-tips.md) — _misc_
+- **2025-03-21** [Team Tactics Training](misc/2025-03-21_team-tactics-training.md) — _misc_
+- **2025-03-21** [Summarize Article for Text](ogzprime/2025-03-21_summarize-article-for-text.md) — _ogzprime_
+- **2025-03-21** [Write request response](training/2025-03-21_write-request-response.md) — _training_
+- **2025-03-22** [Te va a gustar](misc/2025-03-22_te-va-a-gustar.md) — _misc_
+- **2025-03-22** [AI Riches Mindset](ogzprime/2025-03-22_ai-riches-mindset.md) — _ogzprime_
+- **2025-03-22** [Fresh Install Guide](training/2025-03-22_fresh-install-guide.md) — _training_
+- **2025-03-23** [Fix boot loop](emotions/2025-03-23_fix-boot-loop.md) — _emotions_
+- **2025-03-23** [Robust Raised Bed Guide](emotions/2025-03-23_robust-raised-bed-guide.md) — _emotions_
+- **2025-03-23** [Cedar Lumber Stores Corpus Christi](misc/2025-03-23_cedar-lumber-stores-corpus-christi.md) — _misc_
+- **2025-03-23** [Creative Uses for Roses](training/2025-03-23_creative-uses-for-roses.md) — _training_
+- **2025-03-24** [Daughter's First Phone Decision](emotions/2025-03-24_daughter-s-first-phone-decision.md) — _emotions_
+- **2025-03-24** [Text Advice for Relationship](emotions/2025-03-24_text-advice-for-relationship.md) — _emotions_
+- **2025-03-24** [Trading bot setup](ogzprime/2025-03-24_trading-bot-setup.md) — _ogzprime_
+- **2025-03-25** [Where to Fax Nearby](emotions/2025-03-25_where-to-fax-nearby.md) — _emotions_
+- **2025-03-26** [Conversation summary request](misc/2025-03-26_conversation-summary-request.md) — _misc_
+- **2025-03-29** [Biometric Safe Purchase Guide](emotions/2025-03-29_biometric-safe-purchase-guide.md) — _emotions_
+- **2025-03-29** [Don Quixote Boss Strategy](ogzprime/2025-03-29_don-quixote-boss-strategy.md) — _ogzprime_
+- **2025-03-29** [Buy Biometric Safe Near Me](training/2025-03-29_buy-biometric-safe-near-me.md) — _training_
+- **2025-04-02** [Phone Data Issues Fix](training/2025-04-02_phone-data-issues-fix.md) — _training_
+- **2025-04-03** [Gifts for Book Lovers](training/2025-04-03_gifts-for-book-lovers.md) — _training_
+- **2025-04-05** [How to fill vape](ogzprime/2025-04-05_how-to-fill-vape.md) — _ogzprime_
+- **2025-04-05** [Vape Settings Guide](ogzprime/2025-04-05_vape-settings-guide.md) — _ogzprime_
+- **2025-04-05** [Customer Research for Creatine](training/2025-04-05_customer-research-for-creatine.md) — _training_
+- **2025-04-05** [Knight Statue Talents Guide](training/2025-04-05_knight-statue-talents-guide.md) — _training_
+- **2025-04-05** [Windows Features Dialog Issue](training/2025-04-05_windows-features-dialog-issue.md) — _training_
+- **2025-04-06** [Ancient vs Awakened Sword](emotions/2025-04-06_ancient-vs-awakened-sword.md) — _emotions_
+- **2025-04-06** [Random Dice Meta Decks](emotions/2025-04-06_random-dice-meta-decks.md) — _emotions_
+- **2025-04-06** [Brick Securing Options](misc/2025-04-06_brick-securing-options.md) — _misc_
+- **2025-04-06** [Landscape Adhesive Stores CC](training/2025-04-06_landscape-adhesive-stores-cc.md) — _training_
+- **2025-04-07** [Endless Floor Setup Guide](training/2025-04-07_endless-floor-setup-guide.md) — _training_
+- **2025-04-08** [Garden Bed Sales Pitch](training/2025-04-08_garden-bed-sales-pitch.md) — _training_
+- **2025-04-09** [Best PvP Rush Royale Cards](emotions/2025-04-09_best-pvp-rush-royale-cards.md) — _emotions_
+- **2025-04-09** [Raised Beds Image Search](misc/2025-04-09_raised-beds-image-search.md) — _misc_
+- **2025-04-09** [Freemax Wattage Guide](training/2025-04-09_freemax-wattage-guide.md) — _training_
+- **2025-04-09** [Irrigation Ad Ideas](training/2025-04-09_irrigation-ad-ideas.md) — _training_
+- **2025-04-09** [Roses for Daughter's Love](training/2025-04-09_roses-for-daughter-s-love.md) — _training_
+- **2025-04-11** [Display Commands in Console](misc/2025-04-11_display-commands-in-console.md) — _misc_
+- **2025-04-11** [Hyper-V Boot Loop Fix](ogzprime/2025-04-11_hyper-v-boot-loop-fix.md) — _ogzprime_
+- **2025-04-11** [Memory Upgrade Excitement](slotjammer/2025-04-11_memory-upgrade-excitement.md) — _slotjammer_
+- **2025-04-11** [Create System Image Hyper-V](training/2025-04-11_create-system-image-hyper-v.md) — _training_
+- **2025-04-12** [Hyper-V Setup Guide](architecture/2025-04-12_hyper-v-setup-guide.md) — _architecture_
+- **2025-04-12** [Secure Boot Compatibility](architecture/2025-04-12_secure-boot-compatibility.md) — _architecture_
+- **2025-04-14** [Liters to Gallons Conversion](misc/2025-04-14_liters-to-gallons-conversion.md) — _misc_
+- **2025-04-15** [Upload Limits Summary](emotions/2025-04-15_upload-limits-summary.md) — _emotions_
+- **2025-04-17** [VPN Speed Throttling Fix](architecture/2025-04-17_vpn-speed-throttling-fix.md) — _architecture_
+- **2025-04-17** [Ounces in a Cup](emotions/2025-04-17_ounces-in-a-cup.md) — _emotions_
+- **2025-04-17** [Halved Cookie Recipe](misc/2025-04-17_halved-cookie-recipe.md) — _misc_
+- **2025-04-17** [Lost Code Recovery](slotjammer/2025-04-17_lost-code-recovery.md) — _slotjammer_
+- **2025-04-17** [Dough Texture Check](training/2025-04-17_dough-texture-check.md) — _training_
+- **2025-04-17** [Emotional Honesty Banter](training/2025-04-17_emotional-honesty-banter.md) — _training_
+- **2025-04-18** [Epic Games Split Tunneling](emotions/2025-04-18_epic-games-split-tunneling.md) — _emotions_
+- **2025-04-18** [Hotel Search Tips](emotions/2025-04-18_hotel-search-tips.md) — _emotions_
+- **2025-04-18** [Mamool Baking Tips](emotions/2025-04-18_mamool-baking-tips.md) — _emotions_
+- **2025-04-18** [Insomnia Cookies Locations Austin](misc/2025-04-18_insomnia-cookies-locations-austin.md) — _misc_
+- **2025-04-18** [Hybridized Dashboard Chaos](ogzprime/2025-04-18_hybridized-dashboard-chaos.md) — _ogzprime_
+- **2025-04-18** [Mamool Baking Feedback](training/2025-04-18_mamool-baking-feedback.md) — _training_
+- **2025-04-19** [Freemax Vape Juice Guide](emotions/2025-04-19_freemax-vape-juice-guide.md) — _emotions_
+- **2025-04-19** [Topgolf Easter Hours](rants/2025-04-19_topgolf-easter-hours.md) — _rants_
+- **2025-04-19** [Lonely Poetry Vibes](training/2025-04-19_lonely-poetry-vibes.md) — _training_
+- **2025-04-19** [TB Ready to Play](training/2025-04-19_tb-ready-to-play.md) — _training_
+- **2025-04-19** [Thanks for the support](training/2025-04-19_thanks-for-the-support.md) — _training_
+- **2025-04-20** [Advice Request and Support](emotions/2025-04-20_advice-request-and-support.md) — _emotions_
+- **2025-04-20** [Bowling Near Me](emotions/2025-04-20_bowling-near-me.md) — _emotions_
+- **2025-04-20** [Dice Probability Calculation](emotions/2025-04-20_dice-probability-calculation.md) — _emotions_
+- **2025-04-20** [Bowling Form Guide](training/2025-04-20_bowling-form-guide.md) — _training_
+- **2025-04-22** [Xbox powers on then off](rants/2025-04-22_xbox-powers-on-then-off.md) — _rants_
+- **2025-04-23** [Confirmation Bias in Relationships](training/2025-04-23_confirmation-bias-in-relationships.md) — _training_
+- **2025-04-23** [UIT Missed Me](training/2025-04-23_uit-missed-me.md) — _training_
+- **2025-04-24** [Soaking Clarification Needed](misc/2025-04-24_soaking-clarification-needed.md) — _misc_
+- **2025-04-24** [Possible cellulitis diagnosis](ogzprime/2025-04-24_possible-cellulitis-diagnosis.md) — _ogzprime_
+- **2025-04-25** [Grog History and Variations](emotions/2025-04-25_grog-history-and-variations.md) — _emotions_
+- **2025-04-26** [Audio Analysis Request](architecture/2025-04-26_audio-analysis-request.md) — _architecture_
+- **2025-04-26** [Nail Lamp Help](emotions/2025-04-26_nail-lamp-help.md) — _emotions_
+- **2025-04-27** [Deep Questions Exploration](ogzprime/2025-04-27_deep-questions-exploration.md) — _ogzprime_
+- **2025-04-27** [Missing Files Upload](ogzprime/2025-04-27_missing-files-upload.md) — _ogzprime_
+- **2025-04-27** [iPad ghost touch fix](training/2025-04-27_ipad-ghost-touch-fix.md) — _training_
+- **2025-04-28** [Freemax No Atomizer Fix](ogzprime/2025-04-28_freemax-no-atomizer-fix.md) — _ogzprime_
+- **2025-04-28** [Ready to Move Confirmation](ogzprime/2025-04-28_ready-to-move-confirmation.md) — _ogzprime_
+- **2025-04-28** [Top TX Sweepstakes Casinos](ogzprime/2025-04-28_top-tx-sweepstakes-casinos.md) — _ogzprime_
+- **2025-04-28** [Fraud Charge Resolution Guide](training/2025-04-28_fraud-charge-resolution-guide.md) — _training_
+- **2025-04-29** [Bot Sale Strategy](architecture/2025-04-29_bot-sale-strategy.md) — _architecture_
+- **2025-04-30** [Trade Bot Setup](ogzprime/2025-04-30_trade-bot-setup.md) — _ogzprime_
+- **2025-05-01** [Chatham Daycare Tragedy](training/2025-05-01_chatham-daycare-tragedy.md) — _training_
+- **2025-05-02** [TB&E Project Overview](ogzprime/2025-05-02_tb-e-project-overview.md) — _ogzprime_
+- **2025-05-02** [Test and Control Loop](training/2025-05-02_test-and-control-loop.md) — _training_
+- **2025-05-03** [Hotel Booking Request](emotions/2025-05-03_hotel-booking-request.md) — _emotions_
+- **2025-05-03** [Small moments, big impact](emotions/2025-05-03_small-moments-big-impact.md) — _emotions_
+- **2025-05-06** [Best Xbox X Headsets](architecture/2025-05-06_best-xbox-x-headsets.md) — _architecture_
+- **2025-05-07** [Pitbull Real Name](emotions/2025-05-07_pitbull-real-name.md) — _emotions_
+- **2025-05-07** [Thread Memory Retrieval](ogzprime/2025-05-07_thread-memory-retrieval.md) — _ogzprime_
+- **2025-05-08** [Fortuna Rush Royale Review](ogzprime/2025-05-08_fortuna-rush-royale-review.md) — _ogzprime_
+- **2025-05-09** [Boater's License Requirements](training/2025-05-09_boater-s-license-requirements.md) — _training_
+- **2025-05-10** [Pig Latin Vowel Rule](training/2025-05-10_pig-latin-vowel-rule.md) — _training_
+- **2025-05-11** [Headwaters of Oasis River](misc/2025-05-11_headwaters-of-oasis-river.md) — _misc_
+- **2025-05-11** [OGZPrimeV10.2 Trading System](ogzprime/2025-05-11_ogzprimev10-2-trading-system.md) — _ogzprime_
+- **2025-05-13** [Hybridized Dashboard Chaos Retrieval](ogzprime/2025-05-13_hybridized-dashboard-chaos-retrieval.md) — _ogzprime_
+- **2025-05-16** [Candle Storage and Learning](ogzprime/2025-05-16_candle-storage-and-learning.md) — _ogzprime_
+- **2025-05-17** [Projector Troubleshooting Tips](emotions/2025-05-17_projector-troubleshooting-tips.md) — _emotions_
+- **2025-05-17** [BMW X5 AC Issue](ogzprime/2025-05-17_bmw-x5-ac-issue.md) — _ogzprime_
+- **2025-05-17** [Challenge and Reflection Breakdown](training/2025-05-17_challenge-and-reflection-breakdown.md) — _training_
+- **2025-05-17** [Piezano Pizza Oven Review](training/2025-05-17_piezano-pizza-oven-review.md) — _training_
+- **2025-05-17** [Slurs and Dynamics Explained](training/2025-05-17_slurs-and-dynamics-explained.md) — _training_
+- **2025-05-17** [TouchUpDirect Paint Pen Advice](training/2025-05-17_touchupdirect-paint-pen-advice.md) — _training_
+- **2025-05-18** [BMW X5 AC Low Pressure](emotions/2025-05-18_bmw-x5-ac-low-pressure.md) — _emotions_
+- **2025-05-18** [Existential Crisis Solutions](emotions/2025-05-18_existential-crisis-solutions.md) — _emotions_
+- **2025-05-18** [Lockpicking and Car Wash](emotions/2025-05-18_lockpicking-and-car-wash.md) — _emotions_
+- **2025-05-18** [Adventures in Odyssey Overview](training/2025-05-18_adventures-in-odyssey-overview.md) — _training_
+- **2025-05-19** [Accountability and Consequences](training/2025-05-19_accountability-and-consequences.md) — _training_
+- **2025-05-20** [OGZ Prime Launch Plan](ogzprime/2025-05-20_ogz-prime-launch-plan.md) — _ogzprime_
+- **2025-05-22** [3rd Shot Test Mast](ogzprime/2025-05-22_3rd-shot-test-mast.md) — _ogzprime_
+- **2025-05-22** [OGZ Dashboard Setup](ogzprime/2025-05-22_ogz-dashboard-setup.md) — _ogzprime_
+- **2025-05-22** [Project Cleanup Guide](ogzprime/2025-05-22_project-cleanup-guide.md) — _ogzprime_
+- **2025-05-22** [Detail Kit Setup Tips](training/2025-05-22_detail-kit-setup-tips.md) — _training_
+- **2025-05-23** [B-hyve Timer Flashing Issue](emotions/2025-05-23_b-hyve-timer-flashing-issue.md) — _emotions_
+- **2025-05-23** [IO Toothbrush Price Difference](training/2025-05-23_io-toothbrush-price-difference.md) — _training_
+- **2025-05-24** [File Access Clarification](ogzprime/2025-05-24_file-access-clarification.md) — _ogzprime_
+- **2025-05-24** [Best DPS Class Chaosbane](training/2025-05-24_best-dps-class-chaosbane.md) — _training_
+- **2025-05-24** [Polishing Pad Compatibility Guide](training/2025-05-24_polishing-pad-compatibility-guide.md) — _training_
+- **2025-05-25** [Meal Prep Breakdown](training/2025-05-25_meal-prep-breakdown.md) — _training_
+- **2025-05-26** [Ray Gun Mk.II Shattered Veil](slotjammer/2025-05-26_ray-gun-mk-ii-shattered-veil.md) — _slotjammer_
+- **2025-05-26** [Granola vs Almonds](training/2025-05-26_granola-vs-almonds.md) — _training_
+- **2025-05-27** [Claude Integration Planning](ogzprime/2025-05-27_claude-integration-planning.md) — _ogzprime_
+- **2025-05-28** [Sync Codespace with Local](misc/2025-05-28_sync-codespace-with-local.md) — _misc_
+- **2025-05-28** [CYMA Custom Invoice Setup](ogzprime/2025-05-28_cyma-custom-invoice-setup.md) — _ogzprime_
+- **2025-05-28** [Caterpillar War Tactics](ogzprime/2025-05-28_caterpillar-war-tactics.md) — _ogzprime_
+- **2025-05-28** [Claude API Rate Limiting](ogzprime/2025-05-28_claude-api-rate-limiting.md) — _ogzprime_
+- **2025-05-28** [Scar Choices Breakdown](ogzprime/2025-05-28_scar-choices-breakdown.md) — _ogzprime_
+- **2025-05-28** [Update GitHub Repo](ogzprime/2025-05-28_update-github-repo.md) — _ogzprime_
+- **2025-05-28** [GitHub Remote Setup](training/2025-05-28_github-remote-setup.md) — _training_
+- **2025-05-29** [Raven ZZ Pigmentation Explained](misc/2025-05-29_raven-zz-pigmentation-explained.md) — _misc_
+- **2025-05-29** [How to get API key](ogzprime/2025-05-29_how-to-get-api-key.md) — _ogzprime_
+- **2025-05-29** [COD Stix Controller Setup](training/2025-05-29_cod-stix-controller-setup.md) — _training_
+- **2025-05-29** [Laptop with 5000 series GPU](training/2025-05-29_laptop-with-5000-series-gpu.md) — _training_
+- **2025-05-30** [Survival Gear & Prep](training/2025-05-30_survival-gear-prep.md) — _training_
+- **2025-05-31** [OGZPrime.com Analysis](ogzprime/2025-05-31_ogzprime-com-analysis.md) — _ogzprime_
+- **2025-05-31** [Website Funnel Setup](ogzprime/2025-05-31_website-funnel-setup.md) — _ogzprime_
+- **2025-06-01** [Air Purifier Deals Review](ogzprime/2025-06-01_air-purifier-deals-review.md) — _ogzprime_
+- **2025-06-01** [String filled and ready](ogzprime/2025-06-01_string-filled-and-ready.md) — _ogzprime_
+- **2025-06-01** [Micro Center Hours](training/2025-06-01_micro-center-hours.md) — _training_
+- **2025-06-04** [Bot Functionality & Candles](ogzprime/2025-06-04_bot-functionality-candles.md) — _ogzprime_
+- **2025-06-07** [Blinkist vs Superradiance Breakdown](ogzprime/2025-06-07_blinkist-vs-superradiance-breakdown.md) — _ogzprime_
+- **2025-06-07** [Pro DNS Worth It?](ogzprime/2025-06-07_pro-dns-worth-it-.md) — _ogzprime_
+- **2025-06-07** [Cinnamon Toast & Pebbles Creami](training/2025-06-07_cinnamon-toast-pebbles-creami.md) — _training_
+- **2025-06-09** [Google Doc Access Issue](misc/2025-06-09_google-doc-access-issue.md) — _misc_
+- **2025-06-09** [No Clarification Given](ogzprime/2025-06-09_no-clarification-given.md) — _ogzprime_
+- **2025-06-09** [Project Focus and Next Steps](ogzprime/2025-06-09_project-focus-and-next-steps.md) — _ogzprime_
+- **2025-06-09** [VOX Bot Build Help](ogzprime/2025-06-09_vox-bot-build-help.md) — _ogzprime_
+- **2025-06-09** [Medicaid Script for Bethany](training/2025-06-09_medicaid-script-for-bethany.md) — _training_
+- **2025-06-10** [Check Cashing Solutions](training/2025-06-10_check-cashing-solutions.md) — _training_
+- **2025-06-11** [Flipper Zero ESP32 Tools](ogzprime/2025-06-11_flipper-zero-esp32-tools.md) — _ogzprime_
+- **2025-06-11** [New chat](ogzprime/2025-06-11_new-chat.md) — _ogzprime_
+- **2025-06-11** [Gut Health for Leanness](training/2025-06-11_gut-health-for-leanness.md) — _training_
+- **2025-06-12** [Alpaca API Key Guide](ogzprime/2025-06-12_alpaca-api-key-guide.md) — _ogzprime_
+- **2025-06-13** [Monday Song Serenade](emotions/2025-06-13_monday-song-serenade.md) — _emotions_
+- **2025-06-13** [Final Update Confirmation](ogzprime/2025-06-13_final-update-confirmation.md) — _ogzprime_
+- **2025-06-14** [File Overview and Prioritization](ogzprime/2025-06-14_file-overview-and-prioritization.md) — _ogzprime_
+- **2025-06-15** [Kalanchoe Care Tips](emotions/2025-06-15_kalanchoe-care-tips.md) — _emotions_
+- **2025-06-16** [U.S. Open Prize Money](architecture/2025-06-16_u-s-open-prize-money.md) — _architecture_
+- **2025-06-16** [Valhalla Lock Sequence Breakdown](ogzprime/2025-06-16_valhalla-lock-sequence-breakdown.md) — _ogzprime_
+- **2025-06-16** [Training Plan for CNA DIP CIP](training/2025-06-16_training-plan-for-cna-dip-cip.md) — _training_
+- **2025-06-17** [OGZP Alpha Package Summary](ogzprime/2025-06-17_ogzp-alpha-package-summary.md) — _ogzprime_
+- **2025-06-18** [File Acting Weird Fix](ogzprime/2025-06-18_file-acting-weird-fix.md) — _ogzprime_
+- **2025-06-18** [OGZ Prime Bootstorm Explained](ogzprime/2025-06-18_ogz-prime-bootstorm-explained.md) — _ogzprime_
+- **2025-06-18** [Polygon WebSocket Integration](ogzprime/2025-06-18_polygon-websocket-integration.md) — _ogzprime_
+- **2025-06-19** [BaByliss Pro Trimmer Issues](training/2025-06-19_babyliss-pro-trimmer-issues.md) — _training_
+- **2025-06-20** [OGZPrime Licensing and Pricing](ogzprime/2025-06-20_ogzprime-licensing-and-pricing.md) — _ogzprime_
+- **2025-06-20** [Truck Detailing Guide](slotjammer/2025-06-20_truck-detailing-guide.md) — _slotjammer_
+- **2025-06-20** [Detailing Setup Tips](training/2025-06-20_detailing-setup-tips.md) — _training_
+- **2025-06-22** [Pool Day Vibes](ogzprime/2025-06-22_pool-day-vibes.md) — _ogzprime_
+- **2025-06-23** [Best Rode Lapel Mic](training/2025-06-23_best-rode-lapel-mic.md) — _training_
+- **2025-06-24** [Frustration with Stripe](architecture/2025-06-24_frustration-with-stripe.md) — _architecture_
+- **2025-06-24** [Game Graphics Comparison](ogzprime/2025-06-24_game-graphics-comparison.md) — _ogzprime_
+- **2025-06-24** [OGZPrime Overview and Features](ogzprime/2025-06-24_ogzprime-overview-and-features.md) — _ogzprime_
+- **2025-06-25** [Bad and Amazing News](misc/2025-06-25_bad-and-amazing-news.md) — _misc_
+- **2025-06-25** [Add TXT Record Verification](ogzprime/2025-06-25_add-txt-record-verification.md) — _ogzprime_
+- **2025-06-25** [Best Buy Phone Activation](ogzprime/2025-06-25_best-buy-phone-activation.md) — _ogzprime_
+- **2025-06-25** [Cybertron Build Link Help](ogzprime/2025-06-25_cybertron-build-link-help.md) — _ogzprime_
+- **2025-06-26** [RØDE Wireless GO 2 Review](architecture/2025-06-26_røde-wireless-go-2-review.md) — _architecture_
+- **2025-06-26** [Best Electric Nail Files](rants/2025-06-26_best-electric-nail-files.md) — _rants_
+- **2025-06-26** [CLX Osiris PCIe Gen 5](slotjammer/2025-06-26_clx-osiris-pcie-gen-5.md) — _slotjammer_
+- **2025-06-26** [Ketamine Treatment Deal Review](training/2025-06-26_ketamine-treatment-deal-review.md) — _training_
+- **2025-06-27** [Canon EOS R5 MK2 Review](emotions/2025-06-27_canon-eos-r5-mk2-review.md) — _emotions_
+- **2025-06-27** [Arc Blade Build Analysis](ogzprime/2025-06-27_arc-blade-build-analysis.md) — _ogzprime_
+- **2025-06-27** [LG XBOOM Go Waterproof?](ogzprime/2025-06-27_lg-xboom-go-waterproof-.md) — _ogzprime_
+- **2025-06-27** [Best YETI Alternatives](training/2025-06-27_best-yeti-alternatives.md) — _training_
+- **2025-06-28** [Advanced Trading Bot Features](ogzprime/2025-06-28_advanced-trading-bot-features.md) — _ogzprime_
+- **2025-06-28** [Margaritaville Resort Map](training/2025-06-28_margaritaville-resort-map.md) — _training_
+- **2025-06-29** [Dwarf Yaupon Holly ID](emotions/2025-06-29_dwarf-yaupon-holly-id.md) — _emotions_
+- **2025-06-29** [Ford Keypad Code Reset](ogzprime/2025-06-29_ford-keypad-code-reset.md) — _ogzprime_
+- **2025-06-29** [Phil's Roadhouse Menu](ogzprime/2025-06-29_phil-s-roadhouse-menu.md) — _ogzprime_
+- **2025-06-30** [Titanium 200A Welder Review](emotions/2025-06-30_titanium-200a-welder-review.md) — _emotions_
+- **2025-07-02** [Listening to vibes](misc/2025-07-02_listening-to-vibes.md) — _misc_
+- **2025-07-02** [Bot Transaction Fees Logic](ogzprime/2025-07-02_bot-transaction-fees-logic.md) — _ogzprime_
+- **2025-07-02** [Hitch Laptop Setup and Mods](ogzprime/2025-07-02_hitch-laptop-setup-and-mods.md) — _ogzprime_
+- **2025-07-02** [Listen to this!](ogzprime/2025-07-02_listen-to-this-.md) — _ogzprime_
+- **2025-07-03** [Webcam Clarity Flex](emotions/2025-07-03_webcam-clarity-flex.md) — _emotions_
+- **2025-07-03** [Medicaid Big Beautiful Bill](ogzprime/2025-07-03_medicaid-big-beautiful-bill.md) — _ogzprime_
+- **2025-07-03** [Is This Watch Legit](training/2025-07-03_is-this-watch-legit.md) — _training_
+- **2025-07-05** [Axolotl LEGO Dimensions](training/2025-07-05_axolotl-lego-dimensions.md) — _training_
+- **2025-07-06** [Cold Plunges and Test](training/2025-07-06_cold-plunges-and-test.md) — _training_
+- **2025-07-06** [Ryoko Pro Review Guide](training/2025-07-06_ryoko-pro-review-guide.md) — _training_
+- **2025-07-07** [Plant Spot Diagnosis Tips](training/2025-07-07_plant-spot-diagnosis-tips.md) — _training_
+- **2025-07-08** [Mirror iPhone to Truck](ogzprime/2025-07-08_mirror-iphone-to-truck.md) — _ogzprime_
+- **2025-07-08** [ChronoZen Inquiry](slotjammer/2025-07-08_chronozen-inquiry.md) — _slotjammer_
+- **2025-07-08** [Down-Firing Sub Enclosure Advice](slotjammer/2025-07-08_down-firing-sub-enclosure-advice.md) — _slotjammer_
+- **2025-07-09** [Donut Squad Creation LFG](ogzprime/2025-07-09_donut-squad-creation-lfg.md) — _ogzprime_
+- **2025-07-09** [Fortnite Domination Recap](ogzprime/2025-07-09_fortnite-domination-recap.md) — _ogzprime_
+- **2025-07-09** [LFG Big Win Strategy](slotjammer/2025-07-09_lfg-big-win-strategy.md) — _slotjammer_
+- **2025-07-10** [AI Clones for Productivity](ogzprime/2025-07-10_ai-clones-for-productivity.md) — _ogzprime_
+- **2025-07-10** [Dremel Cut-Off Wheel Kit](slotjammer/2025-07-10_dremel-cut-off-wheel-kit.md) — _slotjammer_
+- **2025-07-11** [Securing Vise to Table](ogzprime/2025-07-11_securing-vise-to-table.md) — _ogzprime_
+- **2025-07-11** [Webhook Integration Example](ogzprime/2025-07-11_webhook-integration-example.md) — _ogzprime_
+- **2025-07-11** [Dremel Tool Selection Guide](slotjammer/2025-07-11_dremel-tool-selection-guide.md) — _slotjammer_
+- **2025-07-12** [Memory Bank Initialization](architecture/2025-07-12_memory-bank-initialization.md) — _architecture_
+- **2025-07-12** [Tool Function Breakdown](ogzprime/2025-07-12_tool-function-breakdown.md) — _ogzprime_
+- **2025-07-12** [Canon T7 Deal Review](training/2025-07-12_canon-t7-deal-review.md) — _training_
+- **2025-07-13** [Finding Slots Chat](ogzprime/2025-07-13_finding-slots-chat.md) — _ogzprime_
+- **2025-07-13** [Vise Clamp Setup Tips](ogzprime/2025-07-13_vise-clamp-setup-tips.md) — _ogzprime_
+- **2025-07-13** [Elgato HD60 Deal Review](training/2025-07-13_elgato-hd60-deal-review.md) — _training_
+- **2025-07-15** [Kimi 2 Deployment Plan](ogzprime/2025-07-15_kimi-2-deployment-plan.md) — _ogzprime_
+- **2025-07-15** [Module Optimization Loaded](ogzprime/2025-07-15_module-optimization-loaded.md) — _ogzprime_
+- **2025-07-16** [Puppiesandkitties Grok Protocol](ogzprime/2025-07-16_puppiesandkitties-grok-protocol.md) — _ogzprime_
+- **2025-07-19** [Limbus Company Meta Teams](architecture/2025-07-19_limbus-company-meta-teams.md) — _architecture_
+- **2025-07-20** [Back Acne Solutions](emotions/2025-07-20_back-acne-solutions.md) — _emotions_
+- **2025-07-21** [ZZ Plant Care Guide](emotions/2025-07-21_zz-plant-care-guide.md) — _emotions_
+- **2025-07-23** [Lishis and Lockpicks Lament](emotions/2025-07-23_lishis-and-lockpicks-lament.md) — _emotions_
+- **2025-07-23** [Inline skates and bearings](misc/2025-07-23_inline-skates-and-bearings.md) — _misc_
+- **2025-07-23** [Miller Maxstar 210 Summary](misc/2025-07-23_miller-maxstar-210-summary.md) — _misc_
+- **2025-07-24** [State Farm Payment Info](misc/2025-07-24_state-farm-payment-info.md) — _misc_
+- **2025-07-24** [Back on Track LFG](ogzprime/2025-07-24_back-on-track-lfg.md) — _ogzprime_
+- **2025-07-24** [Drowning in Gutters Stats](training/2025-07-24_drowning-in-gutters-stats.md) — _training_
+- **2025-07-26** [Treasure Hunting and Inline Skates](emotions/2025-07-26_treasure-hunting-and-inline-skates.md) — _emotions_
+- **2025-07-26** [Car Audio Optimization Tips](ogzprime/2025-07-26_car-audio-optimization-tips.md) — _ogzprime_
+- **2025-07-27** [New chat](emotions/2025-07-27_new-chat.md) — _emotions_
+- **2025-07-28** [Cline Rules Overview](ogzprime/2025-07-28_cline-rules-overview.md) — _ogzprime_
+- **2025-07-29** [Protecting Your Heart](emotions/2025-07-29_protecting-your-heart.md) — _emotions_
+- **2025-07-29** [Dangerfield Lockpicking Breakdown](misc/2025-07-29_dangerfield-lockpicking-breakdown.md) — _misc_
+- **2025-07-29** [Change Mac Startup Apps](ogzprime/2025-07-29_change-mac-startup-apps.md) — _ogzprime_
+- **2025-07-29** [WebSocket Engineer Job Post](ogzprime/2025-07-29_websocket-engineer-job-post.md) — _ogzprime_
+- **2025-07-31** [Integration readiness discussion](ogzprime/2025-07-31_integration-readiness-discussion.md) — _ogzprime_
+- **2025-07-31** [Multi-broker handling setup](ogzprime/2025-07-31_multi-broker-handling-setup.md) — _ogzprime_
+- **2025-07-31** [Upwork Hire Debugging Help](ogzprime/2025-07-31_upwork-hire-debugging-help.md) — _ogzprime_
+- **2025-07-31** [Root Beer Float Spots](training/2025-07-31_root-beer-float-spots.md) — _training_
+- **2025-08-03** [Integration readiness update](ogzprime/2025-08-03_integration-readiness-update.md) — _ogzprime_
+- **2025-08-04** [Breakout trade analysis](ogzprime/2025-08-04_breakout-trade-analysis.md) — _ogzprime_
+- **2025-08-06** [Quantum DeFi bot summary](misc/2025-08-06_quantum-defi-bot-summary.md) — _misc_
+- **2025-08-06** [Slotjammer setup checklist](slotjammer/2025-08-06_slotjammer-setup-checklist.md) — _slotjammer_
+- **2025-08-07** [AI system comparison](misc/2025-08-07_ai-system-comparison.md) — _misc_
+- **2025-08-07** [Choice clarification needed](misc/2025-08-07_choice-clarification-needed.md) — _misc_

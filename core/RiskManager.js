@@ -456,10 +456,19 @@ class RiskManager {
       
       if (confidence < requiredConfidence) {
         this.log(`Recovery mode: Confidence ${confidence} below required ${requiredConfidence}`, 'debug');
-        return 0;
       }
       
       this.log(`Recovery mode active: Using ${riskPercent}% risk`, 'warning');
+    }
+    
+    // ====================================================================
+    // ENHANCED DRAWDOWN PROTECTION (DYNAMIC POSITION SIZING)
+    // ====================================================================
+    const drawdownMultiplier = this.calculateDrawdownProtection();
+    riskPercent *= drawdownMultiplier;
+    
+    if (drawdownMultiplier !== 1.0) {
+      this.log(`Drawdown protection: Risk adjusted by ${(drawdownMultiplier * 100).toFixed(0)}% (${riskPercent.toFixed(2)}%)`, 'info');
     }
     
     // ====================================================================
@@ -479,18 +488,6 @@ class RiskManager {
                                this.config.maxWinStreakMultiplier - 1);
       riskPercent *= (1 + increase);
       this.log(`Consecutive wins (${this.state.consecutiveWins}): Risk increased to ${riskPercent.toFixed(2)}%`, 'info');
-    }
-    
-    // ====================================================================
-    // VOLATILITY ADJUSTMENTS
-    // ====================================================================
-    if (this.config.volatilityScaling && marketConditions.volatility) {
-      const volatility = marketConditions.volatility;
-      
-      // Define volatility thresholds for crypto markets
-      const lowVolatility = 0.02;    // 2%
-      const highVolatility = 0.05;   // 5%
-      
       if (volatility > highVolatility) {
         // High volatility: reduce position size significantly
         riskPercent *= this.config.highVolatilityReduction;
@@ -904,6 +901,153 @@ class RiskManager {
     this.log(`Stop loss calculated: ${direction} at ${entryPrice} → stop at ${stopLoss.toFixed(2)} (${(stopLossPercent * 100).toFixed(2)}%)`, 'debug');
     
     return stopLoss;
+  }
+  
+  /**
+   * Assess Trade Risk - Pre-trade Risk Assessment
+   * 
+   * CRITICAL GATE: This method acts as the final gatekeeper before any trade
+   * is executed. It evaluates all risk factors and can block trades that
+   * would violate risk management rules.
+   * 
+   * @param {Object} tradeParams - Trade parameters
+   * @returns {Object} - Risk assessment result
+   */
+  assessTradeRisk(tradeParams) {
+    const {
+      direction,
+      entryPrice,
+      confidence,
+      marketData,
+      patterns = []
+    } = tradeParams;
+    
+    console.log('🛡️ RISK ASSESSMENT: Evaluating trade risk...');
+    
+    // Check if trading is completely disabled
+    if (this.state.currentDrawdown >= this.config.maxDrawdownPercent) {
+      return {
+        approved: false,
+        reason: `Max drawdown exceeded (${this.state.currentDrawdown.toFixed(2)}%)`,
+        riskLevel: 'CRITICAL',
+        blockType: 'DRAWDOWN_LIMIT'
+      };
+    }
+    
+    // Check daily/weekly/monthly limits
+    if (this.state.dailyStats.breachedLimit) {
+      return {
+        approved: false,
+        reason: 'Daily loss limit exceeded',
+        riskLevel: 'HIGH',
+        blockType: 'DAILY_LIMIT'
+      };
+    }
+    
+    if (this.state.weeklyStats.breachedLimit) {
+      return {
+        approved: false,
+        reason: 'Weekly loss limit exceeded',
+        riskLevel: 'HIGH',
+        blockType: 'WEEKLY_LIMIT'
+      };
+    }
+    
+    if (this.state.monthlyStats.breachedLimit) {
+      return {
+        approved: false,
+        reason: 'Monthly loss limit exceeded',
+        riskLevel: 'HIGH',
+        blockType: 'MONTHLY_LIMIT'
+      };
+    }
+    
+    // Recovery mode confidence check
+    if (this.state.recoveryMode) {
+      const requiredConfidence = 0.3 * this.config.recoveryConfidenceMultiplier;
+      if (confidence < requiredConfidence) {
+        return {
+          approved: false,
+          reason: `Recovery mode: Confidence ${(confidence * 100).toFixed(1)}% below required ${(requiredConfidence * 100).toFixed(1)}%`,
+          riskLevel: 'MEDIUM',
+          blockType: 'RECOVERY_CONFIDENCE'
+        };
+      }
+    }
+    
+    // Calculate risk level based on multiple factors
+    let riskScore = 0;
+    
+    // Confidence factor
+    if (confidence < 0.5) riskScore += 2;
+    else if (confidence < 0.7) riskScore += 1;
+    
+    // Consecutive losses factor
+    if (this.state.consecutiveLosses >= 3) riskScore += 2;
+    else if (this.state.consecutiveLosses >= 2) riskScore += 1;
+    
+    // Drawdown factor
+    if (this.state.currentDrawdown >= 10) riskScore += 2;
+    else if (this.state.currentDrawdown >= 5) riskScore += 1;
+    
+    // Determine risk level
+    let riskLevel = 'LOW';
+    if (riskScore >= 4) riskLevel = 'HIGH';
+    else if (riskScore >= 2) riskLevel = 'MEDIUM';
+    
+    console.log(`🛡️ RISK ASSESSMENT COMPLETE: ${riskLevel} risk (score: ${riskScore})`);
+    
+    return {
+      approved: true,
+      riskLevel,
+      riskScore,
+      confidence,
+      recoveryMode: this.state.recoveryMode,
+      consecutiveLosses: this.state.consecutiveLosses,
+      currentDrawdown: this.state.currentDrawdown,
+      recommendation: riskLevel === 'HIGH' ? 'REDUCE_SIZE' : riskLevel === 'MEDIUM' ? 'STANDARD_SIZE' : 'FULL_SIZE'
+    };
+  }
+  
+  /**
+   * Register Trade - Track Trade for Risk Management
+   * 
+   * TRADE TRACKING: Registers a new trade in the risk management system
+   * for ongoing monitoring and risk calculation updates.
+   * 
+   * @param {Object} tradeData - Trade data to register
+   */
+  registerTrade(tradeData) {
+    const {
+      id,
+      direction,
+      entryPrice,
+      positionSize,
+      confidence,
+      timestamp,
+      tradeValue
+    } = tradeData;
+    
+    console.log(`🛡️ REGISTERING TRADE: ${id} (${direction.toUpperCase()})`);
+    
+    // Update trade counters
+    this.state.totalTrades++;
+    this.state.dailyStats.trades++;
+    this.state.weeklyStats.trades++;
+    this.state.monthlyStats.trades++;
+    
+    // Store trade reference for monitoring
+    if (!this.activeTrades) {
+      this.activeTrades = new Map();
+    }
+    
+    this.activeTrades.set(id, {
+      ...tradeData,
+      registeredAt: Date.now(),
+      status: 'ACTIVE'
+    });
+    
+    this.log(`Trade registered: ${id} - ${direction} $${entryPrice} (${(positionSize * 100).toFixed(2)}%)`, 'info');
   }
   
   /**
@@ -1473,6 +1617,42 @@ class RiskManager {
       this.log(`Failed to import risk data: ${error.message}`, 'error');
       return false;
     }
+  }
+  
+  /**
+   * Calculate Enhanced Drawdown Protection Multiplier
+   * 
+   * CRITICAL RISK FUNCTION: Dynamically adjusts position sizes based on
+   * current account performance to prevent catastrophic losses.
+   * 
+   * @returns {number} - Position size multiplier (0.4 to 1.2)
+   */
+  calculateDrawdownProtection() {
+    const currentBalance = this.state.accountBalance;
+    const startingBalance = this.state.initialBalance;
+    
+    if (!startingBalance || startingBalance <= 0) {
+      return 1.0; // No adjustment if no baseline
+    }
+    
+    const drawdownPercent = ((currentBalance - startingBalance) / startingBalance) * 100;
+    let sizeMultiplier = 1.0;
+    
+    if (drawdownPercent < -10) {
+      sizeMultiplier = 0.4; // Severe reduction for major losses
+      this.log(`SEVERE DRAWDOWN: ${drawdownPercent.toFixed(1)}% - Position size reduced to 40%`, 'error');
+    } else if (drawdownPercent < -5) {
+      sizeMultiplier = 0.6; // Moderate reduction
+      this.log(`MODERATE DRAWDOWN: ${drawdownPercent.toFixed(1)}% - Position size reduced to 60%`, 'warning');
+    } else if (drawdownPercent < -2) {
+      sizeMultiplier = 0.8; // Light reduction
+      this.log(`LIGHT DRAWDOWN: ${drawdownPercent.toFixed(1)}% - Position size reduced to 80%`, 'info');
+    } else if (drawdownPercent > 10) {
+      sizeMultiplier = 1.2; // Increase when winning
+      this.log(`STRONG PERFORMANCE: +${drawdownPercent.toFixed(1)}% - Position size increased to 120%`, 'info');
+    }
+    
+    return sizeMultiplier;
   }
 }
 

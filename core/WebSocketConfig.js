@@ -19,9 +19,9 @@ module.exports = {
     
     // Force IPv4 in development to prevent IPv6 issues
     if (CONFIG.environment === 'development') {
-      return `${protocol}://127.0.0.1:${port}`;
+      return `${protocol}://127.0.0.1:${port}/ws`;
     }
     
-    return `${protocol}://${CONFIG.domain}:${port}`;
+    return `${protocol}://${CONFIG.domain}:${port}/ws`;
   }
 };

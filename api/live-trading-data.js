@@ -19,7 +19,8 @@ class LiveTradingDataAPI {
   constructor() {
     this.app = express();
     this.server = http.createServer(this.app);
-    this.wss = new WebSocket.Server({ server: this.server });
+    // Connect to unified WebSocket instead of creating competing server
+    this.unifiedWsUrl = 'ws://localhost:3010/ws';
     
     // Data storage
     this.latestBotStatus = {};
@@ -29,7 +30,7 @@ class LiveTradingDataAPI {
     this.connectedClients = new Set();
     
     this.setupRoutes();
-    this.setupWebSocket();
+    this.connectToUnifiedWebSocket(); // Connect to unified WebSocket
     this.startDataMonitoring();
   }
 
@@ -268,32 +269,42 @@ class LiveTradingDataAPI {
     return secret;
   }
 
-  setupWebSocket() {
-    this.wss.on('connection', (ws) => {
-      console.log('📡 New dashboard client connected');
-      this.connectedClients.add(ws);
-
-      // Send initial data
-      this.sendInitialData(ws);
-
-      ws.on('message', (message) => {
-        try {
-          const data = JSON.parse(message);
-          this.handleWebSocketMessage(ws, data);
-        } catch (error) {
-          console.error('❌ WebSocket message error:', error);
+  connectToUnifiedWebSocket() {
+    console.log('📡 Live Trading Data API connecting to unified WebSocket...');
+    
+    this.unifiedWs = new WebSocket(this.unifiedWsUrl);
+    
+    this.unifiedWs.on('open', () => {
+      console.log('📡 Live Trading Data API connected to unified WebSocket');
+      
+      // Identify as live trading data API
+      this.unifiedWs.send(JSON.stringify({
+        type: 'identify',
+        source: 'live_trading_data_api',
+        capabilities: ['data_broadcasting', 'trade_monitoring']
+      }));
+    });
+    
+    this.unifiedWs.on('message', (data) => {
+      try {
+        const message = JSON.parse(data);
+        
+        // Process relevant messages from unified WebSocket
+        if (this.shouldProcessMessage(message)) {
+          this.processUnifiedMessage(message);
         }
-      });
-
-      ws.on('close', () => {
-        console.log('📡 Dashboard client disconnected');
-        this.connectedClients.delete(ws);
-      });
-
-      ws.on('error', (error) => {
-        console.error('❌ WebSocket error:', error);
-        this.connectedClients.delete(ws);
-      });
+      } catch (err) {
+        console.error('📡 Error processing unified WebSocket message:', err);
+      }
+    });
+    
+    this.unifiedWs.on('close', () => {
+      console.log('📡 Live Trading Data API disconnected from unified WebSocket, reconnecting...');
+      setTimeout(() => this.connectToUnifiedWebSocket(), 5000);
+    });
+    
+    this.unifiedWs.on('error', (err) => {
+      console.error('📡 Live Trading Data API WebSocket error:', err);
     });
   }
 
@@ -561,20 +572,42 @@ class LiveTradingDataAPI {
   }
 
   broadcast(message) {
-    const messageStr = JSON.stringify(message);
-    
-    this.connectedClients.forEach(client => {
-      if (client.readyState === WebSocket.OPEN) {
-        try {
-          client.send(messageStr);
-        } catch (error) {
-          console.error('❌ Error sending to client:', error);
-          this.connectedClients.delete(client);
-        }
-      } else {
-        this.connectedClients.delete(client);
-      }
-    });
+    // Send to unified WebSocket instead of direct clients
+    if (this.unifiedWs && this.unifiedWs.readyState === WebSocket.OPEN) {
+      this.unifiedWs.send(JSON.stringify({
+        type: 'live_data_broadcast',
+        source: 'live_trading_data_api',
+        data: message
+      }));
+    }
+  }
+  
+  // Helper methods for unified WebSocket integration
+  shouldProcessMessage(message) {
+    const relevantTypes = [
+      'trade_executed',
+      'bot_status_update',
+      'pattern_detected',
+      'analysis_update'
+    ];
+    return relevantTypes.includes(message.type);
+  }
+  
+  processUnifiedMessage(message) {
+    switch (message.type) {
+      case 'trade_executed':
+        this.handleTradeUpdate(message.data);
+        break;
+      case 'bot_status_update':
+        this.updateBotStatus(message.data);
+        break;
+      case 'pattern_detected':
+        this.handlePatternUpdate(message.data);
+        break;
+      case 'analysis_update':
+        this.updateAnalysis(message.data);
+        break;
+    }
   }
 
   start(port = 8005) {
