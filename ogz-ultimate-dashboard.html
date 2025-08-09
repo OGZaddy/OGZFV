@@ -848,20 +848,28 @@
                                window.location.hostname === '127.0.0.1' || 
                                window.location.hostname === '';
                 
-                // VPS Configuration - Update these for your VPS
-                const VPS_DOMAIN = 'your-vps-domain.com'; // Replace with your VPS domain/IP
-                const VPS_PORT = '8080';
-                const USE_SSL = false; // Set to true if using HTTPS/WSS
+                // VPS Configuration - Updated for 149.28.242.111
+                const VPS_IP = '149.28.242.111';
+                const USE_SSL = false; // Set to true when SSL is configured
+                
+                // Auto-detect WebSocket URL based on current location
+                const getWebSocketURL = () => {
+                    if (isLocal) return 'ws://localhost:3010';
+                    // Use current hostname with /ws path (NGINX proxy)
+                    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                    return `${protocol}//${window.location.hostname}/ws`;
+                };
+                
+                const getAPIURL = () => {
+                    if (isLocal) return 'http://localhost:3010/api';
+                    // Use current hostname with /api path (NGINX proxy)
+                    return `${window.location.protocol}//${window.location.hostname}/api`;
+                };
                 
                 this.config = {
-                    // Auto-detect environment and set endpoints accordingly
-                    wsEndpoint: isLocal 
-                        ? 'ws://localhost:3010'  // Local development
-                        : `${USE_SSL ? 'wss' : 'ws'}://${VPS_DOMAIN}:${VPS_PORT}`, // VPS production
-                    
-                    apiEndpoint: isLocal 
-                        ? 'http://localhost:3010/api'  // Local development
-                        : `${USE_SSL ? 'https' : 'http'}://${VPS_DOMAIN}:${VPS_PORT}/api`, // VPS production
+                    // Dynamic endpoints that work with NGINX reverse proxy
+                    wsEndpoint: getWebSocketURL(),
+                    apiEndpoint: getAPIURL(),
                     
                     updateInterval: 10000,
                     chartMaxPoints: 100,

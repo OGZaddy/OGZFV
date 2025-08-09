@@ -58,18 +58,29 @@ class TheMoverAIClone extends EventEmitter {
 
   async initializeFinalForm() {
     try {
-      console.log('[TheMover] Loading comprehensive training dataset...');
+      // First, try to load from persistent memory
+      const loadedFromMemory = await this.loadPersonalityState();
       
-      // Load all training categories
-      await this.loadTrainingCategory('emotions');
-      await this.loadTrainingCategory('training');
-      await this.loadTrainingCategory('architecture');
-      await this.loadTrainingCategory('rants');
-      
-      // Process and integrate patterns
-      await this.processPersonalityPatterns();
-      await this.buildResponseMatrix();
-      await this.calibratePersonality();
+      if (loadedFromMemory) {
+        console.log('[TheMover] Loaded from persistent memory - no retraining needed!');
+        console.log(`[TheMover] Restored ${this.learningStats.totalPatterns} personality patterns`);
+      } else {
+        console.log('[TheMover] No saved state found - loading comprehensive training dataset...');
+        
+        // Load all training categories
+        await this.loadTrainingCategory('emotions');
+        await this.loadTrainingCategory('training');
+        await this.loadTrainingCategory('architecture');
+        await this.loadTrainingCategory('rants');
+        
+        // Process and integrate patterns
+        await this.processPersonalityPatterns();
+        await this.buildResponseMatrix();
+        await this.calibratePersonality();
+        
+        // Save the new state
+        await this.savePersonalityState();
+      }
       
       this.learningStats.lastTraining = new Date().toISOString();
       
@@ -87,7 +98,7 @@ class TheMoverAIClone extends EventEmitter {
 
   async loadTrainingCategory(category) {
     try {
-      const categoryPath = path.join(process.cwd(), category);
+      const categoryPath = path.join(__dirname, category);
       const files = await fs.readdir(categoryPath);
       
       let categoryPatterns = 0;

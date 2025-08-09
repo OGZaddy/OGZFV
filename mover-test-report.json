@@ -1,0 +1,142 @@
+{
+  "summary": {
+    "totalTests": 12,
+    "passed": 12,
+    "failed": 0,
+    "successRate": 100,
+    "duration": 59,
+    "timestamp": "2025-08-08T19:58:00.913Z"
+  },
+  "results": [
+    {
+      "test": "Basic Mover AI Response",
+      "status": "PASS",
+      "message": "The Mover AI process is running",
+      "data": {
+        "pid": "3973825",
+        "memory": "52292"
+      },
+      "timestamp": "2025-08-08T19:58:00.875Z"
+    },
+    {
+      "test": "Reasoning Under Uncertainty",
+      "status": "PASS",
+      "message": "Mover shows appropriate reasoning under uncertainty",
+      "data": {
+        "prompt": "If BTC is trending up but RSI is overbought, what should we do?",
+        "response": "Given the conflicting signals, I recommend caution. While the trend is up, the overbought RSI suggests a potential pullback. Consider taking partial profits or waiting for a better entry."
+      },
+      "timestamp": "2025-08-08T19:58:00.875Z"
+    },
+    {
+      "test": "Pattern Recognition",
+      "status": "PASS",
+      "message": "Pattern recognition module (DynamicEntryAnalysis) is integrated",
+      "data": {
+        "prompt": "Analyze this pattern: MACD crossover up, volume spike, breaking resistance.",
+        "module": "DynamicEntryAnalysis.js"
+      },
+      "timestamp": "2025-08-08T19:58:00.876Z"
+    },
+    {
+      "test": "Risk Management",
+      "status": "PASS",
+      "message": "Risk management module is integrated",
+      "data": {
+        "module": "RiskManager.js"
+      },
+      "timestamp": "2025-08-08T19:58:00.876Z"
+    },
+    {
+      "test": "Multi-Step Reasoning",
+      "status": "PASS",
+      "message": "Multi-step reasoning module (OptimizedTradingBrain) is integrated",
+      "data": {
+        "module": "OptimizedTradingBrain.js"
+      },
+      "timestamp": "2025-08-08T19:58:00.876Z"
+    },
+    {
+      "test": "Trading Bot Integration",
+      "status": "PASS",
+      "message": "Main trading bot is running and integrated",
+      "data": {
+        "pid": "3992176",
+        "memory": "60764"
+      },
+      "timestamp": "2025-08-08T19:58:00.893Z"
+    },
+    {
+      "test": "V13.5 Enhancement Layer",
+      "status": "PASS",
+      "message": "V13.5 RealQuantumEnhancement layer is integrated",
+      "data": {
+        "module": "RealQuantumEnhancement.js"
+      },
+      "timestamp": "2025-08-08T19:58:00.894Z"
+    },
+    {
+      "test": "V14 Quantum DeFi Neural Mesh",
+      "status": "PASS",
+      "message": "V14 Quantum DeFi Neural Mesh system is integrated",
+      "data": {
+        "modules": [
+          "OGZPrimeV14_QuantumDeFi.js",
+          "NeuralMeshArchitecture.js"
+        ]
+      },
+      "timestamp": "2025-08-08T19:58:00.894Z"
+    },
+    {
+      "test": "Performance Validator",
+      "status": "PASS",
+      "message": "PerformanceValidator module is integrated",
+      "data": {
+        "module": "PerformanceValidator.js"
+      },
+      "timestamp": "2025-08-08T19:58:00.894Z"
+    },
+    {
+      "test": "WebSocket Communication",
+      "status": "PASS",
+      "message": "Advanced WebSocket system is integrated",
+      "data": {
+        "modules": [
+          "AdvancedWebSocketBroadcastSystem.js",
+          "WebSocketConfig.js"
+        ]
+      },
+      "timestamp": "2025-08-08T19:58:00.895Z"
+    },
+    {
+      "test": "Dashboard Integration",
+      "status": "PASS",
+      "message": "Dashboard is integrated and configured for public access",
+      "data": {
+        "file": "ogz-ultimate-dashboard.html",
+        "publicAccess": true
+      },
+      "timestamp": "2025-08-08T19:58:00.896Z"
+    },
+    {
+      "test": "SSL Server Integration",
+      "status": "PASS",
+      "message": "SSL server is integrated and running",
+      "data": {
+        "file": "ogzprime_ssl_server_advanced.js",
+        "pid": "2744966"
+      },
+      "timestamp": "2025-08-08T19:58:00.912Z"
+    }
+  ],
+  "integrationStatus": {
+    "moverAI": true,
+    "tradingBot": true,
+    "v135Enhancement": true,
+    "v14QuantumDeFi": true,
+    "performanceValidator": true,
+    "webSocketSystem": true,
+    "dashboard": true,
+    "sslServer": true
+  }
+}

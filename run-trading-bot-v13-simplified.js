@@ -58,9 +58,14 @@ const MaxProfitManager = require('./core/MaxProfitManager');
 const TradingSafetyNet = require('./core/TradingSafetyNet');
 const PerformanceAnalyzer = require('./core/PerformanceAnalyzer');
 const QuantumPositionSizer = require('./core/QuantumPositionSizer');
-const MultiDirectionalTrader = require('./core/MultiDirectionalTrader');
-const PerformanceVisualizer = require('./core/PerformanceVisualizer');
 const PerformanceValidator = require('./core/PerformanceValidator');
+const PerformanceVisualizer = require('./core/PerformanceVisualizer');
+const AdvancedWebSocketBroadcastSystem = require('./core/AdvancedWebSocketBroadcastSystem');
+
+// 🚀 V13.5 AND V14 QUANTUM ENHANCEMENTS
+const RealQuantumEnhancement = require('./core/RealQuantumEnhancement');
+const OGZPrimeV14_QuantumDeFi = require('./core/OGZPrimeV14_QuantumDeFi');
+const MultiDirectionalTrader = require('./core/MultiDirectionalTrader');
 
 // 🛡️ USING IMPORTED RobustMessageHandler - NO DUPLICATE CLASS
 
