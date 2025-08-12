@@ -347,7 +347,8 @@ class OptimizedIndicators {
    * 🔧 CRITICAL FIX: Robust trend detection with multiple confirmation methods
    */
   determineTrend(candles, shortPeriod = 20, longPeriod = 50) {
-    if (!candles || candles.length < longPeriod) {
+    // Adjusted to work with fewer candles (3 minute warmup)
+    if (!candles || candles.length < Math.min(18, longPeriod)) {
       return 'sideways';
     }
 
@@ -508,7 +509,8 @@ class OptimizedIndicators {
    * Check if all indicators are working
    */
   validateIndicators(candles) {
-    if (!candles || candles.length < 50) {
+    // Changed from 50 to 18 candles (3 minutes at 10 second intervals)
+    if (!candles || candles.length < 18) {
       return { valid: false, reason: 'Not enough candles' };
     }
 

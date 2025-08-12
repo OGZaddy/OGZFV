@@ -1489,23 +1489,7 @@
                 })}`;
             }
             
-            this.polygonSocket.onmessage = (event) => {
-        try {
-            const messages = JSON.parse(event.data);
-            const msgArray = Array.isArray(messages) ? messages : [messages];
-
-            for (const msg of msgArray) {
-                this.handlePolygonMessage(msg);
-                // Start pattern analysis loop
-                setInterval(() => {
-                    this.analyzePatterns();
-                }, 15000); // Analyze every 15 seconds
-                
-                // Initial pattern update
-                setTimeout(() => {
-                    this.updateAllPatternCards();
-                }, 2000);
-            }
+            // All orphaned code removed - it was outside any function
             
             analyzePatterns() {
                 // Simulate real pattern detection with more realistic behavior

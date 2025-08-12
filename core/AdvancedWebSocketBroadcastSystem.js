@@ -159,6 +159,33 @@ class AdvancedWebSocketBroadcastSystem extends EventEmitter {
   }
   
   /**
+   * 🔄 Update client metadata
+   */
+  updateClientMetadata(clientId, updates = {}) {
+    const client = this.clients.get(clientId);
+    if (!client) {
+      this.log('warn', `Cannot update metadata for unknown client: ${clientId}`);
+      return false;
+    }
+    
+    // Update metadata
+    Object.assign(client.metadata, updates);
+    client.metadata.lastActivity = Date.now();
+    
+    // Update priority if changed
+    if (updates.priority) {
+      this.log('info', `📝 Updated client ${clientId} priority to: ${updates.priority}`);
+    }
+    
+    // Update type if changed
+    if (updates.type) {
+      this.log('info', `📝 Updated client ${clientId} type to: ${updates.type}`);
+    }
+    
+    return true;
+  }
+  
+  /**
    * 🎯 Send message with priority routing and delivery guarantee
    */
   broadcast(message, options = {}) {
