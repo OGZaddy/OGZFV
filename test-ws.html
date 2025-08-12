@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+    <style>
+        body { 
+            background: #000; 
+            color: #0f0; 
+            font-family: monospace; 
+            padding: 20px;
+        }
+        #log {
+            background: #111;
+            padding: 10px;
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #0f0;
+        }
+        .error { color: #f00; }
+        .success { color: #0f0; }
+        .data { color: #0ff; }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Connection Test</h1>
+    <div id="status">Connecting...</div>
+    <div id="log"></div>
+    
+    <script>
+        const log = document.getElementById('log');
+        const status = document.getElementById('status');
+        
+        function addLog(msg, type = '') {
+            const entry = document.createElement('div');
+            entry.className = type;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        // Test WebSocket connection
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const host = window.location.hostname || 'localhost';
+        const wsUrl = `${protocol}//${host}:3010/ws`;
+        
+        addLog(`Attempting connection to: ${wsUrl}`);
+        
+        const ws = new WebSocket(wsUrl);
+        
+        ws.onopen = () => {
+            status.textContent = '✅ CONNECTED!';
+            status.className = 'success';
+            addLog('WebSocket connected successfully!', 'success');
+            
+            // Send identification
+            ws.send(JSON.stringify({
+                type: 'identify',
+                source: 'test-dashboard'
+            }));
+        };
+        
+        ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                addLog(`Message received: ${data.type}`, 'data');
+                
+                if (data.type === 'price' && data.data) {
+                    addLog(`📊 ${data.data.asset}: $${data.data.price}`, 'data');
+                }
+            } catch (e) {
+                addLog(`Raw message: ${event.data}`, 'data');
+            }
+        };
+        
+        ws.onerror = (error) => {
+            status.textContent = '❌ ERROR';
+            status.className = 'error';
+            addLog(`WebSocket error: ${error}`, 'error');
+        };
+        
+        ws.onclose = () => {
+            status.textContent = '❌ DISCONNECTED';
+            status.className = 'error';
+            addLog('WebSocket disconnected', 'error');
+        };
+    </script>
+</body>
+</html>

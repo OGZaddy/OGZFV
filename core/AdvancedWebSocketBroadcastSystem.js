@@ -78,7 +78,15 @@ class AdvancedWebSocketBroadcastSystem extends EventEmitter {
       failures: 0,
       lastFailureTime: null,
       state: 'CLOSED', // CLOSED, OPEN, HALF_OPEN
-      nextRetryTime: null
+      nextRetryTime: null,
+      open: false // Added for getStatistics compatibility
+    };
+    
+    // Health Check State (was missing)
+    this.healthChecks = {
+      passed: 0,
+      failed: 0,
+      lastCheck: null
     };
     
     // Initialize subsystems
@@ -709,6 +717,42 @@ class AdvancedWebSocketBroadcastSystem extends EventEmitter {
     // TODO: Track and clear all intervals
     
     this.log('info', '✅ Advanced WebSocket System shutdown complete');
+  }
+  /**
+   * Get comprehensive broadcast statistics
+   * @returns {Object} System statistics including connections, performance, and health
+   */
+  getStatistics() {
+    const clientsByType = {};
+    this.clients.forEach((client, id) => {
+      const metadata = this.clientMetadata.get(id) || {};
+      const type = metadata.type || 'unknown';
+      clientsByType[type] = (clientsByType[type] || 0) + 1;
+    });
+    
+    return {
+      connections: {
+        total: this.clients.size,
+        active: this.metrics.activeConnections,
+        peak: this.metrics.peakConnections,
+        byType: clientsByType
+      },
+      performance: {
+        messagesDelivered: this.metrics.messagesDelivered,
+        messagesFailed: this.metrics.messagesFailed,
+        averageLatency: this.metrics.averageLatency,
+        messagesPerSecond: this.metrics.messagesDelivered / (Date.now() / 1000),
+        queuedMessages: this.metrics.queuedMessages,
+        totalBandwidth: this.metrics.totalBandwidth
+      },
+      health: {
+        circuitBreakerOpen: this.circuitBreaker.open,
+        circuitBreakerFailures: this.circuitBreaker.failures,
+        healthChecksPassed: this.healthChecks.passed || 0,
+        healthChecksFailed: this.healthChecks.failed || 0,
+        lastHealthCheck: this.healthChecks.lastCheck || null
+      }
+    };
   }
 }
 

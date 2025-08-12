@@ -191,7 +191,7 @@ class StrategyOptimizationEngine {
     const stdDev = Math.sqrt(
       returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length
     ) || 0.001;
-    const sharpe = stdDev > 0 ? (avgReturn / stdDev) * Math.sqrt(252) : 0;
+    const sharpe = stdDev > 0 ? (avgReturn / stdDev) * Math.sqrt(365) : 0; // Crypto trades 365 days
     
     return {
       totalPnL,

@@ -53,7 +53,7 @@ const PerformanceDashboardIntegration = require('./core/PerformanceDashboardInte
 
 // 🔥 HIGH-VALUE MODULE IMPORTS - PHASE 1 INTEGRATION
 const RiskManager = require('./core/RiskManager');
-const OptimizedTradingBrain = require('./core/OptimizedTradingBrain');
+const { OptimizedTradingBrain } = require('./core/OptimizedTradingBrain');
 const MaxProfitManager = require('./core/MaxProfitManager');
 const TradingSafetyNet = require('./core/TradingSafetyNet');
 const PerformanceAnalyzer = require('./core/PerformanceAnalyzer');
@@ -220,6 +220,9 @@ class OGZPrimeV13Simplified {
       baseRiskPercent: 2.0,         // 2% base risk per trade
       verboseLogging: true          // Detailed logging
     });
+    
+    // Initialize starting balance
+    this.balance = parseFloat(process.env.STARTING_BALANCE) || 10000;
     
     // 🧠 INITIALIZE OPTIMIZED TRADING BRAIN - ENHANCED EXECUTION ENGINE
     this.tradingBrain = new OptimizedTradingBrain(this.balance, {
@@ -400,12 +403,47 @@ class OGZPrimeV13Simplified {
     });
     
     this.ws.on('message', (data) => {
-      this.messageHandler.processMessage(data);
+      try {
+        const msg = JSON.parse(data.toString());
+        console.log(`📨 Received WS message type: ${msg.type}`); // Debug log
+        
+        // Process incoming WebSocket messages
+        if (msg.type === 'price' && msg.data) {
+          // Handle price updates from WebSocket
+          const { asset, price, timestamp } = msg.data;
+          console.log(`📊 WS Price Update: ${asset} $${price}`);
+          
+          // Update market data
+          this.cachedMarketData = {
+            price: price,
+            asset: asset,
+            timestamp: timestamp || Date.now(),
+            volume: msg.data.volume || 0
+          };
+          this.lastDataReceived = Date.now();
+          
+        } else if (msg.type === 'trade_signal') {
+          // Handle trade signals
+          console.log(`🎯 WS Trade Signal: ${msg.action} at $${msg.price}`);
+        }
+        
+        // Broadcast to other components if needed
+        if (this.wsConnected) {
+          this.broadcastToClients(msg);
+        }
+      } catch (err) {
+        console.error('Error processing WebSocket message:', err.message);
+      }
     });
     
     this.ws.on('close', () => {
+      console.log('❌ WebSocket disconnected');
       this.wsConnected = false;
       setTimeout(() => this.connectWebSocket(), 5000);
+    });
+    
+    this.ws.on('error', (err) => {
+      console.error('❌ WebSocket error:', err.message);
     });
   }
 

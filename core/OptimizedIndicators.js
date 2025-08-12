@@ -436,7 +436,7 @@ class OptimizedIndicators {
     const avgReturn = returns.reduce((sum, r) => sum + r, 0) / returns.length;
     const squaredDiffs = returns.map(r => Math.pow(r - avgReturn, 2));
     const variance = squaredDiffs.reduce((sum, diff) => sum + diff, 0) / returns.length;
-    const volatility = Math.sqrt(variance) * Math.sqrt(252) * 100; // Annualized volatility
+    const volatility = Math.sqrt(variance) * Math.sqrt(365) * 100; // Annualized volatility (crypto 24/7)
 
     return volatility;
   }
