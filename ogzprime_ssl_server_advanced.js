@@ -81,11 +81,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Dashboard routes
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'ogz-ultimate-dashboard.html'));
+  res.sendFile(path.join(__dirname, 'OGZFV-valhalla', 'ogz-ultimate-dashboard.html'));
 });
 
 app.get('/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'ogz-ultimate-dashboard.html'));
+  res.sendFile(path.join(__dirname, 'OGZFV-valhalla', 'ogz-ultimate-dashboard.html'));
 });
 
 // Enhanced status endpoint with broadcaster stats
@@ -393,7 +393,13 @@ polygonSocket.on('message', (data) => {
       if (msg.status === 'auth_success') {
         console.log('✅ Polygon authenticated - subscribing to multiple assets');
         
-        const assets = ['XA.BTC-USD', 'XA.ETH-USD', 'XA.SOL-USD', 'XA.ADA-USD'];
+        const assets = [
+          'XA.BTC-USD', 'XA.ETH-USD', 'XA.SOL-USD', 'XA.ADA-USD',
+          'XA.DOGE-USD', 'XA.XRP-USD', 'XA.LTC-USD', 'XA.MATIC-USD',
+          'XA.AVAX-USD', 'XA.LINK-USD', 'XA.DOT-USD', 'XA.ATOM-USD',
+          'XA.UNI-USD', 'XA.AAVE-USD', 'XA.ALGO-USD', 'XA.NEAR-USD',
+          'XA.FTM-USD', 'XA.SAND-USD', 'XA.MANA-USD', 'XA.AXS-USD'
+        ];
         assets.forEach(asset => {
           polygonSocket.send(JSON.stringify({
             action: 'subscribe',
