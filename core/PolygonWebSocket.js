@@ -9,30 +9,11 @@ const WebSocket = require('ws');
 const EventEmitter = require('events');
 
 class PolygonWebSocket extends EventEmitter {
-  constructor(config = {}) {
+  constructor(onTick) {
     super();
     
-    // Handle both old callback style and new config style
-    if (typeof config === 'function') {
-      this.onTick = config;
-      this.config = {
-        apiKey: process.env.POLYGON_API_KEY,
-        symbols: ['BTC-USD'],
-        enableLevelII: false,
-        enableTrades: true
-      };
-    } else {
-      this.onTick = config.onTick || null;
-      this.config = {
-        apiKey: config.apiKey || process.env.POLYGON_API_KEY,
-        symbols: config.symbols || ['BTC-USD'],
-        enableLevelII: config.enableLevelII || false,
-        enableTrades: config.enableTrades !== false,
-        ...config
-      };
-    }
-    
-    this.apiKey = this.config.apiKey;
+    this.onTick = onTick;
+    this.apiKey = process.env.POLYGON_API_KEY;
     this.socket = null;
     this.isAuthenticated = false;
     this.isIntentionalDisconnect = false;

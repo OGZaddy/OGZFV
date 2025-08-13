@@ -223,7 +223,7 @@ class TransparencyAPI {
     this.app.get('/api/websocket-status', (req, res) => {
       res.json({
         success: true,
-        websocketPort: 3009, // Dedicated transparency WebSocket port
+        websocketPort: 3010, // Unified WebSocket port
         endpoints: [
           'real-time-analysis',
           'decision-updates',

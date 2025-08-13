@@ -58,14 +58,14 @@ const WebSocketManager = require('./core/WebsocketManager.js');
  * 
  * @example
  * // Basic Usage - Free Tier
- * const server = new HistoricalDataServer(3021);  // UPDATED: Non-conflicting port
+ * const server = new HistoricalDataServer(3001);
  * server.loadDataFromFile('./data/btc-1d-1y.json');
  * server.startServer();
  * server.startDataFeed(1); // Real-time speed
  * 
  * @example
  * // Advanced Usage - Enterprise Tier
- * const server = new HistoricalDataServer(3021);  // UPDATED: Non-conflicting port
+ * const server = new HistoricalDataServer(3001);
  * server.loadDataFromFile('./data/btc-1m-5y.json');
  * 
  * // Setup performance monitoring
@@ -82,7 +82,7 @@ class HistoricalDataServer {
    * @constructor
    * @description Creates a new Historical Data Server instance with enterprise configuration
    * 
-   * @param {number} port - WebSocket port for client connections (typically 3021-3030 for dev services)
+   * @param {number} port - WebSocket port for client connections (typically 3001-3010)
    * 
    * TECHNICAL IMPLEMENTATION:
    * - Initializes WebSocket server using singleton WebSocketManager pattern
@@ -95,7 +95,7 @@ class HistoricalDataServer {
    * - Memory allocation is optimized for large dataset processing
    * - Event system allows for real-time monitoring and control
    */
-  constructor(port = 3021) {             // FIXED: Default to non-conflicting port
+  constructor(port) {
     this.port = port;                    // WebSocket server port
     this.data = [];                      // Historical candle data array (main memory store)
     this.currentIndex = 0;               // Current position in data stream

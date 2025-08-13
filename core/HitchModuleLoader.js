@@ -87,6 +87,9 @@ class HitchModuleLoader {
     
     this.modules = {};
     
+    // MERGED: fix-modules.js functionality - Auto-fix ES6 modules
+    this.fixedModules = this.autoFixES6Modules();
+    
     if (!this.hitch) {
       console.log('❌ HitchNLP not found in OGZPrime! Cannot load modules.');
       console.log('ℹ️ HitchModuleLoader will operate in simulation mode');
@@ -95,6 +98,66 @@ class HitchModuleLoader {
     
     console.log('🔌 Loading Hitch NLP modules...');
     this.loadAllModules();
+  }
+  
+  // MERGED: Auto-fix ES6 modules for browser compatibility
+  autoFixES6Modules() {
+    const fs = require('fs');
+    const path = require('path');
+    
+    const modulesToFix = [
+      'public/modules/fibOverlay.js',
+      'public/modules/goalTracker.js', 
+      'public/modules/leaderboardUploader.js',
+      'public/modules/supportResistance.js',
+      'public/modules/trendLines.js',
+      'public/modules/sparkleEffects.js',
+      'public/modules/stochasticOverlay.js'
+    ];
+
+    console.log('🔧 Auto-fixing ES6 modules for browser compatibility...');
+    const fixedFiles = [];
+
+    modulesToFix.forEach(modulePath => {
+      try {
+        if (fs.existsSync(modulePath)) {
+          let content = fs.readFileSync(modulePath, 'utf8');
+          
+          // Replace ES6 exports with window assignments
+          let modified = false;
+          const originalContent = content;
+          
+          content = content.replace(/export\s+function\s+(\w+)/g, (match, funcName) => {
+            modified = true;
+            return `window.${funcName} = function`;
+          });
+          
+          content = content.replace(/export\s+const\s+(\w+)/g, (match, constName) => {
+            modified = true;
+            return `window.${constName}`;
+          });
+          
+          content = content.replace(/export\s+{[^}]+}/g, () => {
+            modified = true;
+            return '';
+          });
+          
+          if (modified) {
+            fs.writeFileSync(modulePath, content, 'utf8');
+            fixedFiles.push(modulePath);
+            console.log(`✅ Auto-fixed ES6 exports: ${modulePath}`);
+          }
+        }
+      } catch (err) {
+        console.log(`❌ Error auto-fixing ${modulePath}:`, err.message);
+      }
+    });
+
+    if (fixedFiles.length > 0) {
+      console.log(`🚀 Auto-fixed ${fixedFiles.length} ES6 modules for browser compatibility`);
+    }
+    
+    return fixedFiles;
   }
   
   async loadAllModules() {

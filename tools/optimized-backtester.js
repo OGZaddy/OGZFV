@@ -183,13 +183,13 @@ if (PatternMonitor && !PatternMonitor.detectPattern) {
 }
 
 // Create data server
-const dataServer = new HistoricalDataServer(3022);  // FIXED: Changed from 3001 to avoid conflict
+const dataServer = new HistoricalDataServer(3001);
 
 // Configuration
 const config = {
   // Data settings
   dataFile: path.join(dataPath, "polygon-btc-1y.json"),
-  websocketPort: 3022,              // FIXED: Updated to match new data server port
+  websocketPort: 3001,
   speedMultiplier: 10,
   
   // Trading settings

@@ -239,6 +239,9 @@ document.addEventListener("DOMContentLoaded", () => {
       // Add the OGZ Prime classes
       body.classList.add('ogzp-valhalla');
       
+      // Clear bootstorm flag to allow complete-integration.js to run
+      window.OGZ_BOOTSTORM_ACTIVE = false;
+      
       // Trigger the main OGZ Prime initialization
       console.log("🚀 Bootstorm complete - Launching OGZ Prime Valhalla!");
       

@@ -394,7 +394,7 @@ class PerformanceVisualizer {
         const stdDev = Math.sqrt(variance);
         
         // Calculate annualized Sharpe ratio (assuming risk-free rate of 0)
-        this.metrics.sharpeRatio = stdDev > 0 ? (avgReturn / stdDev) * Math.sqrt(252) : 0;
+        this.metrics.sharpeRatio = stdDev > 0 ? (avgReturn / stdDev) * Math.sqrt(365) : 0; // Crypto 24/7/365
       }
     }
   }
