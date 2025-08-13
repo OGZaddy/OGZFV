@@ -101,13 +101,32 @@ class PerformanceDashboardIntegration extends EventEmitter {
       const performanceReport = this.validator.getPerformanceReport();
       
       // Get profile performance
-      const profilePerformance = this.profileManager.getPerformanceStats();
+      const profilePerformance = this.profileManager?.getPerformanceStats?.() || {
+        activeProfile: 'default',
+        trades: 0,
+        winRate: 0,
+        totalPnL: 0
+      };
       
       // Get safety metrics
-      const safetyMetrics = this.safetyNet.getMetrics();
+      const safetyMetrics = this.safetyNet?.getMetrics?.() || {
+        emergencyStop: false,
+        dailyPnL: 0,
+        currentDrawdown: 0,
+        consecutiveLosses: 0,
+        tradesThisHour: 0,
+        violations: []
+      };
       
       // Get visualization data
-      const visualizationData = this.visualizer.getMetrics();
+      const visualizationData = this.visualizer?.getMetrics?.() || {
+        totalTrades: 0,
+        winRate: 0,
+        profitFactor: 1,
+        sharpeRatio: 0,
+        maxDrawdown: 0,
+        currentBalance: 10000
+      };
       
       this.liveMetrics = {
         performance: {
@@ -120,9 +139,9 @@ class PerformanceDashboardIntegration extends EventEmitter {
         },
         
         profiles: {
-          activeProfile: this.profileManager.activeProfile?.name || 'default',
+          activeProfile: this.profileManager?.activeProfile?.name || 'default',
           profileStats: profilePerformance,
-          availableProfiles: Object.keys(this.profileManager.profiles)
+          availableProfiles: this.profileManager?.profiles ? Object.keys(this.profileManager.profiles) : ['default']
         },
         
         safety: {

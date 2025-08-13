@@ -808,6 +808,70 @@ class EnhancedPatternChecker {
   }
   
   /**
+   * Analyze patterns from market data - MAIN METHOD FOR BOT
+   * @param {Object} marketData - Market data object
+   * @returns {Array} Array of detected patterns
+   */
+  analyzePatterns(marketData) {
+    const patterns = [];
+    
+    // Extract features from market data
+    const features = FeatureExtractor.extract({
+      candles: marketData.candles || [],
+      trend: marketData.trend || 'sideways',
+      macd: marketData.macd || 0,
+      signal: marketData.signal || 0,
+      rsi: marketData.rsi || 50,
+      volume: marketData.volume || 1000000
+    });
+    
+    // Evaluate the pattern
+    const result = this.evaluatePattern(features);
+    
+    if (result && result.confidence > 0.5) {
+      patterns.push({
+        name: result.bestMatch?.pattern || 'Unknown',
+        confidence: result.confidence,
+        direction: result.confidence > 0.6 ? 'bullish' : 'bearish',
+        signature: JSON.stringify(features).substring(0, 50),
+        features: features,
+        quality: result.quality || 0.5
+      });
+    }
+    
+    return patterns;
+  }
+  
+  /**
+   * Get pattern history - REQUIRED BY BOT
+   * @param {String} signature - Pattern signature
+   * @returns {Object} Pattern history data
+   */
+  getPatternHistory(signature) {
+    // Search memory for similar patterns
+    const similar = this.memory.findSimilarPatterns({ signature }, 0.9);
+    if (similar && similar.length > 0) {
+      const stats = similar[0];
+      return {
+        timesSeen: stats.seenCount || 0,
+        wins: stats.successCount || 0,
+        successRate: stats.successRate || 0
+      };
+    }
+    return null;
+  }
+  
+  /**
+   * Record pattern result - REQUIRED BY BOT
+   * @param {String} signature - Pattern signature
+   * @param {Object} result - Trade result
+   */
+  recordPatternResult(signature, result) {
+    this.memory.recordPattern({ signature }, result);
+    this.stats.tradeResults++;
+  }
+  
+  /**
    * Evaluate a pattern for trading decision
    * @param {Array} features - Feature vector
    * @param {Object} options - Evaluation options

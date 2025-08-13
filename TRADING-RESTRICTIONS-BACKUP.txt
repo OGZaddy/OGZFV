@@ -1,0 +1,32 @@
+# TRADING RESTRICTIONS - BACKUP
+# These were removed for testing - RESTORE BEFORE LIVE TRADING!
+
+## v13-stable bot (/root/run-trading-bot-v13-stable.js):
+
+1. Line 221: Confidence threshold
+   ORIGINAL: if (analysis && analysis.confidence > 0.65)
+   CHANGED TO: if (analysis && analysis.confidence > 0)
+   
+2. Line 408: Buy strength threshold  
+   ORIGINAL: if (buyStrength > sellStrength && buyStrength > 1.2)
+   CHANGED TO: if (buyStrength > sellStrength && buyStrength > 0)
+   
+3. Line 418: Sell strength threshold
+   ORIGINAL: if (sellStrength > buyStrength && sellStrength > 1.2)
+   CHANGED TO: if (sellStrength > buyStrength && sellStrength > 0)
+
+## v13-simplified bot (/root/OGZFV-valhalla/run-trading-bot-v13-simplified.js):
+
+1. Line 98: minTradeConfidence
+   ORIGINAL: minTradeConfidence: parseFloat(process.env.MIN_TRADE_CONFIDENCE) || 0.45
+   SHOULD CHANGE TO: minTradeConfidence: 0
+
+2. Line 1244: Main trading confidence check
+   ORIGINAL: if (confidence >= this.config.minTradeConfidence)
+   SHOULD CHANGE TO: if (confidence > 0)
+
+## CRITICAL NOTES:
+- These thresholds prevent overtrading and protect capital
+- MUST restore before real money trading
+- Without these, bot will trade on ANY signal (dangerous)
+- Current settings are for TESTING ONLY

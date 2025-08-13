@@ -115,6 +115,14 @@ class PerformanceAnalyzer {
     // ========================================================================
     
     this.reset();
+    
+    // Log initialization
+    console.log('📊 PerformanceAnalyzer initialized with configuration:');
+    console.log(`   ✅ Tracking ${config.trackingMetrics?.length || 0} metrics`);
+    console.log(`   ✅ Update interval: ${config.updateInterval || 60000}ms`);
+    console.log(`   ✅ Alert thresholds configured`);
+    console.log(`   ✅ Min trades for analysis: ${this.config.minTradesForAnalysis}`);
+    console.log(`   ✅ Edge decay lookback: ${this.config.edgeDecayLookback} trades`);
   }
   
   /**

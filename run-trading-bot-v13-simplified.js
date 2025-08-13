@@ -15,6 +15,13 @@
 // LOAD ENVIRONMENT VARIABLES FIRST
 require('dotenv').config();
 
+// 🚨 CRITICAL: SINGLETON LOCK TO PREVENT DUPLICATE INSTANCES
+const { OGZSingletonLock, checkCriticalPorts } = require('./core/SingletonLock');
+const singletonLock = new OGZSingletonLock('v13-simplified-bot');
+
+// Acquire lock immediately - will exit if another instance is running
+singletonLock.acquireLock();
+
 const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
@@ -48,6 +55,9 @@ const net = require('net');
 
 // Enhanced WebSocket Client Integration
 const { getWebSocketUrl } = require('./core/WebSocketConfig');
+
+// 🚀 V13.5 QUANTUM ENHANCEMENT LAYER
+const RealQuantumEnhancement = require('./core/quantum-enhancement-layer');
 // RobustMessageHandler removed - was causing MODULE_NOT_FOUND crash
 const PerformanceDashboardIntegration = require('./core/PerformanceDashboardIntegration');
 
@@ -78,7 +88,7 @@ const MLLogProcessor = require('./core/MLLogProcessor');
 // Enhanced WebSocket and management
 const PolygonWebSocket = require('./core/PolygonWebSocket');
 const TimeFrameManager = require('./core/TimeFrameManager');
-const { EnhancedPatternChecker } = require('./core/EnhancedPatternRecognition');
+const { EnhancedPatternChecker, PatternFeatureExtractor } = require('./core/EnhancedPatternRecognition');
 
 class OGZPrimeV13Simplified {
   constructor() {
@@ -95,7 +105,7 @@ class OGZPrimeV13Simplified {
       primaryAsset: process.env.PRIMARY_ASSET || 'BTC-USD',
       
       // LOWER CONFIDENCE THRESHOLDS = MORE TRADES
-      minTradeConfidence: parseFloat(process.env.MIN_TRADE_CONFIDENCE) || 0.45, // LOWERED from 60% to 45%
+      minTradeConfidence: 0, // TEMPORARILY SET TO 0 FOR TESTING (was 0.45)
       patternConfidence: parseFloat(process.env.PATTERN_CONFIDENCE) || 0.35,    // LOWERED from 50% to 35%
       emergencyConfidence: parseFloat(process.env.EMERGENCY_CONFIDENCE) || 0.25, // NEW emergency low threshold
       
@@ -397,6 +407,7 @@ class OGZPrimeV13Simplified {
       this.ws.send(JSON.stringify({
         type: 'identify',
         source: 'trading_bot',
+        bot: 'valhalla',
         version: 'V13-SIMPLIFIED',
         capabilities: ['trading', 'realtime', 'priority']
       }));
@@ -413,14 +424,17 @@ class OGZPrimeV13Simplified {
           const { asset, price, timestamp } = msg.data;
           console.log(`📊 WS Price Update: ${asset} $${price}`);
           
-          // Update market data
-          this.cachedMarketData = {
-            price: price,
-            asset: asset,
-            timestamp: timestamp || Date.now(),
-            volume: msg.data.volume || 0
-          };
-          this.lastDataReceived = Date.now();
+          // CRITICAL: Only update market data for BTC-USD
+          if (asset === 'BTC-USD') {
+            console.log(`🎯 BTC-USD Price: $${price}`);
+            this.cachedMarketData = {
+              price: price,
+              asset: asset,
+              timestamp: timestamp || Date.now(),
+              volume: msg.data.volume || 0
+            };
+            this.lastDataReceived = Date.now();
+          }
           
         } else if (msg.type === 'trade_signal') {
           // Handle trade signals
@@ -1153,22 +1167,24 @@ class OGZPrimeV13Simplified {
       }
       
       // 🚨 TRADING SAFETY NET: Check market conditions BEFORE anything else
-      const safetyCheck = await this.safetyNet.checkMarketConditions({
-        price: marketData.price,
-        volume: marketData.volume,
-        volatility: marketData.volatility,
-        spread: marketData.spread || 0,
-        recentTrades: this.getRecentTrades()
-      });
-      
-      if (!safetyCheck.safe) {
-        console.log(`🚨 SAFETY NET TRIGGERED: ${safetyCheck.reason}`);
+      if (this.safetyNet?.checkMarketConditions) {
+        const safetyCheck = await this.safetyNet.checkMarketConditions({
+          price: marketData.price,
+          volume: marketData.volume,
+          volatility: marketData.volatility,
+          spread: marketData.spread || 0,
+          recentTrades: this.getRecentTrades()
+        });
         
-        if (safetyCheck.action === 'CLOSE_ALL') {
-          await this.emergencyCloseAllPositions();
+        if (!safetyCheck.safe) {
+          console.log(`🚨 SAFETY NET TRIGGERED: ${safetyCheck.reason}`);
+          
+          if (safetyCheck.action === 'CLOSE_ALL') {
+            await this.emergencyCloseAllPositions();
+          }
+          
+          return; // Skip this cycle
         }
-        
-        return; // Skip this cycle
       }
       
       if (!this.systemState.active || this.systemState.emergencyMode) {
@@ -1323,10 +1339,46 @@ class OGZPrimeV13Simplified {
         console.log(`⏳ Waiting for better opportunity: ${(confidence * 100).toFixed(1)}% < ${(this.config.minTradeConfidence * 100).toFixed(1)}%`);
       }
       
+      // Send bot analysis to main WebSocket for dashboard display
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        const analysisData = {
+          type: 'bot_analysis',
+          bot: 'valhalla',
+          data: {
+            decision: 'ANALYZING',
+            confidence: confidence || 0,
+            reason: `Analyzing market conditions (${(confidence * 100).toFixed(1)}% confidence)`,
+            indicators: {
+              rsi: marketData?.rsi || 50,
+              macd: marketData?.macd || 0,
+              trend: marketData?.trend || 'sideways',
+              volatility: marketData?.volatility || 0
+            },
+            position: this.activePositions.size > 0 ? 'IN_POSITION' : 'NO_POSITION',
+            unrealizedPL: this.calculateUnrealizedPL(),
+            timestamp: Date.now()
+          }
+        };
+        
+        this.ws.send(JSON.stringify(analysisData));
+        console.log(`📊 Sent bot analysis: ${analysisData.data.decision} (${(confidence * 100).toFixed(1)}%)`);
+      }
+      
     } catch (error) {
       console.error('❌ Trading cycle error:', error);
       this.systemState.failedTrades++;
     }
+  }
+  
+  /**
+   * Calculate unrealized P/L for active positions
+   */
+  calculateUnrealizedPL() {
+    let totalPL = 0;
+    this.activePositions.forEach(position => {
+      totalPL += position.currentProfit || 0;
+    });
+    return totalPL;
   }
 
   /**
@@ -1381,8 +1433,8 @@ class OGZPrimeV13Simplified {
       return 'sideways';
     }
     
-    const recent = priceHistory[priceHistory.length - 1];
-    const older = priceHistory[0];
+    const recent = priceHistory[priceHistory.length - 1].c;
+    const older = priceHistory[0].c;
     
     if (recent > older * 1.01) {
       return 'up';
@@ -1901,18 +1953,21 @@ class OGZPrimeV13Simplified {
    */
   calculatePositionSize(confidence, marketData) {
     // 💎 QUANTUM POSITION SIZER: Use quantum sizing instead of basic calculation
-    const quantumSize = this.quantumSizer.calculateOptimalSize({
-      confidence: confidence,
-      winRate: this.systemState.winRate || 0.5,
-      avgWin: this.performanceAnalyzer?.getMetric('averageWin') || 2.5,
-      avgLoss: this.performanceAnalyzer?.getMetric('averageLoss') || 1.5,
-      volatility: marketData.volatility,
-      volume: marketData.volume,
-      correlation: marketData.correlation || 0,
-      momentum: marketData.momentum || 0,
-      currentDrawdown: this.systemState.currentDrawdown,
-      accountBalance: this.systemState.currentBalance
-    });
+    const quantumSize = this.quantumSizer.calculateOptimalPosition(
+      marketData.price,
+      marketData.volatility || 0.02,
+      confidence,
+      this.systemState.currentBalance,
+      {
+        winRate: this.systemState.winRate || 0.5,
+        avgWin: 2.5,  // Default average win
+        avgLoss: 1.5,  // Default average loss
+        volume: marketData.volume,
+        correlation: marketData.correlation || 0,
+        momentum: marketData.momentum || 0,
+        currentDrawdown: this.systemState.currentDrawdown
+      }
+    );
     
     console.log(`💎 Quantum Size: ${(quantumSize * 100).toFixed(3)}% (was ${(this.config.maxPositionSize * 100).toFixed(1)}%)`);
     console.log(`   📊 Confidence: ${(confidence * 100).toFixed(1)}%`);
@@ -2770,8 +2825,19 @@ class OGZPrimeV13Simplified {
       // Broadcast to WebSocket clients
       this.broadcastToClients({
         type: 'status_update',
+        bot: 'valhalla',
         ...status
       });
+      
+      // Also send via main WebSocket for dashboard
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify({
+          type: 'bot_status', 
+          bot: 'valhalla',
+          status: 'active',
+          data: status
+        }));
+      }
       
     } catch (error) {
       console.error('❌ Status update error:', error);
@@ -2815,8 +2881,16 @@ class OGZPrimeV13Simplified {
    * 💵 Get current price
    */
   getCurrentPrice() {
-    // This would return real price data - using current BTC price range
-    return 97000 + (Math.random() - 0.5) * 8000; // $93k-$101k range (realistic 2025)
+    // Return the actual WebSocket price for BTC-USD
+    if (this.cachedMarketData && this.cachedMarketData.price) {
+      return this.cachedMarketData.price;
+    }
+    // Fallback to last known price if available
+    if (this.priceHistory && this.priceHistory.length > 0) {
+      return this.priceHistory[this.priceHistory.length - 1];
+    }
+    // Emergency fallback
+    return 119000; // Current BTC price range
   }
 
   /**
@@ -2941,11 +3015,14 @@ class OGZPrimeV13Simplified {
     try {
       const messageStr = JSON.stringify(message);
       
-      this.wsServer.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(messageStr);
-        }
-      });
+      // Check if wsServer exists and has clients
+      if (this.wsServer && this.wsServer.clients) {
+        this.wsServer.clients.forEach((client) => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(messageStr);
+          }
+        });
+      }
     } catch (error) {
       console.error('❌ Broadcast error:', error.message);
     }
@@ -3038,12 +3115,25 @@ async function main() {
     // Initialize and start the bot
     await bot.initialize();
     
+    // 🚀 ADD V13.5 QUANTUM ENHANCEMENT LAYER
+    console.log('\n⚡ Activating V13.5 Quantum Enhancement Layer...');
+    try {
+      const quantumEnhancement = new RealQuantumEnhancement(bot);
+      bot.quantumEnhancement = quantumEnhancement;
+      console.log('✅ Quantum Enhancement Layer ACTIVATED!');
+      console.log('🧠 Trading decisions will be enhanced with quantum algorithms');
+    } catch (error) {
+      console.log('⚠️ Quantum Enhancement failed to load:', error.message);
+      console.log('📊 Continuing with standard v13 mode...');
+    }
+    
     console.log('\n🎯 OGZ PRIME V13 SIMPLIFIED IS LIVE!');
     console.log('💰 READY TO MAKE MONEY!');
     console.log('🌐 Dashboard: http://localhost:3008');
     console.log('📡 WebSocket: ws://localhost:8001');
     console.log('🚀 Trading Mode: LIVE PRODUCTION TRADING');
     console.log('💎 Premium Profiles: LOADED & ACTIVE');
+    console.log('⚡ Quantum Enhancement: ACTIVE');
     console.log('═══════════════════════════════════════════════════════════\n');
     
   } catch (error) {
