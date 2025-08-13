@@ -6,7 +6,7 @@
  * @param {HTMLElement} target - The HTML element to position the sparkle near.
  * @param {string} type - The type of sparkle (e.g., 'buy', 'sell', 'default').
  */
-export function triggerSparkleEffect(target, type = 'default') {
+window.triggerSparkleEffect = function(target, type = 'default') {
   if (!target) return;
 
   const sparkle = document.createElement('div');
@@ -38,7 +38,7 @@ export function triggerSparkleEffect(target, type = 'default') {
 /**
  * Triggers a larger sparkle explosion effect, typically for big wins.
  */
-export function triggerSparkleExplosion() {
+window.triggerSparkleExplosion = function() {
   const colors = ['#00ff00', '#ffd700', '#ff69b4', '#00bfff', '#ff00ff'];
   // Use the chart container or body as a fallback for explosion area
   const container = document.querySelector('.chart-container') || document.body;

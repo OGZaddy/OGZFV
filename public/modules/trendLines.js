@@ -4,7 +4,7 @@
  * @param {Chart} chart - The Chart.js instance to draw on.
  * @param {string} direction - The direction of the trend ('up' or 'down').
  */
-export function drawTrendLine(chart, direction = 'up') {
+window.drawTrendLine = function(chart, direction = 'up') {
   const len = chart.data.labels.length;
   if (len < 20) return; // Need at least 20 data points to draw a meaningful trend line
 

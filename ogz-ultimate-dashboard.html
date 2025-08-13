@@ -604,8 +604,7 @@
     <!-- Mission Statement -->
     <div class="mission-statement">
         <strong>🚀 Mission: Houston</strong> | 
-        This bot is our ticket to financial freedom | 
-        Blood, sweat, and tears went into this | 
+        <span id="motivationalIdiom">This bot is our ticket to financial freedom</span> | 
         <span id="daysRunning">0</span> days of perseverance
     </div>
 
@@ -955,6 +954,9 @@
                 const daysRunning = Math.floor((Date.now() - startDate) / (1000 * 60 * 60 * 24));
                 document.getElementById('daysRunning').textContent = daysRunning;
                 
+                // Initialize motivational idioms rotation
+                this.initIdiomRotation();
+                
                 // Initialize chart
                 this.initChart();
                 
@@ -975,6 +977,92 @@
                 
                 // Initialize pattern recognition system
                 this.initPatternRecognition();
+            }
+            
+            initIdiomRotation() {
+                // Mix of trading wisdom and motivational idioms
+                const idioms = [
+                    // Trading wisdom
+                    "The trend is your friend",
+                    "Cut your losses, let your winners run",
+                    "Plan your trade, trade your plan",
+                    "Bulls make money, bears make money, pigs get slaughtered",
+                    "Time in the market beats timing the market",
+                    "Never catch a falling knife",
+                    "Buy the rumor, sell the news",
+                    "The market can stay irrational longer than you can stay solvent",
+                    "Don't fight the Fed",
+                    "Past performance doesn't guarantee future results",
+                    "Scared money doesn't make money",
+                    "The first loss is the best loss",
+                    "Never average down on a losing position",
+                    "Trade with discipline, not emotion",
+                    "Patience pays in the market",
+                    
+                    // General motivational idioms
+                    "Where there's a will, there's a way",
+                    "Rome wasn't built in a day",
+                    "Fortune favors the bold",
+                    "Strike while the iron is hot",
+                    "Make hay while the sun shines",
+                    "Don't put all your eggs in one basket",
+                    "A journey of a thousand miles begins with a single step",
+                    "Practice makes perfect",
+                    "No pain, no gain",
+                    "Keep your eyes on the prize",
+                    "Slow and steady wins the race",
+                    "Every cloud has a silver lining",
+                    "When one door closes, another opens",
+                    "The early bird catches the worm",
+                    "Success is a marathon, not a sprint",
+                    "Don't worry about the horse going blind, just load the wagon",
+                    "You miss 100% of the shots you don't take",
+                    "Winners never quit, quitters never win",
+                    "Fall seven times, stand up eight",
+                    "The harder you work, the luckier you get",
+                    "Opportunity doesn't knock twice",
+                    "A smooth sea never made a skilled sailor",
+                    "The best time to plant a tree was 20 years ago, the second best time is now",
+                    "Don't count your chickens before they hatch",
+                    "Actions speak louder than words",
+                    "Knowledge is power",
+                    "Time is money",
+                    "Nothing ventured, nothing gained",
+                    "Better safe than sorry",
+                    "Look before you leap",
+                    "Measure twice, cut once",
+                    "The proof is in the pudding",
+                    "There's no such thing as a free lunch",
+                    "Money doesn't grow on trees",
+                    "A penny saved is a penny earned",
+                    "You have to spend money to make money",
+                    "Cash is king",
+                    "Don't throw good money after bad"
+                ];
+                
+                // Function to update the idiom
+                const updateIdiom = () => {
+                    const idiomElement = document.getElementById('motivationalIdiom');
+                    if (idiomElement) {
+                        const randomIdiom = idioms[Math.floor(Math.random() * idioms.length)];
+                        
+                        // Fade out effect
+                        idiomElement.style.opacity = '0';
+                        idiomElement.style.transition = 'opacity 0.5s ease';
+                        
+                        setTimeout(() => {
+                            idiomElement.textContent = randomIdiom;
+                            // Fade in effect
+                            idiomElement.style.opacity = '1';
+                        }, 500);
+                    }
+                };
+                
+                // Initial random idiom
+                updateIdiom();
+                
+                // Rotate every 10 seconds
+                setInterval(updateIdiom, 10000);
             }
             
             initChart() {
