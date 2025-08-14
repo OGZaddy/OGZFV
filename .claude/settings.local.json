@@ -8,7 +8,8 @@
       "Bash(pm2 stop:*)",
       "Bash(node:*)",
       "Bash(pm2 start:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(lsof:*)"
     ],
     "deny": [],
     "ask": [],

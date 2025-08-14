@@ -128,7 +128,7 @@ class OGZPrimeV13Simplified {
       
       // NETWORK CONFIGURATION
       httpPort: parseInt(process.env.PORT) || 3008,  // API port (reverted to original)
-      wsPort: parseInt(process.env.WS_PORT) || 8001, // WebSocket port (reverted to original)
+      wsPort: parseInt(process.env.WS_PORT) || 3010, // Use unified WebSocket port
       
       // FEATURE FLAGS
       enableLearning: process.env.ENABLE_LEARNING !== 'false',
@@ -197,6 +197,7 @@ class OGZPrimeV13Simplified {
     
     // Monitoring intervals
     this.tradingInterval = null;
+    this.lastStatusWrite = null; // Throttle status file writes
     this.patternUpdateInterval = null;
     this.riskCheckInterval = null;
     this.statusUpdateInterval = null;
@@ -2806,28 +2807,33 @@ class OGZPrimeV13Simplified {
    */
   updateBotStatus() {
     try {
-      const status = {
-        timestamp: new Date().toLocaleString(),
-        thought: this.getLatestThought(),
-        decision: this.getCurrentDecision(),
-        confidence: Math.round(this.systemState.averageConfidence * 100),
-        balance: this.systemState.currentBalance,
-        price: this.getCurrentPrice(),
-        winRate: this.systemState.winRate,
-        totalTrades: this.systemState.totalTrades,
-        dailyPnL: this.systemState.dailyPnL,
-        systemState: this.systemState
-      };
-      
-      // Write to bot_status.json for dashboard integration
-      fs.writeFileSync(path.join(__dirname, 'bot_status.json'), JSON.stringify(status, null, 2));
-      
-      // Broadcast to WebSocket clients
-      this.broadcastToClients({
-        type: 'status_update',
-        bot: 'valhalla',
-        ...status
-      });
+      // Throttle file writes to every 10 seconds to prevent VS Code spam
+      const now = Date.now();
+      if (!this.lastStatusWrite || now - this.lastStatusWrite > 10000) {
+        const status = {
+          timestamp: new Date().toLocaleString(),
+          thought: this.getLatestThought(),
+          decision: this.getCurrentDecision(),
+          confidence: Math.round(this.systemState.averageConfidence * 100),
+          balance: this.systemState.currentBalance,
+          price: this.getCurrentPrice(),
+          winRate: this.systemState.winRate,
+          totalTrades: this.systemState.totalTrades,
+          dailyPnL: this.systemState.dailyPnL,
+          systemState: this.systemState
+        };
+        
+        // Write to bot_status.json for dashboard integration (throttled)
+        fs.writeFileSync(path.join(__dirname, 'bot_status.json'), JSON.stringify(status, null, 2));
+        this.lastStatusWrite = now;
+        
+        // Broadcast to WebSocket clients  
+        this.broadcastToClients({
+          type: 'status_update',
+          bot: 'valhalla',
+          ...status
+        });
+      }
       
       // Also send via main WebSocket for dashboard
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
@@ -3130,7 +3136,7 @@ async function main() {
     console.log('\n🎯 OGZ PRIME V13 SIMPLIFIED IS LIVE!');
     console.log('💰 READY TO MAKE MONEY!');
     console.log('🌐 Dashboard: http://localhost:3008');
-    console.log('📡 WebSocket: ws://localhost:8001');
+    console.log('📡 WebSocket: ws://localhost:3010');
     console.log('🚀 Trading Mode: LIVE PRODUCTION TRADING');
     console.log('💎 Premium Profiles: LOADED & ACTIVE');
     console.log('⚡ Quantum Enhancement: ACTIVE');
