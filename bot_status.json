@@ -1,0 +1,31 @@
+{
+  "timestamp": "8/14/2025, 4:24:20 AM",
+  "thought": "Processing multi-timeframe confluence...",
+  "decision": "HIGH CONFIDENCE - Ready to trade (85.0%)",
+  "confidence": 85,
+  "balance": 10000,
+  "price": 123408,
+  "winRate": 0,
+  "totalTrades": 0,
+  "dailyPnL": 0,
+  "systemState": {
+    "active": true,
+    "mode": "trading",
+    "startTime": 1755145422231,
+    "totalTrades": 0,
+    "successfulTrades": 0,
+    "failedTrades": 1,
+    "totalPnL": 0,
+    "dailyPnL": 0,
+    "currentBalance": 10000,
+    "averageTradeTime": 0,
+    "averageConfidence": 0.8500000000000001,
+    "winRate": 0,
+    "currentDrawdown": 0,
+    "maxDrawdownReached": 0,
+    "emergencyMode": false,
+    "riskLimitExceeded": false,
+    "lastTradeTime": 1755145455259,
+    "lastRiskCheck": 1755145455261
+  }
+}

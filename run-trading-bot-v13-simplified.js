@@ -56,8 +56,8 @@ const net = require('net');
 // Enhanced WebSocket Client Integration
 const { getWebSocketUrl } = require('./core/WebSocketConfig');
 
-// 🚀 V13.5 QUANTUM ENHANCEMENT LAYER
-const RealQuantumEnhancement = require('./core/quantum-enhancement-layer');
+// 🚀 V13.5 QUANTUM ENHANCEMENT LAYER - DISABLED FOR VALHALLA STABILITY
+// const RealQuantumEnhancement = require('./core/quantum-enhancement-layer');
 // RobustMessageHandler removed - was causing MODULE_NOT_FOUND crash
 const PerformanceDashboardIntegration = require('./core/PerformanceDashboardIntegration');
 
@@ -67,14 +67,14 @@ const { OptimizedTradingBrain } = require('./core/OptimizedTradingBrain');
 const MaxProfitManager = require('./core/MaxProfitManager');
 const TradingSafetyNet = require('./core/TradingSafetyNet');
 const PerformanceAnalyzer = require('./core/PerformanceAnalyzer');
-const QuantumPositionSizer = require('./core/QuantumPositionSizer');
+// const QuantumPositionSizer = require('./core/QuantumPositionSizer'); // DISABLED FOR VALHALLA
 const PerformanceValidator = require('./core/PerformanceValidator');
 const PerformanceVisualizer = require('./core/PerformanceVisualizer');
 const AdvancedWebSocketBroadcastSystem = require('./core/AdvancedWebSocketBroadcastSystem');
 
 // 🚀 V13.5 AND V14 QUANTUM ENHANCEMENTS
-const RealQuantumEnhancement = require('./core/RealQuantumEnhancement');
-const OGZPrimeV14_QuantumDeFi = require('./core/OGZPrimeV14_QuantumDeFi');
+// const RealQuantumEnhancement = require('./core/RealQuantumEnhancement'); // DISABLED FOR VALHALLA
+// const OGZPrimeV14_QuantumDeFi = require('./core/OGZPrimeV14_QuantumDeFi'); // DISABLED FOR VALHALLA
 const MultiDirectionalTrader = require('./core/MultiDirectionalTrader');
 
 // 🛡️ USING IMPORTED RobustMessageHandler - NO DUPLICATE CLASS
@@ -88,7 +88,7 @@ const MLLogProcessor = require('./core/MLLogProcessor');
 // Enhanced WebSocket and management
 const PolygonWebSocket = require('./core/PolygonWebSocket');
 const TimeFrameManager = require('./core/TimeFrameManager');
-const { EnhancedPatternChecker, PatternFeatureExtractor } = require('./core/EnhancedPatternRecognition');
+// const { EnhancedPatternChecker, PatternFeatureExtractor } = require('./core/EnhancedPatternRecognition'); // REMOVED FOR CATALYST T1
 
 class OGZPrimeV13Simplified {
   constructor() {
@@ -128,7 +128,7 @@ class OGZPrimeV13Simplified {
       
       // NETWORK CONFIGURATION
       httpPort: parseInt(process.env.PORT) || 3008,  // API port (reverted to original)
-      wsPort: parseInt(process.env.WS_PORT) || 8001, // WebSocket port (reverted to original)
+      wsPort: parseInt(process.env.WS_PORT) || 3010, // Use unified WebSocket port
       
       // FEATURE FLAGS
       enableLearning: process.env.ENABLE_LEARNING !== 'false',
@@ -188,7 +188,7 @@ class OGZPrimeV13Simplified {
     this.mlProcessor = null;
     this.polygonWS = null;
     this.timeFrameManager = null;
-    this.patternRecognition = null;
+    // this.patternRecognition = null; // REMOVED FOR CATALYST T1
     
     // Express and WebSocket servers
     this.app = null;
@@ -197,6 +197,7 @@ class OGZPrimeV13Simplified {
     
     // Monitoring intervals
     this.tradingInterval = null;
+    this.lastStatusWrite = null; // Throttle status file writes
     this.patternUpdateInterval = null;
     this.riskCheckInterval = null;
     this.statusUpdateInterval = null;
@@ -289,21 +290,9 @@ class OGZPrimeV13Simplified {
       }
     });
     
-    // 🔮 INITIALIZE QUANTUM POSITION SIZER - ADVANCED QUANTUM ALGORITHMS
-    this.quantumSizer = new QuantumPositionSizer({
-      baseSize: this.config.maxPositionSize,
-      kellyMultiplier: 0.25,              // Conservative Kelly (25% of full Kelly)
-      minSize: 0.001,                     // 0.1% minimum
-      maxSize: 0.08,                      // 8% maximum
-      
-      quantumFactors: {
-        confidence: 0.3,                  // 30% weight to confidence
-        volatility: 0.2,                  // 20% weight to volatility
-        correlation: 0.2,                 // 20% weight to correlation
-        momentum: 0.15,                   // 15% weight to momentum
-        volume: 0.15                      // 15% weight to volume
-      }
-    });
+    // 🔮 QUANTUM POSITION SIZER - DISABLED FOR VALHALLA STABILITY
+    // Using basic position sizing instead
+    this.basicPositionSize = this.config.maxPositionSize;
     
     // 🎯 MULTI-DIRECTIONAL TRADER: The Market Assassin - Long AND Short positions!
     console.log('🎯 Initializing MultiDirectionalTrader...');
@@ -344,7 +333,7 @@ class OGZPrimeV13Simplified {
     // Initialize trade component tracking
     this.lastTradeComponents = new Map(); // Track components per trade
     
-    console.log('🔥 HIGH-VALUE MODULES INTEGRATED: RiskManager + OptimizedTradingBrain + MaxProfitManager + TradingSafetyNet + PerformanceAnalyzer + QuantumPositionSizer + MultiDirectionalTrader + PerformanceVisualizer ONLINE!');
+    console.log('🔥 HIGH-VALUE MODULES INTEGRATED: RiskManager + OptimizedTradingBrain + MaxProfitManager + TradingSafetyNet + PerformanceAnalyzer + MultiDirectionalTrader + PerformanceVisualizer ONLINE!');
     console.log(`💰 Account Balance: $${this.balance.toLocaleString()}`);
     console.log(`🎯 Houston Fund Target: $${this.tradingBrain.config.houstonFundTarget.toLocaleString()}`);
     console.log(`🛡️ Risk Management: ${this.riskManager.config.baseRiskPercent}% base risk per trade`);
@@ -894,18 +883,8 @@ class OGZPrimeV13Simplified {
       enableMultiTimeframeAnalysis: true
     });
 
-    // Enhanced pattern recognition with LOWERED THRESHOLDS
-    this.patternRecognition = new EnhancedPatternChecker({
-      // CRITICAL: LOWER THRESHOLDS FOR MORE TRADING
-      similarityThreshold: 0.65,        // LOWERED from 0.8 to 0.65
-      minTradeHistory: 2,              // LOWERED from 3 to 2
-      confidenceThreshold: this.config.patternConfidence, // Use our optimized threshold
-      
-      // ENABLE AGGRESSIVE PATTERN DETECTION
-      enableAggressivePatterns: true,
-      patternMemorySize: 1000,
-      recentPatternBonus: true
-    });
+    // 🔥 PATTERN RECOGNITION REMOVED FOR CATALYST T1 - ULTRA MINIMAL VERSION
+    // Using pure price action and indicators only
 
     console.log('✅ Enhanced Systems initialized successfully!');
   }
@@ -1206,42 +1185,11 @@ class OGZPrimeV13Simplified {
         return;
       }
 
-      // 🎯 ENHANCED PATTERN RECOGNITION: Advanced pattern detection with confidence adjustment
-      const patterns = this.patternRecognition.analyzePatterns({
-        candles: this.priceData,
-        trend: marketData.trend,
-        macd: marketData.macd,
-        signal: marketData.signal,
-        rsi: marketData.rsi,
-        lastTrade: this.systemState.lastTrade
-      });
+      // 🔥 CATALYST T1: PURE INDICATOR-BASED TRADING (No Pattern Recognition)
+      // Simplified but still competitive logic using RSI, MACD, and volume
       
-      // 🧠 PATTERN SUCCESS TRACKING: Adjust confidence based on historical pattern performance
-      let patternConfidenceBoost = 0;
-      if (patterns && patterns.length > 0) {
-        for (const pattern of patterns) {
-          const patternHistory = this.patternRecognition.getPatternHistory(pattern.signature);
-          if (patternHistory && patternHistory.timesSeen >= 3) {
-            const successRate = patternHistory.wins / patternHistory.timesSeen;
-            const avgPnL = patternHistory.totalPnL / patternHistory.timesSeen;
-            
-            if (successRate > 0.7 && avgPnL > 20) {
-              patternConfidenceBoost += 0.15; // Strong historical performance
-              console.log(`🎯 Pattern Boost: +15% confidence (${(successRate * 100).toFixed(1)}% win rate, $${avgPnL.toFixed(2)} avg PnL)`);
-            } else if (successRate > 0.6 && avgPnL > 10) {
-              patternConfidenceBoost += 0.08; // Moderate performance
-              console.log(`📊 Pattern Boost: +8% confidence (${(successRate * 100).toFixed(1)}% win rate, $${avgPnL.toFixed(2)} avg PnL)`);
-            } else if (successRate < 0.4 || avgPnL < -5) {
-              patternConfidenceBoost -= 0.12; // Poor performance penalty
-              console.log(`⚠️ Pattern Penalty: -12% confidence (${(successRate * 100).toFixed(1)}% win rate, $${avgPnL.toFixed(2)} avg PnL)`);
-            }
-          }
-        }
-      }
-      
-      // Calculate confidence with OPTIMIZED LOGIC + Pattern Enhancement
-      let confidence = this.calculateTradingConfidence(marketData, patterns);
-      confidence = Math.max(0, Math.min(1, confidence + patternConfidenceBoost));
+      // Calculate confidence with PURE INDICATOR LOGIC 
+      let confidence = this.calculateTradingConfidence(marketData, []);
       
       // Update system state
       this.systemState.averageConfidence = confidence;
@@ -1256,7 +1204,7 @@ class OGZPrimeV13Simplified {
         
         // Determine trade direction
         const direction = this.determineTradingDirection(marketData, patterns, confidence);
-        console.log(`🎯 TRADING DECISION: Direction=${direction}, Patterns=${patterns.length}, Confidence=${(confidence * 100).toFixed(1)}%`);
+        console.log(`🎯 TRADING DECISION: Direction=${direction}, Confidence=${(confidence * 100).toFixed(1)}% (CATALYST T1 - Pure Indicators)`);
         
         if (direction && direction !== 'hold') {
           // 🎯 MULTI-DIRECTIONAL EVALUATION: Let the Market Assassin decide!
@@ -1784,24 +1732,27 @@ class OGZPrimeV13Simplified {
         confidence += 0.1; // Optimal volatility bonus
       }
       
-      // RSI confirmation bonus - WIDENED THRESHOLDS
-      if ((marketData.rsi < 45 && patterns.some(p => p.direction === 'buy')) ||
-          (marketData.rsi > 55 && patterns.some(p => p.direction === 'sell'))) {
-        confidence += 0.15; // RSI confirmation bonus
+      // 🔥 CATALYST T1: RSI MOMENTUM SIGNALS (Pure Indicator Logic)
+      if (marketData.rsi < 30) {
+        confidence += 0.15; // Strong oversold signal
+        console.log('⚡ RSI oversold bonus: +15%');
+      } else if (marketData.rsi > 70) {
+        confidence += 0.15; // Strong overbought signal  
+        console.log('⚡ RSI overbought bonus: +15%');
+      } else if (marketData.rsi < 45 || marketData.rsi > 55) {
+        confidence += 0.08; // Moderate RSI divergence
+        console.log('⚡ RSI divergence bonus: +8%');
       }
       
-      // MACD confirmation bonus
-      if ((marketData.macd > 0 && patterns.some(p => p.direction === 'buy')) ||
-          (marketData.macd < 0 && patterns.some(p => p.direction === 'sell'))) {
-        confidence += 0.1; // MACD confirmation bonus
+      // 🔥 CATALYST T1: PURE MACD MOMENTUM BONUS (No Pattern Dependencies)  
+      if (Math.abs(marketData.macd) > 0.1) {
+        confidence += 0.1; // Strong MACD signal bonus
+        console.log('⚡ MACD momentum bonus: +10%');
       }
       
-      // ALWAYS ADD VOLATILITY PATTERN TO GUARANTEE PATTERNS
-      if (patterns.length === 0) {
-        // Create artificial volatility pattern to ensure trading
-        confidence += 0.2; // Volatility trading bonus
-        console.log('⚡ Added volatility trading bonus: +20%');
-      }
+      // 🔥 CATALYST T1: VOLATILITY TRADING BONUS (Always Available)
+      confidence += 0.2; // Volatility trading bonus for T1 competitiveness
+      console.log('⚡ T1 Volatility bonus: +20%');
       
       // Cap confidence at 95%
       confidence = Math.min(confidence, 0.95);
@@ -1820,22 +1771,35 @@ class OGZPrimeV13Simplified {
   determineTradingDirection(marketData, patterns, confidence) {
     try {
       // Count buy vs sell signals
-      const buyPatterns = patterns.filter(p => p.direction === 'buy');
-      const sellPatterns = patterns.filter(p => p.direction === 'sell');
+      // 🔥 CATALYST T1: PURE INDICATOR-BASED DIRECTION (No Patterns)
+      let buyScore = 0;
+      let sellScore = 0;
       
-      const buyStrength = buyPatterns.reduce((sum, p) => sum + p.strength, 0);
-      const sellStrength = sellPatterns.reduce((sum, p) => sum + p.strength, 0);
+      // RSI-based scoring
+      if (marketData.rsi < 30) buyScore += 2; // Strong oversold
+      else if (marketData.rsi < 45) buyScore += 1; // Mild oversold
+      if (marketData.rsi > 70) sellScore += 2; // Strong overbought  
+      else if (marketData.rsi > 55) sellScore += 1; // Mild overbought
       
-      // Determine direction based on pattern strength
-      if (buyStrength > sellStrength + 0.2) {
+      // MACD-based scoring
+      if (marketData.macd > 0) buyScore += 1;
+      else if (marketData.macd < 0) sellScore += 1;
+      
+      // Price momentum scoring  
+      const priceChange = this.calculatePriceChange(marketData);
+      if (priceChange > 0.5) buyScore += 1;
+      else if (priceChange < -0.5) sellScore += 1;
+      
+      // Determine direction based on indicator scores
+      if (buyScore > sellScore + 1) {
+        console.log(`📈 CATALYST BUY Signal: Score ${buyScore} vs ${sellScore}`);
         return 'buy';
-      } else if (sellStrength > buyStrength + 0.2) {
+      } else if (sellScore > buyScore + 1) {
+        console.log(`📉 CATALYST SELL Signal: Score ${sellScore} vs ${buyScore}`);
         return 'sell';
-      } else if (patterns.length === 0 && confidence > 0.8) {
-        // 2025-08-03T13:50:06: HIGH CONFIDENCE TRADING - No patterns but high confidence
-        // Use price momentum to determine direction
-        const priceChange = this.calculatePriceChange(marketData);
-        console.log(`🚀 HIGH CONFIDENCE TRADE: No patterns but ${(confidence * 100).toFixed(1)}% confidence`);
+      } else if (confidence > 0.6) {
+        // 🔥 CATALYST T1: MOMENTUM TRADING - High confidence momentum trades  
+        console.log(`🚀 CATALYST MOMENTUM: ${(confidence * 100).toFixed(1)}% confidence`);
         console.log(`📈 Price momentum: ${priceChange > 0 ? 'UP' : 'DOWN'} (${priceChange.toFixed(2)}%)`);
         
         if (priceChange > 0.1) {
@@ -1952,29 +1916,23 @@ class OGZPrimeV13Simplified {
    * 🧮 Calculate position size based on confidence, volatility, and market conditions
    */
   calculatePositionSize(confidence, marketData) {
-    // 💎 QUANTUM POSITION SIZER: Use quantum sizing instead of basic calculation
-    const quantumSize = this.quantumSizer.calculateOptimalPosition(
-      marketData.price,
-      marketData.volatility || 0.02,
-      confidence,
-      this.systemState.currentBalance,
-      {
-        winRate: this.systemState.winRate || 0.5,
-        avgWin: 2.5,  // Default average win
-        avgLoss: 1.5,  // Default average loss
-        volume: marketData.volume,
-        correlation: marketData.correlation || 0,
-        momentum: marketData.momentum || 0,
-        currentDrawdown: this.systemState.currentDrawdown
-      }
-    );
+    // 💎 BASIC POSITION SIZING - VALHALLA STABLE VERSION
+    let baseSize = this.basicPositionSize;
     
-    console.log(`💎 Quantum Size: ${(quantumSize * 100).toFixed(3)}% (was ${(this.config.maxPositionSize * 100).toFixed(1)}%)`);
-    console.log(`   📊 Confidence: ${(confidence * 100).toFixed(1)}%`);
+    // Simple confidence-based scaling
+    const confidenceMultiplier = Math.min(confidence / 0.7, 1.2); // Cap at 120%
+    const adjustedSize = baseSize * confidenceMultiplier;
+    
+    // Risk-based limits
+    const maxSize = 0.15; // 15% max
+    const minSize = 0.01; // 1% min
+    const finalSize = Math.max(minSize, Math.min(maxSize, adjustedSize));
+    
+    console.log(`💎 Position Size: ${(finalSize * 100).toFixed(2)}% (confidence: ${(confidence * 100).toFixed(1)}%)`);
+    console.log(`   📊 Base: ${(baseSize * 100).toFixed(1)}%, Multiplier: ${confidenceMultiplier.toFixed(2)}x`);
     console.log(`   📈 Win Rate: ${((this.systemState.winRate || 0.5) * 100).toFixed(1)}%`);
-    console.log(`   📊 Volatility: ${((marketData.volatility || 0.02) * 100).toFixed(1)}%`);
     
-    return quantumSize;
+    return finalSize;
   }
   
   /**
@@ -1988,7 +1946,7 @@ class OGZPrimeV13Simplified {
     console.log(`✅ MaxProfitManager: ${this.profitManager ? 'CONNECTED' : '❌ MISSING'}`);
     console.log(`✅ TradingSafetyNet: ${this.safetyNet ? 'CONNECTED' : '❌ MISSING'}`);
     console.log(`✅ PerformanceAnalyzer: ${this.performanceAnalyzer ? 'CONNECTED' : '❌ MISSING'}`);
-    console.log(`✅ QuantumPositionSizer: ${this.quantumSizer ? 'CONNECTED' : '❌ MISSING'}`);
+    console.log(`✅ BasicPositionSizer: ${this.basicPositionSize ? 'CONNECTED' : '❌ MISSING'}`);
     console.log(`✅ MultiDirectionalTrader: ${this.multiDirectionalTrader ? 'CONNECTED' : '❌ MISSING'}`);
     console.log(`✅ PerformanceVisualizer: ${this.performanceVisualizer ? 'CONNECTED' : '❌ MISSING'}`);
     console.log('═══════════════════════════════\n');
@@ -2570,17 +2528,8 @@ class OGZPrimeV13Simplified {
         });
       }
       
-      // 🧠 PATTERN LEARNING: Record pattern performance for future confidence adjustment
-      if (position.patterns && position.patterns.length > 0) {
-        for (const pattern of position.patterns) {
-          this.patternRecognition.recordPatternResult(pattern.signature, {
-            success: pnl > 0,
-            pnl: pnl,
-            timestamp: Date.now()
-          });
-        }
-        console.log(`🎯 Recorded pattern performance for ${position.patterns.length} patterns`);
-      }
+      // 🔥 CATALYST T1: NO PATTERN LEARNING - Pure Performance Tracking Only
+      console.log(`🎯 CATALYST T1: Trade completed with ${pnl > 0 ? 'PROFIT' : 'LOSS'} of $${pnl.toFixed(2)}`);
       
       // Log trade exit
       const exitRecord = {
@@ -2596,7 +2545,7 @@ class OGZPrimeV13Simplified {
         holdTime: Date.now() - position.timestamp,
         profitProtected: position.protectedProfit,
         wasSuccessful: wasSuccessful,
-        patterns: position.patterns || []
+        // patterns: [] // REMOVED FOR CATALYST T1
       };
       
       await this.logTrade(exitRecord);
@@ -2806,37 +2755,42 @@ class OGZPrimeV13Simplified {
    */
   updateBotStatus() {
     try {
-      const status = {
-        timestamp: new Date().toLocaleString(),
-        thought: this.getLatestThought(),
-        decision: this.getCurrentDecision(),
-        confidence: Math.round(this.systemState.averageConfidence * 100),
-        balance: this.systemState.currentBalance,
-        price: this.getCurrentPrice(),
-        winRate: this.systemState.winRate,
-        totalTrades: this.systemState.totalTrades,
-        dailyPnL: this.systemState.dailyPnL,
-        systemState: this.systemState
-      };
-      
-      // Write to bot_status.json for dashboard integration
-      fs.writeFileSync(path.join(__dirname, 'bot_status.json'), JSON.stringify(status, null, 2));
-      
-      // Broadcast to WebSocket clients
-      this.broadcastToClients({
-        type: 'status_update',
-        bot: 'valhalla',
-        ...status
-      });
-      
-      // Also send via main WebSocket for dashboard
-      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-        this.ws.send(JSON.stringify({
-          type: 'bot_status', 
+      // Throttle file writes to every 10 seconds to prevent VS Code spam
+      const now = Date.now();
+      if (!this.lastStatusWrite || now - this.lastStatusWrite > 10000) {
+        const status = {
+          timestamp: new Date().toLocaleString(),
+          thought: this.getLatestThought(),
+          decision: this.getCurrentDecision(),
+          confidence: Math.round(this.systemState.averageConfidence * 100),
+          balance: this.systemState.currentBalance,
+          price: this.getCurrentPrice(),
+          winRate: this.systemState.winRate,
+          totalTrades: this.systemState.totalTrades,
+          dailyPnL: this.systemState.dailyPnL,
+          systemState: this.systemState
+        };
+        
+        // Write to bot_status.json for dashboard integration (throttled)
+        fs.writeFileSync(path.join(__dirname, 'bot_status.json'), JSON.stringify(status, null, 2));
+        this.lastStatusWrite = now;
+        
+        // Broadcast to WebSocket clients  
+        this.broadcastToClients({
+          type: 'status_update',
           bot: 'valhalla',
-          status: 'active',
-          data: status
-        }));
+          ...status
+        });
+        
+        // Also send via main WebSocket for dashboard
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+          this.ws.send(JSON.stringify({
+            type: 'bot_status', 
+            bot: 'valhalla',
+            status: 'active',
+            data: status
+          }));
+        }
       }
       
     } catch (error) {
@@ -3115,25 +3069,18 @@ async function main() {
     // Initialize and start the bot
     await bot.initialize();
     
-    // 🚀 ADD V13.5 QUANTUM ENHANCEMENT LAYER
-    console.log('\n⚡ Activating V13.5 Quantum Enhancement Layer...');
-    try {
-      const quantumEnhancement = new RealQuantumEnhancement(bot);
-      bot.quantumEnhancement = quantumEnhancement;
-      console.log('✅ Quantum Enhancement Layer ACTIVATED!');
-      console.log('🧠 Trading decisions will be enhanced with quantum algorithms');
-    } catch (error) {
-      console.log('⚠️ Quantum Enhancement failed to load:', error.message);
-      console.log('📊 Continuing with standard v13 mode...');
-    }
+    // 🚀 V13.5 QUANTUM ENHANCEMENT LAYER - DISABLED FOR VALHALLA STABILITY
+    console.log('\n⚡ Valhalla Bot - Pure V13 Mode (No Quantum)...');
+    console.log('🛡️ Stable trading without quantum complexity');
+    console.log('📊 Using basic position sizing and standard algorithms');
     
     console.log('\n🎯 OGZ PRIME V13 SIMPLIFIED IS LIVE!');
     console.log('💰 READY TO MAKE MONEY!');
     console.log('🌐 Dashboard: http://localhost:3008');
-    console.log('📡 WebSocket: ws://localhost:8001');
+    console.log('📡 WebSocket: ws://localhost:3010');
     console.log('🚀 Trading Mode: LIVE PRODUCTION TRADING');
     console.log('💎 Premium Profiles: LOADED & ACTIVE');
-    console.log('⚡ Quantum Enhancement: ACTIVE');
+    console.log('⚡ Valhalla Mode: STABLE & QUANTUM-FREE');
     console.log('═══════════════════════════════════════════════════════════\n');
     
   } catch (error) {
