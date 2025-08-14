@@ -25,8 +25,7 @@ class ModuleAutoLoader {
     
     while (currentPath !== path.parse(currentPath).root) {
       // Check if we found the project root
-      if (fs.existsSync(path.join(currentPath, 'OGZPrimeV10.2.js')) ||
-          fs.existsSync(path.join(currentPath, 'package.json'))) {
+      if (fs.existsSync(path.join(currentPath, 'package.json'))) {
         return currentPath;
       }
       currentPath = path.dirname(currentPath);

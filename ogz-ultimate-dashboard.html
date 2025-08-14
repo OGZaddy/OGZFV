@@ -960,6 +960,9 @@
                 
                 // Connect to data sources
                 this.connectBot();
+                
+                // Initialize pattern recognition
+                this.initPatternRecognition();
                 this.connectPolygon();
                 
                 // Setup event listeners
@@ -2207,6 +2210,16 @@
                 this.showEntryAnalysisSummary();
             }
         }
+        
+        // Add missing initPatternRecognition method to class prototype
+        OGZPrimeUltimate.prototype.initPatternRecognition = function() {
+            console.log('🎯 Pattern recognition initialized');
+            this.patternRecognition = {
+                enabled: true,
+                patterns: [],
+                confidence: 0
+            };
+        };
         
         // Initialize the ultimate dashboard
         document.addEventListener('DOMContentLoaded', () => {

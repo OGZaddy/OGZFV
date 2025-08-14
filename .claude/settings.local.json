@@ -1,9 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:www.ogzprime.com)",
+      "Bash(timeout:*)",
+      "Bash(pm2 stop:*)",
+      "Bash(node:*)",
+      "Bash(pm2 start:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "defaultMode": "acceptEdits"
   }
 }

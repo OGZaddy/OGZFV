@@ -73,7 +73,7 @@ const PerformanceVisualizer = require('./core/PerformanceVisualizer');
 const AdvancedWebSocketBroadcastSystem = require('./core/AdvancedWebSocketBroadcastSystem');
 
 // 🚀 V13.5 AND V14 QUANTUM ENHANCEMENTS
-const RealQuantumEnhancement = require('./core/RealQuantumEnhancement');
+// RealQuantumEnhancement already imported above
 const OGZPrimeV14_QuantumDeFi = require('./core/OGZPrimeV14_QuantumDeFi');
 const MultiDirectionalTrader = require('./core/MultiDirectionalTrader');
 
