@@ -122,7 +122,7 @@ class MarketRegimeDetector extends EventEmitter {
     return {
       [this.regimes.TRENDING_UP]: {
         riskMultiplier: 1.2,        // Take bigger positions in trends
-        confidenceThreshold: 0.5,    // Lower threshold for trend trades
+        confidenceThreshold: 0.01,    // Ultra low threshold for trend trades
         stopLossMultiplier: 1.5,     // Wider stops in trends
         takeProfitMultiplier: 2.0,   // Let winners run
         indicatorWeights: {
@@ -134,7 +134,7 @@ class MarketRegimeDetector extends EventEmitter {
       },
       [this.regimes.TRENDING_DOWN]: {
         riskMultiplier: 0.8,        // Reduce risk in downtrends
-        confidenceThreshold: 0.7,    // Higher threshold for shorts
+        confidenceThreshold: 0.01,    // Ultra low threshold for shorts
         stopLossMultiplier: 1.2,     
         takeProfitMultiplier: 1.5,   
         indicatorWeights: {
@@ -146,7 +146,7 @@ class MarketRegimeDetector extends EventEmitter {
       },
       [this.regimes.RANGING]: {
         riskMultiplier: 1.0,        
-        confidenceThreshold: 0.6,    
+        confidenceThreshold: 0.01,    
         stopLossMultiplier: 0.8,     // Tighter stops in ranges
         takeProfitMultiplier: 1.0,   // Quick profits
         indicatorWeights: {
@@ -158,7 +158,7 @@ class MarketRegimeDetector extends EventEmitter {
       },
       [this.regimes.VOLATILE]: {
         riskMultiplier: 0.5,        // Half risk in volatile markets
-        confidenceThreshold: 0.8,    // Very selective
+        confidenceThreshold: 0.01,    // Ultra aggressive
         stopLossMultiplier: 2.0,     // Wide stops needed
         takeProfitMultiplier: 1.5,   
         indicatorWeights: {
@@ -170,7 +170,7 @@ class MarketRegimeDetector extends EventEmitter {
       },
       [this.regimes.QUIET]: {
         riskMultiplier: 0.7,        // Reduced risk in quiet markets
-        confidenceThreshold: 0.7,    
+        confidenceThreshold: 0.01,    
         stopLossMultiplier: 0.5,     // Very tight stops
         takeProfitMultiplier: 0.8,   // Small targets
         indicatorWeights: {
@@ -182,7 +182,7 @@ class MarketRegimeDetector extends EventEmitter {
       },
       [this.regimes.BREAKOUT]: {
         riskMultiplier: 1.5,        // Aggressive on breakouts
-        confidenceThreshold: 0.6,    
+        confidenceThreshold: 0.01,    
         stopLossMultiplier: 1.0,     
         takeProfitMultiplier: 3.0,   // Big targets on breakouts
         indicatorWeights: {

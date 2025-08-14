@@ -76,7 +76,7 @@ class OptimizedTradingBrain {
       },
       
       // 🛡️ ENHANCED CONFIDENCE THRESHOLDS (Win Rate Optimized)
-      minConfidenceThreshold: 0.45,   // ADJUSTED: 45% minimum confidence for live trading
+      minConfidenceThreshold: 0.01,   // ULTRA AGGRESSIVE: 1% minimum confidence for live trading
       maxConfidenceThreshold: 0.95,   // ENHANCED: 95% maximum confidence for high-quality signals
       dynamicConfidenceAdjustment: true, // Enable dynamic confidence based on performance
       confidencePenalty: 0.1,         // Reduce confidence after losses

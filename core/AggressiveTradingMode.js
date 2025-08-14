@@ -33,7 +33,7 @@ class AggressiveTradingMode {
     this.config = {
       // AGGRESSIVE THRESHOLDS - Much lower than conservative mode
       minCandlesRequired: 3,              // DOWN from 30!
-      minConfidenceThreshold: 0.25,       // VERY LOW - take more trades
+      minConfidenceThreshold: 0.01,       // ULTRA LOW - take ANY trades
       
       // FORCE TRADING FEATURES
       forceFirstTrade: true,              // Force a trade in first 30 seconds

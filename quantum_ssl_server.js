@@ -19,8 +19,8 @@ const path = require('path');
 // 🔥 IMPORT THE ADVANCED WEBSOCKET SYSTEM
 const AdvancedWebSocketBroadcastSystem = require('./core/AdvancedWebSocketBroadcastSystem');
 
-// Set SSL server flag
-process.env.OGZ_SSL_SERVER = 'true';
+// Set QUANTUM SSL server flag
+process.env.OGZ_QUANTUM_SSL_SERVER = 'true';
 
 // Initialize the ADVANCED broadcasting system
 const broadcaster = new AdvancedWebSocketBroadcastSystem({
@@ -59,19 +59,19 @@ broadcaster.on('bot_disconnected', (connection) => {
   console.error('🔔 ALERT: Attempting automatic recovery...');
 });
 
-console.log(`[SSL-${Date.now()}] Advanced SSL Server starting...`);
-console.log('🚀 OGZPrime SSL Server with ADVANCED BROADCASTING SYSTEM');
-console.log('💪 Built for warriors who don\'t take shortcuts');
+console.log(`[QUANTUM-SSL-${Date.now()}] QUANTUM SSL Server starting...`);
+console.log('⚛️ OGZPrime QUANTUM SSL Server with ADVANCED BROADCASTING SYSTEM');
+console.log('🌌 Built for quantum supremacy operations');
 
 // Express setup
 const app = express();
-const apiPort = parseInt(process.env.SSL_SERVER_PORT || process.env.WS_PORT) || 3010;
+const apiPort = parseInt(process.env.QUANTUM_SSL_PORT) || 3011;
 
 app.use(express.json());
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.header('X-Powered-By', 'OGZ-Prime-Advanced');
+  res.header('X-Powered-By', 'OGZ-Prime-Quantum');
   next();
 });
 
@@ -85,6 +85,15 @@ app.get('/', (req, res) => {
 
 app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'ogz-ultimate-dashboard.html'));
+});
+
+// Dashboard routes
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'OGZFV-valhalla', 'ogz-ultimate-dashboard.html'));
+});
+
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'OGZFV-valhalla', 'ogz-ultimate-dashboard.html'));
 });
 
 // Enhanced status endpoint with broadcaster stats
@@ -375,7 +384,7 @@ if (!POLYGON_API_KEY) {
 const polygonSocket = new WebSocket(POLYGON_CRYPTO_SOCKET);
 
 polygonSocket.on('open', () => {
-  console.log('🔌 Connected to Polygon.io crypto feed');
+  console.log('⚛️🔌 Connected to Polygon.io crypto feed (QUANTUM)');
   polygonSocket.send(JSON.stringify({
     action: 'auth',
     params: POLYGON_API_KEY
@@ -394,7 +403,7 @@ polygonSocket.on('message', (data) => {
       }
       
       if (msg.status === 'auth_success') {
-        console.log('✅ Polygon authenticated - subscribing to multiple assets');
+        console.log('⚛️✅ QUANTUM Polygon authenticated - subscribing to multiple assets');
         
         const assets = [
           'XA.BTC-USD', 'XA.ETH-USD', 'XA.SOL-USD', 'XA.ADA-USD',

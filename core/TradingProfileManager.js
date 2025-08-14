@@ -39,7 +39,7 @@ class TradingProfileManager extends EventEmitter {
       scalper: {
         name: 'scalper',
         description: 'Ultra-aggressive scalping - 150+ trades per day',
-        minConfidence: 0.4,
+        minConfidence: 0.01,
         tradesPerDay: 150,
         avgHoldTime: '5-15 minutes',
         riskPercent: 0.5,
@@ -69,7 +69,7 @@ class TradingProfileManager extends EventEmitter {
       day_trader: {
         name: 'day_trader',
         description: 'Active day trading - 50 trades per day',
-        minConfidence: 0.5,
+        minConfidence: 0.01,
         tradesPerDay: 50,
         avgHoldTime: '30-60 minutes',
         riskPercent: 1.0,
@@ -92,7 +92,7 @@ class TradingProfileManager extends EventEmitter {
       swing: {
         name: 'swing',
         description: 'Patient swing trader - 10 trades per day',
-        minConfidence: 0.6,
+        minConfidence: 0.01,
         tradesPerDay: 10,
         avgHoldTime: '2-6 hours',
         riskPercent: 2.0,
@@ -115,7 +115,7 @@ class TradingProfileManager extends EventEmitter {
       conservative: {
         name: 'conservative',
         description: 'Ultra-safe trading - 5 trades per day',
-        minConfidence: 0.7,
+        minConfidence: 0.01,
         tradesPerDay: 5,
         avgHoldTime: '4-8 hours',
         riskPercent: 1.0,
@@ -138,7 +138,7 @@ class TradingProfileManager extends EventEmitter {
       balanced: {
         name: 'balanced',
         description: 'Balanced approach - 30 trades per day',
-        minConfidence: 0.55,
+        minConfidence: 0.01,
         tradesPerDay: 30,
         avgHoldTime: '1-2 hours',
         riskPercent: 1.5,
@@ -161,7 +161,7 @@ class TradingProfileManager extends EventEmitter {
       quantum: {
         name: 'quantum',
         description: 'Quantum AI trading - 100 trades per day',
-        minConfidence: 0.5,
+        minConfidence: 0.01,
         tradesPerDay: 100,
         avgHoldTime: '15-45 minutes',
         riskPercent: 1.0,

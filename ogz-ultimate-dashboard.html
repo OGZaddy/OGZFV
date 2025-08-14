@@ -856,7 +856,7 @@
                 const getWebSocketURL = () => {
                     // Use environment-defined port
                     const wsPort = new URLSearchParams(window.location.search).get('wsPort') || '3010';
-                    if (isLocal) return `ws://localhost:${wsPort}`;
+                    if (isLocal) return `ws://localhost:${wsPort}/ws`;
                     // Use current hostname with /ws path (NGINX proxy)
                     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
                     return `${protocol}//${window.location.hostname}/ws`;
@@ -977,6 +977,12 @@
                 
                 // Initialize pattern recognition system
                 this.initPatternRecognition();
+            }
+            
+            initPatternRecognition() {
+                // Pattern recognition system placeholder
+                console.log('🔍 Pattern recognition system initialized');
+                // TODO: Add pattern recognition logic here when implementing pattern module
             }
             
             initChart() {
