@@ -118,8 +118,8 @@ module.exports = PolygonWebSocket;
 const WebSocketManager = require('./core/WebsocketManager');
 const wsManager = new WebSocketManager();
 
-const dataPort = 3001;
-const guiPort = 3002;
+const dataPort = parseInt(process.env.DATA_PORT) || 3001;
+const guiPort = parseInt(process.env.GUI_PORT) || 3002;
 
 console.log('Starting WebSocket servers...');
 wsManager.getServer(dataPort);

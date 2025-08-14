@@ -3,7 +3,7 @@
  * Identifies key price levels based on recent highs and lows.
  * @param {Chart} chart - The Chart.js instance to draw on.
  */
-export function drawSupportResistance(chart) {
+window.drawSupportResistance = function(chart) {
   const candles = chart.data.datasets[0].data; // Assuming price data is the first dataset
   const labels = chart.data.labels;
   if (!candles || candles.length < 30) return; // Need sufficient data

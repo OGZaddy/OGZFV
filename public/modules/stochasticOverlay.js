@@ -8,7 +8,7 @@ let stochasticLastValue = 50; // Internal state for crossover detection
  * @param {number} stochastic - The %K value of the Stochastic Oscillator.
  * @param {number} signal - The %D (signal line) value.
  */
-export function updateStochasticDisplay(stochastic, signal) {
+window.updateStochasticDisplay = function(stochastic, signal) {
   const elem = document.getElementById('stochastic-display');
   if (!elem) return;
 
@@ -86,7 +86,7 @@ export function updateStochasticDisplay(stochastic, signal) {
  * @param {number} period - The lookback period for the calculation.
  * @returns {Object} An object containing the %K (k) and %D (d) values.
  */
-export function calculateStochastic(candles, period = 14) {
+window.calculateStochastic = function(candles, period = 14) {
   if (!candles || candles.length < period) return { k: 50, d: 50 }; // Return neutral if insufficient data
   
   const recent = candles.slice(-period);

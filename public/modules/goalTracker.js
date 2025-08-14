@@ -309,4 +309,4 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Export the object for ES6 module loading
-export { goalTracker };
+;

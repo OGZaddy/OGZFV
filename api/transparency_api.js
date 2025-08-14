@@ -24,7 +24,7 @@ class TransparencyAPI {
   constructor(ogzPrimeInstance = null) {
     this.app = express();
     this.ogzPrime = ogzPrimeInstance;
-    this.port = 3008; // Dedicated transparency API port
+    this.port = parseInt(process.env.TRANSPARENCY_PORT) || 3008; // Dedicated transparency API port
     
     // Real-time data storage
     this.realtimeData = {

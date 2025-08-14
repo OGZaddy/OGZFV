@@ -42,7 +42,7 @@ class TransparencyClient {
     detectApiUrl() {
         const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
         const host = window.location.hostname === 'localhost' ? 'localhost' : window.location.hostname;
-        const port = window.location.protocol === 'https:' ? '3007' : '3008'; // SSL vs regular port
+        const port = window.location.protocol === 'https:' ? (new URLSearchParams(window.location.search).get('httpsPort') || '3007') : (new URLSearchParams(window.location.search).get('httpPort') || '3008'); // SSL vs regular port
         return `${protocol}//${host}:${port}/api`;
     }
     

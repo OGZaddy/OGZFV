@@ -7,7 +7,7 @@
  * @param {number} high - The swing high price.
  * @param {number} low - The swing low price.
  */
-export function drawFibonacciLevels(chart, high, low) {
+window.drawFibonacciLevels = function(chart, high, low) {
   // Standard Fibonacci retracement levels
   const levels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
   const fibLines = [];

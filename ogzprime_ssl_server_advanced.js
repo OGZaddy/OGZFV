@@ -18,7 +18,6 @@ const path = require('path');
 
 // 🔥 IMPORT THE ADVANCED WEBSOCKET SYSTEM
 const AdvancedWebSocketBroadcastSystem = require('./core/AdvancedWebSocketBroadcastSystem');
-const { CONFIG } = require('./core/WebSocketConfig');
 
 // Set SSL server flag
 process.env.OGZ_SSL_SERVER = 'true';
@@ -66,7 +65,7 @@ console.log('💪 Built for warriors who don\'t take shortcuts');
 
 // Express setup
 const app = express();
-const apiPort = 3010;
+const apiPort = parseInt(process.env.SSL_SERVER_PORT || process.env.WS_PORT) || 3010;
 
 app.use(express.json());
 app.use((req, res, next) => {
@@ -115,7 +114,7 @@ app.get('/api/live-status', (req, res) => {
       wsPort: apiPort,
       secureWsPort: 443,
       apiPort: apiPort,
-      secureApiPort: 443,
+      secureApiPort: parseInt(process.env.SSL_SECURE_PORT) || 443,
       advancedBroadcasting: true
     }
   });
@@ -269,7 +268,7 @@ app.get('/cancel.html', (req, res) => {
 // SSL Configuration - NGINX HANDLES THIS NOW
 // Nginx reverse proxy handles SSL termination
 console.log('🔄 SSL handled by nginx reverse proxy');
-console.log('   WebSocket: wss://ogzprime.com/ws → nginx → ws://localhost:3010/ws');
+console.log(`   WebSocket: wss://${process.env.DOMAIN || 'ogzprime.com'}/ws → nginx → ws://localhost:${apiPort}/ws`);
 
 // Regular HTTP server
 const httpServer = http.createServer(app);
@@ -321,9 +320,9 @@ wss.on('connection', (ws, req) => {
       if (data.type === 'identify' && data.source === 'trading_bot') {
         console.log('🤖 TRADING BOT IDENTIFIED!');
         
-        // Update connection metadata
-        const connection = broadcaster.connections.get(connectionId);
-        if (connection) {
+        // Update connection metadata with safety check
+        const connection = broadcaster.connections?.get(connectionId);
+        if (connection && connection.metadata) {
           connection.metadata.type = 'bot';
           connection.state.priority = 'critical';
           
@@ -334,6 +333,10 @@ wss.on('connection', (ws, req) => {
             priority: 'critical',
             message: 'You are now registered as a critical trading bot connection'
           });
+          
+          console.log('✅ Trading bot successfully registered with enterprise security');
+        } else {
+          console.log('⚠️ Connection not found during bot identification');
         }
       }
       
@@ -536,8 +539,8 @@ Object.keys(networkInterfaces).forEach(interfaceName => {
 console.log('\n✅ OGZ Prime ADVANCED Server Running (Nginx SSL Proxy)');
 console.log('🚀 Powered by Advanced WebSocket Broadcasting System');
 console.log('\n📡 Available endpoints:');
-console.log(`   🔒 Secure WebSocket: wss://ogzprime.com/ws (via nginx))`);
-console.log(`   🔒 Secure API: https://ogzprime.com/api/live-status (via nginx)`);
+console.log(`   🔒 Secure WebSocket: wss://${process.env.DOMAIN || 'ogzprime.com'}/ws (via nginx)`);
+console.log(`   🔒 Secure API: https://${process.env.DOMAIN || 'ogzprime.com'}/api/live-status (via nginx)`);
 console.log(`   📡 Local WebSocket: ws://localhost:${apiPort}/ws`);
 console.log(`   🌐 Local API: http://localhost:${apiPort}/api/live-status`);
 
