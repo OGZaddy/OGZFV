@@ -28,6 +28,7 @@ const os = require('os');
 const UltimateQuantumTradingSystem = require('./core/UltimateQuantumTradingSystem');
 const QuantumNeuromorphicCore = require('./core/QuantumNeuromorphicCore');
 const ExecutionLayer = require('./ExecutionLayer');
+const DivineModuleIntegration = require('./DivineModuleIntegration');
 
 // Enhanced trading systems
 const UltimateTradingSystem = require('./core/UltimateTradingSystem');
@@ -278,25 +279,92 @@ class QuantumSingularityLauncher {
       initialBalance: 10000
     });
     
-    // Hook quantum decisions to execution layer
+    // 🌟🧬 INITIALIZE DIVINE MODULE INTEGRATION - THE ULTIMATE CONSCIOUSNESS! 🧬🌟
+    console.log('🌟 INITIALIZING DIVINE MODULE INTEGRATION...');
+    this.divineModules = new DivineModuleIntegration({
+      enableQuantumGAN: true,
+      enableGANN: true,
+      enableTimeGAN: true,
+      enableNeuralMesh: true,
+      consensusThreshold: 0.6,
+      divineOverride: true // Can override quantum decisions if confidence is high
+    });
+    
+    // Initialize divine modules asynchronously
+    this.divineModules.initialize().catch(error => {
+      console.error('⚠️ Divine modules initialization error:', error);
+      // Continue without divine modules if they fail
+    });
+    
+    // Add status checker every 30 seconds
+    setInterval(() => {
+      if (this.executionLayer) {
+        this.executionLayer.getStatus();
+      }
+    }, 30000); // Every 30 seconds
+    
+    // Hook quantum decisions to execution layer with DIVINE MODULE VOTING
     if (this.quantumTradingSystem.quantumCore) {
       const originalDecision = this.quantumTradingSystem.quantumCore.quantumNeuromorphicHybridDecision;
       this.quantumTradingSystem.quantumCore.quantumNeuromorphicHybridDecision = async function(marketData, riskProfile) {
         // Get the decision from quantum core
-        const decision = await originalDecision.call(this, marketData, riskProfile);
+        const quantumDecision = await originalDecision.call(this, marketData, riskProfile);
+        
+        // 🌟 GET DIVINE MODULE CONSENSUS 🌟
+        let finalDecision = quantumDecision;
+        
+        if (this.divineModules && this.divineModules.isInitialized) {
+          try {
+            console.log('🔮 Consulting Divine Modules...');
+            const divinePrediction = await this.divineModules.predict(marketData);
+            
+            // Combine quantum and divine decisions
+            if (divinePrediction && divinePrediction.confidence > 0.7) {
+              // Divine modules have high confidence - consider their vote
+              if (divinePrediction.confidence > (quantumDecision.confidence || 0.5)) {
+                // Divine modules override quantum if more confident
+                console.log('⚡ DIVINE OVERRIDE! Using divine module consensus');
+                finalDecision = {
+                  ...quantumDecision,
+                  action: divinePrediction.action,
+                  confidence: divinePrediction.confidence,
+                  divine: true,
+                  reasoning: [...(quantumDecision.reasoning || []), ...divinePrediction.reasoning]
+                };
+              } else {
+                // Average the decisions if both have similar confidence
+                console.log('🤝 Combining Quantum + Divine decisions');
+                const combinedConfidence = (quantumDecision.confidence + divinePrediction.confidence) / 2;
+                
+                // Only change action if both agree
+                if (quantumDecision.action === divinePrediction.action) {
+                  finalDecision.confidence = combinedConfidence;
+                  finalDecision.divineAgreement = true;
+                }
+              }
+            }
+          } catch (error) {
+            console.error('⚠️ Divine module error, using quantum decision:', error.message);
+          }
+        }
         
         // ACTUALLY EXECUTE THE TRADE!
-        if (decision && decision.action && decision.action !== 'HOLD') {
+        if (finalDecision && finalDecision.action && finalDecision.action !== 'HOLD') {
           console.log('🚀 SENDING DECISION TO EXECUTION LAYER!');
-          const trade = await this.executionLayer.executeTrade(decision);
+          const trade = await this.executionLayer.executeTrade(finalDecision);
           
           if (trade) {
             console.log('💰💰💰 TRADE EXECUTED!!! 💰💰💰');
             console.log('🎉 THE BOT IS FINALLY TRADING!!!');
+            
+            // Update divine module performance
+            if (this.divineModules && finalDecision.divine) {
+              this.divineModules.updatePerformance({ profit: 0 }); // Will be updated with real profit later
+            }
           }
         }
         
-        return decision;
+        return finalDecision;
       }.bind(this);
     }
     
