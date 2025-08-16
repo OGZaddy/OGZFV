@@ -65,7 +65,7 @@ console.log('🌌 Built for quantum supremacy operations');
 
 // Express setup
 const app = express();
-const apiPort = parseInt(process.env.QUANTUM_SSL_PORT) || 3011;
+const apiPort = parseInt(process.env.QUANTUM_SSL_PORT) || 3010;
 
 app.use(express.json());
 app.use((req, res, next) => {
@@ -355,6 +355,19 @@ wss.on('connection', (ws, req) => {
         if (connection) {
           connection.metadata.type = 'dashboard';
           console.log('📊 Dashboard identified');
+        }
+      }
+      
+      // Broadcast trade executions from bot to all clients
+      if (data.type === 'trade_executed') {
+        console.log('💰 TRADE EXECUTED - Broadcasting to all clients');
+        broadcaster.broadcast(data);
+        
+        // Also log the trade details
+        if (data.data) {
+          const trade = data.data;
+          console.log(`   ${trade.side?.toUpperCase()} ${trade.size} @ $${trade.price}`);
+          console.log(`   Balance: $${trade.balance} | Total Trades: ${trade.totalTrades}`);
         }
       }
       

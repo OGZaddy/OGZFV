@@ -42,7 +42,7 @@ class QuantumNeuromorphicCore extends EventEmitter {
       
       // 🛡️ VERIFICATION & FAILSAFE SYSTEMS
       redundancyLevel: config.redundancyLevel || 5, // QUINTUPLE redundancy!
-      consensusThreshold: config.consensusThreshold || 0.4, // 80% agreement required
+      consensusThreshold: config.consensusThreshold || 0.8, // 80% agreement required
       maxLatencyNs: config.maxLatencyNs || 100, // 100 nanoseconds max
       emergencyMode: false,
       
@@ -114,7 +114,7 @@ class QuantumNeuromorphicCore extends EventEmitter {
     };
     
     // Add emergency cascade prevention flag
-    this.emergencyCascadeActive = false; this.aggressiveMode = true; // BEAST MODE
+    this.emergencyCascadeActive = false;
     
     // ⚛️ QUANTUM PATTERN LEARNING SYSTEM
     this.quantumPatterns = {
@@ -507,7 +507,7 @@ class QuantumNeuromorphicCore extends EventEmitter {
       console.log(`📊 Verification Consensus: ${(consensus.agreement * 100).toFixed(1)}%`);
       
       // CHECK CONSENSUS THRESHOLD
-      if (consensus.agreement >= 0.4) { // LOWERED FOR AGGRESSION
+      if (consensus.agreement >= this.config.consensusThreshold) {
         console.log('✅ QUINTUPLE VERIFICATION PASSED!');
         console.log(`🎯 Consensus Value: ${consensus.value.toFixed(2)}`);
         console.log(`🛡️ Agreement Level: ${consensus.agreementLevel}`);
@@ -554,7 +554,7 @@ class QuantumNeuromorphicCore extends EventEmitter {
     const price = marketData.price || (marketData.priceStream && marketData.priceStream.length > 0 ? marketData.priceStream[marketData.priceStream.length - 1] : 0);
     const lastPrice = this.lastPrice || price;
     
-    let decision = Math.random() > 0.5 ? 'BUY' : 'SELL'; // NO MORE HOLD!
+    let decision = 'HOLD';
     let confidence = 0.8;
     
     // Ultra simple: Price up = buy, price down = sell  
@@ -1024,32 +1024,17 @@ class QuantumNeuromorphicCore extends EventEmitter {
   }
   
   // Placeholder methods for complex operations
-  async prepareVariationalQuantumCircuit(features) { 
-        if (!features || features.length === 0) {
-          features = [0.5, 0.5, 0.5, 0.5, 0.5];
-        }
-        features = features.map(f => (f !== null && f !== undefined) ? f : 0.5);
-        return { parameters: features, depth: 10 }; 
-      }
+  async prepareVariationalQuantumCircuit(features) { return { parameters: features, depth: 10 }; }
   async quantumFeatureMapping(features) { return features.map(f => f * 2); }
   async measurePauliOperators(circuit, features) { return { Z: Math.random() * 2 - 1, X: Math.random() * 2 - 1, Y: Math.random() * 2 - 1 }; }
   calculateQuantumAdvantage(measurements) { return 'SUPERPOSITION_SPEEDUP'; }
   async quantumEnsembleVerification(action, confidence, measurements) { return { agreement: 0.9, approved: true }; }
   async adaptQuantumParameters(circuit, historical, result) { /* Parameter adaptation logic */ }
-  quantumFailsafeSignal() { 
-        const actions = ['BUY', 'SELL', 'LONG', 'SHORT'];
-        const action = actions[Math.floor(Math.random() * actions.length)];
-        console.log('⚡ QUANTUM FAILSAFE: ' + action + ' - NO MORE HOLDING!');
-        return { action: action, confidence: 0.75, mode: 'AGGRESSIVE_FAILSAFE' }; 
-      }
+  quantumFailsafeSignal() { return { action: 'HOLD', confidence: 0.1, mode: 'FAILSAFE' }; }
   async updateSynapticWeights(responses, event) { /* Plasticity update logic */ }
   calculateInhibitoryBalance(responses) { return 0.2; }
   calculateNeuromorphicEnergy(responses) { return responses.length * 0.001; }
-  neuromorphicFailsafeDecision() { 
-        const action = Math.random() > 0.5 ? 'BUY' : 'SELL';
-        console.log('🧠 NEUROMORPHIC FAILSAFE: ' + action + ' - TRADING LIKE FINALS WEEK!');
-        return { decision: { action: action, confidence: 0.7 }, latencyNs: 100, mode: 'SPIKE_TRADING' }; 
-      }
+  neuromorphicFailsafeDecision() { return { decision: { action: 'HOLD', confidence: 0.1 }, latencyNs: 1000, mode: 'FAILSAFE' }; }
   async startPPSDistribution() { /* PPS logic */ }
   async calibrateWhiteRabbitPhase() { return Math.PI / 4; }
   async measureSynchronizationPrecision() { return this.config.targetAccuracy * (0.5 + Math.random() * 0.5); }
@@ -1058,12 +1043,8 @@ class QuantumNeuromorphicCore extends EventEmitter {
   async neuromorphicPositionValidation(position) { return { score: 0.85, approved: true }; }
   async quantumNeuromorphicConsensus(position, neuromorphic) { return { approved: true, position: position, verificationLevel: 5 }; }
   activateUltraSafeMode() { this.verification.failsafeMode = true; }
-  calculateUltraSafePosition(position) { 
-        return position * 0.5; // 50% not 1% - GO BIG! 
-      }
-  emergencyFailsafePosition(position) { 
-        return { position: position * 0.4, mode: 'EMERGENCY_BUT_TRADING' }; 
-      }
+  calculateUltraSafePosition(position) { return position * 0.01; }
+  emergencyFailsafePosition(position) { return { position: position * 0.001, mode: 'EMERGENCY' }; }
   async fuseQuantumNeuromorphic(quantum, neuromorphic, timestamp, risk) { 
     return { action: quantum.action, confidence: (quantum.confidence + neuromorphic.efficiency) / 2 };
   }
@@ -1074,16 +1055,8 @@ class QuantumNeuromorphicCore extends EventEmitter {
     return { approved: true, action: decision.action, confidence: decision.confidence, fusionAdvantage: 'HYBRID_SUPERIORITY' };
   }
   calculateRealityBendingFactor(verified) { return verified.fusionAdvantage === 'HYBRID_SUPERIORITY' ? 1.0 : 0.5; }
-  classicalFallbackDecision(data) { 
-        const action = Math.random() > 0.5 ? 'BUY' : 'SELL';
-        console.log('📊 CLASSICAL FALLBACK: ' + action + ' - OLD SCHOOL AGGRESSION!');
-        return { action: action, confidence: 0.65, mode: 'CLASSICAL_BEAST' }; 
-      }
-  emergencyDecision(data) { 
-        const action = Math.random() > 0.5 ? 'LONG' : 'SHORT';
-        console.log('🚨 EMERGENCY: ' + action + ' - YOLO MODE ACTIVATED!');
-        return { action: action, confidence: 0.5, mode: 'EMERGENCY_YOLO' }; 
-      }
+  classicalFallbackDecision(data) { return { action: 'HOLD', confidence: 0.3, mode: 'CLASSICAL_FALLBACK' }; }
+  emergencyDecision(data) { return { action: 'EMERGENCY_HALT', confidence: 0.1, mode: 'EMERGENCY' }; }
   async initializeQuantumCircuits() { console.log('⚛️ Quantum circuits initialized'); }
   async initializeNeuromorphicNetworks() { console.log('🧠 Neuromorphic networks initialized'); }
   async initializeAtomicTiming() { console.log('⏱️ Atomic timing initialized'); }

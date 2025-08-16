@@ -2011,7 +2011,13 @@ class OptimizedTradingBrain {
       confidenceMet: analysis.confidence >= this.config.minConfidenceThreshold
     });
     
-    if (!this.isInPosition() && analysis.decision !== 'hold' && analysis.confidence >= this.config.minConfidenceThreshold) {
+    // 🔥 ULTRA-AGGRESSIVE MODE: FORCE TRADE IF NOT IN POSITION
+    const forceEntry = !this.isInPosition() && (
+      (analysis.decision !== 'hold' && analysis.confidence >= this.config.minConfidenceThreshold) ||
+      (this.config.aggressiveMode && analysis.confidence >= 0.01) // AGGRESSIVE: Force entry at 1% confidence
+    );
+    
+    if (forceEntry) {
       console.log('🧠 All entry criteria met! Proceeding with trade...');
       
       const direction = analysis.decision === 'buy' ? 'buy' : 'sell';

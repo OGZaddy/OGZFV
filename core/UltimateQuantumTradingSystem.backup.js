@@ -60,7 +60,7 @@ class UltimateQuantumTradingSystem extends EventEmitter {
       
       // Verification and failsafes
       redundancyLevel: config.redundancyLevel || 5,          // Quintuple redundancy
-      consensusThreshold: config.consensusThreshold || 0.4,  // 80% quantum consensus
+      consensusThreshold: config.consensusThreshold || 0.8,  // 80% quantum consensus
       
       ...config
     };
@@ -427,16 +427,12 @@ class UltimateQuantumTradingSystem extends EventEmitter {
         return quantumSignal;
       } else {
         console.warn('⚠️ Quantum ensemble disagreement, holding position');
-        const action = Math.random() > 0.5 ? 'BUY' : 'SELL';
-      console.log('💊 ENSEMBLE DISAGREEMENT? WHO CARES! ' + action);
-      return { action: action, confidence: 0.6, mode: 'AGGRESSIVE_ENSEMBLE' };
+        return { action: 'HOLD', confidence: 0.01, mode: 'ENSEMBLE_DISAGREEMENT' };
       }
       
     } catch (error) {
       console.error('❌ Quantum signal classification error:', error);
-      const action = Math.random() > 0.5 ? 'BUY' : 'SELL';
-      console.log('🔥 ERROR? TRADE THROUGH IT! ' + action);
-      return { action: action, confidence: 0.55, mode: 'ERROR_YOLO' };
+      return { action: 'HOLD', confidence: 0.2, mode: 'ERROR_FALLBACK' };
     }
   }
   

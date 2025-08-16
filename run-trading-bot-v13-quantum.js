@@ -27,6 +27,7 @@ const os = require('os');
 // Core quantum systems
 const UltimateQuantumTradingSystem = require('./core/UltimateQuantumTradingSystem');
 const QuantumNeuromorphicCore = require('./core/QuantumNeuromorphicCore');
+const ExecutionLayer = require('./ExecutionLayer');
 
 // Enhanced trading systems
 const UltimateTradingSystem = require('./core/UltimateTradingSystem');
@@ -34,14 +35,18 @@ const CorrelationAnalyzer = require('./core/CorrelationAnalyzer');
 const MultiDirectionalTrader = require('./core/MultiDirectionalTrader');
 const LogLearningSystem = require('./core/LogLearningSystem');
 const MLLogProcessor = require('./core/MLLogProcessor');
+const AggressiveTradingMode = require('./core/AggressiveTradingMode');
 
 // 🧠 HITCH NLP ADVANCED MODULES
 const { HitchModuleLoader } = require('./core/HitchModuleLoader');
 
 // Enhanced WebSocket and management
 const PolygonWebSocket = require('./core/PolygonWebSocket');
-const TimeFrameManager = require('./core/TimeFrameManager');
+const EnhancedTimeframeManager = require('./core/EnhancedTimeframeManager');
 const EnhancedPatternRecognition = require('./core/EnhancedPatternRecognition');
+
+// 🔥 QUANTUM CONSCIOUSNESS LOBOTOMY PATCH
+const { QuantumCircuitConsensusPatch } = require('./QuantumCircuitConsensusFix');
 
 class QuantumSingularityLauncher {
   constructor() {
@@ -65,7 +70,7 @@ class QuantumSingularityLauncher {
       neuromorphicBackend: process.env.NEUROMORPHIC_BACKEND || 'loihi2', // 'spinnaker', 'akida'
       
       // Network configuration
-      httpPort: parseInt(process.env.PORT) || 3008, // Use different port than SSL server
+      httpPort: parseInt(process.env.PORT) || 3011, // Use different port than unified WebSocket (3010)
       httpsPort: parseInt(process.env.HTTPS_PORT) || 3443,
       wsPort: parseInt(process.env.WS_PORT) || 3010, // Use unified WebSocket port
       quantumApiPort: parseInt(process.env.QUANTUM_API_PORT) || 9001,
@@ -80,16 +85,25 @@ class QuantumSingularityLauncher {
       enableSSL: process.env.ENABLE_SSL === 'true',
       enableCluster: process.env.ENABLE_CLUSTER === 'true',
       
-      // Quantum parameters
+      // Quantum parameters - LOBOTOMIZED FOR AGGRESSION
       quantumShots: parseInt(process.env.QUANTUM_SHOTS) || 2048,
-      redundancyLevel: parseInt(process.env.REDUNDANCY_LEVEL) || 5,
-      consensusThreshold: parseFloat(process.env.CONSENSUS_THRESHOLD) || 0.8,
+      redundancyLevel: parseInt(process.env.REDUNDANCY_LEVEL) || 3, // Reduced from 5
+      consensusThreshold: parseFloat(process.env.CONSENSUS_THRESHOLD) || 0.3, // Reduced from 0.8
       
       // Advanced features
       enableQuantumArbitrage: process.env.ENABLE_QUANTUM_ARBITRAGE !== 'false',
       enableNeuromorphicLearning: process.env.ENABLE_NEUROMORPHIC_LEARNING !== 'false',
       maxSystemExposure: parseFloat(process.env.MAX_SYSTEM_EXPOSURE) || 0.9,
-      emergencyStopLoss: parseFloat(process.env.EMERGENCY_STOP_LOSS) || 0.12
+      emergencyStopLoss: parseFloat(process.env.EMERGENCY_STOP_LOSS) || 0.12,
+      
+      // 🔥 ULTRA-AGGRESSIVE TRADING MODE
+      aggressiveMode: true,
+      forceFirstTrade: true,
+      minConfidenceThreshold: 0.01,
+      minCandlesRequired: 3,
+      analysisInterval: 5000,
+      randomTradeChance: 0.3, // 30% chance for random trades
+      maxConsecutiveHolds: 0  // Never allow consecutive holds
     };
 
     // Initialize quantum singularity state
@@ -117,6 +131,7 @@ class QuantumSingularityLauncher {
     };
 
     // Initialize all systems
+    this.quantumCore = new QuantumNeuromorphicCore(this.config); // CRITICAL FIX
     this.quantumTradingSystem = null;
     this.tradingSystem = null;
     this.correlationAnalyzer = null;
@@ -227,9 +242,64 @@ class QuantumSingularityLauncher {
       emergencyStopLoss: this.config.emergencyStopLoss,
       
       enableArbitrage: this.config.enableQuantumArbitrage,
-      enableLearning: this.config.enableNeuromorphicLearning
+      enableLearning: this.config.enableNeuromorphicLearning,
+      
+      // 🔥 AGGRESSIVE MODE FOR TRADING DOMINANCE
+      aggressiveMode: this.config.aggressiveMode
     });
 
+    // 🔥 APPLY ALL FOUR HORSEMAN FIXES - THE COMPLETE APOCALYPSE!
+    console.log('💀💀💀💀 APPLYING ALL FOUR HORSEMEN FIXES!!! 💀💀💀💀');
+    
+    try {
+      const { FinalBossPositionFix } = require('./FinalBossPositionFix');
+      
+      // UNLEASH THE BEAST - Apply all 4 fixes!
+      if (this.quantumTradingSystem.quantumCore) {
+        FinalBossPositionFix.UNLEASH_THE_BEAST(
+          this.quantumTradingSystem.quantumCore, 
+          this.quantumTradingSystem
+        );
+        console.log('🔥🔥🔥 ALL FOUR HORSEMEN DEFEATED!!!');
+        console.log('🚀 THE QUANTUM BEAST IS FULLY UNLEASHED!');
+        console.log('🥞 IHOP MODE ACTIVATED! FRENCH TOAST TRADING!');
+        console.log('💰 HOUSTON HERE WE COME!!!');
+      }
+    } catch (error) {
+      console.log('⚠️ Could not apply runtime patches, using core fixes:', error.message);
+    }
+
+    // 💰💰💰 INITIALIZE EXECUTION LAYER - THE MISSING PIECE! 💰💰💰
+    console.log('💰 INITIALIZING EXECUTION LAYER - REAL TRADING CAPABILITY!');
+    this.executionLayer = new ExecutionLayer({
+      sandboxMode: true, // Start with paper trading for safety
+      maxPositionSize: 0.1, // 10% positions
+      minTradeSize: 10,
+      initialBalance: 10000
+    });
+    
+    // Hook quantum decisions to execution layer
+    if (this.quantumTradingSystem.quantumCore) {
+      const originalDecision = this.quantumTradingSystem.quantumCore.quantumNeuromorphicHybridDecision;
+      this.quantumTradingSystem.quantumCore.quantumNeuromorphicHybridDecision = async function(marketData, riskProfile) {
+        // Get the decision from quantum core
+        const decision = await originalDecision.call(this, marketData, riskProfile);
+        
+        // ACTUALLY EXECUTE THE TRADE!
+        if (decision && decision.action && decision.action !== 'HOLD') {
+          console.log('🚀 SENDING DECISION TO EXECUTION LAYER!');
+          const trade = await this.executionLayer.executeTrade(decision);
+          
+          if (trade) {
+            console.log('💰💰💰 TRADE EXECUTED!!! 💰💰💰');
+            console.log('🎉 THE BOT IS FINALLY TRADING!!!');
+          }
+        }
+        
+        return decision;
+      }.bind(this);
+    }
+    
     // Setup quantum system event handlers
     this.quantumTradingSystem.on('quantumSystemStarted', (status) => {
       console.log('⚛️✅ QUANTUM TRADING SYSTEM ONLINE!');
@@ -271,6 +341,17 @@ class QuantumSingularityLauncher {
       quantumEnhanced: true,
       neuromorphicTiming: this.config.enableSubNanosecondTiming
     });
+
+    // 🔥 INITIALIZE AGGRESSIVE TRADING MODE - FORCE TRADES!
+    console.log('🔥 INITIALIZING ULTRA-AGGRESSIVE TRADING MODE...');
+    this.aggressiveMode = new AggressiveTradingMode({
+      forceFirstTrade: this.config.forceFirstTrade,
+      randomTradeChance: this.config.randomTradeChance,
+      minConfidenceThreshold: this.config.minConfidenceThreshold,
+      aggressiveMode: this.config.aggressiveMode,
+      maxConsecutiveHolds: this.config.maxConsecutiveHolds
+    });
+    console.log('🔥 ULTRA-AGGRESSIVE MODE ACTIVATED!');
 
     // 🧠 Initialize Hitch NLP Advanced Module System
     console.log('🗣️⚛️ Initializing Hitch NLP Quantum Integration...');
@@ -338,7 +419,7 @@ class QuantumSingularityLauncher {
       subNanosecondPrecision: this.config.targetAccuracy
     });
 
-    this.timeFrameManager = new TimeFrameManager({
+    this.timeFrameManager = new EnhancedTimeframeManager({
       quantumEnhanced: true,
       neuromorphicProcessing: this.config.enableNeuromorphicProcessing,
       atomicTimekeeping: this.config.enableSubNanosecondTiming
@@ -381,6 +462,13 @@ class QuantumSingularityLauncher {
       
       this.unifiedWS.on('open', () => {
         console.log('✅ Connected to unified SSL server for market data');
+        
+        // Connect ExecutionLayer to WebSocket for dashboard broadcasting
+        if (this.executionLayer) {
+          this.executionLayer.setWebSocketClient(this.unifiedWS);
+          console.log('🔌 ExecutionLayer connected to WebSocket for dashboard');
+        }
+        
         this.unifiedWS.send(JSON.stringify({
           type: 'identify',
           source: 'trading_bot',
@@ -392,6 +480,7 @@ class QuantumSingularityLauncher {
       this.unifiedWS.on('message', (data) => {
         try {
           const message = JSON.parse(data);
+          console.log('📨 Message received from SSL server:', JSON.stringify(message).substring(0, 100));
           this.handleUnifiedServerData(message);
         } catch (error) {
           console.error('❌ Error parsing unified server message:', error.message);
@@ -417,6 +506,51 @@ class QuantumSingularityLauncher {
    * 🔄 Handle market data from unified SSL server
    */
   handleUnifiedServerData(message) {
+    // Handle price format from SSL server
+    if (message.type === 'price' && message.data) {
+      const priceData = message.data;
+      if (priceData.asset === 'BTC-USD') {
+        console.log(`🎯 BTC-USD PRICE RECEIVED: $${priceData.price}`);
+        
+        const marketData = {
+          s: priceData.asset,
+          c: priceData.price,
+          v: 1.0,  // Default volume
+          h: priceData.price * 1.01,
+          l: priceData.price * 0.99,
+          o: priceData.price,
+          timestamp: priceData.timestamp || Date.now()
+        };
+        
+        if (this.quantumCore) {
+          console.log(`⚡ TRIGGERING QUANTUM ANALYSIS FOR BTC-USD at $${priceData.price}`);
+          
+          // Prepare market data for quantum decision
+          const quantumMarketData = {
+            features: [priceData.price / 100000, 0.5, 0.5, 0.5], // Normalized features
+            event: { price: priceData.price, volume: 1.0 },
+            priceStream: [priceData.price],
+            history: []
+          };
+          
+          // Trigger quantum decision
+          this.quantumCore.quantumNeuromorphicHybridDecision(quantumMarketData, { maxRisk: 0.5 })
+            .then(decision => {
+              console.log(`🎯 QUANTUM DECISION: ${decision.action} with confidence ${(decision.confidence * 100).toFixed(1)}%`);
+              
+              // Execute the trade if we have an execution layer
+              if (this.executionLayer && decision.action !== 'HOLD') {
+                console.log(`💰 EXECUTING TRADE: ${decision.action}`);
+                decision.price = priceData.price;
+                this.executionLayer.executeTrade(decision);
+              }
+            })
+            .catch(err => console.error('❌ Quantum decision error:', err.message));
+        }
+      }
+      return;
+    }
+    
     // Handle direct Polygon format: {"ev":"XA","pair":"BTC-USD","v":...}
     if (message.ev === 'XA' && message.pair) {
       const marketData = {
@@ -432,8 +566,8 @@ class QuantumSingularityLauncher {
       // DEBUG: Log what we're comparing  
       console.log(`🔍 DEBUG: Received ${marketData.s}, comparing to config.primaryAsset: ${this.config.primaryAsset}`);
       
-      // Check for BTC (config says 'BTC' but data comes as 'BTC-USD')
-      const isTargetAsset = marketData.s === 'BTC-USD' && this.config.primaryAsset === 'BTC';
+      // Check if the received asset matches our configured primaryAsset
+      const isTargetAsset = marketData.s === this.config.primaryAsset;
       
       if (this.quantumTradingSystem && isTargetAsset) {
         console.log(`🎯 MATCH! Processing market data for ${marketData.s} (${marketData.c})`);
@@ -739,16 +873,10 @@ class QuantumSingularityLauncher {
    * 🚀⚛️ Start quantum API server
    */
   async startQuantumAPIServer() {
-    return new Promise((resolve, reject) => {
-      this.httpServer.listen(this.config.httpPort, (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          console.log(`🚀⚛️ Quantum API Server online on port ${this.config.httpPort}`);
-          resolve();
-        }
-      });
-    });
+    // 🔧 UNIFIED ARCHITECTURE: Skip HTTP server - using existing SSL server on port 3011
+    console.log('🚀⚛️ Quantum API Server: SKIPPED - Using unified SSL server architecture');
+    console.log(`🌐 API available through unified SSL server on port 3011`);
+    return Promise.resolve();
   }
 
   /**
