@@ -541,6 +541,7 @@ class QuantumSingularityLauncher {
           type: 'identify',
           source: 'trading_bot',
           botType: 'quantum',
+          botTier: 'quantum',  // TIER IDENTIFICATION FOR UNIFIED DASHBOARD
           timestamp: Date.now()
         }));
       });
