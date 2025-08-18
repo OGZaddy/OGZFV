@@ -4,6 +4,9 @@
  */
 
 const WebSocket = require('ws');
+const dns = require('dns');
+// Force IPv4
+dns.setDefaultResultOrder('ipv4first');
 
 const BOT_TIER = 'pro';
 const WS_URL = 'ws://127.0.0.1:3010/ws';
@@ -86,6 +89,7 @@ class ProBot {
                 
                 this.ws.send(JSON.stringify({
                     type: 'trade',
+                    source: 'trading_bot',
                     botTier: BOT_TIER,
                     action: action,
                     price: 50000 + Math.random() * 1000,
@@ -103,6 +107,7 @@ class ProBot {
     executeBuy() {
         this.ws.send(JSON.stringify({
             type: 'trade',
+            source: 'trading_bot',
             botTier: BOT_TIER,
             action: 'BUY',
             price: 50000,
@@ -115,6 +120,7 @@ class ProBot {
     executeSell() {
         this.ws.send(JSON.stringify({
             type: 'trade',
+            source: 'trading_bot',
             botTier: BOT_TIER,
             action: 'SELL',
             price: 50000,

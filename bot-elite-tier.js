@@ -4,6 +4,9 @@
  */
 
 const WebSocket = require('ws');
+const dns = require('dns');
+// Force IPv4
+dns.setDefaultResultOrder('ipv4first');
 const SelfConsumingLogModule = require('./core/SelfConsumingLogModule');
 const CompressedLogManager = require('./core/CompressedLogManager');
 
@@ -46,6 +49,7 @@ class EliteBot {
         this.ws.on('open', () => {
             console.log(`✅ Elite bot connected to unified dashboard`);
             this.connected = true;
+            this.reconnectAttempts = 0; // Reset reconnect counter
             
             // Identify ourselves
             this.ws.send(JSON.stringify({
@@ -67,10 +71,24 @@ class EliteBot {
             if (msg.type === 'manual_sell') this.executeSell();
         });
         
-        this.ws.on('close', () => {
-            console.log('Disconnected, reconnecting...');
-            setTimeout(() => this.connect(), 3000);
+        this.ws.on('close', (code, reason) => {
+            console.log(`Disconnected (code: ${code}), reconnecting...`);
+            this.connected = false;
+            const delay = Math.min(3000 * Math.pow(1.5, this.reconnectAttempts || 0), 30000);
+            this.reconnectAttempts = (this.reconnectAttempts || 0) + 1;
+            setTimeout(() => this.connect(), delay);
         });
+        
+        // Heartbeat to prevent disconnects
+        this.ws.on('pong', () => {
+            this.lastPong = Date.now();
+        });
+        
+        setInterval(() => {
+            if (this.connected && this.ws.readyState === WebSocket.OPEN) {
+                this.ws.ping();
+            }
+        }, 30000);
     }
     
     startTrading() {
@@ -96,6 +114,7 @@ class EliteBot {
                 
                 const tradeData = {
                     type: 'trade',
+                    source: 'trading_bot',
                     botTier: BOT_TIER,
                     action: action,
                     price: 50000 + Math.random() * 1000,
@@ -137,6 +156,7 @@ class EliteBot {
             // Notify dashboard of evolution
             this.ws.send(JSON.stringify({
                 type: 'evolution',
+                source: 'trading_bot',
                 botTier: BOT_TIER,
                 generation: this.evolutionGen,
                 stats: evolution.stats,
@@ -148,6 +168,7 @@ class EliteBot {
     executeBuy() {
         this.ws.send(JSON.stringify({
             type: 'trade',
+            source: 'trading_bot',
             botTier: BOT_TIER,
             action: 'BUY',
             price: 50000,
@@ -161,6 +182,7 @@ class EliteBot {
     executeSell() {
         this.ws.send(JSON.stringify({
             type: 'trade',
+            source: 'trading_bot',
             botTier: BOT_TIER,
             action: 'SELL',
             price: 50000,

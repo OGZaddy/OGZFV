@@ -1271,6 +1271,15 @@
                         this.updateConnectionStatus('bot', true);
                         this.addAIThought('🔗 Connected to trading engine. Systems nominal.', 'system');
                         
+                        // CRITICAL: Identify as dashboard to receive bot messages
+                        this.botSocket.send(JSON.stringify({
+                            type: 'identify',
+                            source: 'dashboard',
+                            version: '1.0.0',
+                            timestamp: Date.now()
+                        }));
+                        console.log('📊 Identified as dashboard to server');
+                        
                         // Enhanced ping system with connection health monitoring
                         this.botPingInterval = setInterval(() => {
                             if (this.botSocket.readyState === WebSocket.OPEN) {

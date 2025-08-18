@@ -270,10 +270,10 @@ app.get('/cancel.html', (req, res) => {
 console.log('🔄 SSL handled by nginx reverse proxy');
 console.log(`   WebSocket: wss://${process.env.DOMAIN || 'ogzprime.com'}/ws → nginx → ws://localhost:${apiPort}/ws`);
 
-// Regular HTTP server
+// Regular HTTP server - Listen on BOTH IPv4 and IPv6
 const httpServer = http.createServer(app);
-httpServer.listen(apiPort, '0.0.0.0', () => {
-  console.log(`🌐 HTTP API Server running on port ${apiPort} (all interfaces)`);
+httpServer.listen(apiPort, '::', () => {
+  console.log(`🌍 Server listening on all interfaces (IPv4 + IPv6) port ${apiPort}`);
 });
 
 // HTTPS server removed - nginx handles SSL termination
@@ -281,78 +281,76 @@ httpServer.listen(apiPort, '0.0.0.0', () => {
 
 // Single WebSocket server on unified port
 const wss = new WebSocket.Server({ 
-  server: httpServer,
-  path: '/ws'  // Optional: use path-based routing
+  server: httpServer
+  // No path restriction - accept all WebSocket connections
 });
 
 wss.on('connection', (ws, req) => {
-  // Register ALL connections with broadcaster
-  const connectionId = broadcaster.registerClient(ws, {
-    type: 'unknown',
-    ip: req.socket.remoteAddress,
-    userAgent: req.headers['user-agent']
-  });
+  console.log('🔵 NEW RAW CONNECTION 🔵');
   
-  console.log(`✅ New connection registered: ${connectionId}`);
+  // Generate a simple ID for this connection
+  const connectionId = `conn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  let connectionType = 'unknown';
+  let botTier = null;
   
-  // Handle incoming messages
+  // HANDLE MESSAGES WITHOUT BROADCASTER
   ws.on('message', (message) => {
+    console.log('🟣 RAW MESSAGE:', message.toString().substring(0, 200));
+    
     try {
       const data = JSON.parse(message.toString());
+      console.log(`📨 Message type: ${data.type}`);
       
-      // CRITICAL: Handle ping/pong for connection health
-      if (data.type === 'ping') {
-        ws.send(JSON.stringify({
-          type: 'pong', 
-          id: data.id,
-          timestamp: data.timestamp || Date.now()
-        }));
-        console.log(`🏓 Responded to ping from ${connectionId}`);
-        return;
-      }
-      
-      if (data.type === 'pong') {
-        console.log(`✅ Received pong from ${connectionId}`);
-        return;
-      }
-      
-      // Special handling for bot identification
-      if (data.type === 'identify' && data.source === 'trading_bot') {
-        console.log('🤖 TRADING BOT IDENTIFIED!');
-        
-        // Update connection metadata with safety check
-        const connection = broadcaster.connections?.get(connectionId);
-        if (connection && connection.metadata) {
-          connection.metadata.type = 'bot';
-          connection.state.priority = 'critical';
+      // Handle identification
+      if (data.type === 'identify') {
+        if (data.source === 'trading_bot') {
+          connectionType = 'bot';
+          botTier = data.botTier;
+          console.log(`🤖 Bot identified: ${botTier}`);
           
-          // Send confirmation
-          broadcaster.sendDirect(connection, {
+          ws.send(JSON.stringify({
             type: 'identification_confirmed',
-            connectionId: connectionId,
-            priority: 'critical',
-            message: 'You are now registered as a critical trading bot connection'
-          });
-          
-          console.log('✅ Trading bot successfully registered with enterprise security');
-        } else {
-          console.log('⚠️ Connection not found during bot identification');
-        }
-      }
-      
-      // Special handling for dashboard identification
-      if (data.type === 'identify' && data.source === 'dashboard') {
-        const connection = broadcaster.connections.get(connectionId);
-        if (connection) {
-          connection.metadata.type = 'dashboard';
+            message: 'Bot registered'
+          }));
+        } else if (data.source === 'dashboard') {
+          connectionType = 'dashboard';
           console.log('📊 Dashboard identified');
         }
       }
       
+      // Handle trades - FORWARD TO ALL CLIENTS
+      if (data.type === 'trade') {
+        console.log(`💰 TRADE: ${data.botTier} - ${data.action} at ${data.price}`);
+        
+        // Forward to ALL other connected clients
+        wss.clients.forEach((client) => {
+          if (client !== ws && client.readyState === WebSocket.OPEN) {
+            client.send(message.toString());
+            console.log('📤 Trade forwarded');
+          }
+        });
+      }
+      
+      // Handle ping/pong
+      if (data.type === 'ping') {
+        ws.send(JSON.stringify({
+          type: 'pong',
+          timestamp: Date.now()
+        }));
+      }
+      
     } catch (err) {
-      console.error(`Error parsing message from ${connectionId}:`, err);
+      console.error('Parse error:', err);
     }
   });
+  
+  ws.on('close', () => {
+    console.log(`❌ Connection closed: ${connectionId} (${connectionType})`);
+  });
+  
+  // DON'T USE BROADCASTER AT ALL - it's breaking the WebSocket
+  // Just track connections manually if needed
+  console.log(`✅ Connection ready: ${connectionId}`);
 });
 
 // Market data variables
