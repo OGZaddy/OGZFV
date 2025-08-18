@@ -62291,5 +62291,1607 @@
       "rsi": 96.81126726537966,
       "macd": -0.2590558410389454
     }
+  },
+  {
+    "timestamp": 1755525738246,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50161.63546168325,
+    "pnl": 7.08402181313782,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 84.95538197086167,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 7.08402181313782,
+    "indicators": {
+      "rsi": 50.146078109217065,
+      "macd": -0.031047281616631173
+    }
+  },
+  {
+    "timestamp": 1755525741246,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50285.69721294857,
+    "pnl": -35.36380202788062,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 83.73905851166408,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -35.36380202788062,
+    "indicators": {
+      "rsi": 87.25811933050159,
+      "macd": 0.23310576138894334
+    }
+  },
+  {
+    "timestamp": 1755525750246,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50690.04511822241,
+    "pnl": 11.551460048625072,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 76.53154263467624,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 11.551460048625072,
+    "indicators": {
+      "rsi": 84.36296713513386,
+      "macd": 0.452740249754533
+    }
+  },
+  {
+    "timestamp": 1755525762253,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50476.79522780945,
+    "pnl": -38.91814567030655,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 78.74846238292902,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -38.91814567030655,
+    "indicators": {
+      "rsi": 92.77904031313605,
+      "macd": 0.19012191349098062
+    }
+  },
+  {
+    "timestamp": 1755525768253,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50824.15710312537,
+    "pnl": 56.84088173916114,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 76.24960926796494,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 56.84088173916114,
+    "indicators": {
+      "rsi": 57.24099222752933,
+      "macd": 0.13745601189991352
+    }
+  },
+  {
+    "timestamp": 1755525780254,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50855.64976046188,
+    "pnl": -14.611328547171743,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 80.2974380385492,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -14.611328547171743,
+    "indicators": {
+      "rsi": 55.47626765031809,
+      "macd": 0.08427012619795993
+    }
+  },
+  {
+    "timestamp": 1755525789253,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50113.012267987724,
+    "pnl": -9.075081898734128,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 84.00444592012803,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -9.075081898734128,
+    "indicators": {
+      "rsi": 55.95869358944816,
+      "macd": -0.23579064214776357
+    }
+  },
+  {
+    "timestamp": 1755525795254,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50604.69595746777,
+    "pnl": 40.87875783705689,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 83.96207158599063,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 40.87875783705689,
+    "indicators": {
+      "rsi": 54.304703550128366,
+      "macd": -0.25793971933256965
+    }
+  },
+  {
+    "timestamp": 1755525822254,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50314.921559275266,
+    "pnl": 46.64008655629816,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 84.07642053923588,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 46.64008655629816,
+    "indicators": {
+      "rsi": 92.60514608820334,
+      "macd": 0.09992071051270779
+    }
+  },
+  {
+    "timestamp": 1755525831254,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50279.357125882016,
+    "pnl": 23.816773143117796,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 78.61026373083035,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 23.816773143117796,
+    "indicators": {
+      "rsi": 69.47036665805679,
+      "macd": 0.07913919334239328
+    }
+  },
+  {
+    "timestamp": 1755525840255,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50360.413127048545,
+    "pnl": -3.6061249711464183,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 80.75556942364844,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -3.6061249711464183,
+    "indicators": {
+      "rsi": 50.70677279852516,
+      "macd": -0.48187344315661607
+    }
+  },
+  {
+    "timestamp": 1755525843255,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50396.68622396999,
+    "pnl": -36.581972358203075,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 76.80057318570516,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -36.581972358203075,
+    "indicators": {
+      "rsi": 73.09767747862753,
+      "macd": 0.06954834311805302
+    }
+  },
+  {
+    "timestamp": 1755525846255,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50716.40806734534,
+    "pnl": -17.00758676044981,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 78.5270546001342,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -17.00758676044981,
+    "indicators": {
+      "rsi": 51.640939090689386,
+      "macd": 0.048568113828798554
+    }
+  },
+  {
+    "timestamp": 1755525849255,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50167.64113976066,
+    "pnl": 14.28998677382981,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 83.22411948160587,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 14.28998677382981,
+    "indicators": {
+      "rsi": 95.60148159741124,
+      "macd": -0.0231588772129534
+    }
+  },
+  {
+    "timestamp": 1755525852255,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50006.970396378354,
+    "pnl": -8.851613723023599,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 78.11119080433862,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -8.851613723023599,
+    "indicators": {
+      "rsi": 56.13211582022627,
+      "macd": -0.11491975824848577
+    }
+  },
+  {
+    "timestamp": 1755525861256,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50550.04257978568,
+    "pnl": 6.1218450398050965,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 77.61597838321111,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 6.1218450398050965,
+    "indicators": {
+      "rsi": 98.16266430135809,
+      "macd": 0.28247839037622624
+    }
+  },
+  {
+    "timestamp": 1755525864255,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50073.56452277849,
+    "pnl": 18.770945049057463,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 83.92553851414199,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 18.770945049057463,
+    "indicators": {
+      "rsi": 78.99177304598926,
+      "macd": 0.3961450557245245
+    }
+  },
+  {
+    "timestamp": 1755525885255,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50457.2815725364,
+    "pnl": -9.201274805732307,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 78.05712277788317,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -9.201274805732307,
+    "indicators": {
+      "rsi": 80.14194744182163,
+      "macd": -0.19502501468705669
+    }
+  },
+  {
+    "timestamp": 1755525891256,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50913.56717151811,
+    "pnl": 4.468148162297869,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 83.44611793845802,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 4.468148162297869,
+    "indicators": {
+      "rsi": 88.6803327111005,
+      "macd": 0.22668405073016396
+    }
+  },
+  {
+    "timestamp": 1755525906256,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50848.09592440024,
+    "pnl": 47.31785405560075,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 75.46504026955084,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 47.31785405560075,
+    "indicators": {
+      "rsi": 89.53645882631486,
+      "macd": 0.4239164800658308
+    }
+  },
+  {
+    "timestamp": 1755525915257,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50729.15697837999,
+    "pnl": 47.39078242357101,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 78.52558165474126,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 47.39078242357101,
+    "indicators": {
+      "rsi": 56.220155935793755,
+      "macd": -0.28774625630511497
+    }
+  },
+  {
+    "timestamp": 1755525924257,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50278.906749374655,
+    "pnl": 47.02044481177775,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 84.13328637392259,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 47.02044481177775,
+    "indicators": {
+      "rsi": 96.41008533576459,
+      "macd": 0.20771714369350125
+    }
+  },
+  {
+    "timestamp": 1755525948257,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50984.53559674449,
+    "pnl": 0.8951097096454919,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 79.44220768760225,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 0.8951097096454919,
+    "indicators": {
+      "rsi": 89.47918581694546,
+      "macd": -0.13213266166249982
+    }
+  },
+  {
+    "timestamp": 1755525951257,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50594.373851290286,
+    "pnl": -21.674357248728448,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 80.66437143722139,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -21.674357248728448,
+    "indicators": {
+      "rsi": 86.87118715435457,
+      "macd": -0.35701512853945894
+    }
+  },
+  {
+    "timestamp": 1755525960257,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50500.495483949184,
+    "pnl": 37.45788444041766,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 84.03699234685078,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 37.45788444041766,
+    "indicators": {
+      "rsi": 68.95371094466188,
+      "macd": -0.01514876154282141
+    }
+  },
+  {
+    "timestamp": 1755525969257,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50590.18113160647,
+    "pnl": -32.19077490964458,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 77.5440356405138,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -32.19077490964458,
+    "indicators": {
+      "rsi": 89.25510120557863,
+      "macd": 0.14908530561448563
+    }
+  },
+  {
+    "timestamp": 1755525975256,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50655.52646114415,
+    "pnl": 21.234843481725207,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 77.6527005107148,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 21.234843481725207,
+    "indicators": {
+      "rsi": 86.50433045974611,
+      "macd": -0.44061148621744173
+    }
+  },
+  {
+    "timestamp": 1755525987256,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50370.003174082536,
+    "pnl": 24.105167712870955,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 79.49933116116632,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 24.105167712870955,
+    "indicators": {
+      "rsi": 64.82667565577391,
+      "macd": -0.245795670043923
+    }
+  },
+  {
+    "timestamp": 1755526005258,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50913.92526104949,
+    "pnl": 12.009899243141431,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 76.76204235194251,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 12.009899243141431,
+    "indicators": {
+      "rsi": 60.76038451819933,
+      "macd": -0.2962500834171906
+    }
+  },
+  {
+    "timestamp": 1755526011257,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50430.74866229166,
+    "pnl": -20.433592220640882,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 76.90235546269675,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -20.433592220640882,
+    "indicators": {
+      "rsi": 66.53350615671872,
+      "macd": -0.4616153921121364
+    }
+  },
+  {
+    "timestamp": 1755526029258,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50894.595005207906,
+    "pnl": -31.9660507711203,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 79.90211671647495,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -31.9660507711203,
+    "indicators": {
+      "rsi": 76.16488406312834,
+      "macd": -0.2787379323626116
+    }
+  },
+  {
+    "timestamp": 1755526038258,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50240.83372179666,
+    "pnl": -19.942304151398847,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 80.74078274906311,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -19.942304151398847,
+    "indicators": {
+      "rsi": 82.93194192932201,
+      "macd": 0.3652477152255065
+    }
+  },
+  {
+    "timestamp": 1755526041258,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50481.16620280606,
+    "pnl": -19.41808456703432,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 77.83164504858141,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -19.41808456703432,
+    "indicators": {
+      "rsi": 98.70887869505205,
+      "macd": 0.002349042114256017
+    }
+  },
+  {
+    "timestamp": 1755526047258,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50503.233303317866,
+    "pnl": -23.970704150852708,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 83.7978998240338,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -23.970704150852708,
+    "indicators": {
+      "rsi": 93.7217756684955,
+      "macd": -0.0755167816385407
+    }
+  },
+  {
+    "timestamp": 1755526059260,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50169.9040083753,
+    "pnl": 10.18996373762816,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 84.91755645200654,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 10.18996373762816,
+    "indicators": {
+      "rsi": 66.85599984634325,
+      "macd": -0.4120433641750547
+    }
+  },
+  {
+    "timestamp": 1755526062259,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50810.37604477001,
+    "pnl": -30.109075119804952,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 78.42718661578729,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -30.109075119804952,
+    "indicators": {
+      "rsi": 59.08295936623059,
+      "macd": 0.31638665952020273
+    }
+  },
+  {
+    "timestamp": 1755526065259,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50333.84344980813,
+    "pnl": -24.343595072824698,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 77.49405415138209,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -24.343595072824698,
+    "indicators": {
+      "rsi": 51.43952625668883,
+      "macd": -0.17529160731678828
+    }
+  },
+  {
+    "timestamp": 1755526071261,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50267.43373913422,
+    "pnl": -32.40720069645698,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 78.74979261760033,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -32.40720069645698,
+    "indicators": {
+      "rsi": 80.98580551282713,
+      "macd": 0.25329518390304573
+    }
+  },
+  {
+    "timestamp": 1755526077261,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50174.37229420989,
+    "pnl": -13.202021279624454,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 84.2356127702678,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -13.202021279624454,
+    "indicators": {
+      "rsi": 69.35459756834905,
+      "macd": -0.1408848964633318
+    }
+  },
+  {
+    "timestamp": 1755526101261,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50464.2929898259,
+    "pnl": 26.430069981016057,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 76.91408864142873,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 26.430069981016057,
+    "indicators": {
+      "rsi": 55.531170115341155,
+      "macd": -0.4106384237792633
+    }
+  },
+  {
+    "timestamp": 1755526110261,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50953.58455161577,
+    "pnl": 35.12708692723226,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 83.11961648785609,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 35.12708692723226,
+    "indicators": {
+      "rsi": 67.78918134133004,
+      "macd": 0.25344030007757046
+    }
+  },
+  {
+    "timestamp": 1755526113261,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50674.34157140523,
+    "pnl": 17.930234244911748,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 82.29521692813236,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 17.930234244911748,
+    "indicators": {
+      "rsi": 99.08956841599658,
+      "macd": 0.42403694107415957
+    }
+  },
+  {
+    "timestamp": 1755526131263,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50641.96905635778,
+    "pnl": 28.603987276164457,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 75.94193587031081,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 28.603987276164457,
+    "indicators": {
+      "rsi": 84.3911829477689,
+      "macd": -0.1994408494920077
+    }
+  },
+  {
+    "timestamp": 1755526134264,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50530.59447104479,
+    "pnl": 7.008627555582592,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 77.59173720077928,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 7.008627555582592,
+    "indicators": {
+      "rsi": 93.85524478327054,
+      "macd": -0.1882125227678293
+    }
+  },
+  {
+    "timestamp": 1755526137265,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50339.711080306,
+    "pnl": -31.873472841681217,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 79.77110650436418,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -31.873472841681217,
+    "indicators": {
+      "rsi": 67.80846398263405,
+      "macd": -0.37162828360501954
+    }
+  },
+  {
+    "timestamp": 1755526143265,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50169.13951915185,
+    "pnl": 5.330249355757221,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 83.4646553171981,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 5.330249355757221,
+    "indicators": {
+      "rsi": 62.748156178756034,
+      "macd": 0.09057641717115383
+    }
+  },
+  {
+    "timestamp": 1755526149264,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50415.44234324257,
+    "pnl": -35.11159698948393,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 78.76783970126989,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -35.11159698948393,
+    "indicators": {
+      "rsi": 54.56343361764795,
+      "macd": 0.02770303946130248
+    }
+  },
+  {
+    "timestamp": 1755526167264,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50737.835797201864,
+    "pnl": 48.75532204380607,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 77.62292875417084,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 48.75532204380607,
+    "indicators": {
+      "rsi": 55.56539827318705,
+      "macd": 0.3513173492188837
+    }
+  },
+  {
+    "timestamp": 1755526170265,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50655.04744847932,
+    "pnl": 55.572914580363765,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 76.80000840248309,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 55.572914580363765,
+    "indicators": {
+      "rsi": 54.47005404339562,
+      "macd": -0.01187309435855477
+    }
+  },
+  {
+    "timestamp": 1755526176265,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50000.57015382694,
+    "pnl": -35.79041667187916,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 81.31604989676471,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -35.79041667187916,
+    "indicators": {
+      "rsi": 78.96968251506715,
+      "macd": -0.29859506784733103
+    }
+  },
+  {
+    "timestamp": 1755526188265,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50053.807809954764,
+    "pnl": 38.038041837120865,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 77.66911334513591,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 38.038041837120865,
+    "indicators": {
+      "rsi": 85.15538560285927,
+      "macd": 0.3869234419680738
+    }
+  },
+  {
+    "timestamp": 1755526212265,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50271.69402604065,
+    "pnl": 33.33713980538128,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 79.15583679598578,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 33.33713980538128,
+    "indicators": {
+      "rsi": 65.90938266841894,
+      "macd": 0.09756823066920384
+    }
+  },
+  {
+    "timestamp": 1755526215266,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50359.26221013449,
+    "pnl": 39.85172831825422,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 79.21296356379368,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 39.85172831825422,
+    "indicators": {
+      "rsi": 78.14126387745581,
+      "macd": 0.296441532874008
+    }
+  },
+  {
+    "timestamp": 1755526221266,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50315.674757735746,
+    "pnl": 48.22516581573696,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 82.27214579997663,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 48.22516581573696,
+    "indicators": {
+      "rsi": 87.12185222926665,
+      "macd": 0.12698014300828042
+    }
+  },
+  {
+    "timestamp": 1755526233267,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50025.63562191766,
+    "pnl": 10.109822856727114,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 81.97967434524418,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 10.109822856727114,
+    "indicators": {
+      "rsi": 86.53583561953513,
+      "macd": 0.1447670071843976
+    }
+  },
+  {
+    "timestamp": 1755526239266,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50119.228654052735,
+    "pnl": 17.456654822470508,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 82.83323320132081,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 17.456654822470508,
+    "indicators": {
+      "rsi": 81.33374728345603,
+      "macd": -0.2319638522093017
+    }
+  },
+  {
+    "timestamp": 1755526248267,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50468.81761168384,
+    "pnl": 23.179856809486587,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 78.09812973701644,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 23.179856809486587,
+    "indicators": {
+      "rsi": 79.91176653725971,
+      "macd": 0.0451517542340969
+    }
+  },
+  {
+    "timestamp": 1755526251267,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50965.99312428818,
+    "pnl": 30.140499393648103,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 82.45196816513285,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 30.140499393648103,
+    "indicators": {
+      "rsi": 84.40719232061781,
+      "macd": -0.44260978681608276
+    }
+  },
+  {
+    "timestamp": 1755526254268,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50456.08697866697,
+    "pnl": -14.164924875131668,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 80.3474411276282,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -14.164924875131668,
+    "indicators": {
+      "rsi": 60.6535660726227,
+      "macd": -0.4423857103961759
+    }
+  },
+  {
+    "timestamp": 1755526266268,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50816.0586915093,
+    "pnl": 15.457525576377817,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 75.56109109567105,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 15.457525576377817,
+    "indicators": {
+      "rsi": 86.06383442110393,
+      "macd": 0.13933039704681294
+    }
+  },
+  {
+    "timestamp": 1755526269269,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50580.87159684479,
+    "pnl": -22.871147372984357,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 79.62635372304324,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -22.871147372984357,
+    "indicators": {
+      "rsi": 51.361053534197175,
+      "macd": -0.45343440982980443
+    }
+  },
+  {
+    "timestamp": 1755526287269,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50740.20541336248,
+    "pnl": -11.423846602548327,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 77.12079615366885,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -11.423846602548327,
+    "indicators": {
+      "rsi": 74.99861691127659,
+      "macd": 0.14070176225838393
+    }
+  },
+  {
+    "timestamp": 1755526293268,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50532.7308079971,
+    "pnl": -15.539279279610374,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 77.38699620539879,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -15.539279279610374,
+    "indicators": {
+      "rsi": 59.48432399795304,
+      "macd": -0.39938544280125443
+    }
+  },
+  {
+    "timestamp": 1755526302269,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50253.043505589136,
+    "pnl": -14.058363746266577,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 81.64677340781309,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -14.058363746266577,
+    "indicators": {
+      "rsi": 66.57522763582085,
+      "macd": -0.3403032021220944
+    }
+  },
+  {
+    "timestamp": 1755526305268,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50014.3207620646,
+    "pnl": 9.764116506804966,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 83.40459307611175,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 9.764116506804966,
+    "indicators": {
+      "rsi": 97.51399848093737,
+      "macd": -0.4655790657820462
+    }
+  },
+  {
+    "timestamp": 1755526317270,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50670.49847939464,
+    "pnl": -15.190045302164423,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 78.64525769588907,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -15.190045302164423,
+    "indicators": {
+      "rsi": 77.56728222163994,
+      "macd": -0.2744423254421331
+    }
+  },
+  {
+    "timestamp": 1755526326270,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50342.35354053225,
+    "pnl": -15.420522094911304,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 84.39108204622718,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -15.420522094911304,
+    "indicators": {
+      "rsi": 90.92194117333509,
+      "macd": 0.23522730071927445
+    }
+  },
+  {
+    "timestamp": 1755526329270,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50008.79324021731,
+    "pnl": -23.965495701245587,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 84.51737743295051,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -23.965495701245587,
+    "indicators": {
+      "rsi": 57.51413012892526,
+      "macd": 0.44721116481010403
+    }
+  },
+  {
+    "timestamp": 1755526341271,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50209.69901570574,
+    "pnl": -34.447599479412794,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 81.5993125150518,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -34.447599479412794,
+    "indicators": {
+      "rsi": 75.74327063210909,
+      "macd": 0.30335592040472226
+    }
+  },
+  {
+    "timestamp": 1755526344270,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50666.63621850943,
+    "pnl": 39.89548354642313,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 76.64115345170356,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 39.89548354642313,
+    "indicators": {
+      "rsi": 71.53667171797579,
+      "macd": -0.20664762734853515
+    }
+  },
+  {
+    "timestamp": 1755526350271,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50636.62423890352,
+    "pnl": 30.15637711928071,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 84.35284613658324,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 30.15637711928071,
+    "indicators": {
+      "rsi": 54.30581186925063,
+      "macd": 0.44477427412084514
+    }
+  },
+  {
+    "timestamp": 1755526353271,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50602.472956273814,
+    "pnl": -12.144053016076162,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 75.11331900755619,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -12.144053016076162,
+    "indicators": {
+      "rsi": 89.55995632143384,
+      "macd": 0.24037605053229028
+    }
+  },
+  {
+    "timestamp": 1755526365272,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50238.87358784231,
+    "pnl": 23.973605718240776,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 81.47653368854185,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 23.973605718240776,
+    "indicators": {
+      "rsi": 53.98162930585391,
+      "macd": 0.2966990377866301
+    }
+  },
+  {
+    "timestamp": 1755526377275,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50562.03768269307,
+    "pnl": 38.07154614372242,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 77.11612640911643,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 38.07154614372242,
+    "indicators": {
+      "rsi": 90.69866188050261,
+      "macd": 0.37688613227394674
+    }
+  },
+  {
+    "timestamp": 1755526383275,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50307.0228174478,
+    "pnl": -20.548541850967585,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 77.38009484362395,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -20.548541850967585,
+    "indicators": {
+      "rsi": 79.22012153834442,
+      "macd": 0.2698754576914484
+    }
+  },
+  {
+    "timestamp": 1755526389275,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50840.70206522257,
+    "pnl": 28.440752269250524,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 81.05597720956858,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 28.440752269250524,
+    "indicators": {
+      "rsi": 81.60359817551424,
+      "macd": 0.17833108798369657
+    }
+  },
+  {
+    "timestamp": 1755526392275,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50833.827004755556,
+    "pnl": 37.337020871453596,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 82.85039168066554,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 37.337020871453596,
+    "indicators": {
+      "rsi": 93.16660614118994,
+      "macd": -0.18636533352889417
+    }
+  },
+  {
+    "timestamp": 1755526398275,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50518.69321265325,
+    "pnl": -34.0121625359019,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 82.56545220591896,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -34.0121625359019,
+    "indicators": {
+      "rsi": 55.59985250711843,
+      "macd": -0.18480151252956234
+    }
+  },
+  {
+    "timestamp": 1755526410277,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50989.78426949078,
+    "pnl": 27.89540524918165,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 76.79025708453808,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 27.89540524918165,
+    "indicators": {
+      "rsi": 69.3868619379798,
+      "macd": 0.30870133711361647
+    }
+  },
+  {
+    "timestamp": 1755526422278,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50043.41812858873,
+    "pnl": 39.00002424319457,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 82.03365022869303,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 39.00002424319457,
+    "indicators": {
+      "rsi": 60.7810528978373,
+      "macd": 0.2723763317471741
+    }
+  },
+  {
+    "timestamp": 1755526434281,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50067.93980224857,
+    "pnl": 9.836392926250282,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 76.38644135350418,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 9.836392926250282,
+    "indicators": {
+      "rsi": 83.39531777613661,
+      "macd": 0.4342297793703944
+    }
+  },
+  {
+    "timestamp": 1755526446283,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50971.26428763521,
+    "pnl": -16.970860283787392,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 76.19902594424563,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -16.970860283787392,
+    "indicators": {
+      "rsi": 59.72629692052238,
+      "macd": 0.2692707681915638
+    }
+  },
+  {
+    "timestamp": 1755526455283,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50957.5390604787,
+    "pnl": 2.3939462796176536,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 82.92991795882259,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 2.3939462796176536,
+    "indicators": {
+      "rsi": 62.4934316110505,
+      "macd": 0.03175693603341867
+    }
+  },
+  {
+    "timestamp": 1755526461284,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50793.242225247486,
+    "pnl": 55.99407293262563,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 80.53577767936201,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 55.99407293262563,
+    "indicators": {
+      "rsi": 57.831459510722304,
+      "macd": -0.3672481159086811
+    }
+  },
+  {
+    "timestamp": 1755526464283,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50962.484592874964,
+    "pnl": -15.60049311930739,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 79.99407376996453,
+    "evolution": 0,
+    "learning": true,
+    "outcome": -15.60049311930739,
+    "indicators": {
+      "rsi": 64.0939817201164,
+      "macd": -0.3981619859650938
+    }
+  },
+  {
+    "timestamp": 1755526467284,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "SELL",
+    "price": 50966.29755301908,
+    "pnl": 31.334350501037576,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 75.0137594416609,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 31.334350501037576,
+    "indicators": {
+      "rsi": 67.34942607155737,
+      "macd": 0.45334347174580225
+    }
+  },
+  {
+    "timestamp": 1755526470283,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50528.658519361146,
+    "pnl": 7.6565150290349155,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 76.12533197549972,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 7.6565150290349155,
+    "indicators": {
+      "rsi": 83.08124064866442,
+      "macd": -0.3222591168324669
+    }
+  },
+  {
+    "timestamp": 1755526476284,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50729.46429180957,
+    "pnl": 41.490908941745595,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 78.34416538359942,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 41.490908941745595,
+    "indicators": {
+      "rsi": 94.50447589614657,
+      "macd": 0.4422669743517669
+    }
+  },
+  {
+    "timestamp": 1755526488285,
+    "type": "trade",
+    "source": "trading_bot",
+    "botTier": "elite",
+    "action": "BUY",
+    "price": 50552.72077661497,
+    "pnl": 36.79038228997541,
+    "reason": "AI Signal (Gen 0)",
+    "confidence": 80.9865424813143,
+    "evolution": 0,
+    "learning": true,
+    "outcome": 36.79038228997541,
+    "indicators": {
+      "rsi": 75.05783784342604,
+      "macd": 0.15368553919923977
+    }
   }
 ]

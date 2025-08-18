@@ -227,6 +227,9 @@ class ExecutionLayer {
       console.log('   Balance After: $' + this.balance.toFixed(2));
       console.log('   📊 Remaining Cash: $' + this.balance.toFixed(2));
       
+      // Broadcast the trade to dashboard
+      this.broadcastTrade(trade);
+      
       return trade;
       
     } else if (decision.action === 'SHORT' || decision.action === 'SELL') {
@@ -266,7 +269,7 @@ class ExecutionLayer {
       console.log('   P&L: $' + pnl.toFixed(2) + ' (' + pnlPercent.toFixed(2) + '%)');
       console.log('   💰 New Balance: $' + this.balance.toFixed(2));
       
-      return {
+      const sellTrade = {
         id: Date.now().toString(),
         side: 'sell',
         size: positionToSell.size,
@@ -278,6 +281,11 @@ class ExecutionLayer {
         paper: true,
         newBalance: this.balance
       };
+      
+      // Broadcast the sell trade to dashboard
+      this.broadcastTrade(sellTrade);
+      
+      return sellTrade;
     }
     
     return null;
@@ -385,19 +393,21 @@ class ExecutionLayer {
     try {
       if (this.wsClient && this.wsClient.readyState === 1) { // WebSocket.OPEN = 1
         const message = {
-          type: 'trade_executed',
-          botTier: this.botTier,  // Include bot tier for dashboard routing
-          data: {
-            ...trade,
-            balance: this.balance,
-            totalTrades: this.totalTrades,
-            pnl: this.totalPnL,
-            stats: this.getStats()
-          }
+          type: 'trade',  // Dashboard expects 'trade' not 'trade_executed'
+          botTier: 'quantum',  // Always quantum for this bot
+          source: 'trading_bot',
+          action: trade.side === 'buy' ? 'BUY' : 'SELL',
+          price: trade.price,
+          pnl: trade.pnl || 0,
+          reason: 'Quantum-neuromorphic analysis',
+          confidence: 0.95,
+          balance: this.balance,
+          totalTrades: this.totalTrades,
+          timestamp: Date.now()
         };
         
         this.wsClient.send(JSON.stringify(message));
-        console.log('📡 Trade broadcast to dashboard');
+        console.log('📡 Quantum trade broadcast to dashboard');
       }
     } catch (error) {
       console.error('Failed to broadcast trade:', error.message);

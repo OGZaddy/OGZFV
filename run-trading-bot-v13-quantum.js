@@ -540,7 +540,6 @@ class QuantumSingularityLauncher {
         this.unifiedWS.send(JSON.stringify({
           type: 'identify',
           source: 'trading_bot',
-          botType: 'quantum',
           botTier: 'quantum',  // TIER IDENTIFICATION FOR UNIFIED DASHBOARD
           timestamp: Date.now()
         }));
