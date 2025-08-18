@@ -433,7 +433,7 @@ polygonSocket.on('message', (data) => {
           console.log(`🎯 TICK #${tickCount}: ${asset} $${price.toFixed(2)} @ ${new Date(msg.e).toLocaleTimeString()}`);
         }
 
-        // 🚀 BROADCAST USING ADVANCED SYSTEM
+        // SEND PRICES DIRECTLY TO ALL WEBSOCKET CLIENTS
         const priceMessage = {
           type: 'price',
           data: {
@@ -445,22 +445,16 @@ polygonSocket.on('message', (data) => {
           }
         };
         
-        // Broadcast to ALL connections with high priority
-        const result = broadcaster.broadcast(priceMessage, {
-          priority: 'high',
-          requiresAck: false // Don't require ACK for price updates
+        // Send to ALL connected WebSocket clients
+        wss.clients.forEach((client) => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(priceMessage));
+          }
         });
         
-        // Broadcast specifically to bots with critical priority
-        broadcaster.broadcast(priceMessage, {
-          type: 'bot',
-          priority: 'critical',
-          requiresAck: true // Require ACK from bots
-        });
-        
-        // Log broadcast results
-        if (result.sent > 0) {
-          console.log(`📡 Price broadcast: ${asset} $${price.toFixed(2)} to ${result.sent} clients`);
+        // Log price update
+        if (tickCount % 10 === 0) {
+          console.log(`📡 Price sent to ${wss.clients.size} clients: ${asset} $${price.toFixed(2)}`);
         }
         
         // Price processed directly by broadcaster

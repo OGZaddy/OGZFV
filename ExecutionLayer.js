@@ -24,6 +24,10 @@ class ExecutionLayer {
     this.winningTrades = 0;
     this.totalPnL = 0;
     
+    // Trade frequency limiter
+    this.lastTradeTime = 0;
+    this.minTradeCooldown = 60000; // 1 minute minimum between trades
+    
     // Coinbase Pro API endpoints
     this.apiUrl = this.config.sandboxMode 
       ? 'https://api-public.sandbox.pro.coinbase.com'
@@ -183,6 +187,12 @@ class ExecutionLayer {
    */
   
   paperTrade(decision) {
+    // Check trade cooldown
+    if (Date.now() - this.lastTradeTime < this.minTradeCooldown) {
+      console.log('⏰ Trade cooldown active, skipping');
+      return null;
+    }
+    
     const tradeId = Date.now().toString();
     const currentPrice = decision.price || 50000;
     
@@ -226,6 +236,9 @@ class ExecutionLayer {
       console.log('   Balance Before: $' + trade.entryBalance.toFixed(2));
       console.log('   Balance After: $' + this.balance.toFixed(2));
       console.log('   📊 Remaining Cash: $' + this.balance.toFixed(2));
+      
+      // Update last trade time
+      this.lastTradeTime = Date.now();
       
       // Broadcast the trade to dashboard
       this.broadcastTrade(trade);
