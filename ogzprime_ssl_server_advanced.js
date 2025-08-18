@@ -281,8 +281,8 @@ httpServer.listen(apiPort, '::', () => {
 
 // Single WebSocket server on unified port
 const wss = new WebSocket.Server({ 
-  server: httpServer
-  // No path restriction - accept all WebSocket connections
+  server: httpServer,
+  path: '/ws'  // Dashboard expects this path
 });
 
 wss.on('connection', (ws, req) => {
