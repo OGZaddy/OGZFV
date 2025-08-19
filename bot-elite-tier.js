@@ -11,7 +11,7 @@ const SelfConsumingLogModule = require('./core/SelfConsumingLogModule');
 const CompressedLogManager = require('./core/CompressedLogManager');
 
 const BOT_TIER = 'elite';
-const WS_URL = 'ws://localhost:3010/ws';
+const WS_URL = 'ws://127.0.0.1:3010/ws';
 
 class EliteBot {
     constructor() {
@@ -35,8 +35,6 @@ class EliteBot {
             consumptionInterval: 30000, // Eat logs every 30 seconds
             learningRate: 0.15
         });
-        // Fix memory leak warning
-        this.logConsumer.setMaxListeners(20);
         
         // ELITE FEATURE: Compressed memory
         this.logManager = new CompressedLogManager({
