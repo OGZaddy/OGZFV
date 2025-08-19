@@ -194,7 +194,12 @@ class ExecutionLayer {
     }
     
     const tradeId = Date.now().toString();
-    const currentPrice = decision.price || 50000;
+    // Don't trade without real price
+    if (!decision.price) {
+      console.log('❌ No price provided - skipping trade');
+      return null;
+    }
+    const currentPrice = decision.price;
     
     // Calculate how much we can actually afford
     const availableBalance = this.balance * 0.95; // Keep 5% reserve
