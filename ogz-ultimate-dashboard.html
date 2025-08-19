@@ -1763,19 +1763,8 @@
             // All orphaned code removed - it was outside any function
             
             analyzePatterns() {
-                // Simulate real pattern detection with more realistic behavior
-                const patterns = ['Double Bottom', 'Head & Shoulders', 'Bull Flag', 'Bear Flag', 
-                                'Ascending Triangle', 'Descending Triangle', 'Cup & Handle', 'Breakout',
-                                'Support Level', 'Resistance Level', 'Fibonacci Retracement'];
-                
-                // Randomly detect a pattern (30% chance)
-                if (Math.random() < 0.3) {
-                    const detectedPattern = patterns[Math.floor(Math.random() * patterns.length)];
-                    const confidence = 60 + Math.random() * 35; // 60-95% confidence
-                    const signal = Math.random() > 0.5 ? 'BULLISH' : 'BEARISH';
-                    
-                    this.addPatternDetection(detectedPattern, confidence, signal);
-                }
+                // Patterns come from REAL bot trade messages only
+                // NO FAKE PATTERNS
                 
                 // Update individual pattern cards with new analysis
                 this.updatePatternAnalysis();
@@ -1984,10 +1973,7 @@
                 // Update confidence meter
                 this.updateConfidence(confidence);
                 
-                // Pattern detection
-                if (Math.random() < 0.2) {
-                    this.detectPattern();
-                }
+                // Pattern detection from real bot data only
                 
                 // Execute trade on high confidence
                 if (confidence > 85 && Math.random() < 0.3) {
@@ -2001,18 +1987,8 @@
             }
             
             detectPattern() {
-                const patterns = [
-                    'Double Bottom', 'Head & Shoulders', 'Bull Flag', 
-                    'Ascending Triangle', 'Cup & Handle', 'Breakout'
-                ];
-                const pattern = patterns[Math.floor(Math.random() * patterns.length)];
-                const confidence = 70 + Math.random() * 25;
-                
-                document.getElementById('patternAlert').style.display = 'block';
-                document.getElementById('patternName').textContent = `🎯 ${pattern} Pattern Detected!`;
-                document.getElementById('patternConfidence').textContent = confidence.toFixed(1) + '%';
-                
-                this.addAIThought(`🎯 Pattern recognition: ${pattern} with ${confidence.toFixed(1)}% confidence`, 'buy');
+                // Patterns come from REAL bot trade messages only
+                // NO FAKE PATTERNS
                 
                 setTimeout(() => {
                     document.getElementById('patternAlert').style.display = 'none';
