@@ -26,7 +26,7 @@ class ExecutionLayer {
     
     // Trade frequency limiter
     this.lastTradeTime = 0;
-    this.minTradeCooldown = 60000; // 1 minute minimum between trades
+    this.minTradeCooldown = 0; // No cooldown - trade as fast as possible!
     
     // Coinbase Pro API endpoints
     this.apiUrl = this.config.sandboxMode 
