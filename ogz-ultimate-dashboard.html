@@ -1626,29 +1626,8 @@
                                 }, 1000); // Update chart max once per second
                             }
                             
-                            // Update indicators with realistic values
-                            const rsi = 30 + Math.random() * 40;
-                            const macd = (Math.random() - 0.5) * 2;
-                            const bb = Math.random() * 100;
-                            
-                            document.getElementById('rsiValue').textContent = rsi.toFixed(1);
-                            document.getElementById('macdValue').textContent = macd.toFixed(2);
-                            document.getElementById('bollingerValue').textContent = bb.toFixed(1) + '%';
-                            
-                            // Update RSI color
-                            const rsiElement = document.getElementById('rsiValue');
-                            if (rsi > 70) {
-                                rsiElement.style.color = '#dc2626';
-                            } else if (rsi < 30) {
-                                rsiElement.style.color = '#22c55e';
-                            } else {
-                                rsiElement.style.color = '#f59e0b';
-                            }
-                            
-                            // Trigger pattern analysis occasionally
-                            if (Math.random() > 0.9) {
-                                this.analyzePatterns();
-                            }
+                            // Indicators updated only from real bot data in trade messages
+                            // NO FAKE VALUES
                         }
                         
                         // Store all asset prices for switching
