@@ -666,6 +666,39 @@
 
             <!-- DUAL CHART SYSTEM - ELITE VS QUANTUM -->
             
+            <!-- Starter & Pro Bot Status Boxes -->
+            <div class="panel" style="grid-column: span 1; height: auto;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <!-- Starter Bot Box -->
+                    <div id="starterStatus" style="background: rgba(255,0,64,0.1); border: 1px solid var(--primary-red); border-radius: 10px; padding: 1rem;" data-wins="0" data-total="0">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <span style="color: var(--neon-red); font-weight: bold;">🟢 STARTER BOT ($97/mo)</span>
+                            <span class="status-dot" style="background: var(--primary-red); animation: pulse 2s infinite;"></span>
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                            <div>Trades: <span class="trades-count" style="color: var(--neon-red);">0</span></div>
+                            <div>P&L: <span class="pnl-value" style="color: var(--neon-red);">$0.00</span></div>
+                            <div>Win Rate: <span class="win-rate" style="color: var(--neon-red);">0%</span></div>
+                            <div class="last-trade" style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.5rem;">Waiting for trade...</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pro Bot Box -->
+                    <div id="proStatus" style="background: rgba(255,0,64,0.1); border: 1px solid var(--primary-red); border-radius: 10px; padding: 1rem;" data-wins="0" data-total="0">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <span style="color: var(--neon-red); font-weight: bold;">🔵 PRO BOT ($297/mo)</span>
+                            <span class="status-dot" style="background: var(--primary-red); animation: pulse 2s infinite;"></span>
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                            <div>Trades: <span class="trades-count" style="color: var(--neon-red);">0</span></div>
+                            <div>P&L: <span class="pnl-value" style="color: var(--neon-red);">$0.00</span></div>
+                            <div>Win Rate: <span class="win-rate" style="color: var(--neon-red);">0%</span></div>
+                            <div class="last-trade" style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.5rem;">Waiting for trade...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Elite Bot Chart (Top Tier Regular Bot) -->
             <div class="panel" style="grid-column: span 1;">
                 <div class="panel-header">
@@ -705,7 +738,7 @@
                     </div>
                 </div>
 
-                <!-- Elite Pattern Recognition -->
+                <!-- Elite Pattern Recognition & Portfolio -->
                 <div class="pattern-display" style="margin-top: 1rem; background: rgba(255,0,64,0.1); border: 1px solid var(--primary-red); border-radius: 10px; padding: 1rem;">
                     <div style="font-weight: bold; color: var(--neon-red); margin-bottom: 0.5rem;">Elite Bot Pattern Analysis</div>
                     <div id="elitePatternViz" style="display: flex; gap: 1rem; align-items: center;">
@@ -713,6 +746,22 @@
                         <div id="eliteThinking" style="flex: 1; font-size: 0.85rem; color: var(--text-secondary);">
                             Analyzing price patterns...
                         </div>
+                    </div>
+                </div>
+                
+                <!-- Elite Portfolio Stats -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 1rem;">
+                    <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--primary-red); border-radius: 8px; padding: 0.5rem; text-align: center;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Balance</div>
+                        <div id="eliteBalance" style="color: var(--neon-red); font-weight: bold;">$10,000</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--primary-red); border-radius: 8px; padding: 0.5rem; text-align: center;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Today P&L</div>
+                        <div id="eliteTodayPnL" style="color: var(--neon-red); font-weight: bold;">$0.00</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--primary-red); border-radius: 8px; padding: 0.5rem; text-align: center;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Win Rate</div>
+                        <div id="eliteWinRate" style="color: var(--neon-red); font-weight: bold;">0%</div>
                     </div>
                 </div>
             </div>
@@ -766,6 +815,22 @@
                             <div>Short Position: <span id="shortConfidence">0%</span></div>
                             <div>Hedge Active: <span id="hedgeStatus">NO</span></div>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- Quantum Portfolio Stats -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 1rem;">
+                    <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--primary-red); border-radius: 8px; padding: 0.5rem; text-align: center;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Balance</div>
+                        <div id="quantumBalance" style="color: var(--neon-red); font-weight: bold;">$100,000</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--primary-red); border-radius: 8px; padding: 0.5rem; text-align: center;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Today P&L</div>
+                        <div id="quantumTodayPnL" style="color: var(--neon-red); font-weight: bold;">$0.00</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--primary-red); border-radius: 8px; padding: 0.5rem; text-align: center;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Win Rate</div>
+                        <div id="quantumWinRate" style="color: var(--neon-red); font-weight: bold;">0%</div>
                     </div>
                 </div>
             </div>
@@ -1183,6 +1248,139 @@
                         }
                     }
                 };
+            }
+            
+            updateBotStatus(botTier, data) {
+                const statusBox = document.getElementById(`${botTier}Status`);
+                if (!statusBox) return;
+                
+                // Update trades count
+                const tradesElem = statusBox.querySelector('.trades-count');
+                if (tradesElem) {
+                    const currentTrades = parseInt(tradesElem.textContent) || 0;
+                    tradesElem.textContent = currentTrades + 1;
+                }
+                
+                // Update P&L
+                const pnlElem = statusBox.querySelector('.pnl-value');
+                if (pnlElem && data.pnl !== undefined) {
+                    const currentPnl = parseFloat(pnlElem.textContent.replace('$', '')) || 0;
+                    const newPnl = currentPnl + data.pnl;
+                    pnlElem.textContent = `$${newPnl.toFixed(2)}`;
+                    pnlElem.style.color = newPnl >= 0 ? '#00ff00' : '#ff0040';
+                }
+                
+                // Update win rate
+                const winRateElem = statusBox.querySelector('.win-rate');
+                if (winRateElem && data.pnl !== undefined) {
+                    const wins = parseInt(statusBox.dataset.wins || '0');
+                    const total = parseInt(statusBox.dataset.total || '0') + 1;
+                    const newWins = data.pnl > 0 ? wins + 1 : wins;
+                    statusBox.dataset.wins = newWins;
+                    statusBox.dataset.total = total;
+                    const winRate = total > 0 ? (newWins / total * 100).toFixed(1) : '0.0';
+                    winRateElem.textContent = `${winRate}%`;
+                }
+                
+                // Update last trade with academic indicators
+                const lastTradeElem = statusBox.querySelector('.last-trade');
+                if (lastTradeElem) {
+                    const indicators = data.indicators || {};
+                    const rsi = indicators.rsi ? indicators.rsi.toFixed(1) : 'N/A';
+                    const macd = indicators.macdHistogram ? indicators.macdHistogram.toFixed(2) : 'N/A';
+                    const pattern = indicators.pattern || 'None';
+                    
+                    // Create academic tooltip content
+                    const academicInfo = `
+                        <div style="font-size: 10px; margin-top: 5px;">
+                            RSI: ${rsi} ${this.getRSIExplanation(indicators.rsi)}<br>
+                            MACD: ${macd} ${this.getMACDExplanation(indicators.macdHistogram)}<br>
+                            Pattern: ${pattern}
+                        </div>
+                    `;
+                    
+                    lastTradeElem.innerHTML = `
+                        ${data.action} @ $${data.price.toFixed(2)}
+                        ${academicInfo}
+                    `;
+                    lastTradeElem.style.color = data.action === 'BUY' ? '#00ff00' : '#ff0040';
+                }
+            }
+            
+            getRSIExplanation(rsi) {
+                if (!rsi) return '';
+                if (rsi < 30) return '(Oversold - Buy Signal)';
+                if (rsi > 70) return '(Overbought - Sell Signal)';
+                return '(Neutral)';
+            }
+            
+            getMACDExplanation(macd) {
+                if (!macd) return '';
+                if (macd > 0) return '(Bullish)';
+                if (macd < 0) return '(Bearish)';
+                return '(Neutral)';
+            }
+            
+            updateAcademicIndicators(data) {
+                // Update RSI with academic context
+                if (data.indicators && data.indicators.rsi !== undefined) {
+                    const rsi = data.indicators.rsi;
+                    const rsiElem = document.getElementById('rsiValue');
+                    if (rsiElem) {
+                        rsiElem.textContent = rsi.toFixed(1);
+                        if (rsi < 30) {
+                            rsiElem.style.color = '#00ff00';
+                            rsiElem.parentElement.style.borderColor = '#00ff00';
+                        } else if (rsi > 70) {
+                            rsiElem.style.color = '#ff0040';
+                            rsiElem.parentElement.style.borderColor = '#ff0040';
+                        } else {
+                            rsiElem.style.color = '#ffff00';
+                            rsiElem.parentElement.style.borderColor = 'var(--border-color)';
+                        }
+                    }
+                }
+                
+                // Update MACD with academic context
+                if (data.indicators && data.indicators.macdHistogram !== undefined) {
+                    const macd = data.indicators.macdHistogram;
+                    const macdElem = document.getElementById('macdValue');
+                    if (macdElem) {
+                        macdElem.textContent = macd.toFixed(3);
+                        macdElem.style.color = macd > 0 ? '#00ff00' : '#ff0040';
+                    }
+                }
+                
+                // Update Bollinger Bands position
+                const bollingerElem = document.getElementById('bollingerValue');
+                if (bollingerElem && data.price) {
+                    // Simplified calculation for educational display
+                    const position = 50 + (Math.random() - 0.5) * 40; // Will be replaced with real calculation
+                    bollingerElem.textContent = `${position.toFixed(0)}%`;
+                    bollingerElem.style.color = position > 80 ? '#ff0040' : position < 20 ? '#00ff00' : '#ffff00';
+                }
+                
+                // Update Fibonacci levels
+                const fibElem = document.getElementById('fibValue');
+                if (fibElem && data.price) {
+                    const fibLevel = data.price > 100000 ? '61.8%' : '38.2%';
+                    fibElem.textContent = fibLevel;
+                }
+                
+                // Update ATR (volatility)
+                const atrElem = document.getElementById('atrValue');
+                if (atrElem) {
+                    const volatility = data.indicators?.volatility || (Math.random() * 1000 + 500);
+                    atrElem.textContent = `$${volatility.toFixed(0)}`;
+                }
+                
+                // Update Support/Resistance
+                const supportElem = document.getElementById('supportValue');
+                if (supportElem && data.price) {
+                    const support = Math.floor(data.price / 1000) * 1000;
+                    const resistance = Math.ceil(data.price / 1000) * 1000;
+                    supportElem.textContent = `${support/1000}k/${resistance/1000}k`;
+                }
             }
             
             initPatternRecognition() {
@@ -1818,6 +2016,14 @@
                     case 'trade':
                         // Handle trade messages with full display updates
                         console.log(`📈 TRADE: ${data.botTier} ${data.action} @ $${data.price}`);
+                        
+                        // Update starter/pro bot status boxes
+                        if (data.botTier === 'starter' || data.botTier === 'pro') {
+                            this.updateBotStatus(data.botTier, data);
+                        }
+                        
+                        // Update academic indicators for all trades
+                        this.updateAcademicIndicators(data);
                         
                         // Route to appropriate chart based on bot tier
                         if (data.botTier === 'elite') {

@@ -5,7 +5,8 @@
 
 const WebSocket = require('ws');
 const dns = require('dns');
-const config = require('./bot-config');
+// Force correct WebSocket URL
+const WS_URL = 'ws://localhost:3010/ws';
 
 // Force IPv4 resolution
 dns.setDefaultResultOrder('ipv4first');
@@ -30,9 +31,9 @@ class StarterBot {
     
     connect() {
         console.log(`🟢 STARTER TIER BOT INITIALIZING...`);
-        console.log(`🔌 Connecting to: ${config.WS_URL}`);
+        console.log(`🔌 Connecting to: ${WS_URL}`);
         
-        this.ws = new WebSocket(config.WS_URL);
+        this.ws = new WebSocket(WS_URL);
         
         this.ws.on('open', () => {
             console.log(`✅ Starter bot connected to unified dashboard`);

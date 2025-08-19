@@ -9,7 +9,7 @@ const dns = require('dns');
 dns.setDefaultResultOrder('ipv4first');
 
 const BOT_TIER = 'pro';
-const WS_URL = 'ws://127.0.0.1:3010/ws';
+const WS_URL = 'ws://localhost:3010/ws';
 
 class ProBot {
     constructor() {
