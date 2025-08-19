@@ -260,7 +260,11 @@ class ProBot {
         if (pnl > 0) this.wins++;
         this.lastTradeTime = Date.now();
         
-        // Send real trade to dashboard
+        // Calculate current indicators for educational display
+        const rsi = this.calculateRSI(this.priceHistory, 3);
+        const macd = this.calculateMACD(this.priceHistory);
+        
+        // Send real trade to dashboard with actual indicator values
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
             const message = JSON.stringify({
                 type: 'trade',
@@ -271,10 +275,18 @@ class ProBot {
                 pnl: pnl,
                 reason: reason,
                 confidence: confidence,
-                pattern: pattern
+                pattern: pattern,
+                rsi: rsi,
+                macd: macd.histogram,
+                indicators: {
+                    rsi: rsi,
+                    macdHistogram: macd.histogram,
+                    macdCrossover: macd.crossover,
+                    pattern: pattern
+                }
             });
             this.ws.send(message);
-            console.log(`🔵 PRO: ${action} @ $${this.currentPrice} | Pattern: ${pattern} | Confidence: ${confidence}% | P&L: $${pnl.toFixed(2)}`);
+            console.log(`🔵 PRO: ${action} @ $${this.currentPrice} | Pattern: ${pattern} | RSI: ${rsi.toFixed(1)} | MACD: ${macd.histogram.toFixed(2)} | Confidence: ${confidence}% | P&L: $${pnl.toFixed(2)}`);
         }
     }
 }

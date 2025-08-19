@@ -314,7 +314,13 @@ class EliteBot {
         });
         if (this.aiMemory.length > 100) this.aiMemory.shift();
         
-        // Send to dashboard
+        // Calculate current indicators for educational display
+        const rsi = this.calculateRSI(this.priceHistory, 14);
+        const macd = this.calculateMACD(this.priceHistory);
+        const bollinger = this.calculateBollinger(this.priceHistory);
+        const pattern = this.detectPattern(this.priceHistory);
+        
+        // Send to dashboard with actual indicator values
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
             this.ws.send(JSON.stringify({
                 type: 'trade',
@@ -326,9 +332,22 @@ class EliteBot {
                 reason: reason,
                 confidence: confidence,
                 evolution: this.evolutionGen,
-                learning: true
+                learning: true,
+                rsi: rsi,
+                macd: macd.histogram,
+                pattern: pattern,
+                indicators: {
+                    rsi: rsi,
+                    macdHistogram: macd.histogram,
+                    macdCrossover: macd.crossover,
+                    bollingerUpper: bollinger.upper,
+                    bollingerLower: bollinger.lower,
+                    bollingerMiddle: bollinger.middle,
+                    pattern: pattern,
+                    evolutionGen: this.evolutionGen
+                }
             }));
-            console.log(`🟣 ELITE: ${action} @ $${this.currentPrice} | ${reason} | Confidence: ${confidence}% | P&L: $${pnl.toFixed(2)}`);
+            console.log(`🟣 ELITE: ${action} @ $${this.currentPrice} | ${reason} | RSI: ${rsi.toFixed(1)} | BB: ${bollinger.upper.toFixed(0)}-${bollinger.lower.toFixed(0)} | Confidence: ${confidence}% | P&L: $${pnl.toFixed(2)}`);
         }
         
         // Learn from trade

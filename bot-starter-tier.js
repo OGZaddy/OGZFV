@@ -249,7 +249,11 @@ class StarterBot {
         if (pnl > 0) this.wins++;
         this.lastTradeTime = Date.now();
         
-        // Send real trade to dashboard
+        // Calculate current indicators for educational display
+        const rsi = this.calculateRSI(this.priceHistory, 3);
+        const macd = this.calculateMACD(this.priceHistory);
+        
+        // Send real trade to dashboard with actual indicator values
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
             const message = JSON.stringify({
                 type: 'trade',
@@ -259,10 +263,17 @@ class StarterBot {
                 price: this.currentPrice,
                 pnl: pnl,
                 reason: reason,
-                confidence: confidence
+                confidence: confidence,
+                rsi: rsi,
+                macd: macd.histogram,
+                indicators: {
+                    rsi: rsi,
+                    macdHistogram: macd.histogram,
+                    macdCrossover: macd.crossover
+                }
             });
             this.ws.send(message);
-            console.log(`🟢 STARTER: ${action} @ $${this.currentPrice} | Confidence: ${confidence}% | P&L: $${pnl.toFixed(2)}`);
+            console.log(`🟢 STARTER: ${action} @ $${this.currentPrice} | RSI: ${rsi.toFixed(1)} | MACD: ${macd.histogram.toFixed(2)} | Confidence: ${confidence}% | P&L: $${pnl.toFixed(2)}`);
         }
     }
 }
