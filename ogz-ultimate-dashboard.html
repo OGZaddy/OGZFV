@@ -1512,8 +1512,41 @@
                             document.getElementById('patternAlert').style.display = 'block';
                             document.getElementById('patternName').textContent = `🎯 ${data.pattern} Pattern Detected!`;
                             document.getElementById('patternConfidence').textContent = (data.confidence || 0).toFixed(1) + '%';
+                            
+                            // Update pattern grid to highlight detected pattern
+                            const patternCards = document.querySelectorAll('.pattern-card');
+                            patternCards.forEach(card => {
+                                card.style.opacity = '0.3';
+                                card.style.border = '1px solid rgba(255,255,255,0.1)';
+                            });
+                            
+                            // Add to pattern ticker
+                            const ticker = document.getElementById('patternTicker');
+                            const patternEntry = document.createElement('div');
+                            patternEntry.style.cssText = 'padding: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);';
+                            patternEntry.innerHTML = `
+                                <span style="color: var(--primary-green);">${new Date().toLocaleTimeString()}</span> - 
+                                <strong>${data.pattern}</strong> detected by ${data.botTier} 
+                                (${(data.confidence || 0).toFixed(1)}% confidence)
+                            `;
+                            ticker.insertBefore(patternEntry, ticker.firstChild);
+                            
+                            // Keep only last 5 patterns
+                            while (ticker.children.length > 5) {
+                                ticker.removeChild(ticker.lastChild);
+                            }
+                            
+                            // Update pattern count
+                            const count = parseInt(document.getElementById('patternCount').textContent) || 0;
+                            document.getElementById('patternCount').textContent = `${count + 1} patterns today`;
+                            
                             setTimeout(() => {
                                 document.getElementById('patternAlert').style.display = 'none';
+                                // Reset pattern cards
+                                patternCards.forEach(card => {
+                                    card.style.opacity = '1';
+                                    card.style.border = '';
+                                });
                             }, 10000);
                         }
                         
@@ -1584,7 +1617,14 @@
                                 this.chart.data.datasets[0].data.shift();
                             }
                             
-                            this.chart.update('none');
+                            // Throttle chart updates to prevent lag
+                            if (!this.chartUpdatePending) {
+                                this.chartUpdatePending = true;
+                                setTimeout(() => {
+                                    this.chart.update('none');
+                                    this.chartUpdatePending = false;
+                                }, 1000); // Update chart max once per second
+                            }
                             
                             // Update indicators with realistic values
                             const rsi = 30 + Math.random() * 40;
