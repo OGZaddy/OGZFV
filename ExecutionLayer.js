@@ -428,7 +428,7 @@ class ExecutionLayer {
           price: trade.price,
           pnl: trade.pnl || 0,
           reason: 'Quantum-neuromorphic analysis',
-          confidence: 0.95,
+          confidence: trade.confidence || 95, // Use actual confidence or 95%
           balance: this.balance,
           totalTrades: this.totalTrades,
           timestamp: Date.now()

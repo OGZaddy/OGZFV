@@ -230,6 +230,12 @@ class StarterBot {
         // Prevent overtrading - minimum 30 seconds between trades
         if (Date.now() - this.lastTradeTime < 30000) return;
         
+        // Don't sell if we have no positions
+        if (action === 'SELL' && this.positions.length === 0) {
+            console.log('⚠️ STARTER: No positions to sell, skipping SELL signal');
+            return;
+        }
+        
         // Calculate P&L based on positions
         let pnl = 0;
         if (action === 'SELL' && this.positions.length > 0) {

@@ -241,6 +241,12 @@ class ProBot {
         // Prevent overtrading - minimum 20 seconds between trades (Pro trades more)
         if (Date.now() - this.lastTradeTime < 20000) return;
         
+        // Don't sell if we have no positions
+        if (action === 'SELL' && this.positions.length === 0) {
+            console.log('⚠️ PRO: No positions to sell, skipping SELL signal');
+            return;
+        }
+        
         // Calculate P&L
         let pnl = 0;
         if (action === 'SELL' && this.positions.length > 0) {

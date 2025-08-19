@@ -286,6 +286,12 @@ class EliteBot {
         // Prevent overtrading - Elite trades every 15 seconds minimum
         if (Date.now() - this.lastTradeTime < 15000) return 0;
         
+        // Don't sell if we have no positions
+        if (action === 'SELL' && this.positions.length === 0) {
+            console.log('⚠️ ELITE: No positions to sell, skipping SELL signal');
+            return 0;
+        }
+        
         let pnl = 0;
         if (action === 'SELL' && this.positions.length > 0) {
             const position = this.positions.shift();
