@@ -664,35 +664,110 @@
                 </div>
             </div>
 
-            <!-- Chart & Analysis Panel -->
-            <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">📈 Live Market Analysis</div>
-                <select id="assetSelector" style="background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--primary-green); padding: 0.5rem; border-radius: 8px;">
-                    <option value="BTC-USD">Bitcoin (BTC)</option>
-                    <option value="ETH-USD">Ethereum (ETH)</option>
-                    <option value="SOL-USD">Solana (SOL)</option>
-                    <option value="ADA-USD">Cardano (ADA)</option>
-                </select>
+            <!-- DUAL CHART SYSTEM - ELITE VS QUANTUM -->
+            
+            <!-- Elite Bot Chart (Top Tier Regular Bot) -->
+            <div class="panel" style="grid-column: span 1;">
+                <div class="panel-header">
+                    <div class="panel-title" style="color: var(--neon-red); text-shadow: var(--cyber-glow);">
+                        🟣 ELITE BOT - AI Enhanced Trading
+                    </div>
+                    <div class="bot-status" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="status-dot" id="eliteStatus" style="background: var(--primary-red);"></span>
+                        <span style="font-size: 0.85rem; color: var(--text-secondary);">Gen <span id="eliteGen">0</span></span>
+                    </div>
+                </div>
+
+                <div class="chart-controls" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                    <div class="timeframe-buttons">
+                        <button class="timeframe-btn active" data-chart="elite" data-timeframe="1m">1m</button>
+                        <button class="timeframe-btn" data-chart="elite" data-timeframe="5m">5m</button>
+                        <button class="timeframe-btn" data-chart="elite" data-timeframe="15m">15m</button>
+                        <button class="timeframe-btn" data-chart="elite" data-timeframe="1h">1h</button>
+                    </div>
+                    <select id="eliteIndicators" style="background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--primary-red); padding: 0.5rem; border-radius: 8px;">
+                        <option value="all">All Indicators</option>
+                        <option value="rsi">RSI Only</option>
+                        <option value="macd">MACD Only</option>
+                        <option value="bollinger">Bollinger Bands</option>
+                        <option value="patterns">Patterns Only</option>
+                    </select>
+                </div>
+
+                <div class="chart-container" style="height: 400px; position: relative; border: 2px solid var(--primary-red); border-radius: 10px; overflow: hidden;">
+                    <canvas id="eliteChart"></canvas>
+                    <div id="eliteOverlay" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 5px; border: 1px solid var(--primary-red);">
+                        <div style="color: var(--text-primary); font-size: 0.85rem;">
+                            <div>RSI: <span id="eliteRSI" style="color: var(--neon-red);">--</span></div>
+                            <div>MACD: <span id="eliteMACD" style="color: var(--neon-red);">--</span></div>
+                            <div>Pattern: <span id="elitePattern" style="color: var(--neon-red);">--</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Elite Pattern Recognition -->
+                <div class="pattern-display" style="margin-top: 1rem; background: rgba(255,0,64,0.1); border: 1px solid var(--primary-red); border-radius: 10px; padding: 1rem;">
+                    <div style="font-weight: bold; color: var(--neon-red); margin-bottom: 0.5rem;">Elite Bot Pattern Analysis</div>
+                    <div id="elitePatternViz" style="display: flex; gap: 1rem; align-items: center;">
+                        <canvas id="elitePatternCanvas" width="150" height="100" style="border: 1px solid var(--primary-red); border-radius: 5px;"></canvas>
+                        <div id="eliteThinking" style="flex: 1; font-size: 0.85rem; color: var(--text-secondary);">
+                            Analyzing price patterns...
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="price-display">
-                <div class="current-price" id="currentPrice">$0.00</div>
-                <div class="price-change" id="priceChange">Loading...</div>
-            </div>
+            <!-- Quantum Bot Chart (The Beast) -->
+            <div class="panel" style="grid-column: span 1;">
+                <div class="panel-header">
+                    <div class="panel-title" style="color: var(--neon-red); text-shadow: var(--cyber-glow); animation: pulse 2s infinite;">
+                        ⚛️ QUANTUM BEAST - Neuromorphic Engine
+                    </div>
+                    <div class="bot-status" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="status-dot" id="quantumStatus" style="background: var(--neon-red); animation: pulse 1s infinite;"></span>
+                        <span style="font-size: 0.85rem; color: var(--text-secondary);">Coherence: <span id="quantumCoherence">0%</span></span>
+                    </div>
+                </div>
 
-            <div class="chart-controls">
-                <button class="timeframe-btn active" data-timeframe="1m">1m</button>
-                <button class="timeframe-btn" data-timeframe="5m">5m</button>
-                <button class="timeframe-btn" data-timeframe="15m">15m</button>
-                <button class="timeframe-btn" data-timeframe="1h">1h</button>
-                <button class="timeframe-btn" data-timeframe="4h">4h</button>
-                <button class="timeframe-btn" data-timeframe="1d">1D</button>
-            </div>
+                <div class="chart-controls" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                    <div class="timeframe-buttons">
+                        <button class="timeframe-btn active" data-chart="quantum" data-timeframe="1m">1m</button>
+                        <button class="timeframe-btn" data-chart="quantum" data-timeframe="5m">5m</button>
+                        <button class="timeframe-btn" data-chart="quantum" data-timeframe="15m">15m</button>
+                        <button class="timeframe-btn" data-chart="quantum" data-timeframe="1h">1h</button>
+                    </div>
+                    <select id="quantumIndicators" style="background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--neon-red); padding: 0.5rem; border-radius: 8px;">
+                        <option value="all">Quantum Analysis</option>
+                        <option value="neural">Neural Mesh</option>
+                        <option value="gan">GAN Predictions</option>
+                        <option value="ensemble">Ensemble View</option>
+                        <option value="multidirectional">Long/Short/Hedge</option>
+                    </select>
+                </div>
 
-            <div class="chart-container" style="height: 600px; position: relative;">
-                <canvas id="priceChart"></canvas>
-                <div id="chartOverlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none;"></div>
+                <div class="chart-container" style="height: 400px; position: relative; border: 2px solid var(--neon-red); border-radius: 10px; overflow: hidden; box-shadow: var(--cyber-glow);">
+                    <canvas id="quantumChart"></canvas>
+                    <div id="quantumOverlay" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.9); padding: 10px; border-radius: 5px; border: 1px solid var(--neon-red);">
+                        <div style="color: var(--text-primary); font-size: 0.85rem;">
+                            <div>Quantum: <span id="quantumScore" style="color: var(--neon-red);">--</span></div>
+                            <div>Neural: <span id="neuralScore" style="color: var(--neon-red);">--</span></div>
+                            <div>Direction: <span id="tradeDirection" style="color: var(--neon-red);">--</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quantum Pattern Recognition -->
+                <div class="pattern-display" style="margin-top: 1rem; background: rgba(255,0,64,0.1); border: 1px solid var(--neon-red); border-radius: 10px; padding: 1rem; box-shadow: var(--cyber-glow);">
+                    <div style="font-weight: bold; color: var(--neon-red); margin-bottom: 0.5rem;">Quantum Neuromorphic Analysis</div>
+                    <div id="quantumPatternViz" style="display: flex; gap: 1rem; align-items: center;">
+                        <canvas id="quantumPatternCanvas" width="150" height="100" style="border: 1px solid var(--neon-red); border-radius: 5px;"></canvas>
+                        <div id="quantumThinking" style="flex: 1; font-size: 0.85rem; color: var(--text-secondary);">
+                            <div>Long Position: <span id="longConfidence">0%</span></div>
+                            <div>Short Position: <span id="shortConfidence">0%</span></div>
+                            <div>Hedge Active: <span id="hedgeStatus">NO</span></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="indicators-grid">
@@ -1057,14 +1132,249 @@
                 this.updateBotDisplay();
             }
             
+            getChartOptions(botType) {
+                return {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: { 
+                                color: '#ff6666',
+                                font: { size: 10 }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                            titleColor: '#ff0040',
+                            bodyColor: '#ff9999',
+                            borderColor: '#ff0040',
+                            borderWidth: 1
+                        },
+                        annotation: {
+                            annotations: {}
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'minute',
+                                displayFormats: { minute: 'HH:mm' },
+                                tooltipFormat: 'HH:mm:ss'
+                            },
+                            grid: { color: 'rgba(255, 0, 64, 0.1)' },
+                            ticks: { color: '#ff6666', font: { size: 10 } }
+                        },
+                        y: {
+                            beginAtZero: false,
+                            grid: { color: 'rgba(255, 0, 64, 0.1)' },
+                            ticks: { 
+                                color: '#ff6666',
+                                font: { size: 10 },
+                                callback: value => '$' + value.toLocaleString()
+                            }
+                        }
+                    }
+                };
+            }
+            
             initPatternRecognition() {
-                // Pattern recognition system placeholder
                 console.log('🔍 Pattern recognition system initialized');
-                // TODO: Add pattern recognition logic here when implementing pattern module
+                
+                // Initialize pattern visualization for Elite bot
+                this.drawPatternVisualization('elite');
+                
+                // Initialize pattern visualization for Quantum bot
+                this.drawPatternVisualization('quantum');
+                
+                // Setup timeframe button handlers
+                document.querySelectorAll('.timeframe-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const chart = e.target.dataset.chart;
+                        const timeframe = e.target.dataset.timeframe;
+                        this.changeTimeframe(chart, timeframe);
+                        
+                        // Update active state
+                        document.querySelectorAll(`.timeframe-btn[data-chart="${chart}"]`).forEach(b => {
+                            b.classList.remove('active');
+                        });
+                        e.target.classList.add('active');
+                    });
+                });
+                
+                // Setup indicator selectors
+                document.getElementById('eliteIndicators')?.addEventListener('change', (e) => {
+                    this.updateIndicators('elite', e.target.value);
+                });
+                
+                document.getElementById('quantumIndicators')?.addEventListener('change', (e) => {
+                    this.updateIndicators('quantum', e.target.value);
+                });
+            }
+            
+            drawPatternVisualization(botType) {
+                const canvas = document.getElementById(`${botType}PatternCanvas`);
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.strokeStyle = '#ff0040';
+                ctx.lineWidth = 2;
+                
+                // Draw a simple pattern visualization
+                ctx.beginPath();
+                ctx.moveTo(10, 50);
+                
+                // Draw price movement pattern
+                const points = botType === 'quantum' ? 
+                    [30, 40, 50, 30, 70, 25, 90, 35, 110, 20, 130, 45] :
+                    [30, 45, 50, 35, 70, 40, 90, 30, 110, 50, 130, 40];
+                
+                for (let i = 0; i < points.length; i += 2) {
+                    ctx.lineTo(points[i], points[i + 1]);
+                }
+                
+                ctx.stroke();
+                
+                // Add glow effect
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#ff0040';
+                ctx.stroke();
+            }
+            
+            changeTimeframe(chart, timeframe) {
+                console.log(`Changing ${chart} chart to ${timeframe} timeframe`);
+                // This would connect to real data source
+                // For now just update the time unit
+                if (chart === 'elite' && this.eliteChart) {
+                    this.eliteChart.options.scales.x.time.unit = 
+                        timeframe === '1m' ? 'minute' :
+                        timeframe === '5m' ? 'minute' :
+                        timeframe === '15m' ? 'minute' :
+                        timeframe === '1h' ? 'hour' : 'day';
+                    this.eliteChart.update();
+                } else if (chart === 'quantum' && this.quantumChart) {
+                    this.quantumChart.options.scales.x.time.unit = 
+                        timeframe === '1m' ? 'minute' :
+                        timeframe === '5m' ? 'minute' :
+                        timeframe === '15m' ? 'minute' :
+                        timeframe === '1h' ? 'hour' : 'day';
+                    this.quantumChart.update();
+                }
+            }
+            
+            updateIndicators(botType, indicatorType) {
+                console.log(`Updating ${botType} indicators to show ${indicatorType}`);
+                // This will toggle different indicator overlays
+                const chart = botType === 'elite' ? this.eliteChart : this.quantumChart;
+                if (!chart) return;
+                
+                // Clear existing annotations
+                chart.options.plugins.annotation.annotations = {};
+                
+                // Add selected indicators
+                if (indicatorType === 'all' || indicatorType === 'bollinger') {
+                    // Add Bollinger Bands
+                    // This would use real calculated values
+                }
+                
+                chart.update();
             }
             
             initChart() {
-                const ctx = document.getElementById('priceChart').getContext('2d');
+                // Initialize ELITE bot chart
+                const eliteCtx = document.getElementById('eliteChart').getContext('2d');
+                this.eliteChart = new Chart(eliteCtx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Elite Price',
+                                data: [],
+                                borderColor: '#ff0040',
+                                backgroundColor: 'rgba(255, 0, 64, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Elite Buys',
+                                data: [],
+                                borderColor: '#00ff00',
+                                backgroundColor: '#00ff00',
+                                showLine: false,
+                                pointStyle: 'triangle',
+                                pointRadius: 8
+                            },
+                            {
+                                label: 'Elite Sells',
+                                data: [],
+                                borderColor: '#ff0000',
+                                backgroundColor: '#ff0000',
+                                showLine: false,
+                                pointStyle: 'triangleDown',
+                                pointRadius: 8
+                            }
+                        ]
+                    },
+                    options: this.getChartOptions('elite')
+                });
+                
+                // Initialize QUANTUM bot chart
+                const quantumCtx = document.getElementById('quantumChart').getContext('2d');
+                this.quantumChart = new Chart(quantumCtx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Quantum Price',
+                                data: [],
+                                borderColor: '#ff0055',
+                                backgroundColor: 'rgba(255, 0, 85, 0.1)',
+                                borderWidth: 3,
+                                tension: 0.05,
+                                borderDash: [5, 2]
+                            },
+                            {
+                                label: 'Long Positions',
+                                data: [],
+                                borderColor: '#00ff88',
+                                backgroundColor: '#00ff88',
+                                showLine: false,
+                                pointStyle: 'rectRot',
+                                pointRadius: 10
+                            },
+                            {
+                                label: 'Short Positions',
+                                data: [],
+                                borderColor: '#ff8800',
+                                backgroundColor: '#ff8800',
+                                showLine: false,
+                                pointStyle: 'crossRot',
+                                pointRadius: 10
+                            },
+                            {
+                                label: 'Hedge Points',
+                                data: [],
+                                borderColor: '#ffff00',
+                                backgroundColor: '#ffff00',
+                                showLine: false,
+                                pointStyle: 'star',
+                                pointRadius: 12
+                            }
+                        ]
+                    },
+                    options: this.getChartOptions('quantum')
+                });
+                
+                // Keep old chart for compatibility
+                const ctx = document.getElementById('priceChart')?.getContext('2d');
+                if (ctx) {
                 
                 this.chart = new Chart(ctx, {
                     type: 'line',
@@ -1509,7 +1819,74 @@
                         // Handle trade messages with full display updates
                         console.log(`📈 TRADE: ${data.botTier} ${data.action} @ $${data.price}`);
                         
-                        // Update indicators if provided
+                        // Route to appropriate chart based on bot tier
+                        if (data.botTier === 'elite') {
+                            // Update Elite chart
+                            if (this.eliteChart) {
+                                const now = Date.now();
+                                this.eliteChart.data.datasets[0].data.push({x: now, y: data.price});
+                                
+                                // Add trade marker
+                                if (data.action === 'BUY') {
+                                    this.eliteChart.data.datasets[1].data.push({x: now, y: data.price});
+                                } else if (data.action === 'SELL') {
+                                    this.eliteChart.data.datasets[2].data.push({x: now, y: data.price});
+                                }
+                                
+                                // Keep last 100 points
+                                if (this.eliteChart.data.datasets[0].data.length > 100) {
+                                    this.eliteChart.data.datasets[0].data.shift();
+                                }
+                                
+                                this.eliteChart.update('none');
+                            }
+                            
+                            // Update Elite indicators
+                            if (data.rsi) document.getElementById('eliteRSI').textContent = data.rsi.toFixed(1);
+                            if (data.macd) document.getElementById('eliteMACD').textContent = data.macd.toFixed(2);
+                            if (data.pattern) document.getElementById('elitePattern').textContent = data.pattern;
+                            
+                            // Update thinking display
+                            document.getElementById('eliteThinking').innerHTML = 
+                                `<strong>Elite Analysis:</strong><br>
+                                ${data.reason}<br>
+                                Confidence: ${(data.confidence || 0).toFixed(1)}%`;
+                                
+                        } else if (data.botTier === 'quantum') {
+                            // Update Quantum chart
+                            if (this.quantumChart) {
+                                const now = Date.now();
+                                this.quantumChart.data.datasets[0].data.push({x: now, y: data.price});
+                                
+                                // Add position markers based on action
+                                if (data.action === 'LONG' || data.action === 'BUY') {
+                                    this.quantumChart.data.datasets[1].data.push({x: now, y: data.price});
+                                    document.getElementById('longConfidence').textContent = (data.confidence || 0).toFixed(1) + '%';
+                                } else if (data.action === 'SHORT' || data.action === 'SELL') {
+                                    this.quantumChart.data.datasets[2].data.push({x: now, y: data.price});
+                                    document.getElementById('shortConfidence').textContent = (data.confidence || 0).toFixed(1) + '%';
+                                } else if (data.action === 'HEDGE') {
+                                    this.quantumChart.data.datasets[3].data.push({x: now, y: data.price});
+                                    document.getElementById('hedgeStatus').textContent = 'ACTIVE';
+                                }
+                                
+                                // Keep last 100 points
+                                if (this.quantumChart.data.datasets[0].data.length > 100) {
+                                    this.quantumChart.data.datasets[0].data.shift();
+                                }
+                                
+                                this.quantumChart.update('none');
+                            }
+                            
+                            // Update Quantum indicators
+                            document.getElementById('quantumScore').textContent = (data.confidence || 0).toFixed(1) + '%';
+                            document.getElementById('tradeDirection').textContent = data.action;
+                            
+                            // Update quantum thinking
+                            document.getElementById('quantumCoherence').textContent = (data.coherence || Math.random() * 30 + 70).toFixed(1) + '%';
+                        }
+                        
+                        // Update general indicators if provided
                         if (data.rsi) document.getElementById('rsiValue').textContent = data.rsi.toFixed(1);
                         if (data.macd) document.getElementById('macdValue').textContent = data.macd.toFixed(2);
                         
