@@ -1,0 +1,40 @@
+{
+  "mcpServers": {
+    "sentry": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sentry"],
+      "env": {
+        "SENTRY_AUTH_TOKEN": "YOUR_SENTRY_AUTH_TOKEN",
+        "SENTRY_ORG": "YOUR_SENTRY_ORG",
+        "SENTRY_PROJECT": "YOUR_SENTRY_PROJECT"
+      }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-playwright"]
+    },
+    "huggingface": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-huggingface"],
+      "env": {
+        "HUGGINGFACE_API_KEY": "YOUR_HF_API_KEY"
+      }
+    },
+    "mongodb": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-mongodb"],
+      "env": {
+        "MONGODB_URI": "mongodb://localhost:27017",
+        "DATABASE_NAME": "your_database"
+      }
+    },
+    "codacy": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-codacy"],
+      "env": {
+        "CODACY_API_TOKEN": "YOUR_CODACY_API_TOKEN",
+        "CODACY_PROJECT_TOKEN": "YOUR_PROJECT_TOKEN"
+      }
+    }
+  }
+}

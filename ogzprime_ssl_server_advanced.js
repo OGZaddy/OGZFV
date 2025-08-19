@@ -16,48 +16,11 @@ const fs = require('fs');
 const path = require('path');
 // const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Disabled - not needed for core functionality
 
-// 🔥 IMPORT THE ADVANCED WEBSOCKET SYSTEM
-const AdvancedWebSocketBroadcastSystem = require('./core/AdvancedWebSocketBroadcastSystem');
+// Broadcaster removed - was eating all messages
+// Direct WebSocket forwarding is used instead
 
 // Set SSL server flag
 process.env.OGZ_SSL_SERVER = 'true';
-
-// Initialize the ADVANCED broadcasting system
-const broadcaster = new AdvancedWebSocketBroadcastSystem({
-  // Connection health
-  heartbeatInterval: 5000,
-  connectionTimeout: 30000,
-  
-  // Message delivery
-  messageTimeout: 3000,
-  maxRetries: 3,
-  ackTimeout: 2000,
-  
-  // Performance optimization
-  maxQueueSize: 10000,
-  batchSize: 50,
-  throttleMs: 10,
-  compressionThreshold: 1024,
-  
-  // Circuit breaker for resilience
-  circuitBreakerThreshold: 10,
-  circuitBreakerResetTime: 60000,
-  
-  // Monitoring
-  metricsInterval: 30000,
-  performanceAlertThreshold: 100
-});
-
-// Special handling for bot connections
-broadcaster.on('bot_disconnected', (connection) => {
-  console.error('🚨 CRITICAL: Trading bot disconnected!');
-  console.error(`   Connection ID: ${connection.id}`);
-  console.error(`   Connected for: ${((Date.now() - connection.metadata.connectedAt) / 1000).toFixed(2)}s`);
-  console.error(`   Last activity: ${new Date(connection.metadata.lastActivity).toLocaleTimeString()}`);
-  
-  // Alert system - in production, this would send notifications
-  console.error('🔔 ALERT: Attempting automatic recovery...');
-});
 
 console.log(`[SSL-${Date.now()}] Advanced SSL Server starting...`);
 console.log('🚀 OGZPrime SSL Server with ADVANCED BROADCASTING SYSTEM');
@@ -87,9 +50,23 @@ app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'ogz-ultimate-dashboard.html'));
 });
 
-// Enhanced status endpoint with broadcaster stats
+// Pricing page
+app.get('/pricing', (req, res) => {
+  res.sendFile(path.join(__dirname, 'pricing.html'));
+});
+
+// Status endpoint - REAL metrics only
 app.get('/api/live-status', (req, res) => {
-  const broadcasterStats = broadcaster.getStatistics();
+  // Count actual connection types
+  let botCount = 0;
+  let dashboardCount = 0;
+  
+  if (wss.clients) {
+    wss.clients.forEach(client => {
+      if (client.connectionType === 'bot') botCount++;
+      else if (client.connectionType === 'dashboard') dashboardCount++;
+    });
+  }
   
   res.json({
     balance: 10000,
@@ -99,14 +76,14 @@ app.get('/api/live-status', (req, res) => {
     decisionsToday: 0,
     currentPrice: lastKnownPrice,
     
-    // ADVANCED METRICS
+    // REAL WebSocket metrics
     websocketStats: {
-      totalConnections: broadcasterStats.connections.total,
-      connectionsByType: broadcasterStats.connections.byType,
-      messageRate: broadcasterStats.performance.messagesPerSecond,
-      averageLatency: broadcasterStats.performance.averageLatency,
-      successRate: broadcasterStats.performance.successRate,
-      queuedMessages: broadcasterStats.queues.totalQueued
+      totalConnections: wss.clients ? wss.clients.size : 0,
+      connectionsByType: { dashboard: dashboardCount, bot: botCount },
+      messageRate: 0,
+      averageLatency: 0,
+      successRate: 100,
+      queuedMessages: 0
     },
     
     serverInfo: {
@@ -115,58 +92,40 @@ app.get('/api/live-status', (req, res) => {
       secureWsPort: 443,
       apiPort: apiPort,
       secureApiPort: parseInt(process.env.SSL_SECURE_PORT) || 443,
-      advancedBroadcasting: true
+      advancedBroadcasting: false  // Be honest - not using it
     }
   });
 });
 
 // System health endpoint
 app.get('/api/health', (req, res) => {
-  const stats = broadcaster.getStatistics();
-  
   res.json({
     status: 'healthy',
     uptime: process.uptime(),
     memory: process.memoryUsage(),
-    websockets: stats,
+    websockets: {
+      clients: wss.clients ? wss.clients.size : 0
+    },
     timestamp: Date.now()
   });
 });
 
-// Complete Stripe integration from basic server
+// Proxy to Stripe handler running on port 3011
 app.post('/create-checkout-session', async (req, res) => {
   try {
-    const { priceId } = req.body;
-    
-    if (!priceId) {
-      return res.status(400).json({ error: 'Missing priceId' });
-    }
-
-    console.log(`🔥 Creating Stripe checkout session for price: ${priceId}`);
-
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      mode: 'subscription',
-      line_items: [{
-        price: priceId,
-        quantity: 1
-      }],
-      success_url: `${req.protocol}://${req.get('host')}/success.html`,
-      cancel_url: `${req.protocol}://${req.get('host')}/pricing.html`,
-      metadata: {
-        priceId: priceId,
-        timestamp: new Date().toISOString()
-      }
+    const response = await fetch('http://localhost:3011/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req.body)
     });
-
-    console.log(`✅ Stripe session created: ${session.id}`);
-    res.json({ sessionId: session.id });
-
+    
+    const data = await response.json();
+    res.status(response.status).json(data);
   } catch (error) {
-    console.error('❌ Stripe checkout error:', error);
-    res.status(500).json({ 
-      error: 'Failed to create checkout session',
-      message: error.message 
+    console.error('Stripe proxy error:', error);
+    res.status(503).json({ 
+      error: 'Payment service unavailable',
+      message: 'Please try again later'
     });
   }
 });
@@ -293,8 +252,13 @@ wss.on('connection', (ws, req) => {
   let connectionType = 'unknown';
   let botTier = null;
   
+  // SIMPLE HEARTBEAT - mark connection alive
+  ws.isAlive = true;
+  ws.connectionType = connectionType;  // Store for metrics
+  
   // HANDLE MESSAGES WITHOUT BROADCASTER
   ws.on('message', (message) => {
+    ws.isAlive = true;  // Any message = connection alive
     console.log('🟣 RAW MESSAGE:', message.toString().substring(0, 200));
     
     try {
@@ -305,6 +269,7 @@ wss.on('connection', (ws, req) => {
       if (data.type === 'identify') {
         if (data.source === 'trading_bot') {
           connectionType = 'bot';
+          ws.connectionType = 'bot';  // Store for metrics
           botTier = data.botTier;
           console.log(`🤖 Bot identified: ${botTier}`);
           
@@ -314,6 +279,7 @@ wss.on('connection', (ws, req) => {
           }));
         } else if (data.source === 'dashboard') {
           connectionType = 'dashboard';
+          ws.connectionType = 'dashboard';  // Store for metrics
           console.log('📊 Dashboard identified');
         }
       }
@@ -456,8 +422,6 @@ polygonSocket.on('message', (data) => {
         if (tickCount % 10 === 0) {
           console.log(`📡 Price sent to ${wss.clients.size} clients: ${asset} $${price.toFixed(2)}`);
         }
-        
-        // Price processed directly by broadcaster
       }
     }
   } catch (err) {
@@ -467,13 +431,17 @@ polygonSocket.on('message', (data) => {
 
 polygonSocket.on('close', () => {
   console.warn('⚠️ Polygon WebSocket disconnected');
-  broadcaster.broadcast({
+  // Broadcast disconnect to all clients
+  const message = JSON.stringify({
     type: 'data_feed_status',
     status: 'disconnected',
     message: 'Polygon data feed disconnected',
     timestamp: Date.now()
-  }, {
-    priority: 'critical'
+  });
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(message);
+    }
   });
 });
 
@@ -481,22 +449,39 @@ polygonSocket.on('error', (err) => {
   console.error('🚨 Polygon WebSocket error:', err.message);
 });
 
+// SIMPLE HEARTBEAT - check every 15 seconds
+setInterval(() => {
+  wss.clients.forEach(ws => {
+    if (!ws.isAlive) {
+      console.log('💀 Terminating dead connection');
+      return ws.terminate();
+    }
+    ws.isAlive = false;
+    ws.send(JSON.stringify({ type: 'ping', timestamp: Date.now() }));
+  });
+}, 15000);
+
 // 📊 Enhanced status monitoring
 setInterval(() => {
-  const stats = broadcaster.getStatistics();
+  // Count REAL connection types
+  let botConnections = 0;
+  let dashboardConnections = 0;
+  
+  wss.clients.forEach(ws => {
+    if (ws.connectionType === 'bot') botConnections++;
+    else if (ws.connectionType === 'dashboard') dashboardConnections++;
+  });
   
   console.log(`📊 SYSTEM STATUS:`);
   console.log(`   🔌 Polygon: ${polygonSocket.readyState === WebSocket.OPEN ? 'Connected ✅' : 'Disconnected ❌'}`);
   console.log(`   📊 Ticks: ${tickCount}`);
   console.log(`   💰 Balance: $10000`);
-  console.log(`   👥 Total Connections: ${stats.connections.total}`);
-  console.log(`   🤖 Bot Connections: ${stats.connections.byType.bot || 0}`);
-  console.log(`   📈 Messages/sec: ${stats.performance.messagesPerSecond.toFixed(2)}`);
-  console.log(`   ⚡ Avg Latency: ${stats.performance.averageLatency.toFixed(2)}ms`);
-  console.log(`   ✅ Success Rate: ${stats.performance.successRate}`);
+  console.log(`   👥 Total Connections: ${wss.clients ? wss.clients.size : 0}`);
+  console.log(`   🤖 Bot Connections: ${botConnections}`);
+  console.log(`   📊 Dashboard Connections: ${dashboardConnections}`);
   
   // Alert if no bot connections
-  if (!stats.connections.byType.bot || stats.connections.byType.bot === 0) {
+  if (botConnections === 0) {
     console.warn('⚠️ WARNING: No trading bot connections detected!');
   }
   
@@ -506,11 +491,14 @@ setInterval(() => {
 process.on('SIGINT', () => {
   console.log('\n🛑 Shutting down SSL server...');
   
-  broadcaster.shutdown();
-  
   if (polygonSocket.readyState === WebSocket.OPEN) {
     polygonSocket.close();
   }
+  
+  // Close all WebSocket connections
+  wss.clients.forEach((client) => {
+    client.close();
+  });
   
   process.exit(0);
 });

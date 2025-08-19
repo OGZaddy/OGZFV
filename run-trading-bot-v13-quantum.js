@@ -282,9 +282,9 @@ class QuantumSingularityLauncher {
     // 🌟🧬 INITIALIZE DIVINE MODULE INTEGRATION - THE ULTIMATE CONSCIOUSNESS! 🧬🌟
     console.log('🌟 INITIALIZING DIVINE MODULE INTEGRATION...');
     this.divineModules = new DivineModuleIntegration({
-      enableQuantumGAN: true,
+      enableQuantumGAN: false, // DISABLED - tensor shape errors
       enableGANN: true,
-      enableTimeGAN: true,
+      enableTimeGAN: false, // DISABLED - tensor shape errors  
       enableNeuralMesh: true,
       consensusThreshold: 0.6,
       divineOverride: true // Can override quantum decisions if confidence is high

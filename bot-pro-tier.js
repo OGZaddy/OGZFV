@@ -22,6 +22,11 @@ class ProBot {
         this.patterns = ['Head & Shoulders', 'Double Bottom', 'Ascending Triangle', 'Bull Flag'];
         this.reconnectAttempts = 0;
         this.lastPong = Date.now();
+        this.currentPrice = null; // Store real BTC price
+        this.priceHistory = []; // Store price history for indicators
+        this.positions = []; // Track open positions
+        this.lastTradeTime = 0; // Prevent overtrading
+        this.lastMACDHistogram = 0;
     }
     
     connect() {
@@ -77,29 +82,51 @@ class ProBot {
         setInterval(() => {
             if (!this.connected) return;
             
-            // Advanced pattern recognition simulation
-            if (Math.random() > 0.7) {
-                const action = Math.random() > 0.45 ? 'BUY' : 'SELL'; // Slightly bullish bias
-                const pnl = (Math.random() - 0.45) * 75; // Better returns
-                const pattern = this.patterns[Math.floor(Math.random() * this.patterns.length)];
+            // REAL TRADING WITH PATTERN RECOGNITION (REDUCED FOR TESTING)
+            if (this.currentPrice && this.priceHistory.length >= 5) {
+                // Add price to history
+                this.priceHistory.push(this.currentPrice);
+                if (this.priceHistory.length > 50) this.priceHistory.shift();
                 
-                this.trades++;
-                this.pnl += pnl;
-                if (pnl > 0) this.wins++;
+                // Calculate indicators
+                const rsi = this.calculateRSI(this.priceHistory, 3); // Reduced for testing
+                const macd = this.calculateMACD(this.priceHistory);
+                const pattern = this.detectPattern(this.priceHistory);
                 
-                this.ws.send(JSON.stringify({
-                    type: 'trade',
-                    source: 'trading_bot',
-                    botTier: BOT_TIER,
-                    action: action,
-                    price: 50000 + Math.random() * 1000,
-                    pnl: pnl,
-                    reason: `${pattern} pattern detected`,
-                    confidence: 70 + Math.random() * 20,
-                    pattern: pattern
-                }));
+                let action = null;
+                let reason = '';
+                let confidence = 50;
                 
-                console.log(`📊 PRO: ${action} on ${pattern}, P&L: $${pnl.toFixed(2)}`);
+                // BUY signals with pattern confirmation
+                if (rsi < 30 && pattern === 'Double Bottom') {
+                    action = 'BUY';
+                    reason = 'Double Bottom + RSI oversold';
+                    confidence = 75;
+                } else if (macd.histogram > 0 && macd.crossover && pattern === 'Bull Flag') {
+                    action = 'BUY';
+                    reason = 'Bull Flag + MACD bullish';
+                    confidence = 80;
+                } else if (pattern === 'Ascending Triangle' && rsi < 50) {
+                    action = 'BUY';
+                    reason = 'Ascending Triangle breakout';
+                    confidence = 70;
+                }
+                
+                // SELL signals with pattern confirmation
+                else if (rsi > 70 && pattern === 'Head & Shoulders') {
+                    action = 'SELL';
+                    reason = 'Head & Shoulders + RSI overbought';
+                    confidence = 75;
+                } else if (macd.histogram < 0 && macd.crossover) {
+                    action = 'SELL';
+                    reason = 'MACD bearish cross';
+                    confidence = 70;
+                }
+                
+                // Only trade if confidence is high enough (Pro needs 70%+)
+                if (action && confidence >= 70) {
+                    this.executeTrade(action, reason, confidence, pattern);
+                }
             }
         }, 4000);
     }
@@ -110,7 +137,7 @@ class ProBot {
             source: 'trading_bot',
             botTier: BOT_TIER,
             action: 'BUY',
-            price: 50000,
+            price: this.currentPrice || 100000, // Use real BTC price
             pnl: 0,
             reason: 'Manual buy (Pro)',
             manual: true
@@ -123,11 +150,132 @@ class ProBot {
             source: 'trading_bot',
             botTier: BOT_TIER,
             action: 'SELL',
-            price: 50000,
+            price: this.currentPrice || 100000, // Use real BTC price
             pnl: 0,
             reason: 'Manual sell (Pro)',
             manual: true
         }));
+    }
+    calculateRSI(prices, period = 3) { // REDUCED FOR TESTING
+        if (prices.length < period + 1) return 50;
+        
+        let gains = 0;
+        let losses = 0;
+        
+        for (let i = prices.length - period; i < prices.length; i++) {
+            const change = prices[i] - prices[i - 1];
+            if (change > 0) gains += change;
+            else losses -= change;
+        }
+        
+        const avgGain = gains / period;
+        const avgLoss = losses / period;
+        const rs = avgGain / (avgLoss || 0.0001);
+        return 100 - (100 / (1 + rs));
+    }
+    
+    calculateMACD(prices) {
+        if (prices.length < 5) return { histogram: 0, crossover: false }; // REDUCED
+        
+        const ema12 = this.calculateEMA(prices, 3);
+        const ema26 = this.calculateEMA(prices, 5); // Reduced for testing
+        const macdLine = ema12 - ema26;
+        const signal = macdLine * 0.2;
+        const histogram = macdLine - signal;
+        
+        const prevHistogram = this.lastMACDHistogram || 0;
+        const crossover = (prevHistogram <= 0 && histogram > 0) || (prevHistogram >= 0 && histogram < 0);
+        this.lastMACDHistogram = histogram;
+        
+        return { histogram, crossover };
+    }
+    
+    calculateEMA(prices, period) {
+        if (prices.length < period) return prices[prices.length - 1];
+        
+        const multiplier = 2 / (period + 1);
+        let ema = prices[prices.length - period];
+        
+        for (let i = prices.length - period + 1; i < prices.length; i++) {
+            ema = (prices[i] - ema) * multiplier + ema;
+        }
+        
+        return ema;
+    }
+    
+    detectPattern(prices) {
+        if (prices.length < 5) return null; // REDUCED FOR TESTING
+        
+        const recent = prices.slice(-20);
+        const avg = recent.reduce((a, b) => a + b) / recent.length;
+        
+        // Simplified pattern detection
+        const high = Math.max(...recent);
+        const low = Math.min(...recent);
+        const range = high - low;
+        
+        // Double Bottom: W shape
+        if (recent[5] < avg && recent[10] < avg && recent[15] > avg) {
+            return 'Double Bottom';
+        }
+        
+        // Head & Shoulders: Peak in middle
+        if (recent[10] > high * 0.98 && recent[5] < high * 0.95 && recent[15] < high * 0.95) {
+            return 'Head & Shoulders';
+        }
+        
+        // Bull Flag: Small consolidation after rise
+        if (recent[0] < recent[10] && range < avg * 0.02) {
+            return 'Bull Flag';
+        }
+        
+        // Ascending Triangle: Higher lows
+        if (recent[5] < recent[10] && recent[10] < recent[15]) {
+            return 'Ascending Triangle';
+        }
+        
+        return null;
+    }
+    
+    executeTrade(action, reason, confidence, pattern) {
+        // Prevent overtrading - minimum 20 seconds between trades (Pro trades more)
+        if (Date.now() - this.lastTradeTime < 20000) return;
+        
+        // Calculate P&L
+        let pnl = 0;
+        if (action === 'SELL' && this.positions.length > 0) {
+            const position = this.positions.shift();
+            pnl = (this.currentPrice - position.price) * position.size;
+            pnl -= pnl * 0.034; // Apply 3.4% fees
+        } else if (action === 'BUY') {
+            this.positions.push({
+                price: this.currentPrice,
+                size: 0.002, // Larger position than starter
+                time: Date.now()
+            });
+        }
+        
+        this.trades++;
+        this.pnl += pnl;
+        if (pnl > 0) this.wins++;
+        this.lastTradeTime = Date.now();
+        
+        // Send real trade to dashboard
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            const message = JSON.stringify({
+                type: 'trade',
+                source: 'trading_bot',
+                botTier: BOT_TIER,
+                action: action,
+                price: this.currentPrice,
+                pnl: pnl,
+                reason: reason,
+                confidence: confidence,
+                pattern: pattern
+            });
+            this.ws.send(message);
+            console.log(`🔵 PRO: ${action} @ $${this.currentPrice} | Pattern: ${pattern} | Confidence: ${confidence}% | P&L: $${pnl.toFixed(2)}`);
+        }
     }
 }
 

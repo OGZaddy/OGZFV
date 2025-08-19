@@ -1230,7 +1230,8 @@
                                 type: 'time',
                                 time: {
                                     unit: 'minute',
-                                    displayFormats: { minute: 'HH:mm' }
+                                    displayFormats: { minute: 'HH:mm' },
+                                    tooltipFormat: 'HH:mm:ss'
                                 },
                                 grid: { color: 'rgba(255, 255, 255, 0.1)' },
                                 ticks: { color: '#ffffff' }
@@ -1498,6 +1499,57 @@
                 }
                 
                 switch (data.type) {
+                    case 'trade':
+                        // Handle trade messages with full display updates
+                        console.log(`📈 TRADE: ${data.botTier} ${data.action} @ $${data.price}`);
+                        
+                        // Update indicators if provided
+                        if (data.rsi) document.getElementById('rsiValue').textContent = data.rsi.toFixed(1);
+                        if (data.macd) document.getElementById('macdValue').textContent = data.macd.toFixed(2);
+                        
+                        // Show pattern if detected
+                        if (data.pattern) {
+                            document.getElementById('patternAlert').style.display = 'block';
+                            document.getElementById('patternName').textContent = `🎯 ${data.pattern} Pattern Detected!`;
+                            document.getElementById('patternConfidence').textContent = (data.confidence || 0).toFixed(1) + '%';
+                            setTimeout(() => {
+                                document.getElementById('patternAlert').style.display = 'none';
+                            }, 10000);
+                        }
+                        
+                        // Update confidence meter
+                        if (data.confidence) {
+                            document.getElementById('confidenceFill').style.width = data.confidence + '%';
+                            document.getElementById('confidencePercent').textContent = data.confidence.toFixed(1) + '%';
+                        }
+                        
+                        // Add to AI thought stream
+                        const emoji = data.action === 'BUY' ? '🟢' : '🔴';
+                        this.addAIThought(
+                            `${emoji} ${data.botTier?.toUpperCase()}: ${data.action} @ $${data.price.toFixed(2)} | ${data.reason} | Confidence: ${(data.confidence || 0).toFixed(1)}%`,
+                            data.action === 'BUY' ? 'buy' : 'sell'
+                        );
+                        
+                        // Add to trades list
+                        this.addTradeToList({
+                            id: Date.now(),
+                            type: data.action,
+                            price: data.price,
+                            timestamp: new Date(),
+                            confidence: data.confidence,
+                            tier: data.botTier,
+                            pnl: data.pnl || 0
+                        });
+                        
+                        // Update portfolio if P&L provided
+                        if (data.pnl !== undefined) {
+                            this.state.stats.totalProfit += data.pnl;
+                            this.state.stats.todayProfit += data.pnl;
+                            this.state.balance += data.pnl;
+                            this.updatePortfolio();
+                        }
+                        break;
+                        
                     case 'identify':
                         // Bot is identifying itself
                         console.log(`🤖 Bot identified: ${data.botTier} tier from ${data.source}`);
@@ -1520,17 +1572,15 @@
                             // Update price in state
                             this.state.currentPrice = price;
                             
-                            // Add to chart data
-                            const now = new Date();
-                            this.chart.data.labels.push(now.toLocaleTimeString());
+                            // Add to chart data - use timestamps for time scale
+                            const now = Date.now();
                             this.chart.data.datasets[0].data.push({
                                 x: now,
                                 y: price
                             });
                             
                             // Keep only last 50 points
-                            if (this.chart.data.labels.length > 50) {
-                                this.chart.data.labels.shift();
+                            if (this.chart.data.datasets[0].data.length > 50) {
                                 this.chart.data.datasets[0].data.shift();
                             }
                             
@@ -1674,16 +1724,14 @@
                 const selectedBot = document.getElementById('botSelector').value;
                 if (this.chart && this.chart.data) {
                     // Add price to main dataset
-                    const now = new Date();
-                    this.chart.data.labels.push(now);
+                    const now = Date.now();
                     this.chart.data.datasets[0].data.push({
                         x: now,
                         y: price
                     });
                     
                     // Keep only last 100 points
-                    if (this.chart.data.labels.length > 100) {
-                        this.chart.data.labels.shift();
+                    if (this.chart.data.datasets[0].data.length > 100) {
                         this.chart.data.datasets[0].data.shift();
                     }
                     
@@ -2047,7 +2095,7 @@
                 const datasetIndex = trade.type === 'BUY' ? 1 : 2;
                 
                 this.chart.data.datasets[datasetIndex].data.push({
-                    x: trade.timestamp,
+                    x: trade.timestamp.getTime ? trade.timestamp.getTime() : trade.timestamp,
                     y: trade.price
                 });
                 

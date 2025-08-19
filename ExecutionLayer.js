@@ -207,12 +207,16 @@ class ExecutionLayer {
     
     // ACTUALLY DEDUCT THE MONEY WHEN BUYING
     if (decision.action === 'LONG' || decision.action === 'BUY') {
-      if (this.balance < tradeValue) {
-        console.log('❌ INSUFFICIENT FUNDS! Balance: $' + this.balance.toFixed(2));
+      // Apply 1.7% fee on buy
+      const buyFee = tradeValue * 0.017;
+      const totalCost = tradeValue + buyFee;
+      
+      if (this.balance < totalCost) {
+        console.log('❌ INSUFFICIENT FUNDS! Balance: $' + this.balance.toFixed(2) + ' (need $' + totalCost.toFixed(2) + ' including fees)');
         return null;
       }
       
-      this.balance -= tradeValue; // SUBTRACT THE MONEY!
+      this.balance -= totalCost; // SUBTRACT THE MONEY INCLUDING FEES!
       
       const trade = {
         id: tradeId,
@@ -233,6 +237,8 @@ class ExecutionLayer {
       console.log('   Price: $' + currentPrice.toFixed(2));
       console.log('   Size: ' + btcAmount.toFixed(6) + ' BTC');
       console.log('   Cost: $' + tradeValue.toFixed(2));
+      console.log('   💸 Fee (1.7%): $' + buyFee.toFixed(2));
+      console.log('   Total Cost: $' + totalCost.toFixed(2));
       console.log('   Balance Before: $' + trade.entryBalance.toFixed(2));
       console.log('   Balance After: $' + this.balance.toFixed(2));
       console.log('   📊 Remaining Cash: $' + this.balance.toFixed(2));
@@ -259,13 +265,15 @@ class ExecutionLayer {
       const sellPrice = currentPrice;
       const sellValue = positionToSell.size * sellPrice;
       
-      // Calculate P&L
+      // Calculate P&L WITH FEES
       const buyValue = positionToSell.size * positionToSell.price;
-      const pnl = sellValue - buyValue;
+      const sellFee = sellValue * 0.017; // 1.7% fee on sell
+      const netSellValue = sellValue - sellFee;
+      const pnl = netSellValue - buyValue;
       const pnlPercent = (pnl / buyValue) * 100;
       
-      // ADD THE MONEY BACK (with profit/loss)
-      this.balance += sellValue;
+      // ADD THE MONEY BACK (with profit/loss, minus fees)
+      this.balance += netSellValue;
       
       // Mark position as closed
       positionToSell.closed = true;
@@ -279,6 +287,8 @@ class ExecutionLayer {
       console.log('   Entry: $' + positionToSell.price.toFixed(2));
       console.log('   Exit: $' + sellPrice.toFixed(2));
       console.log('   Size: ' + positionToSell.size.toFixed(6) + ' BTC');
+      console.log('   💸 Fee (1.7%): $' + sellFee.toFixed(2));
+      console.log('   Net Proceeds: $' + netSellValue.toFixed(2));
       console.log('   P&L: $' + pnl.toFixed(2) + ' (' + pnlPercent.toFixed(2) + '%)');
       console.log('   💰 New Balance: $' + this.balance.toFixed(2));
       
