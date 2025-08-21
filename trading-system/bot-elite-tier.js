@@ -7,8 +7,14 @@ const WebSocket = require('ws');
 const dns = require('dns');
 // Force IPv4
 dns.setDefaultResultOrder('ipv4first');
-const SelfConsumingLogModule = require('./core/SelfConsumingLogModule');
-const CompressedLogManager = require('./core/CompressedLogManager');
+
+// Initialize Module Auto-Loader
+const ModuleAutoLoader = require('./core/ModuleAutoLoader');
+const moduleLoader = new ModuleAutoLoader();
+
+// Load modules using auto-loader
+const SelfConsumingLogModule = moduleLoader.load('SelfConsumingLogModule');
+const CompressedLogManager = moduleLoader.load('CompressedLogManager');
 
 const BOT_TIER = 'elite';
 const WS_URL = 'ws://127.0.0.1:3010/ws';

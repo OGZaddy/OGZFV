@@ -9,12 +9,43 @@
 
 const EventEmitter = require('events');
 
-// Import all divine modules
-const QuantumGANANGAM = require('./quantum-gan-angam-tensorflow');
-const { GANNMasterStrategy } = require('./ogz_gann_js');
-const { TimeGANMarketPredictor } = require('./ogz_timegan_js');
-const { OGZPrimeMasterBot } = require('./ogz_master_integration_js');
-const { NeuralMeshCore, NeuralComponent } = require('./neural-mesh-trading-architecture');
+// Import all divine modules - now optional loading
+let QuantumGANANGAM, GANNMasterStrategy, TimeGANMarketPredictor, OGZPrimeMasterBot, NeuralMeshCore, NeuralComponent;
+
+try {
+  QuantumGANANGAM = require('../tools/quantum-gan-angam-tensorflow');
+} catch (e) {
+  console.log('⚠️ QuantumGANANGAM not loaded - module in tools');
+}
+
+try {
+  const gann = require('../tools/ogz_gann_js');
+  GANNMasterStrategy = gann.GANNMasterStrategy;
+} catch (e) {
+  console.log('⚠️ GANN not loaded - module in tools');
+}
+
+try {
+  const timegan = require('../tools/ogz_timegan_js');
+  TimeGANMarketPredictor = timegan.TimeGANMarketPredictor;
+} catch (e) {
+  console.log('⚠️ TimeGAN not loaded - module in tools');
+}
+
+try {
+  const master = require('../tools/ogz_master_integration_js');
+  OGZPrimeMasterBot = master.OGZPrimeMasterBot;
+} catch (e) {
+  console.log('⚠️ Master Integration not loaded - module in tools');
+}
+
+try {
+  const mesh = require('./neural-mesh-trading-architecture');
+  NeuralMeshCore = mesh.NeuralMeshCore;
+  NeuralComponent = mesh.NeuralComponent;
+} catch (e) {
+  console.log('⚠️ Neural Mesh not loaded');
+}
 
 class DivineModuleIntegration extends EventEmitter {
   constructor(config = {}) {

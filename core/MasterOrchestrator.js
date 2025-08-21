@@ -1,10 +1,16 @@
 // MasterOrchestrator.js - Manages all 4 bots with unified architecture
 const { Worker } = require('worker_threads');
 const EventEmitter = require('events');
-const UnifiedTradingCore = require('./UnifiedTradingCore');
-const TradingProfile = require('./TradingProfile');
 const fs = require('fs').promises;
 const path = require('path');
+
+// Initialize Module Auto-Loader
+const ModuleAutoLoader = require('./ModuleAutoLoader');
+const moduleLoader = new ModuleAutoLoader();
+
+// Load modules using auto-loader
+const UnifiedTradingCore = moduleLoader.load('UnifiedTradingCore');
+const TradingProfile = moduleLoader.load('TradingProfile');
 
 class MasterOrchestrator extends EventEmitter {
   constructor() {

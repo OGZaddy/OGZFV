@@ -3,6 +3,9 @@ const EventEmitter = require('events');
 const fs = require('fs').promises;
 const path = require('path');
 
+// Initialize Module Auto-Loader
+const ModuleAutoLoader = require('./ModuleAutoLoader');
+
 class UnifiedTradingCore extends EventEmitter {
   constructor(profile) {
     super();
@@ -12,8 +15,8 @@ class UnifiedTradingCore extends EventEmitter {
     this.mode = profile.mode || 'LIVE'; // 'LIVE' | 'PAPER' | 'BACKTEST'
     this.port = process.env.UNIFIED_PORT || 3010; // ALWAYS USE 3010
     
-    // Module auto-loader - NO HARDCODED PATHS
-    this.moduleLoader = require('./ModuleAutoLoader');
+    // Module auto-loader instance - NO HARDCODED PATHS
+    this.moduleLoader = new ModuleAutoLoader();
     
     // Load modules based on profile
     this.loadModules();
