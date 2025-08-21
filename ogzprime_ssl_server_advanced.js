@@ -231,8 +231,8 @@ console.log(`   WebSocket: wss://${process.env.DOMAIN || 'ogzprime.com'}/ws → 
 
 // Regular HTTP server - Listen on BOTH IPv4 and IPv6
 const httpServer = http.createServer(app);
-httpServer.listen(apiPort, '::', () => {
-  console.log(`🌍 Server listening on all interfaces (IPv4 + IPv6) port ${apiPort}`);
+httpServer.listen(apiPort, '0.0.0.0', () => {
+  console.log(`🌍 Server listening on 0.0.0.0:${apiPort} (IPv4 + IPv6)`);
 });
 
 // HTTPS server removed - nginx handles SSL termination

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Archon Access Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #0f0; }
+        .service { margin: 10px 0; padding: 10px; border: 1px solid #0f0; }
+        .checking { color: yellow; }
+        .online { color: #0f0; }
+        .offline { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Testing Archon Services Access</h1>
+    <div id="results"></div>
+    
+    <script>
+        const services = [
+            { name: 'Archon UI', url: 'http://149.248.242.111:3737', port: 3737 },
+            { name: 'Archon API', url: 'http://149.248.242.111:8181/health', port: 8181 },
+            { name: 'MCP Server', url: 'http://149.248.242.111:8051', port: 8051 },
+            { name: 'Trading Dashboard', url: 'http://149.248.242.111:8080', port: 8080 }
+        ];
+        
+        const results = document.getElementById('results');
+        
+        services.forEach(service => {
+            const div = document.createElement('div');
+            div.className = 'service checking';
+            div.innerHTML = `${service.name} (${service.port}): Checking...`;
+            results.appendChild(div);
+            
+            // Try to fetch with timeout
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 5000);
+            
+            fetch(service.url, { 
+                mode: 'no-cors',
+                signal: controller.signal 
+            })
+            .then(() => {
+                clearTimeout(timeout);
+                div.className = 'service online';
+                div.innerHTML = `${service.name} (${service.port}): ✓ REACHABLE - <a href="${service.url}" target="_blank" style="color: #0f0;">Open</a>`;
+            })
+            .catch(err => {
+                clearTimeout(timeout);
+                div.className = 'service offline';
+                div.innerHTML = `${service.name} (${service.port}): ✗ NOT ACCESSIBLE - ${err.message}`;
+            });
+        });
+        
+        // Also show local access URLs
+        setTimeout(() => {
+            const localDiv = document.createElement('div');
+            localDiv.style.marginTop = '30px';
+            localDiv.innerHTML = `
+                <h2>Alternative Access Methods:</h2>
+                <p>If external access isn't working, try:</p>
+                <ol>
+                    <li>SSH Tunnel: <code>ssh -L 3737:localhost:3737 root@149.248.242.111</code></li>
+                    <li>Then access: <a href="http://localhost:3737">http://localhost:3737</a></li>
+                </ol>
+            `;
+            results.appendChild(localDiv);
+        }, 6000);
+    </script>
+</body>
+</html>

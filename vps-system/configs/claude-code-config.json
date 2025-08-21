@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "archon": {
+      "command": "curl",
+      "args": ["-N", "http://149.248.242.111:8051/sse"],
+      "transport": "sse",
+      "description": "Archon Knowledge Management System on VPS"
+    },
+    "archon-stdio": {
+      "command": "nc",
+      "args": ["149.248.242.111", "8052"],
+      "transport": "stdio",
+      "description": "Archon STDIO interface for IDE integration"
+    }
+  }
+}

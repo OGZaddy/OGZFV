@@ -1,0 +1,214 @@
+# Archon Knowledge Manager Configuration
+# For OGZ Prime Trading Bot System
+
+version: '1.0'
+
+# Database connection (uses Supabase)
+database:
+  type: postgres
+  host: supabase-db
+  port: 5432
+  database: postgres
+  schema: trading
+  username: postgres
+  password: ${POSTGRES_PASSWORD}
+  ssl: false
+  pool:
+    min: 2
+    max: 10
+
+# Redis caching
+cache:
+  type: redis
+  host: redis
+  port: 6379
+  password: ${REDIS_PASSWORD}
+  ttl: 3600
+  prefix: 'archon:'
+
+# Knowledge categories
+categories:
+  - name: bugs
+    description: "Known bugs and their fixes"
+    retention: permanent
+    
+  - name: patterns
+    description: "Trading patterns that work or fail"
+    retention: 90days
+    
+  - name: solutions
+    description: "Solutions to common problems"
+    retention: permanent
+    
+  - name: performance
+    description: "Performance optimizations"
+    retention: 180days
+    
+  - name: architecture
+    description: "System architecture decisions"
+    retention: permanent
+    
+  - name: failures
+    description: "What NOT to do - critical failures"
+    retention: permanent
+    alert_on_similar: true
+
+# Learning rules
+learning:
+  enabled: true
+  
+  # Automatically learn from errors
+  auto_capture_errors: true
+  error_threshold: 3  # Same error 3 times = add to knowledge base
+  
+  # Pattern recognition
+  pattern_matching:
+    enabled: true
+    similarity_threshold: 0.85
+    
+  # Alert on similar issues
+  similarity_alerts:
+    enabled: true
+    channels:
+      - console
+      - database
+      - webhook
+      
+  # Automatic tagging
+  auto_tagging:
+    enabled: true
+    tags:
+      - critical
+      - performance
+      - security
+      - websocket
+      - trading
+      - database
+      - api
+
+# Integration with trading bot
+bot_integration:
+  enabled: true
+  
+  # Monitor bot logs
+  log_monitoring:
+    enabled: true
+    paths:
+      - /app/logs/quantum/*.log
+      - /app/logs/elite/*.log
+    patterns:
+      error: 'ERROR|FATAL|CRITICAL'
+      warning: 'WARN|WARNING'
+      trade_fail: 'trade.*failed|order.*rejected'
+      
+  # Track trading patterns
+  trade_analysis:
+    enabled: true
+    analyze_failures: true
+    analyze_successes: true
+    min_confidence_to_learn: 70
+    
+  # Performance tracking
+  performance:
+    track_metrics: true
+    alert_on_degradation: true
+    baseline_window: 7days
+
+# API configuration
+api:
+  enabled: true
+  port: 7000
+  host: 0.0.0.0
+  
+  # Authentication
+  auth:
+    enabled: true
+    type: api_key
+    header: X-Archon-Key
+    
+  # Rate limiting
+  rate_limit:
+    enabled: true
+    requests_per_minute: 100
+    
+  # CORS
+  cors:
+    enabled: true
+    origins:
+      - http://149.248.242.111:8080
+      - http://localhost:8080
+
+# Webhooks for notifications
+webhooks:
+  critical_error:
+    url: ${DISCORD_WEBHOOK_URL}
+    enabled: false
+    
+  pattern_detected:
+    url: ${PATTERN_WEBHOOK_URL}
+    enabled: false
+    
+  performance_alert:
+    url: ${PERFORMANCE_WEBHOOK_URL}
+    enabled: false
+
+# Maintenance
+maintenance:
+  # Auto cleanup old entries
+  auto_cleanup:
+    enabled: true
+    schedule: '0 2 * * *'  # 2 AM daily
+    
+  # Backup
+  backup:
+    enabled: true
+    schedule: '0 3 * * *'  # 3 AM daily
+    path: /app/backups
+    retention_days: 30
+    
+  # Optimization
+  optimize:
+    enabled: true
+    schedule: '0 4 * * 0'  # 4 AM Sunday
+
+# Specific rules for OGZ Prime
+ogz_rules:
+  # Never do these things
+  never_do:
+    - "Add middleware to WebSocket without testing"
+    - "Use AdvancedWebSocketBroadcaster"
+    - "Trust console.log counts for debugging"
+    - "Modify working WebSocket code without backup"
+    
+  # Always do these things
+  always_do:
+    - "Test WebSocket connections with wscat first"
+    - "Check PM2 logs before assuming bot is broken"
+    - "Verify data flow with simple echo tests"
+    - "Keep WebSocket handlers simple and direct"
+    
+  # Known good patterns
+  good_patterns:
+    - "Direct WebSocket broadcast without middleware"
+    - "Simple JSON message format"
+    - "Single responsibility per handler"
+    - "Explicit error logging with context"
+
+# Monitoring
+monitoring:
+  health_check:
+    enabled: true
+    interval: 30s
+    endpoint: /health
+    
+  metrics:
+    enabled: true
+    endpoint: /metrics
+    format: prometheus
+    
+  logging:
+    level: info
+    format: json
+    output:
+      - console
+      - file: /app/logs/archon.log

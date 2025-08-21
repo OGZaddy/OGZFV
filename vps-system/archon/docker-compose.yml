@@ -1,0 +1,119 @@
+version: '3.8'
+
+services:
+  # Archon Server - Main knowledge management system
+  archon-server:
+    image: archon/server:latest
+    container_name: archon-server
+    environment:
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD:-your-super-secret-password}@supabase-db:5432/postgres
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-your-redis-password}@redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-AIzaSyB-AroJUWBoWsHQYqUc4TL-z3PlCwj-x8U}
+      - HOST=0.0.0.0
+      - PORT=8181
+      - NODE_ENV=production
+    ports:
+      - "8181:8181"
+    volumes:
+      - ./knowledge:/app/knowledge
+      - ./config:/app/config
+    networks:
+      - trading-network
+    depends_on:
+      - supabase-db
+      - redis
+    restart: unless-stopped
+
+  # Archon UI - Web interface
+  archon-ui:
+    image: archon/ui:latest
+    container_name: archon-ui
+    environment:
+      - REACT_APP_API_URL=http://149.248.242.111:8181
+      - REACT_APP_MCP_URL=http://149.248.242.111:8051
+    ports:
+      - "3737:80"
+    networks:
+      - trading-network
+    depends_on:
+      - archon-server
+    restart: unless-stopped
+
+  # Archon MCP Server - Model Context Protocol for AI integration
+  archon-mcp:
+    image: archon/mcp:latest
+    container_name: archon-mcp
+    environment:
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD:-your-super-secret-password}@supabase-db:5432/postgres
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-your-redis-password}@redis:6379
+      - MCP_TRANSPORT=dual
+      - HOST=0.0.0.0
+      - PORT=8051
+      - SSE_PORT=8051
+      - STDIO_PORT=8052
+    ports:
+      - "8051:8051"  # SSE for web clients
+      - "8052:8052"  # STDIO for IDE clients
+    volumes:
+      - ./config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock  # For Docker access
+    networks:
+      - trading-network
+    depends_on:
+      - archon-server
+      - supabase-db
+      - redis
+    restart: unless-stopped
+
+  # Archon Agents - AI agents for various tasks
+  archon-agents:
+    image: archon/agents:latest
+    container_name: archon-agents
+    environment:
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD:-your-super-secret-password}@supabase-db:5432/postgres
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-your-redis-password}@redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-AIzaSyB-AroJUWBoWsHQYqUc4TL-z3PlCwj-x8U}
+      - AGENT_PORT=8053
+    ports:
+      - "8053:8053"
+    networks:
+      - trading-network
+    depends_on:
+      - archon-server
+      - supabase-db
+      - redis
+    restart: unless-stopped
+
+  # Clone AI Integration Bridge
+  clone-ai-bridge:
+    build:
+      context: .
+      dockerfile: Dockerfile.cloneai
+    container_name: clone-ai-bridge
+    environment:
+      - ARCHON_API_URL=http://archon-server:8181
+      - ARCHON_MCP_URL=http://archon-mcp:8051
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD:-your-super-secret-password}@supabase-db:5432/postgres
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-your-redis-password}@redis:6379
+      - CLONE_AI_PORT=8054
+    ports:
+      - "8054:8054"
+    volumes:
+      - ./clone-ai:/app/clone-ai
+      - /root:/root  # Access to clone AI data
+    networks:
+      - trading-network
+    depends_on:
+      - archon-server
+      - archon-mcp
+    restart: unless-stopped
+
+networks:
+  trading-network:
+    external: true
+
+volumes:
+  archon-knowledge:
+  archon-config:

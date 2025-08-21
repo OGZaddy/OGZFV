@@ -1,0 +1,217 @@
+version: '3.8'
+
+services:
+  # Supabase Stack (Postgres + Auth + Realtime)
+  supabase-db:
+    image: supabase/postgres:15.1.0.117
+    container_name: supabase-db
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-your-super-secret-password}
+      POSTGRES_DB: postgres
+    volumes:
+      - supabase-db-data:/var/lib/postgresql/data
+      - ./supabase/migrations:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - trading-network
+    restart: unless-stopped
+
+  supabase-auth:
+    image: supabase/gotrue:v2.99.0
+    container_name: supabase-auth
+    depends_on:
+      - supabase-db
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      API_EXTERNAL_URL: ${API_EXTERNAL_URL:-http://localhost:9999}
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-your-super-secret-password}@supabase-db:5432/postgres?search_path=auth
+      GOTRUE_SITE_URL: ${SITE_URL:-http://localhost:3000}
+      GOTRUE_JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-token-with-at-least-32-characters-long}
+      GOTRUE_JWT_EXP: 3600
+    ports:
+      - "9999:9999"
+    networks:
+      - trading-network
+    restart: unless-stopped
+
+  supabase-realtime:
+    image: supabase/realtime:v2.25.35
+    container_name: supabase-realtime
+    depends_on:
+      - supabase-db
+    environment:
+      DB_HOST: supabase-db
+      DB_PORT: 5432
+      DB_NAME: postgres
+      DB_USER: postgres
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-your-super-secret-password}
+      DB_SSL: "false"
+      PORT: 4000
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-token-with-at-least-32-characters-long}
+      REPLICATION_MODE: RLS
+      REPLICATION_POLL_INTERVAL: 100
+      SECURE_CHANNELS: "true"
+      SLOT_NAME: supabase_realtime_rls
+      TEMPORARY_SLOT: "true"
+    ports:
+      - "4000:4000"
+    networks:
+      - trading-network
+    restart: unless-stopped
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: trading-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-your-redis-password}
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - trading-network
+    restart: unless-stopped
+
+  # Grafana for monitoring
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: trading-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_INSTALL_PLUGINS=redis-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - "3000:3000"
+    networks:
+      - trading-network
+    restart: unless-stopped
+
+  # Prometheus for metrics
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: trading-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - trading-network
+    restart: unless-stopped
+
+  # Trading Bot Quantum
+  quantum-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: quantum-bot
+    environment:
+      - BOT_TYPE=quantum
+      - NODE_ENV=production
+      - COINBASE_API_KEY=${COINBASE_API_KEY}
+      - COINBASE_API_SECRET=${COINBASE_API_SECRET}
+      - COINBASE_API_PASSPHRASE=${COINBASE_API_PASSPHRASE}
+      - SUPABASE_URL=http://supabase-db:5432
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-your-redis-password}@redis:6379
+      - WS_PORT=3010
+    volumes:
+      - ./data/quantum:/app/data
+      - ./logs/quantum:/app/logs
+    ports:
+      - "3010:3010"
+    networks:
+      - trading-network
+    depends_on:
+      - supabase-db
+      - redis
+    restart: unless-stopped
+
+  # Trading Bot Elite
+  elite-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: elite-bot
+    environment:
+      - BOT_TYPE=elite
+      - NODE_ENV=production
+      - COINBASE_API_KEY=${COINBASE_API_KEY}
+      - COINBASE_API_SECRET=${COINBASE_API_SECRET}
+      - COINBASE_API_PASSPHRASE=${COINBASE_API_PASSPHRASE}
+      - SUPABASE_URL=http://supabase-db:5432
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-your-redis-password}@redis:6379
+      - WS_PORT=3011
+    volumes:
+      - ./data/elite:/app/data
+      - ./logs/elite:/app/logs
+    ports:
+      - "3011:3011"
+    networks:
+      - trading-network
+    depends_on:
+      - supabase-db
+      - redis
+    restart: unless-stopped
+
+  # Dashboard
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    container_name: trading-dashboard
+    environment:
+      - NODE_ENV=production
+      - SUPABASE_URL=http://supabase-db:5432
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-your-redis-password}@redis:6379
+    ports:
+      - "8080:80"
+    networks:
+      - trading-network
+    depends_on:
+      - supabase-db
+      - redis
+      - quantum-bot
+      - elite-bot
+    restart: unless-stopped
+
+  # Archon Knowledge Manager
+  archon:
+    image: archon/knowledge-manager:latest
+    container_name: archon
+    environment:
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD:-your-super-secret-password}@supabase-db:5432/postgres
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-your-redis-password}@redis:6379
+      - ARCHON_API_KEY=${ARCHON_API_KEY}
+    volumes:
+      - ./archon/knowledge:/app/knowledge
+      - ./archon/config:/app/config
+    ports:
+      - "7000:7000"
+    networks:
+      - trading-network
+    depends_on:
+      - supabase-db
+      - redis
+    restart: unless-stopped
+
+networks:
+  trading-network:
+    driver: bridge
+
+volumes:
+  supabase-db-data:
+  redis-data:
+  grafana-data:
+  prometheus-data:
