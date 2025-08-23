@@ -8,12 +8,23 @@ const axios = require('axios');
 class MCPOrchestrator {
   constructor() {
     // Initialize all connections
+    // SECURITY: Require environment variables for all API keys
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
+      console.error('❌ SUPABASE_URL and SUPABASE_SERVICE_KEY environment variables are required');
+      process.exit(1);
+    }
+    
+    if (!process.env.GEMINI_API_KEY) {
+      console.error('❌ GEMINI_API_KEY environment variable is required');
+      process.exit(1);
+    }
+    
     this.supabase = createClient(
-      process.env.SUPABASE_URL || 'https://dbpuhvxbiedjqxeqdonw.supabase.co',
-      process.env.SUPABASE_SERVICE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRicHVodnhiaWVkanF4ZXFkb253Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDg1ODIwNiwiZXhwIjoyMDcwNDM0MjA2fQ.S-GjkFcWj_IDjaEf62Q-ZSukWr7kR0Jv9bAP_N-UiVw'
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_KEY
     );
     
-    this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'AIzaSyB-AroJUWBoWsHQYqUc4TL-z3PlCwj-x8U');
+    this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     this.geminiModel = this.genAI.getGenerativeModel({ model: "gemini-pro" });
     
     this.archonUrl = 'http://localhost:8181';

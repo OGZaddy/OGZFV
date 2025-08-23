@@ -7,8 +7,12 @@
 require('dotenv').config();
 const express = require('express');
 // IMPORTANT: Your test key is EXPIRED! Get a new one from https://dashboard.stripe.com/test/apikeys
-// For now using the expired key - REPLACE THIS!
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || 'sk_test_51Rc2VnGai7JiFhNgxpk4VPgzuLwgymGkGDW4fZCDzfqjDmYCCvKxF9i3g9ebOlPQexaR9qxx7xIv7bqfpDXfkRGu00qy9cjKBS';
+// SECURITY: API key must be set in environment variables
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+if (!STRIPE_SECRET_KEY) {
+  console.error('❌ STRIPE_SECRET_KEY environment variable is required');
+  process.exit(1);
+}
 const stripe = require('stripe')(STRIPE_SECRET_KEY);
 
 // Your actual Price IDs from Stripe
