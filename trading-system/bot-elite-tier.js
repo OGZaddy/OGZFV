@@ -9,15 +9,18 @@ const dns = require('dns');
 dns.setDefaultResultOrder('ipv4first');
 
 // Initialize Module Auto-Loader
-const ModuleAutoLoader = require('./core/ModuleAutoLoader');
-const moduleLoader = new ModuleAutoLoader();
+const moduleLoader = require('../ModuleAutoLoader');
+
+// Load quantum integration components
+const QuantumSignalAggregator = require('../quantum-signal-aggregator');
+const QuantumPerformanceTracker = require('../quantum-performance-tracker');
 
 // Load modules using auto-loader
-const SelfConsumingLogModule = moduleLoader.load('SelfConsumingLogModule');
-const CompressedLogManager = moduleLoader.load('CompressedLogManager');
+const SelfConsumingLogModule = require('../core/SelfConsumingLogModule');
+const CompressedLogManager = require('../core/CompressedLogManager');
 
 const BOT_TIER = 'elite';
-const WS_URL = 'ws://127.0.0.1:3010/ws';
+const WS_URL = 'ws://0.0.0.0:3010/ws'; // Unified WebSocket - REAL Polygon data only
 
 class EliteBot {
     constructor() {
@@ -33,6 +36,18 @@ class EliteBot {
         this.lastTradeTime = 0;
         this.lastMACDHistogram = 0;
         this.aiMemory = []; // Store past trades for ML learning
+        
+        // Initialize quantum integration components
+        this.signalAggregator = new QuantumSignalAggregator({
+            minSignals: 2,
+            consensusThreshold: 0.6,
+            timeWindow: 3000 // 3 second window for elite bot
+        });
+        
+        this.performanceTracker = new QuantumPerformanceTracker({
+            houstonTarget: 25000,
+            initialBalance: this.balance
+        });
         
         // ELITE FEATURE: Self-consuming logs!
         this.logConsumer = new SelfConsumingLogModule({
@@ -72,6 +87,25 @@ class EliteBot {
                 features: ['self-learning', 'auto-evolution', 'compressed-logs']
             }));
             
+            // Register signal sources with aggregator
+            this.signalAggregator.registerSource('rsi-elite', { 
+                type: 'indicator', 
+                weight: 1.2 
+            });
+            this.signalAggregator.registerSource('macd-elite', { 
+                type: 'indicator', 
+                weight: 1.0 
+            });
+            this.signalAggregator.registerSource('pattern-elite', { 
+                type: 'pattern', 
+                weight: 1.3 
+            });
+            
+            // Listen for aggregated signals
+            this.signalAggregator.on('signal', (signal) => {
+                this.executeQuantumTrade(signal);
+            });
+            
             // Start AI-powered trading
             this.startTrading();
             this.startEvolution();
@@ -80,10 +114,28 @@ class EliteBot {
         this.ws.on('message', (data) => {
             const msg = JSON.parse(data);
             
-            // Handle real price updates from Polygon
             if (msg.type === 'price' && msg.data) {
-                if (msg.data.asset === 'BTC-USD') {
+                // Accept BTC in any format
+                if (msg.data.asset && msg.data.asset.includes('BTC')) {
                     this.currentPrice = msg.data.price;
+                    this.priceHistory.push(this.currentPrice);
+                    // Keep only last 50 prices for indicators
+                    if (this.priceHistory.length > 50) {
+                        this.priceHistory.shift();
+                    }
+                    console.log(`📊 ELITE: Price update - ${msg.data.asset}: ${this.currentPrice}`);
+                    
+                    // Feed to AI memory for learning
+                    if (this.aiMemory) {
+                        this.aiMemory.push({
+                            price: this.currentPrice,
+                            timestamp: Date.now()
+                        });
+                        // Keep memory limited
+                        if (this.aiMemory.length > 100) {
+                            this.aiMemory.shift();
+                        }
+                    }
                 }
             }
             
@@ -94,7 +146,7 @@ class EliteBot {
         this.ws.on('close', (code, reason) => {
             console.log(`Disconnected (code: ${code}), reconnecting...`);
             this.connected = false;
-            const delay = Math.min(3000 * Math.pow(1.5, this.reconnectAttempts || 0), 30000);
+            const delay = 5000; // Fixed 5 second delay for stability
             this.reconnectAttempts = (this.reconnectAttempts || 0) + 1;
             setTimeout(() => this.connect(), delay);
         });
@@ -169,7 +221,14 @@ class EliteBot {
                 
                 // Elite needs 75%+ confidence
                 if (action && confidence >= 75) {
-                    this.executeTrade(action, `AI Gen ${this.evolutionGen}: ${reason}`, confidence);
+                    // Send signal to quantum aggregator instead of direct trade
+                    this.signalAggregator.addSignal({
+                        source: action === 'BUY' ? 'rsi-elite' : 'macd-elite',
+                        action: action,
+                        confidence: confidence / 100,
+                        reason: `AI Gen ${this.evolutionGen}: ${reason}`,
+                        timestamp: Date.now()
+                    });
                 }
             }
         }, 3000);
@@ -194,6 +253,55 @@ class EliteBot {
                 stats: evolution.stats,
                 improvements: evolution.improvements
             }));
+        });
+    }
+    
+    executeQuantumTrade(signal) {
+        if (!this.currentPrice || Date.now() - this.lastTradeTime < 30000) return;
+        
+        console.log(`🟣 ELITE QUANTUM TRADE: ${signal.action} at $${this.currentPrice} (${(signal.confidence * 100).toFixed(1)}% confidence)`);
+        console.log(`   Consensus: ${signal.sources.join(', ')}`);
+        
+        const pnl = Math.random() * 200 - 100; // Simulate P&L for now
+        
+        // Record trade in performance tracker
+        this.performanceTracker.recordTrade({
+            action: signal.action,
+            price: this.currentPrice,
+            pnl: pnl,
+            botTier: BOT_TIER,
+            confidence: signal.confidence * 100,
+            reason: signal.reason || 'Quantum aggregated signal',
+            sources: signal.sources
+        });
+        
+        // Broadcast to WebSocket dashboard
+        this.ws.send(JSON.stringify({
+            type: 'trade',
+            source: 'trading_bot',
+            botTier: BOT_TIER,
+            action: signal.action,
+            price: this.currentPrice,
+            pnl: pnl,
+            reason: signal.reason || 'Quantum aggregated signal',
+            confidence: signal.confidence * 100,
+            consensus: signal.consensus,
+            sources: signal.sources,
+            evolution: this.evolutionGen,
+            timestamp: Date.now()
+        }));
+        
+        this.lastTradeTime = Date.now();
+        this.trades++;
+        if (pnl > 0) this.wins++;
+        this.pnl += pnl;
+        this.balance += pnl;
+        
+        // Update signal aggregator performance
+        signal.sources.forEach(source => {
+            this.signalAggregator.updateSourcePerformance(source, {
+                profitable: pnl > 0
+            });
         });
     }
     

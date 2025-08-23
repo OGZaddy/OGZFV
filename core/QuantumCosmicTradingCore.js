@@ -73,8 +73,8 @@ class QuantumCosmicTradingCore extends EventEmitter {
     for (let i = 0; i < 1000; i++) {
       this.collectiveConsciousness.neurons.push({
         id: i,
-        weight: Math.random() * 0.5 + 0.5, // 0.5 to 1.0
-        bias: Math.random() * 0.2 - 0.1,    // -0.1 to 0.1
+        weight: 0.75, // Fixed weight - no random
+        bias: 0,       // No bias
         experience: 0,
         votes: { buy: 0, sell: 0, hold: 0 },
         
@@ -91,20 +91,20 @@ class QuantumCosmicTradingCore extends EventEmitter {
           if (i < 300) {
             if (rsi < 45 || (macd > 0 && trend !== 'downtrend')) {
               vote = 'buy';
-              confidence = 0.7 + Math.random() * 0.3;
+              confidence = 0.8; // Fixed confidence
             } else if (rsi > 55 || (macd < 0 && trend !== 'uptrend')) {
               vote = 'sell';
-              confidence = 0.7 + Math.random() * 0.3;
+              confidence = 0.8; // Fixed confidence
             }
           }
           // Conservative neurons (next 300)
           else if (i < 600) {
             if (rsi < 30 && macd > 0 && trend === 'uptrend') {
               vote = 'buy';
-              confidence = 0.8 + Math.random() * 0.2;
+              confidence = 0.85; // Fixed confidence
             } else if (rsi > 70 && macd < 0 && trend === 'downtrend') {
               vote = 'sell';
-              confidence = 0.8 + Math.random() * 0.2;
+              confidence = 0.85; // Fixed confidence
             }
           }
           // Quantum neurons (last 400) - use quantum states
@@ -139,11 +139,18 @@ class QuantumCosmicTradingCore extends EventEmitter {
       hold: { probability: 0, universes: [] }
     };
     
-    // Simulate 1000 parallel universes
-    for (let i = 0; i < 1000; i++) {
-      const universe = this.simulateQuantumUniverse(marketData, i);
-      superposition[universe.decision].probability += universe.profit;
-      superposition[universe.decision].universes.push(universe);
+    // Real market analysis only - no simulated universes
+    // Use actual market indicators for decision
+    const rsi = marketData.rsi || 50;
+    const macd = marketData.macd || 0;
+    const trend = marketData.trend || 'neutral';
+    
+    if (rsi < 30 && macd > 0) {
+      superposition.buy.probability = 0.8;
+    } else if (rsi > 70 && macd < 0) {
+      superposition.sell.probability = 0.8;
+    } else {
+      superposition.hold.probability = 0.6;
     }
     
     // Collapse wavefunction based on profit probability
@@ -158,31 +165,8 @@ class QuantumCosmicTradingCore extends EventEmitter {
   }
   
   /**
-   * Simulate a single quantum universe
+   * REMOVED: No simulated universes - use real market data only
    */
-  simulateQuantumUniverse(marketData, universeId) {
-    const price = marketData.price || 50000;
-    const rsi = marketData.rsi || 50;
-    const macd = marketData.macd || 0;
-    
-    // Each universe has quantum fluctuations
-    const quantumFluctuation = Math.sin(universeId * 0.1) * 0.01;
-    const adjustedPrice = price * (1 + quantumFluctuation);
-    
-    // Quantum decision based on universe-specific physics
-    let decision = 'hold';
-    let profit = 0;
-    
-    if (rsi + (universeId % 20) < 50) {
-      decision = 'buy';
-      profit = Math.random() * 0.02 + 0.005; // 0.5% to 2.5% profit
-    } else if (rsi - (universeId % 20) > 50) {
-      decision = 'sell';
-      profit = Math.random() * 0.02 + 0.005;
-    }
-    
-    return { decision, profit, universeId, price: adjustedPrice };
-  }
   
   /**
    * Collapse quantum wavefunction
@@ -375,8 +359,8 @@ class QuantumCosmicTradingCore extends EventEmitter {
     for (const level of levels) {
       triggers.push({
         price: level,
-        impact: Math.random() * 0.1 + 0.05, // 5-15% impact
-        probability: Math.random() * 0.3 + 0.1 // 10-40% chance
+        impact: 0.08,    // Fixed 8% impact
+        probability: 0.25 // Fixed 25% probability
       });
     }
     
@@ -421,12 +405,11 @@ class QuantumCosmicTradingCore extends EventEmitter {
   }
   
   /**
-   * Get solar flare index (simulated)
+   * REMOVED: No simulated cosmic data - use real market indicators only
    */
   getSolarFlareIndex(date) {
-    // Simulate solar activity based on date
-    const dayOfYear = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
-    return Math.sin(dayOfYear / 365 * 2 * Math.PI) * 0.5 + 0.5; // 0 to 1
+    // Return neutral value - no fake cosmic influence
+    return 0.5;
   }
   
   /**

@@ -426,17 +426,13 @@ class UltimateQuantumTradingSystem extends EventEmitter {
         
         return quantumSignal;
       } else {
-        console.warn('⚠️ Quantum ensemble disagreement, holding position');
-        const action = Math.random() > 0.5 ? 'BUY' : 'SELL';
-      console.log('💊 ENSEMBLE DISAGREEMENT? WHO CARES! ' + action);
-      return { action: action, confidence: 0.6, mode: 'AGGRESSIVE_ENSEMBLE' };
+        console.warn('⚠️ Quantum ensemble disagreement, requiring more data');
+        return { action: 'HOLD', confidence: 0, mode: 'INSUFFICIENT_CONSENSUS' };
       }
       
     } catch (error) {
       console.error('❌ Quantum signal classification error:', error);
-      const action = Math.random() > 0.5 ? 'BUY' : 'SELL';
-      console.log('🔥 ERROR? TRADE THROUGH IT! ' + action);
-      return { action: action, confidence: 0.55, mode: 'ERROR_YOLO' };
+      return { action: 'HOLD', confidence: 0, mode: 'ERROR_FALLBACK' };
     }
   }
   
@@ -645,16 +641,19 @@ class UltimateQuantumTradingSystem extends EventEmitter {
   // ============================================================================
   
   async getCurrentMarketData() {
-    return {
-      features: [Math.random(), Math.random(), Math.random()], // Simplified
-      event: { price: 50000 + Math.random() * 1000, volume: 1000000 },
-      priceStream: [49500, 49800, 50100, 50000],
-      history: []
-    };
+    // MUST use real Polygon WebSocket data - no fake data
+    if (!this.externalSystems.polygonWS) {
+      throw new Error('No Polygon WebSocket connection available');
+    }
+    return this.externalSystems.polygonWS.getCurrentMarketData();
   }
   
   getAvailableCapital() {
-    return 100000; // Simplified - $100k available
+    // Get real available capital from execution layer
+    if (this.externalSystems.executionLayer) {
+      return this.externalSystems.executionLayer.getAvailableBalance();
+    }
+    return 10000; // Fallback balance
   }
   
   async updateQuantumMarketIntelligence() {

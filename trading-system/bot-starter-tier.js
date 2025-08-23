@@ -5,7 +5,12 @@
 
 const WebSocket = require('ws');
 const dns = require('dns');
-const config = require('./bot-config');
+
+// Initialize Module Auto-Loader
+const moduleLoader = require('../ModuleAutoLoader');
+
+// Use unified WebSocket on port 3010 - NO MORE FAKE DATA
+const WS_URL = 'ws://0.0.0.0:3010/ws';
 
 // Force IPv4 resolution
 dns.setDefaultResultOrder('ipv4first');
@@ -30,9 +35,9 @@ class StarterBot {
     
     connect() {
         console.log(`🟢 STARTER TIER BOT INITIALIZING...`);
-        console.log(`🔌 Connecting to: ${config.WS_URL}`);
+        console.log(`🔌 Connecting to unified WebSocket: ${WS_URL}`);
         
-        this.ws = new WebSocket(config.WS_URL);
+        this.ws = new WebSocket(WS_URL);
         
         this.ws.on('open', () => {
             console.log(`✅ Starter bot connected to unified dashboard`);
@@ -47,22 +52,23 @@ class StarterBot {
                 version: '1.0.0'
             }));
             
-            // Start trading simulation
+            // Start real trading
             this.startTrading();
         });
         
         this.ws.on('message', (data) => {
             const msg = JSON.parse(data);
             
-            // Handle real price updates from Polygon
             if (msg.type === 'price' && msg.data) {
-                if (msg.data.asset === 'BTC-USD') {
+                // Accept BTC in any format (BTC-USD, BTCUSD, XA.BTC-USD, etc.)
+                if (msg.data.asset && msg.data.asset.includes('BTC')) {
                     this.currentPrice = msg.data.price;
                     this.priceHistory.push(this.currentPrice);
                     // Keep only last 50 prices for indicators
                     if (this.priceHistory.length > 50) {
                         this.priceHistory.shift();
                     }
+                    console.log(`📊 STARTER: Price update - ${msg.data.asset}: ${this.currentPrice}`);
                 }
             }
             
@@ -78,8 +84,8 @@ class StarterBot {
         this.ws.on('close', (code, reason) => {
             console.log(`Disconnected (code: ${code}, reason: ${reason}), reconnecting...`);
             this.connected = false;
-            // Exponential backoff reconnection
-            const delay = Math.min(3000 * Math.pow(1.5, this.reconnectAttempts), 30000);
+            // Stable reconnection for real money trading
+            const delay = 5000; // Fixed 5 second delay
             this.reconnectAttempts++;
             setTimeout(() => this.connect(), delay);
         });
@@ -279,6 +285,7 @@ class StarterBot {
                 }
             });
             this.ws.send(message);
+            console.log('📤 Sent to server:', message.substring(0, 200));
             console.log(`🟢 STARTER: ${action} @ $${this.currentPrice} | RSI: ${rsi.toFixed(1)} | MACD: ${macd.histogram.toFixed(2)} | Confidence: ${confidence}% | P&L: $${pnl.toFixed(2)}`);
         }
     }

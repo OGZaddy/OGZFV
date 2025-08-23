@@ -182,6 +182,26 @@ class ModuleAutoLoader {
     return require(modulePath);
   }
   
+  // Resolve file path (for dashboard files, etc.)
+  resolvePath(filename) {
+    // Try multiple directories
+    const searchPaths = [
+      path.join(this.basePath, 'trading-system', filename),
+      path.join(this.basePath, filename),
+      path.join(this.basePath, 'public', filename),
+      path.join(this.basePath, 'ui', filename)
+    ];
+    
+    for (const filePath of searchPaths) {
+      if (fs.existsSync(filePath)) {
+        return filePath;
+      }
+    }
+    
+    // Fallback - return first path even if it doesn't exist
+    return searchPaths[0];
+  }
+  
   // Load all core modules at once
   loadAll() {
     console.log('🚀 AUTO-LOADING ALL MODULES...\n');

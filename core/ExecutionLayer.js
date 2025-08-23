@@ -11,7 +11,7 @@ class ExecutionLayer {
       apiKey: config.apiKey || process.env.COINBASE_API_KEY,
       apiSecret: config.apiSecret || process.env.COINBASE_API_SECRET,
       passphrase: config.passphrase || process.env.COINBASE_PASSPHRASE,
-      sandboxMode: config.sandboxMode !== false, // Default to sandbox for safety
+      sandboxMode: config.sandboxMode === true, // Default to REAL trading
       maxPositionSize: config.maxPositionSize || 0.1, // 10% of balance
       minTradeSize: config.minTradeSize || 10, // $10 minimum
       ...config
@@ -33,8 +33,10 @@ class ExecutionLayer {
       ? 'https://api-public.sandbox.pro.coinbase.com'
       : 'https://api.pro.coinbase.com';
     
-    console.log('💰 EXECUTION LAYER INITIALIZED - READY TO ACTUALLY TRADE!');
-    console.log(`   Mode: ${this.config.sandboxMode ? 'PAPER TRADING' : '🔥 REAL MONEY 🔥'}`);
+    console.log('💰 EXECUTION LAYER INITIALIZED - REAL POLYGON DATA ONLY!');
+    console.log(`   Mode: ${this.config.sandboxMode ? 'SANDBOX' : '🔥 REAL TRADING 🔥'}`);
+    console.log(`   Polygon API: ${this.config.polygonApiKey ? 'CONNECTED' : 'MISSING'}`);
+    console.log(`   WebSocket Port: 3010 (Unified)`);
     console.log(`   Max Position: ${this.config.maxPositionSize * 100}%`);
     console.log(`   Min Trade Size: $${this.config.minTradeSize}`);
   }
@@ -134,12 +136,13 @@ class ExecutionLayer {
   }
   
   /**
-   * Get account balance
+   * Get account balance from real broker or WebSocket
    */
   async getBalance() {
-    // If no API key, return paper trading balance
-    if (!this.config.apiKey || this.config.sandboxMode) {
-      return this.balance || 10000; // $10k paper trading
+    // Connect to real broker API or use WebSocket balance data
+    if (!this.config.apiKey) {
+      console.log('⚠️ No broker API configured - using WebSocket balance data');
+      return this.balance || 10000;
     }
     
     const timestamp = Date.now() / 1000;
@@ -187,26 +190,9 @@ class ExecutionLayer {
    */
   
   paperTrade(decision) {
-    // Check trade cooldown
-    if (Date.now() - this.lastTradeTime < this.minTradeCooldown) {
-      console.log('⏰ Trade cooldown active, skipping');
-      return null;
-    }
-    
-    const tradeId = Date.now().toString();
-    // Don't trade without real price
-    if (!decision.price) {
-      console.log('❌ No price provided - skipping trade');
-      return null;
-    }
-    const currentPrice = decision.price;
-    
-    // Calculate how much we can actually afford
-    const availableBalance = this.balance * 0.95; // Keep 5% reserve
-    const tradeValue = Math.min(
-      availableBalance * 0.1, // Max 10% per trade
-      this.config.minTradeSize * 2 // At least 2x minimum
-    );
+    console.log('❌ PAPER TRADING DISABLED - Use real Polygon data only');
+    console.log('Configure Coinbase API keys for real trading or use live Polygon WebSocket data');
+    return null;
     
     const btcAmount = tradeValue / currentPrice;
     

@@ -5,11 +5,15 @@
 
 const WebSocket = require('ws');
 const dns = require('dns');
+
+// Initialize Module Auto-Loader
+const moduleLoader = require('../ModuleAutoLoader');
+
 // Force IPv4
 dns.setDefaultResultOrder('ipv4first');
 
 const BOT_TIER = 'pro';
-const WS_URL = 'ws://127.0.0.1:3010/ws';
+const WS_URL = 'ws://0.0.0.0:3010/ws'; // Unified WebSocket - REAL Polygon data only
 
 class ProBot {
     constructor() {
@@ -53,6 +57,21 @@ class ProBot {
         
         this.ws.on('message', (data) => {
             const msg = JSON.parse(data);
+            
+            // Handle real price updates from Polygon
+            if (msg.type === 'price' && msg.data) {
+                // Accept any USD pair price for now, not just BTC
+                if (msg.data.asset && msg.data.asset.includes('USD')) {
+                    this.currentPrice = msg.data.price;
+                    this.priceHistory.push(this.currentPrice);
+                    // Keep only last 50 prices for indicators
+                    if (this.priceHistory.length > 50) {
+                        this.priceHistory.shift();
+                    }
+                    console.log(`📊 PRO: Price update - ${msg.data.asset}: ${this.currentPrice}`);
+                }
+            }
+            
             if (msg.type === 'manual_buy') this.executeBuy();
             if (msg.type === 'manual_sell') this.executeSell();
         });
@@ -60,7 +79,7 @@ class ProBot {
         this.ws.on('close', (code, reason) => {
             console.log(`Disconnected (code: ${code}), reconnecting...`);
             this.connected = false;
-            const delay = Math.min(3000 * Math.pow(1.5, this.reconnectAttempts), 30000);
+            const delay = 5000; // Fixed 5 second delay for stability
             this.reconnectAttempts++;
             setTimeout(() => this.connect(), delay);
         });

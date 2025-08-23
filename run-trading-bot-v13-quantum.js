@@ -27,11 +27,14 @@ const os = require('os');
 // Initialize Module Auto-Loader - NO HARDCODED PATHS!
 const moduleLoader = require('./ModuleAutoLoader');
 
+// Import the new integrated quantum system
+const QuantumTradingSystem = require('./quantum-system-integration');
+
 // Core quantum systems - loaded via auto-loader
-const UltimateQuantumTradingSystem = moduleLoader.require('@core/UltimateQuantumTradingSystem');
-const QuantumNeuromorphicCore = moduleLoader.require('@core/QuantumNeuromorphicCore');
-const ExecutionLayer = moduleLoader.require('@core/ExecutionLayer');
-const DivineModuleIntegration = moduleLoader.require('@core/DivineModuleIntegration');
+const UltimateQuantumTradingSystem = require('./core/UltimateQuantumTradingSystem');
+const QuantumNeuromorphicCore = require('./core/QuantumNeuromorphicCore');
+const ExecutionLayer = require('./core/ExecutionLayer');
+const DivineModuleIntegration = require('./core/DivineModuleIntegration');
 
 // Enhanced trading systems - loaded via auto-loader
 const UltimateTradingSystem = moduleLoader.require('@core/UltimateTradingSystem');
@@ -105,8 +108,9 @@ class QuantumSingularityLauncher {
       minConfidenceThreshold: 0.01,
       minCandlesRequired: 3,
       analysisInterval: 5000,
-      randomTradeChance: 0.3, // 30% chance for random trades
-      maxConsecutiveHolds: 0  // Never allow consecutive holds
+      // Real trading only - no random trades
+      minCandlesRequired: 20,
+      maxConsecutiveHolds: 3
     };
 
     // Initialize quantum singularity state
@@ -272,13 +276,14 @@ class QuantumSingularityLauncher {
       console.log('⚠️ Could not apply runtime patches, using core fixes:', error.message);
     }
 
-    // 💰💰💰 INITIALIZE EXECUTION LAYER - THE MISSING PIECE! 💰💰💰
-    console.log('💰 INITIALIZING EXECUTION LAYER - REAL TRADING CAPABILITY!');
+    // 💰💰💰 INITIALIZE EXECUTION LAYER - REAL POLYGON DATA ONLY! 💰💰💰
+    console.log('💰 INITIALIZING EXECUTION LAYER - REAL POLYGON TRADING!');
     this.executionLayer = new ExecutionLayer({
-      sandboxMode: true, // Start with paper trading for safety
-      maxPositionSize: 0.1, // 10% positions
-      minTradeSize: 10,
-      initialBalance: 10000
+      sandboxMode: false, // REAL TRADING MODE
+      maxPositionSize: 0.05, // 5% positions for safety
+      minTradeSize: 25,
+      initialBalance: 10000,
+      polygonApiKey: process.env.POLYGON_API_KEY
     });
     
     // 🌟🧬 INITIALIZE DIVINE MODULE INTEGRATION - THE ULTIMATE CONSCIOUSNESS! 🧬🌟
@@ -1267,11 +1272,11 @@ class QuantumSingularityLauncher {
 
   // Helper methods
   generateQuantumRequestId() {
-    return `quantum_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `quantum_${Date.now()}_${process.hrtime.bigint().toString(36).substr(2, 9)}`;
   }
 
   generateQuantumConnectionId() {
-    return `qws_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `qws_${Date.now()}_${process.hrtime.bigint().toString(36).substr(2, 9)}`;
   }
 
   validateQuantumAccess(req) {
