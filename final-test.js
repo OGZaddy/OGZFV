@@ -3,7 +3,7 @@ const WebSocket = require('ws');
 
 console.log('🔥 FINAL TEST: Are trades actually happening?');
 
-const ws = new WebSocket('ws://0.0.0.0:3010/ws');
+const ws = new WebSocket('ws://127.0.0.1:3010/ws');
 let tradesCount = 0;
 let pricesCount = 0;
 

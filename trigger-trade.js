@@ -3,7 +3,7 @@ const WebSocket = require('ws');
 
 console.log('🎯 Forcing trade execution test...');
 
-const ws = new WebSocket('ws://0.0.0.0:3010/ws');
+const ws = new WebSocket('ws://127.0.0.1:3010/ws');
 
 ws.on('open', () => {
     console.log('✅ Connected - sending manual BUY command');

@@ -1,0 +1,933 @@
+{
+  "metrics": {
+    "currentBalance": 10000,
+    "startingBalance": 10000,
+    "peakBalance": 10000,
+    "totalTrades": 0,
+    "winningTrades": 0,
+    "losingTrades": 0,
+    "totalProfit": 0,
+    "totalLoss": 0,
+    "netPnL": 0,
+    "winRate": 0,
+    "profitFactor": 0,
+    "sharpeRatio": 0,
+    "maxDrawdown": 0,
+    "currentDrawdown": 0,
+    "startTime": 1756086601586,
+    "lastTradeTime": null,
+    "sessionDuration": 0,
+    "houstonProgress": 0,
+    "estimatedDaysToHouston": null,
+    "dailyAverage": 0
+  },
+  "bots": {
+    "starter": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0,
+      "winRate": 0,
+      "avgWin": 0,
+      "avgLoss": 0,
+      "bestTrade": 0,
+      "worstTrade": 0,
+      "currentStreak": 0,
+      "bestStreak": 0,
+      "lastTrade": null
+    },
+    "pro": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0,
+      "winRate": 0,
+      "avgWin": 0,
+      "avgLoss": 0,
+      "bestTrade": 0,
+      "worstTrade": 0,
+      "currentStreak": 0,
+      "bestStreak": 0,
+      "lastTrade": null
+    },
+    "elite": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0,
+      "winRate": 0,
+      "avgWin": 0,
+      "avgLoss": 0,
+      "bestTrade": 0,
+      "worstTrade": 0,
+      "currentStreak": 0,
+      "bestStreak": 0,
+      "lastTrade": null
+    },
+    "quantum": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0,
+      "winRate": 0,
+      "avgWin": 0,
+      "avgLoss": 0,
+      "bestTrade": 0,
+      "worstTrade": 0,
+      "currentStreak": 0,
+      "bestStreak": 0,
+      "lastTrade": null
+    }
+  },
+  "modules": {},
+  "strategies": {},
+  "history": [],
+  "snapshots": {
+    "minute": [
+      {
+        "timestamp": 1756086841586,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756086901587,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756086961587,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087021587,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087081587,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087141588,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087201589,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087261589,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087321589,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087381589,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087441590,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087501590,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087561590,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087621590,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087681590,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087741590,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087801590,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087861591,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087921590,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756087981590,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088041591,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088101593,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088161592,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088221592,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088281592,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088341592,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088401593,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088461592,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088521592,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088581593,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088641593,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088701593,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088761594,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088821595,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088881596,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756088941596,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089001596,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089061596,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089121596,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089181596,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089241596,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089301596,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089361596,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089421596,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089481597,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089541597,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089601598,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089661598,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089721599,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089781599,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089841600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089901599,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089961600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756090021600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756090081600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756090141600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756090201600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756090261600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756090321600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756090381600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      }
+    ],
+    "hourly": [
+      {
+        "timestamp": 1756089001596,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089061595,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089121595,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089181596,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089241595,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089301596,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089361595,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089421596,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089481597,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089541597,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089601598,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089661598,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089721599,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089781599,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089841600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089901599,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756089961600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756090021600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756090081600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756090141600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756090201600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756090261599,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756090321600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      },
+      {
+        "timestamp": 1756090381600,
+        "balance": 10000,
+        "pnl": 0,
+        "trades": 0,
+        "winRate": 0,
+        "profitFactor": 0,
+        "drawdown": 0,
+        "houstonProgress": 0
+      }
+    ],
+    "daily": []
+  },
+  "savedAt": 1756090381600
+}

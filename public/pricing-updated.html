@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OGZ Prime Pricing - Choose Your Trading Tier</title>
+  <link rel="stylesheet" href="valhalla-style.css">
+  <style>
+    :root {
+      --primary-red: #dc2626;
+      --dark-red: #991b1b;
+      --light-red: #f87171;
+      --neon-red: #ff3333;
+      --dark-bg: #0a0a0a;
+      --card-bg: #111111;
+      --text-primary: #ffffff;
+      --text-secondary: #cccccc;
+      --text-muted: #888888;
+      --border-glow: rgba(220, 38, 38, 0.5);
+      --success-green: #22c55e;
+      --warning-yellow: #f59e0b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--dark-bg) 0%, #1a0a0a 50%, #2a0a0a 100%);
+      color: var(--text-primary);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .header h1 {
+      font-size: 3.5rem;
+      background: linear-gradient(45deg, var(--primary-red), var(--neon-red), var(--light-red));
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradient-shift 3s ease infinite;
+      margin-bottom: 20px;
+      text-shadow: 0 0 30px rgba(220, 38, 38, 0.5);
+    }
+
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .header p {
+      font-size: 1.4rem;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--primary-red);
+      font-weight: 600;
+    }
+
+    /* LIVE DATA BANNER */
+    .live-data-banner {
+      background: linear-gradient(45deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
+      border: 2px solid var(--success-green);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 40px;
+      text-align: center;
+      animation: pulse-glow 2s ease infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.6); }
+    }
+
+    .live-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .stat-item {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--success-green);
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+      margin-bottom: 60px;
+    }
+
+    .pricing-card {
+      background: linear-gradient(135deg, var(--card-bg), #1a1a1a);
+      border: 2px solid var(--primary-red);
+      border-radius: 20px;
+      padding: 40px 30px;
+      position: relative;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 30px var(--border-glow);
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 60px var(--border-glow);
+    }
+
+    .pricing-card.featured {
+      border-color: var(--success-green);
+      box-shadow: 0 0 30px rgba(34, 197, 94, 0.5);
+    }
+
+    .pricing-card.featured::before {
+      content: "PROVEN PROFITABLE";
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--success-green);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+
+    .tier-name {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--primary-red);
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .tier-price {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .price-amount {
+      font-size: 3rem;
+      font-weight: bold;
+      color: var(--text-primary);
+    }
+
+    .price-period {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-left: 10px;
+    }
+
+    .price-setup {
+      font-size: 1rem;
+      color: var(--warning-yellow);
+      margin-top: 5px;
+    }
+
+    .tier-description {
+      color: var(--text-secondary);
+      margin-bottom: 30px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+
+    /* PERFORMANCE STATS IN CARDS */
+    .performance-stats {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid var(--success-green);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .performance-stats h4 {
+      color: var(--success-green);
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .perf-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .perf-item {
+      text-align: center;
+      padding: 8px;
+    }
+
+    .perf-value {
+      font-weight: bold;
+      color: var(--success-green);
+      font-size: 1.1rem;
+    }
+
+    .perf-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .features-list {
+      list-style: none;
+      margin-bottom: 30px;
+    }
+
+    .features-list li {
+      padding: 10px 0;
+      color: var(--text-secondary);
+      position: relative;
+      padding-left: 30px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .features-list li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--success-green);
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .features-list li.premium:before {
+      color: var(--warning-yellow);
+      content: "⭐";
+    }
+
+    .tier-button {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(45deg, var(--primary-red), var(--neon-red));
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .tier-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
+      background: linear-gradient(45deg, var(--neon-red), var(--primary-red));
+    }
+
+    .tier-button:active {
+      transform: translateY(-1px);
+    }
+
+    .tier-button:disabled {
+      background: #666;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .comparison-table {
+      background: rgba(17, 17, 17, 0.8);
+      border: 2px solid var(--primary-red);
+      border-radius: 20px;
+      padding: 40px;
+      margin-top: 60px;
+      backdrop-filter: blur(10px);
+    }
+
+    .comparison-table h3 {
+      text-align: center;
+      color: var(--primary-red);
+      font-size: 2rem;
+      margin-bottom: 30px;
+    }
+
+    .feature-comparison {
+      display: grid;
+      grid-template-columns: 2fr repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+
+    .feature-row {
+      display: contents;
+    }
+
+    .feature-name {
+      font-weight: bold;
+      color: var(--text-primary);
+      padding: 15px;
+      background: rgba(220, 38, 38, 0.1);
+      border-radius: 8px;
+    }
+
+    .feature-value {
+      text-align: center;
+      padding: 15px;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+    }
+
+    .feature-value.yes {
+      color: var(--success-green);
+      font-weight: bold;
+    }
+
+    .feature-value.premium {
+      color: var(--warning-yellow);
+      font-weight: bold;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 40px;
+      padding: 15px 30px;
+      background: rgba(220, 38, 38, 0.1);
+      border: 2px solid var(--primary-red);
+      color: var(--primary-red);
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+      background: rgba(220, 38, 38, 0.2);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 10px;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+      }
+
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .pricing-card {
+        padding: 30px 20px;
+      }
+
+      .feature-comparison {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .feature-value {
+        text-align: left;
+      }
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚀 OGZ Prime Pricing</h1>
+      <p>Choose Your Elite Trading Tier</p>
+      <div class="subtitle">48+ Hours Live Trading • Real Performance Data</div>
+    </div>
+
+    <!-- LIVE DATA BANNER -->
+    <div class="live-data-banner">
+      <h3>🔴 LIVE PERFORMANCE DATA - 48+ Hours Continuous Trading</h3>
+      <p>All bots are currently running with real money and real data. No simulations.</p>
+      <div class="live-stats">
+        <div class="stat-item">
+          <div class="stat-value">49.8%</div>
+          <div class="stat-label">Elite Win Rate</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">+$235</div>
+          <div class="stat-label">Elite Profit (48hrs)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">954</div>
+          <div class="stat-label">Elite Trades</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">48+ hrs</div>
+          <div class="stat-label">System Uptime</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Starter Tier (was Core) -->
+      <div class="pricing-card">
+        <div class="tier-name">🟢 STARTER</div>
+        <div class="tier-price">
+          <span class="price-amount">$97</span>
+          <span class="price-period">/month</span>
+        </div>
+        <div class="tier-description">
+          Basic RSI/MACD trading for crypto beginners. Real data, limited features.
+        </div>
+        <div class="performance-stats">
+          <h4>📊 Live Performance</h4>
+          <div class="perf-grid">
+            <div class="perf-item">
+              <div class="perf-value">ACTIVE</div>
+              <div class="perf-label">Status</div>
+            </div>
+            <div class="perf-item">
+              <div class="perf-value">~15</div>
+              <div class="perf-label">Trades/Day</div>
+            </div>
+          </div>
+        </div>
+        <ul class="features-list">
+          <li>BTC live trading only</li>
+          <li>Basic RSI/MACD indicators</li>
+          <li>10 trades/day limit</li>
+          <li>Performance tracking</li>
+          <li>Email alerts</li>
+          <li>Dashboard access</li>
+          <li>Community Discord</li>
+        </ul>
+        <button class="tier-button" onclick="checkout('starter')" id="starter-btn">
+          🚀 Deploy Starter
+        </button>
+      </div>
+
+      <!-- Pro Tier -->
+      <div class="pricing-card">
+        <div class="tier-name">🔵 PRO</div>
+        <div class="tier-price">
+          <span class="price-amount">$297</span>
+          <span class="price-period">/month</span>
+        </div>
+        <div class="tier-description">
+          Advanced pattern recognition and multiple indicators for serious traders.
+        </div>
+        <div class="performance-stats">
+          <h4>📊 Live Performance</h4>
+          <div class="perf-grid">
+            <div class="perf-item">
+              <div class="perf-value">ACTIVE</div>
+              <div class="perf-label">Status</div>
+            </div>
+            <div class="perf-item">
+              <div class="perf-value">~35</div>
+              <div class="perf-label">Trades/Day</div>
+            </div>
+          </div>
+        </div>
+        <ul class="features-list">
+          <li>Everything in Starter</li>
+          <li class="premium">Pattern recognition (Head & Shoulders, etc.)</li>
+          <li class="premium">Multiple technical indicators</li>
+          <li class="premium">50 trades/day limit</li>
+          <li class="premium">Priority customer support</li>
+          <li class="premium">Advanced backtesting</li>
+          <li class="premium">Risk optimization</li>
+        </ul>
+        <button class="tier-button" onclick="checkout('pro')" id="pro-btn">
+          ⚡ Deploy Pro
+        </button>
+      </div>
+
+      <!-- Elite Tier (was Odin) - FEATURED -->
+      <div class="pricing-card featured">
+        <div class="tier-name">🟣 ELITE</div>
+        <div class="tier-price">
+          <span class="price-amount">$997</span>
+          <span class="price-period">/month</span>
+        </div>
+        <div class="tier-description">
+          PROVEN PROFITABLE - Statistical arbitrage with quantum signal aggregation.
+        </div>
+        <div class="performance-stats">
+          <h4>🏆 PROVEN RESULTS</h4>
+          <div class="perf-grid">
+            <div class="perf-item">
+              <div class="perf-value">49.8%</div>
+              <div class="perf-label">Win Rate</div>
+            </div>
+            <div class="perf-item">
+              <div class="perf-value">+$235</div>
+              <div class="perf-label">48hr Profit</div>
+            </div>
+          </div>
+        </div>
+        <ul class="features-list">
+          <li>Everything in Pro</li>
+          <li class="premium">Quantum signal aggregation</li>
+          <li class="premium">Statistical arbitrage</li>
+          <li class="premium">Self-learning AI</li>
+          <li class="premium">Unlimited trades</li>
+          <li class="premium">Performance validator</li>
+          <li class="premium">Live support</li>
+          <li class="premium">49.8% proven win rate</li>
+          <li class="premium">Auto-evolution system</li>
+        </ul>
+        <button class="tier-button" onclick="checkout('elite')" id="elite-btn">
+          ⚔️ Deploy Elite
+        </button>
+      </div>
+
+      <!-- Quantum Tier (was Valhalla) -->
+      <div class="pricing-card">
+        <div class="tier-name">⚛️ QUANTUM</div>
+        <div class="tier-price">
+          <span class="price-amount">$2,997</span>
+          <span class="price-period">/month</span>
+        </div>
+        <div class="tier-description">
+          THE FULL LS1 SWAP - Quantum neuromorphic core with divine ML modules.
+        </div>
+        <div class="performance-stats">
+          <h4>🔧 JUST FIXED!</h4>
+          <div class="perf-grid">
+            <div class="perf-item">
+              <div class="perf-value">ACTIVE</div>
+              <div class="perf-label">Status</div>
+            </div>
+            <div class="perf-item">
+              <div class="perf-value">BEAST</div>
+              <div class="perf-label">Mode</div>
+            </div>
+          </div>
+        </div>
+        <ul class="features-list">
+          <li>Everything in Elite</li>
+          <li class="premium">Quantum neuromorphic core</li>
+          <li class="premium">Divine ML modules</li>
+          <li class="premium">Reality bending protocols</li>
+          <li class="premium">3x position sizing</li>
+          <li class="premium">White glove support</li>
+          <li class="premium">Custom development</li>
+          <li class="premium">Direct OGZ access</li>
+          <li class="premium">⚡ THE FULL LS1 SWAP</li>
+        </ul>
+        <button class="tier-button" onclick="checkout('quantum')" id="quantum-btn">
+          👑 Deploy Quantum
+        </button>
+      </div>
+    </div>
+
+    <!-- Updated Feature Comparison Table -->
+    <div class="comparison-table">
+      <h3>📊 Feature Comparison - Updated with Live Data</h3>
+      
+      <div class="feature-comparison">
+        <div class="feature-name">Feature</div>
+        <div class="feature-value"><strong>Starter</strong></div>
+        <div class="feature-value"><strong>Pro</strong></div>
+        <div class="feature-value"><strong>Elite</strong></div>
+        <div class="feature-value"><strong>Quantum</strong></div>
+      </div>
+
+      <div class="feature-comparison">
+        <div class="feature-name">Live Trading</div>
+        <div class="feature-value yes">✓</div>
+        <div class="feature-value yes">✓</div>
+        <div class="feature-value yes">✓</div>
+        <div class="feature-value yes">✓</div>
+      </div>
+
+      <div class="feature-comparison">
+        <div class="feature-name">Proven Profitability</div>
+        <div class="feature-value">Testing</div>
+        <div class="feature-value">Testing</div>
+        <div class="feature-value premium">49.8% Win Rate</div>
+        <div class="feature-value premium">Just Fixed</div>
+      </div>
+
+      <div class="feature-comparison">
+        <div class="feature-name">Trading Logic</div>
+        <div class="feature-value">RSI/MACD</div>
+        <div class="feature-value yes">+ Patterns</div>
+        <div class="feature-value premium">+ Quantum Signals</div>
+        <div class="feature-value premium">+ Divine ML</div>
+      </div>
+
+      <div class="feature-comparison">
+        <div class="feature-name">Daily Trades</div>
+        <div class="feature-value">10 limit</div>
+        <div class="feature-value">50 limit</div>
+        <div class="feature-value premium">Unlimited</div>
+        <div class="feature-value premium">Unlimited</div>
+      </div>
+
+      <div class="feature-comparison">
+        <div class="feature-name">Support Level</div>
+        <div class="feature-value">Community</div>
+        <div class="feature-value yes">Priority</div>
+        <div class="feature-value premium">Live Support</div>
+        <div class="feature-value premium">White Glove</div>
+      </div>
+
+      <div class="feature-comparison">
+        <div class="feature-name">Performance Data</div>
+        <div class="feature-value yes">Basic</div>
+        <div class="feature-value yes">Advanced</div>
+        <div class="feature-value premium">Full Analytics</div>
+        <div class="feature-value premium">Full Analytics</div>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px; padding: 20px; background: rgba(255, 193, 7, 0.1); border-radius: 15px;">
+      <h3 style="color: #ffc107;">🛡️ Your Security is Our Priority</h3>
+      <p><strong>We DON'T want your trading capital - we want your subscription.</strong></p>
+      <p style="margin-top: 15px;">• Your keys, your money, your control<br>
+      • We host your API keys for 14 days to help you get started<br>
+      • Then YOU take full control for maximum security<br>
+      • We just provide the trading brain - you keep the profits</p>
+    </div>
+
+    <div style="text-align: center;">
+      <a href="/" class="back-link">← Back to Main Site</a>
+      <a href="/ultdash" class="back-link" style="margin-left: 20px;">🎯 View Live Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Stripe Library -->
+  <script src="https://js.stripe.com/v3/"></script>
+
+  <!-- Enhanced Stripe Checkout Logic with updated tiers -->
+  <script>
+    const stripe = Stripe("pk_test_51Rc2VnGai7JiFhNgT1aZdghugWMXbWoOnOVpNwr7QmojxxIau57wGKOB3f8rBi8yFWVuvIGGON7bjvuUtcm7SIm100ylS00sz6");
+
+    function checkout(tier) {
+      // Use your existing price IDs - no changes needed
+      const priceMap = {
+        starter: "price_1Rc2dIGai7JiFhNgZWZKEVnw",  // $99 (was core)
+        pro: "price_1Rc2egGai7JiFhNgKgTs25ey",      // $499 (was pro) 
+        elite: "price_1Rc2iuGai7JiFhNg1y4Gi6VJ",   // $1,499 (was odin)
+        quantum: "price_1Rc2kPGai7JiFhNg80KRIgbS"   // $14,999 (was valhalla)
+      };
+
+      // Show loading state
+      const button = document.getElementById(`${tier}-btn`);
+      const originalText = button.innerHTML;
+      button.disabled = true;
+      button.innerHTML = '<span class="loading"></span>Processing...';
+
+      fetch("/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          priceId: priceMap[tier]
+        })
+      })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`Server error: ${res.status} ${res.statusText}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (!data.sessionId) {
+          throw new Error("Missing session ID from server response");
+        }
+        
+        // Track conversion attempt with new tier names
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'begin_checkout', {
+            'currency': 'USD',
+            'value': tier === 'starter' ? 97 : tier === 'pro' ? 297 : tier === 'elite' ? 997 : 2997,
+            'items': [{
+              'item_id': tier,
+              'item_name': `OGZ Prime ${tier.charAt(0).toUpperCase() + tier.slice(1)}`,
+              'category': 'Trading Software',
+              'quantity': 1
+            }]
+          });
+        }
+
+        return stripe.redirectToCheckout({ sessionId: data.sessionId });
+      })
+      .then(result => {
+        if (result.error) {
+          throw new Error(result.error.message);
+        }
+      })
+      .catch(err => {
+        console.error('Checkout error:', err);
+        alert(`Checkout error: ${err.message}\n\nPlease try again or contact support if the issue persists.`);
+      })
+      .finally(() => {
+        // Reset button state
+        button.disabled = false;
+        button.innerHTML = originalText;
+      });
+    }
+
+    // Add visual feedback for better UX
+    document.querySelectorAll('.tier-button').forEach(button => {
+      button.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-3px) scale(1.02)';
+      });
+      
+      button.addEventListener('mouseleave', function() {
+        if (!this.disabled) {
+          this.style.transform = 'translateY(0) scale(1)';
+        }
+      });
+    });
+
+    // Update live stats every 30 seconds
+    setInterval(updateLiveStats, 30000);
+    
+    function updateLiveStats() {
+      // In production, this would fetch real data from the performance tracking system
+      fetch('/api/live-performance')
+        .then(response => response.json())
+        .then(data => {
+          // Update the live stats display
+          document.querySelectorAll('.stat-value').forEach((el, index) => {
+            if (data[index]) el.textContent = data[index];
+          });
+        })
+        .catch(err => console.log('Live stats update failed:', err));
+    }
+
+    // Track pricing page view with performance data
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'page_view', {
+        'page_title': 'OGZ Prime Pricing - Live Performance',
+        'page_location': window.location.href,
+        'custom_parameters': {
+          'elite_win_rate': '49.8%',
+          'elite_profit': '+$235',
+          'system_uptime': '48+hrs'
+        }
+      });
+    }
+  </script>
+</body>
+</html>

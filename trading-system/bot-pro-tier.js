@@ -9,11 +9,14 @@ const dns = require('dns');
 // Initialize Module Auto-Loader
 const moduleLoader = require('../ModuleAutoLoader');
 
+// 📊 48-HOUR LAUNCH SPRINT - PERFORMANCE TRACKING
+const UniversalPerformanceTracking = require('../performanceIntegration');
+
 // Force IPv4
 dns.setDefaultResultOrder('ipv4first');
 
 const BOT_TIER = 'pro';
-const WS_URL = 'ws://0.0.0.0:3010/ws'; // Unified WebSocket - REAL Polygon data only
+const WS_URL = 'ws://127.0.0.1:3010/ws'; // Unified WebSocket - REAL Polygon data only
 
 class ProBot {
     constructor() {
@@ -31,6 +34,10 @@ class ProBot {
         this.positions = []; // Track open positions
         this.lastTradeTime = 0; // Prevent overtrading
         this.lastMACDHistogram = 0;
+        
+        // 📊 LAUNCH SPRINT - Initialize performance tracking
+        this.performanceTracker = new UniversalPerformanceTracking('pro');
+        console.log('📊 PRO BOT: Performance tracking enabled for launch sprint');
     }
     
     connect() {
@@ -284,6 +291,17 @@ class ProBot {
         this.pnl += pnl;
         if (pnl > 0) this.wins++;
         this.lastTradeTime = Date.now();
+        
+        // 📊 LAUNCH SPRINT - Track performance
+        const tradeData = {
+            action: action,
+            price: this.currentPrice,
+            pnl: pnl,
+            reason: reason,
+            confidence: confidence,
+            timestamp: Date.now()
+        };
+        this.performanceTracker.trackEverything(tradeData, this.balance, ['RSI', 'MACD', 'PatternRecognition', pattern || 'NoPattern']);
         
         // Calculate current indicators for educational display
         const rsi = this.calculateRSI(this.priceHistory, 3);

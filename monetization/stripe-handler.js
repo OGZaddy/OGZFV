@@ -15,17 +15,17 @@ if (!STRIPE_SECRET_KEY) {
 }
 const stripe = require('stripe')(STRIPE_SECRET_KEY);
 
-// Your actual Price IDs from Stripe
+// Updated Price IDs - Replace with new Stripe account IDs
 const PRICE_IDS = {
-  core: 'price_1Rc2dIGai7JiFhNgZWZKEVnw',      // $99/month
-  pro: 'price_1Rc2egGai7JiFhNgKgTs25ey',       // $499/month  
-  odin: 'price_1Rc2iuGai7JiFhNg1y4Gi6VJ',      // $1,499/month
-  valhalla: 'price_1Rc2kPGai7JiFhNg80KRIgbS'   // $14,999 lifetime
+  starter: 'price_1Rc2dIGai7JiFhNgZWZKEVnw',      // $99/month - UPDATE THIS
+  pro: 'price_1Rc2egGai7JiFhNgKgTs25ey',       // $499/month - UPDATE THIS
+  elite: 'price_1Rc2iuGai7JiFhNg1y4Gi6VJ',      // $1,499/month - UPDATE THIS
+  quantum: 'price_1Rc2kPGai7JiFhNg80KRIgbS'   // $14,999 lifetime - UPDATE THIS
 };
 const cors = require('cors');
 
 const app = express();
-const PORT = 3011; // Different port from main server
+const PORT = process.env.STRIPE_PORT || 3011; // Auto-assigned port from environment
 
 app.use(cors());
 app.use(express.json());

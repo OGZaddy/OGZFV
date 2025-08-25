@@ -11,6 +11,9 @@ dns.setDefaultResultOrder('ipv4first');
 // Initialize Module Auto-Loader
 const moduleLoader = require('../ModuleAutoLoader');
 
+// 📊 48-HOUR LAUNCH SPRINT - PERFORMANCE TRACKING
+const UniversalPerformanceTracking = require('../performanceIntegration');
+
 // Load quantum integration components
 const QuantumSignalAggregator = require('../quantum-signal-aggregator');
 const QuantumPerformanceTracker = require('../quantum-performance-tracker');
@@ -20,12 +23,83 @@ const SelfConsumingLogModule = require('../core/SelfConsumingLogModule');
 const CompressedLogManager = require('../core/CompressedLogManager');
 
 const BOT_TIER = 'elite';
-const WS_URL = 'ws://0.0.0.0:3010/ws'; // Unified WebSocket - REAL Polygon data only
+const WS_URL = 'ws://127.0.0.1:3010/ws'; // Unified WebSocket - REAL Polygon data only
+
+// REALISTIC BUT PESSIMISTIC FEE CALCULATION FOR PAPER TRADING
+class CorrectTradingMath {
+  constructor(initialBalance = 10000) {
+    this.balance = initialBalance;
+    this.positions = [];
+    this.totalFeesPaid = 0;
+    // REALISTIC PESSIMISTIC FEES:
+    // - Binance: 0.1% maker, 0.1% taker = 0.2% total
+    // - Coinbase Pro: 0.5% maker, 0.5% taker = 1.0% total  
+    // - Slippage + spread: ~0.1-0.3% per trade
+    // - Network fees: ~0.05% per trade
+    // TOTAL REALISTIC PESSIMISTIC: ~0.6% per side = 1.2% total
+    this.feeRate = 0.006; // 0.6% per side (1.2% total round trip)
+  }
+  
+  executeBuy(currentPrice, percentOfBalance = 0.95) {
+    const usdToSpend = this.balance * percentOfBalance;
+    const buyFee = usdToSpend * this.feeRate;
+    const totalCost = usdToSpend + buyFee;
+    
+    if (totalCost > this.balance) {
+      console.log('❌ INSUFFICIENT FUNDS for buy');
+      return null;
+    }
+    
+    const btcAmount = usdToSpend / currentPrice;
+    this.balance -= totalCost;
+    this.totalFeesPaid += buyFee;
+    
+    const position = {
+      id: Date.now(),
+      entryPrice: currentPrice,
+      btcAmount: btcAmount,
+      totalCost: totalCost,
+      timestamp: new Date().toISOString()
+    };
+    
+    this.positions.push(position);
+    return position;
+  }
+  
+  executeSell(currentPrice) {
+    const openPositions = this.positions.filter(p => !p.closed);
+    if (openPositions.length === 0) return null;
+    
+    const position = openPositions[0];
+    const grossProceeds = position.btcAmount * currentPrice;
+    const sellFee = grossProceeds * this.feeRate;
+    const netProceeds = grossProceeds - sellFee;
+    const realizedPnL = netProceeds - position.totalCost;
+    
+    this.balance += netProceeds;
+    this.totalFeesPaid += sellFee;
+    
+    position.closed = true;
+    position.exitPrice = currentPrice;
+    position.realizedPnL = realizedPnL;
+    
+    return { position, pnl: realizedPnL };
+  }
+  
+  getBalance() {
+    return this.balance;
+  }
+  
+  getTotalFees() {
+    return this.totalFeesPaid;
+  }
+}
 
 class EliteBot {
     constructor() {
         this.ws = null;
         this.connected = false;
+        this.tradingMath = new CorrectTradingMath(10000);
         this.balance = 10000;
         this.trades = 0;
         this.wins = 0;
@@ -65,6 +139,10 @@ class EliteBot {
         
         this.evolutionGen = 0;
         this.confidence = 75;
+        
+        // 📊 LAUNCH SPRINT - Initialize performance tracking
+        this.performanceTracker = new UniversalPerformanceTracking('elite');
+        console.log('📊 ELITE BOT: Performance tracking enabled for launch sprint');
     }
     
     connect() {
@@ -262,7 +340,23 @@ class EliteBot {
         console.log(`🟣 ELITE QUANTUM TRADE: ${signal.action} at $${this.currentPrice} (${(signal.confidence * 100).toFixed(1)}% confidence)`);
         console.log(`   Consensus: ${signal.sources.join(', ')}`);
         
-        const pnl = Math.random() * 200 - 100; // Simulate P&L for now
+        // Execute real trade with proper P&L calculation
+        let pnl = 0;
+        if (signal.action === 'BUY' || signal.action === 'LONG') {
+            const result = this.tradingMath.executeBuy(this.currentPrice, 0.95);
+            if (result) {
+                console.log(`🟣 ELITE BUY executed @ $${this.currentPrice}`);
+            }
+        } else if (signal.action === 'SELL' || signal.action === 'SHORT') {
+            const result = this.tradingMath.executeSell(this.currentPrice);
+            if (result) {
+                pnl = result.pnl;
+                console.log(`🟣 ELITE SELL executed @ $${this.currentPrice} | P&L: $${pnl.toFixed(2)}`);
+            }
+        }
+        
+        // Update balance from trading math (not from fake P&L!)
+        this.balance = this.tradingMath.getBalance();
         
         // Record trade in performance tracker
         this.performanceTracker.recordTrade({
@@ -295,7 +389,19 @@ class EliteBot {
         this.trades++;
         if (pnl > 0) this.wins++;
         this.pnl += pnl;
-        this.balance += pnl;
+        // Balance already updated by tradingMath - don't double-add!
+        
+        // 📊 LAUNCH SPRINT - Track performance
+        const tradeData = {
+            action: signal.action,
+            price: this.currentPrice,
+            pnl: pnl,
+            reason: signal.reason || 'Quantum aggregated signal',
+            confidence: signal.confidence * 100,
+            timestamp: Date.now()
+        };
+        this.performanceTracker.trackEverything(tradeData, this.balance, 
+            ['QuantumAggregator', 'RSI', 'MACD', 'PatternRecognition', 'SelfLearning', ...signal.sources]);
         
         // Update signal aggregator performance
         signal.sources.forEach(source => {
@@ -400,24 +506,27 @@ class EliteBot {
         // Prevent overtrading - Elite trades every 15 seconds minimum
         if (Date.now() - this.lastTradeTime < 15000) return 0;
         
-        // Don't sell if we have no positions
-        if (action === 'SELL' && this.positions.length === 0) {
-            console.log('⚠️ ELITE: No positions to sell, skipping SELL signal');
-            return 0;
+        let pnl = 0;
+        
+        // Use correct trading math instead of broken P&L calculation
+        if (action === 'BUY' || action === 'LONG') {
+            const result = this.tradingMath.executeBuy(this.currentPrice, 0.95);
+            if (result) {
+                console.log(`🟣 ELITE BUY: $${this.currentPrice} | ${reason}`);
+            }
+        } else if (action === 'SELL' || action === 'SHORT') {
+            const result = this.tradingMath.executeSell(this.currentPrice);
+            if (result) {
+                pnl = result.pnl;
+                console.log(`🟣 ELITE SELL: $${this.currentPrice} | P&L: $${pnl.toFixed(2)} | ${reason}`);
+            } else {
+                console.log('⚠️ ELITE: No positions to sell, skipping SELL signal');
+                return 0;
+            }
         }
         
-        let pnl = 0;
-        if (action === 'SELL' && this.positions.length > 0) {
-            const position = this.positions.shift();
-            pnl = (this.currentPrice - position.price) * position.size;
-            pnl -= pnl * 0.034; // 3.4% fees
-        } else if (action === 'BUY') {
-            this.positions.push({
-                price: this.currentPrice,
-                size: 0.003, // Largest position size (Elite)
-                time: Date.now()
-            });
-        }
+        // Update balance from trading math
+        this.balance = this.tradingMath.getBalance();
         
         this.trades++;
         this.pnl += pnl;

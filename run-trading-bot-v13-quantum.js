@@ -27,6 +27,9 @@ const os = require('os');
 // Initialize Module Auto-Loader - NO HARDCODED PATHS!
 const moduleLoader = require('./ModuleAutoLoader');
 
+// 📊 48-HOUR LAUNCH SPRINT - PERFORMANCE TRACKING
+const UniversalPerformanceTracking = require('./performanceIntegration');
+
 // Import the new integrated quantum system
 const QuantumTradingSystem = require('./quantum-system-integration');
 
@@ -112,6 +115,22 @@ class QuantumSingularityLauncher {
       minCandlesRequired: 20,
       maxConsecutiveHolds: 3
     };
+
+    // REAL TRADING VARIABLES - COPIED FROM ELITE BOT
+    this.balance = 10000;
+    this.trades = 0;
+    this.wins = 0;
+    this.pnl = 0;
+    this.currentPrice = null;
+    this.priceHistory = [];
+    this.entryPrice = null;
+    this.positionSize = 0;
+    this.lastTradeTime = 0;
+    this.lastMACDHistogram = 0;
+
+    // 📊 LAUNCH SPRINT - Initialize performance tracking
+    this.performanceTracker = new UniversalPerformanceTracking('quantum');
+    console.log('📊 QUANTUM BOT: Performance tracking enabled for launch sprint');
 
     // Initialize quantum singularity state
     this.singularityState = {
@@ -364,9 +383,29 @@ class QuantumSingularityLauncher {
             console.log('💰💰💰 TRADE EXECUTED!!! 💰💰💰');
             console.log('🎉 THE BOT IS FINALLY TRADING!!!');
             
-            // Update divine module performance
+            // REAL P&L CALCULATION - COPIED FROM ELITE BOT
             if (this.divineModules && finalDecision.divine) {
-              this.divineModules.updatePerformance({ profit: 0 }); // Will be updated with real profit later
+              if (!this.entryPrice || !this.currentPrice) return;
+              const realPnL = (this.currentPrice - this.entryPrice) * this.positionSize;
+              const netPnL = realPnL - (Math.abs(realPnL) * 0.034); // 3.4% fees like Elite
+              this.trades++;
+              if (netPnL > 0) this.wins++;
+              this.pnl += netPnL;
+              this.balance += netPnL;
+              
+              // 📊 LAUNCH SPRINT - Track performance
+              const tradeData = {
+                action: finalDecision.action,
+                price: this.currentPrice,
+                pnl: netPnL,
+                reason: finalDecision.reasoning ? finalDecision.reasoning.join(', ') : 'Divine module decision',
+                confidence: finalDecision.confidence * 100,
+                timestamp: Date.now()
+              };
+              this.performanceTracker.trackEverything(tradeData, this.balance, 
+                ['QuantumCore', 'DivineModules', 'RSI', 'MACD', 'PatternRecognition', 'MLPredictions']);
+              
+              this.divineModules.updatePerformance({ profit: netPnL });
             }
           }
         }
@@ -421,7 +460,7 @@ class QuantumSingularityLauncher {
     console.log('🔥 INITIALIZING ULTRA-AGGRESSIVE TRADING MODE...');
     this.aggressiveMode = new AggressiveTradingMode({
       forceFirstTrade: this.config.forceFirstTrade,
-      randomTradeChance: this.config.randomTradeChance,
+      // randomTradeChance: this.config.randomTradeChance, // DISABLED - NO FAKE TRADES
       minConfidenceThreshold: this.config.minConfidenceThreshold,
       aggressiveMode: this.config.aggressiveMode,
       maxConsecutiveHolds: this.config.maxConsecutiveHolds
@@ -475,16 +514,17 @@ class QuantumSingularityLauncher {
   async initializeEnhancedTradingSystems() {
     console.log('🔧🚀 Initializing Enhanced Trading Infrastructure...');
     
-    // Initialize learning systems with neuromorphic enhancement
-    this.learningSystem = new LogLearningSystem({
-      enableQuantumLearning: this.config.enableNeuromorphicLearning,
-      neuromorphicProcessing: this.config.enableNeuromorphicProcessing
-    });
+    // DISABLED - Was learning from failures
+    // this.learningSystem = new LogLearningSystem({
+    //   enableQuantumLearning: this.config.enableNeuromorphicLearning,
+    //   neuromorphicProcessing: this.config.enableNeuromorphicProcessing
+    // });
 
-    this.mlProcessor = new MLLogProcessor({
-      enableQuantumML: this.config.enableNeuromorphicLearning,
-      neuromorphicBackend: this.config.neuromorphicBackend
-    });
+    // DISABLED - Was learning from failures
+    // this.mlProcessor = new MLLogProcessor({
+    //   enableQuantumML: this.config.enableNeuromorphicLearning,
+    //   neuromorphicBackend: this.config.neuromorphicBackend
+    // });
 
     // Initialize market data systems with quantum timing
     this.polygonWS = new PolygonWebSocket({
@@ -511,10 +551,10 @@ class QuantumSingularityLauncher {
     this.connectToUnifiedServer();
     this.initializeMoverIntegration();
     
-    // Connect all systems to quantum trading system
+    // Connect all systems to quantum trading system - DISABLED LEARNING SYSTEMS
     this.quantumTradingSystem.connectExternalSystems({
-      learningSystem: this.learningSystem,
-      mlProcessor: this.mlProcessor,
+      // learningSystem: this.learningSystem, // DISABLED - Was learning from failures
+      // mlProcessor: this.mlProcessor, // DISABLED - Was learning from failures
       polygonWS: this.polygonWS,
       timeFrameManager: this.timeFrameManager,
       patternRecognition: this.patternRecognition
@@ -600,27 +640,89 @@ class QuantumSingularityLauncher {
         if (this.quantumCore) {
           console.log(`⚡ TRIGGERING QUANTUM ANALYSIS FOR BTC-USD at $${priceData.price}`);
           
-          // Prepare market data for quantum decision
-          const quantumMarketData = {
-            features: [priceData.price / 100000, 0.5, 0.5, 0.5], // Normalized features
-            event: { price: priceData.price, volume: 1.0 },
-            priceStream: [priceData.price],
-            history: []
-          };
+          // Update current price and history - REAL DATA ONLY
+          this.currentPrice = priceData.price;
+          this.priceHistory.push(this.currentPrice);
+          if (this.priceHistory.length > 100) this.priceHistory.shift();
           
-          // Trigger quantum decision
-          this.quantumCore.quantumNeuromorphicHybridDecision(quantumMarketData, { maxRisk: 0.5 })
-            .then(decision => {
-              console.log(`🎯 QUANTUM DECISION: ${decision.action} with confidence ${(decision.confidence * 100).toFixed(1)}%`);
-              
-              // Execute the trade if we have an execution layer
-              if (this.executionLayer && decision.action !== 'HOLD') {
-                console.log(`💰 EXECUTING TRADE: ${decision.action}`);
-                decision.price = priceData.price;
-                this.executionLayer.executeTrade(decision);
+          // ELITE BOT LOGIC - REAL TRADING DECISIONS
+          if (this.currentPrice && this.priceHistory.length >= 30) {
+            // Calculate real indicators using Elite's functions
+            const rsi = this.calculateRSI(this.priceHistory, 14);
+            const macd = this.calculateMACD(this.priceHistory);
+            const pattern = this.detectPattern(this.priceHistory);
+            const bollinger = this.calculateBollinger(this.priceHistory);
+            
+            // AI decision based on multiple signals - COPIED FROM ELITE
+            let action = null;
+            let reason = '';
+            let confidence = 50;
+            
+            // Complex AI logic combining indicators - EXACT COPY FROM ELITE
+            if (rsi < 25 && this.currentPrice < bollinger.lower && macd.histogram > 0) {
+              action = 'BUY';
+              reason = 'Triple oversold signal';
+              confidence = 85;
+              this.entryPrice = this.currentPrice;
+              this.positionSize = 0.003; // Same as Elite
+            } else if (rsi > 75 && this.currentPrice > bollinger.upper && macd.histogram < 0) {
+              action = 'SELL';
+              reason = 'Triple overbought signal';
+              confidence = 85;
+            } else if (pattern && macd.crossover) {
+              action = macd.histogram > 0 ? 'BUY' : 'SELL';
+              reason = `${pattern} + MACD cross`;
+              confidence = 80;
+              if (action === 'BUY') {
+                this.entryPrice = this.currentPrice;
+                this.positionSize = 0.003;
               }
-            })
-            .catch(err => console.error('❌ Quantum decision error:', err.message));
+            }
+            
+            // Execute trade if confidence is high enough
+            if (action && confidence >= 75 && Date.now() - this.lastTradeTime > 15000) {
+              console.log(`🎯 QUANTUM DECISION: ${action} at $${this.currentPrice} (${confidence}% confidence)`);
+              console.log(`   RSI: ${rsi.toFixed(1)} | MACD: ${macd.histogram.toFixed(4)} | Reason: ${reason}`);
+              
+              // Execute the trade with real P&L calculation
+              if (this.executionLayer) {
+                const decision = {
+                  action: action,
+                  price: this.currentPrice,
+                  confidence: confidence / 100,
+                  reason: reason
+                };
+                
+                // Calculate P&L for tracking
+                let pnl = 0;
+                if (action === 'SELL' && this.entryPrice && this.positionSize > 0) {
+                  const realPnL = (this.currentPrice - this.entryPrice) * this.positionSize;
+                  pnl = realPnL - (Math.abs(realPnL) * 0.034); // 3.4% fees
+                  this.trades++;
+                  if (pnl > 0) this.wins++;
+                  this.pnl += pnl;
+                  this.balance += pnl;
+                } else if (action === 'BUY') {
+                  this.trades++;
+                }
+                
+                // 📊 LAUNCH SPRINT - Track performance for Elite-style trades
+                const tradeData = {
+                  action: action,
+                  price: this.currentPrice,
+                  pnl: pnl,
+                  reason: reason,
+                  confidence: confidence,
+                  timestamp: Date.now()
+                };
+                this.performanceTracker.trackEverything(tradeData, this.balance, 
+                  ['EliteLogic', 'RSI', 'MACD', 'BollingerBands', pattern || 'NoPattern']);
+                
+                this.executionLayer.executeTrade(decision);
+                this.lastTradeTime = Date.now();
+              }
+            }
+          }
         }
       }
       return;
@@ -1398,6 +1500,71 @@ class QuantumSingularityLauncher {
   onQuantumEmergency(emergency) {
     console.log('🚨⚛️ QUANTUM EMERGENCY SIGNAL RECEIVED!');
     this.activateQuantumEmergencyProtocols('QUANTUM_CORE_EMERGENCY', emergency.reason);
+  }
+
+  // ELITE BOT INDICATOR FUNCTIONS - EXACT COPIES FOR REAL TRADING
+  calculateRSI(prices, period = 14) {
+    if (prices.length < period + 1) return 50;
+    let gains = 0, losses = 0;
+    for (let i = prices.length - period; i < prices.length; i++) {
+      const change = prices[i] - prices[i - 1];
+      if (change > 0) gains += change;
+      else losses -= change;
+    }
+    const avgGain = gains / period;
+    const avgLoss = losses / period;
+    const rs = avgGain / (avgLoss || 0.0001);
+    return 100 - (100 / (1 + rs));
+  }
+  
+  calculateMACD(prices) {
+    if (prices.length < 26) return { histogram: 0, crossover: false };
+    const ema12 = this.calculateEMA(prices, 12);
+    const ema26 = this.calculateEMA(prices, 26);
+    const macdLine = ema12 - ema26;
+    const signal = macdLine * 0.2;
+    const histogram = macdLine - signal;
+    const prevHistogram = this.lastMACDHistogram || 0;
+    const crossover = (prevHistogram <= 0 && histogram > 0) || (prevHistogram >= 0 && histogram < 0);
+    this.lastMACDHistogram = histogram;
+    return { histogram, crossover };
+  }
+  
+  calculateEMA(prices, period) {
+    if (prices.length < period) return prices[prices.length - 1];
+    const multiplier = 2 / (period + 1);
+    let ema = prices[prices.length - period];
+    for (let i = prices.length - period + 1; i < prices.length; i++) {
+      ema = (prices[i] - ema) * multiplier + ema;
+    }
+    return ema;
+  }
+  
+  calculateBollinger(prices, period = 20) {
+    if (prices.length < period) return { upper: prices[prices.length - 1], lower: prices[prices.length - 1] };
+    const recent = prices.slice(-period);
+    const sma = recent.reduce((a, b) => a + b) / period;
+    const variance = recent.reduce((sum, price) => sum + Math.pow(price - sma, 2), 0) / period;
+    const stdDev = Math.sqrt(variance);
+    return {
+      upper: sma + (stdDev * 2),
+      lower: sma - (stdDev * 2),
+      middle: sma
+    };
+  }
+  
+  detectPattern(prices) {
+    if (prices.length < 20) return null;
+    const recent = prices.slice(-20);
+    const avg = recent.reduce((a, b) => a + b) / recent.length;
+    const high = Math.max(...recent);
+    const low = Math.min(...recent);
+    
+    if (recent[5] < avg && recent[10] < avg && recent[15] > avg) return 'Double Bottom';
+    if (recent[10] > high * 0.98 && recent[5] < high * 0.95 && recent[15] < high * 0.95) return 'Head & Shoulders';
+    if (recent[0] < recent[10] && (high - low) < avg * 0.02) return 'Bull Flag';
+    if (recent[5] < recent[10] && recent[10] < recent[15]) return 'Ascending Triangle';
+    return null;
   }
 
   /**

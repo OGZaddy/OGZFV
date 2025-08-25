@@ -19,8 +19,18 @@ const path = require('path');
 // 🔥 IMPORT THE ADVANCED WEBSOCKET SYSTEM
 const AdvancedWebSocketBroadcastSystem = require('./core/AdvancedWebSocketBroadcastSystem');
 
+// 🤖 IMPORT THE MOVER AI CLONE
+const TheMoverAIClone = require('./mover/the-mover-ai-clone');
+
 // Set QUANTUM SSL server flag
 process.env.OGZ_QUANTUM_SSL_SERVER = 'true';
+
+// Initialize THE MOVER with persistent memory
+const mover = new TheMoverAIClone({
+  memoryPath: '/root/OGZFV-valhalla/data/mover-memory',
+  learningRate: 0.8,
+  responseStyle: 'authentic_og'
+});
 
 // Initialize the ADVANCED broadcasting system
 const broadcaster = new AdvancedWebSocketBroadcastSystem({
@@ -279,6 +289,17 @@ app.get('/cancel.html', (req, res) => {
 console.log('🔄 SSL handled by nginx reverse proxy');
 console.log(`   WebSocket: wss://${process.env.DOMAIN || 'ogzprime.com'}/ws → nginx → ws://localhost:${apiPort}/ws`);
 
+// 🤖 Initialize The Mover before starting server
+(async () => {
+  try {
+    console.log('🤖 Initializing The Mover AI Clone...');
+    await mover.initializeFinalForm();
+    console.log('✅ The Mover initialized successfully!');
+  } catch (error) {
+    console.error('❌ Failed to initialize The Mover:', error);
+  }
+})();
+
 // Regular HTTP server
 const httpServer = http.createServer(app);
 httpServer.listen(apiPort, '0.0.0.0', () => {
@@ -305,7 +326,7 @@ wss.on('connection', (ws, req) => {
   console.log(`✅ New connection registered: ${connectionId}`);
   
   // Handle incoming messages
-  ws.on('message', (message) => {
+  ws.on('message', async (message) => {
     try {
       const data = JSON.parse(message.toString());
       
@@ -368,6 +389,76 @@ wss.on('connection', (ws, req) => {
           const trade = data.data;
           console.log(`   ${trade.side?.toUpperCase()} ${trade.size} @ $${trade.price}`);
           console.log(`   Balance: $${trade.balance} | Total Trades: ${trade.totalTrades}`);
+        }
+      }
+      
+      // 🤖 Handle Mover chat commands
+      if (data.op === 'cmd' && data.action === 'mover:chat') {
+        try {
+          const text = String(data.args?.text || '').trim();
+          console.log(`🤖 Mover received: "${text}"`);
+          
+          if (!text) {
+            ws.send(JSON.stringify({ op: 'ack', action: 'mover:chat', ok: false, error: 'Empty message' }));
+            return;
+          }
+          
+          // Generate response from The Mover
+          const reply = await mover.generateResponse(text);
+          console.log(`🤖 Mover replied: "${reply}"`);
+          
+          // Send acknowledgment
+          ws.send(JSON.stringify({ op: 'ack', action: 'mover:chat', ok: true }));
+          
+          // Broadcast reply to all clients
+          const replyPacket = JSON.stringify({
+            op: 'event',
+            topic: 'mover_reply',
+            data: { text: reply, timestamp: Date.now() }
+          });
+          
+          wss.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+              client.send(replyPacket);
+            }
+          });
+          
+        } catch (error) {
+          console.error('❌ Mover error:', error);
+          ws.send(JSON.stringify({ 
+            op: 'ack', 
+            action: 'mover:chat', 
+            ok: false, 
+            error: error.message 
+          }));
+        }
+      }
+      
+      // 🤖 Handle Mover status requests
+      if (data.op === 'cmd' && data.action === 'mover:status') {
+        try {
+          const status = {
+            initialized: true,
+            personality: mover.config.personality,
+            conversationCount: mover.conversationHistory?.length || 0,
+            lastActivity: mover.lastActivity || null
+          };
+          
+          ws.send(JSON.stringify({
+            op: 'ack',
+            action: 'mover:status',
+            ok: true,
+            data: status
+          }));
+          
+        } catch (error) {
+          console.error('❌ Mover status error:', error);
+          ws.send(JSON.stringify({
+            op: 'ack',
+            action: 'mover:status',
+            ok: false,
+            error: error.message
+          }));
         }
       }
       

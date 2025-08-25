@@ -9,8 +9,11 @@ const dns = require('dns');
 // Initialize Module Auto-Loader
 const moduleLoader = require('../ModuleAutoLoader');
 
+// 📊 48-HOUR LAUNCH SPRINT - PERFORMANCE TRACKING
+const UniversalPerformanceTracking = require('../performanceIntegration');
+
 // Use unified WebSocket on port 3010 - NO MORE FAKE DATA
-const WS_URL = 'ws://0.0.0.0:3010/ws';
+const WS_URL = 'ws://127.0.0.1:3010/ws';
 
 // Force IPv4 resolution
 dns.setDefaultResultOrder('ipv4first');
@@ -31,6 +34,10 @@ class StarterBot {
         this.priceHistory = []; // Store price history for indicators
         this.positions = []; // Track open positions
         this.lastTradeTime = 0; // Prevent overtrading
+        
+        // 📊 LAUNCH SPRINT - Initialize performance tracking
+        this.performanceTracker = new UniversalPerformanceTracking('starter');
+        console.log('📊 STARTER BOT: Performance tracking enabled for launch sprint');
     }
     
     connect() {
@@ -260,6 +267,17 @@ class StarterBot {
         this.pnl += pnl;
         if (pnl > 0) this.wins++;
         this.lastTradeTime = Date.now();
+        
+        // 📊 LAUNCH SPRINT - Track performance
+        const tradeData = {
+            action: action,
+            price: this.currentPrice,
+            pnl: pnl,
+            reason: reason,
+            confidence: confidence,
+            timestamp: Date.now()
+        };
+        this.performanceTracker.trackEverything(tradeData, this.balance, ['RSI', 'MACD', 'BasicLogic']);
         
         // Calculate current indicators for educational display
         const rsi = this.calculateRSI(this.priceHistory, 3);
