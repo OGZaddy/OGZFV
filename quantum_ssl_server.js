@@ -302,8 +302,8 @@ console.log(`   WebSocket: wss://${process.env.DOMAIN || 'ogzprime.com'}/ws → 
 
 // Regular HTTP server
 const httpServer = http.createServer(app);
-httpServer.listen(apiPort, '0.0.0.0', () => {
-  console.log(`🌐 HTTP API Server running on port ${apiPort} (all interfaces)`);
+httpServer.listen(apiPort, '127.0.0.1', () => {
+  console.log(`🌐 HTTP API Server running on port ${apiPort} (127.0.0.1)`);
 });
 
 // HTTPS server removed - nginx handles SSL termination

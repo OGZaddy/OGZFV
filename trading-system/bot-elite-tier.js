@@ -23,7 +23,10 @@ const SelfConsumingLogModule = require('../core/SelfConsumingLogModule');
 const CompressedLogManager = require('../core/CompressedLogManager');
 
 const BOT_TIER = 'elite';
-const WS_URL = 'ws://127.0.0.1:3010/ws'; // Unified WebSocket - REAL Polygon data only
+// Dynamic WebSocket URL - matches quantum bot logic
+const wsHost = process.env.SSL_SERVER_HOST || process.env.WS_HOST || '127.0.0.1';
+const wsPort = process.env.SSL_SERVER_PORT || process.env.WS_PORT || 3010;
+const WS_URL = `ws://${wsHost}:${wsPort}/ws`; // Unified WebSocket - REAL Polygon data only
 
 // REALISTIC BUT PESSIMISTIC FEE CALCULATION FOR PAPER TRADING
 class CorrectTradingMath {

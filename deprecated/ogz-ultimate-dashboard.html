@@ -1,0 +1,3727 @@
+<!--
+DEPRECATED - MOVED TO deprecated/ folder for review
+ogz-ultimate-dashboard.html from trading-system - older version, public/ version is most recent
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OGZPrime Ultimate - AI Trading Intelligence</title>
+    <!-- Fixed: Use compatible Chart.js version with proper adapters -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1/dist/chartjs-adapter-moment.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-red: #ff0040;
+            --secondary-red: #cc0030;
+            --neon-red: #ff0055;
+            --dark-red: #800020;
+            --primary-black: #000000;
+            --dark-bg: #0a0000;
+            --card-bg: #1a0000;
+            --card-border: rgba(255, 0, 64, 0.3);
+            --text-primary: #ff6666;
+            --text-secondary: #ff9999;
+            --text-muted: #cc6666;
+            --cyber-glow: 0 0 20px rgba(255, 0, 64, 0.8);
+            --primary-green: #00ff88;
+            --primary-cyan: #00ffff;
+            --warning-orange: #ff8800;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #0f1419 50%, #1a1f2e 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--primary-green);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1920px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--primary-green), var(--primary-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0,255,136,0.5);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .connection-hub {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(0,0,0,0.5);
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.connected { background: var(--primary-green); }
+        .status-dot.connecting { background: var(--warning-orange); }
+        .status-dot.disconnected { background: var(--primary-red); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        /* Mission Statement */
+        .mission-statement {
+            background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(0,255,255,0.1));
+            border: 1px solid var(--primary-green);
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            margin: 1rem auto;
+            max-width: 1200px;
+            text-align: center;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0,255,136,0.3); }
+            50% { box-shadow: 0 0 40px rgba(0,255,136,0.6); }
+        }
+
+        /* Main Layout */
+        .main-container {
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr 400px;
+            gap: 1rem;
+            min-height: calc(100vh - 200px);
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 15px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-green);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Chart Section */
+        .chart-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .timeframe-btn {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--primary-green);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .timeframe-btn:hover {
+            background: rgba(0, 255, 136, 0.2);
+        }
+
+        .timeframe-btn.active {
+            background: var(--primary-green);
+            color: var(--dark-bg);
+            font-weight: bold;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 1rem;
+        }
+
+        .price-display {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .current-price {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-green);
+            text-shadow: 0 0 20px rgba(0,255,136,0.5);
+            font-family: 'Courier New', monospace;
+        }
+
+        .price-change {
+            font-size: 1.5rem;
+            margin-top: 0.5rem;
+            font-weight: bold;
+        }
+
+        .price-change.positive { color: var(--primary-green); }
+        .price-change.negative { color: var(--primary-red); }
+
+        /* AI Brain Section */
+        .ai-stream {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .ai-thought {
+            background: rgba(255,255,255,0.05);
+            margin: 0.5rem 0;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-green);
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            animation: slideIn 0.5s ease;
+        }
+
+        .ai-thought.thinking { border-left-color: var(--warning-orange); }
+        .ai-thought.buy { 
+            border-left-color: var(--primary-green); 
+            background: rgba(0,255,136,0.1);
+        }
+        .ai-thought.sell { 
+            border-left-color: var(--primary-red); 
+            background: rgba(255,68,68,0.1);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .ai-timestamp {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Technical Indicators */
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .indicator-card {
+            background: rgba(0,255,136,0.05);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(0,255,136,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .indicator-card:hover {
+            background: rgba(0,255,136,0.1);
+            transform: translateY(-2px);
+        }
+
+        .indicator-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .indicator-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-green);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Confidence Meter */
+        .confidence-meter {
+            margin: 1rem 0;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-red), var(--warning-orange), var(--primary-green));
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 1rem;
+        }
+
+        .confidence-text {
+            color: var(--dark-bg);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Portfolio Section */
+        .portfolio-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card {
+            background: rgba(0,255,255,0.05);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(0,255,255,0.2);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary-cyan);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Trading Activity */
+        .trades-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .trade-entry {
+            background: rgba(255,255,255,0.05);
+            margin: 0.5rem 0;
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.5s ease;
+        }
+
+        .trade-buy {
+            border-left: 3px solid var(--primary-green);
+            background: rgba(0,255,136,0.05);
+        }
+
+        .trade-sell {
+            border-left: 3px solid var(--primary-red);
+            background: rgba(255,68,68,0.05);
+        }
+
+        .trade-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .trade-type {
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .trade-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .trade-metrics {
+            text-align: right;
+        }
+
+        .trade-price {
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .trade-pnl {
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .trade-pnl.positive { color: var(--primary-green); }
+        .trade-pnl.negative { color: var(--primary-red); }
+
+        /* Houston Progress */
+        .houston-progress {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,165,0,0.1));
+            border: 1px solid #ffd700;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .houston-title {
+            font-size: 1.2rem;
+            color: #ffd700;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .houston-bar {
+            width: 100%;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .houston-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffa500);
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .houston-percentage {
+            color: var(--dark-bg);
+            font-weight: bold;
+            font-size: 1.1rem;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Verification Section */
+        .verification-bar {
+            background: rgba(0,0,0,0.5);
+            padding: 1rem;
+            text-align: center;
+            border-top: 1px solid var(--primary-green);
+        }
+
+        .verify-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .verify-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            background: rgba(0,255,136,0.1);
+            border: 1px solid var(--primary-green);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .verify-link:hover {
+            background: var(--primary-green);
+            color: var(--dark-bg);
+            transform: translateY(-2px);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 4px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1400px) {
+            .main-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .panel:nth-child(3) {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .panel:nth-child(3) {
+                grid-column: span 1;
+            }
+            
+            .indicators-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .current-price {
+                font-size: 2rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,255,136,0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-green);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pattern Alert */
+        .pattern-alert {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,165,0,0.2));
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+            animation: pattern-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pattern-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* AI Ensemble Brain Animations */
+        @keyframes thoughtAppear {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes voicePulse {
+            0% { border-color: rgba(0,255,136,0.3); }
+            50% { border-color: rgba(0,255,136,1); box-shadow: 0 0 10px rgba(0,255,136,0.5); }
+            100% { border-color: rgba(0,255,136,0.3); }
+        }
+
+        .ai-voice {
+            transition: all 0.3s ease;
+        }
+
+        .ai-voice:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,255,136,0.2);
+        }
+
+        .ai-thought {
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            border-radius: 5px;
+            opacity: 0;
+            animation: thoughtAppear 0.5s ease forwards;
+        }
+
+        .ai-thought.buy {
+            background: rgba(0,255,136,0.1);
+            border-left: 3px solid var(--primary-green);
+        }
+
+        .ai-thought.sell {
+            background: rgba(255,68,68,0.1);
+            border-left: 3px solid var(--primary-red);
+        }
+
+        .ai-thought.system {
+            background: rgba(255,255,255,0.05);
+            border-left: 3px solid var(--text-secondary);
+        }
+
+        .voice-thinking {
+            animation: voicePulse 1.5s infinite;
+        }
+
+        .pattern-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+        }
+
+        .pattern-confidence {
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                🧠 OGZPrime Ultimate
+                <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-secondary);">v3.0</span>
+            </div>
+            
+            <div class="connection-hub">
+                <div class="connection-status">
+                    <span class="status-dot connecting" id="botStatus"></span>
+                    <span id="botStatusText">Bot: Connecting...</span>
+                </div>
+                <div class="connection-status">
+                    <span class="status-dot connecting" id="dataStatus"></span>
+                    <span id="dataStatusText">Data: Connecting...</span>
+                </div>
+                <div class="connection-status">
+                    <span class="status-dot connected"></span>
+                    <span>AI: Active</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mission Statement -->
+    <div class="mission-statement">
+        <strong>🚀 Mission: Houston</strong> | 
+        This bot is our ticket to financial freedom | 
+        Blood, sweat, and tears went into this | 
+        <span id="daysRunning">0</span> days of perseverance
+    </div>
+
+        <!-- Main Dashboard -->
+        <div class="main-container">
+            <!-- AI Pattern Recognition Panel -->
+            <div class="panel" style="grid-column: span 3;">
+                <div class="panel-header">
+                    <div class="panel-title">🧠 AI Pattern Recognition Engine</div>
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Real-time analysis</span>
+                </div>
+                
+                <div class="pattern-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                    <div class="pattern-card bullish" id="rsiPattern" style="background: rgba(0,255,136,0.05); border: 1px solid rgba(0,255,136,0.3); border-radius: 10px; padding: 1rem; text-align: center; transition: all 0.3s ease;">
+                        <div class="pattern-name" style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase;">RSI Pattern</div>
+                        <div class="pattern-confidence confidence-high" id="rsiConfidence" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-green); margin-bottom: 0.3rem;">75%</div>
+                        <div class="pattern-signal" id="rsiSignal" style="font-size: 0.8rem; color: var(--text-primary); font-weight: bold;">BULLISH</div>
+                    </div>
+                    <div class="pattern-card neutral" id="macdPattern" style="background: rgba(255,170,0,0.05); border: 1px solid rgba(255,170,0,0.3); border-radius: 10px; padding: 1rem; text-align: center; transition: all 0.3s ease;">
+                        <div class="pattern-name" style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase;">MACD Pattern</div>
+                        <div class="pattern-confidence confidence-medium" id="macdConfidence" style="font-size: 1.5rem; font-weight: bold; color: var(--warning-orange); margin-bottom: 0.3rem;">45%</div>
+                        <div class="pattern-signal" id="macdSignal" style="font-size: 0.8rem; color: var(--text-primary); font-weight: bold;">NEUTRAL</div>
+                    </div>
+                    <div class="pattern-card bearish" id="trendPattern" style="background: rgba(255,68,68,0.05); border: 1px solid rgba(255,68,68,0.3); border-radius: 10px; padding: 1rem; text-align: center; transition: all 0.3s ease;">
+                        <div class="pattern-name" style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase;">Trend Pattern</div>
+                        <div class="pattern-confidence confidence-high" id="trendConfidence" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-red); margin-bottom: 0.3rem;">88%</div>
+                        <div class="pattern-signal" id="trendSignal" style="font-size: 0.8rem; color: var(--text-primary); font-weight: bold;">BEARISH</div>
+                    </div>
+                    <div class="pattern-card bullish" id="bollingerPattern" style="background: rgba(0,255,136,0.05); border: 1px solid rgba(0,255,136,0.3); border-radius: 10px; padding: 1rem; text-align: center; transition: all 0.3s ease;">
+                        <div class="pattern-name" style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase;">Bollinger Bands</div>
+                        <div class="pattern-confidence confidence-medium" id="bollingerConfidence" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-green); margin-bottom: 0.3rem;">62%</div>
+                        <div class="pattern-signal" id="bollingerSignal" style="font-size: 0.8rem; color: var(--text-primary); font-weight: bold;">BULLISH</div>
+                    </div>
+                    <div class="pattern-card neutral" id="volumePattern" style="background: rgba(255,170,0,0.05); border: 1px solid rgba(255,170,0,0.3); border-radius: 10px; padding: 1rem; text-align: center; transition: all 0.3s ease;">
+                        <div class="pattern-name" style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase;">Volume Pattern</div>
+                        <div class="pattern-confidence confidence-low" id="volumeConfidence" style="font-size: 1.5rem; font-weight: bold; color: var(--warning-orange); margin-bottom: 0.3rem;">38%</div>
+                        <div class="pattern-signal" id="volumeSignal" style="font-size: 0.8rem; color: var(--text-primary); font-weight: bold;">NEUTRAL</div>
+                    </div>
+                    <div class="pattern-card bullish" id="candlestickPattern" style="background: rgba(0,255,136,0.05); border: 1px solid rgba(0,255,136,0.3); border-radius: 10px; padding: 1rem; text-align: center; transition: all 0.3s ease;">
+                        <div class="pattern-name" style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase;">Candlestick</div>
+                        <div class="pattern-confidence confidence-high" id="candlestickConfidence" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-green); margin-bottom: 0.3rem;">92%</div>
+                        <div class="pattern-signal" id="candlestickSignal" style="font-size: 0.8rem; color: var(--text-primary); font-weight: bold;">BULLISH</div>
+                    </div>
+                </div>
+                
+                <div class="pattern-ticker" style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 1rem; border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-weight: bold; color: var(--primary-green);">📊 Recent Pattern Detections</span>
+                        <span id="patternCount" style="color: var(--text-secondary); font-size: 0.85rem;">0 patterns today</span>
+                    </div>
+                    <div id="patternTicker" style="max-height: 80px; overflow-y: auto; font-size: 0.85rem;">
+                        <div style="color: var(--text-muted); text-align: center; padding: 1rem;">Analyzing market patterns...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DUAL CHART SYSTEM - ELITE VS QUANTUM -->
+            
+            <!-- Elite Bot Chart (Top Tier Regular Bot) -->
+            <div class="panel" style="grid-column: span 1;">
+                <div class="panel-header">
+                    <div class="panel-title" style="color: var(--neon-red); text-shadow: var(--cyber-glow);">
+                        🟣 ELITE BOT - AI Enhanced Trading
+                    </div>
+                    <div class="bot-status" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="status-dot" id="eliteStatus" style="background: var(--primary-red);"></span>
+                        <span style="font-size: 0.85rem; color: var(--text-secondary);">Gen <span id="eliteGen">0</span></span>
+                    </div>
+                </div>
+
+                <div class="chart-controls" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                    <div class="timeframe-buttons">
+                        <button class="timeframe-btn active" data-chart="elite" data-timeframe="1m">1m</button>
+                        <button class="timeframe-btn" data-chart="elite" data-timeframe="5m">5m</button>
+                        <button class="timeframe-btn" data-chart="elite" data-timeframe="15m">15m</button>
+                        <button class="timeframe-btn" data-chart="elite" data-timeframe="1h">1h</button>
+                    </div>
+                    <div id="eliteIndicators" style="background: var(--card-bg); border: 1px solid var(--primary-red); padding: 0.5rem; border-radius: 8px; position: relative; display: inline-block;">
+                        <div style="cursor: pointer; color: var(--text-primary);" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">
+                            📊 Technical Indicators ▼
+                        </div>
+                        <div style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--card-bg); border: 1px solid var(--primary-red); border-radius: 8px; z-index: 100; padding: 0.5rem;">
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="bollinger" style="margin-right: 0.5rem;"> 📈 Bollinger Bands
+                            </label>
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="fibonacci" style="margin-right: 0.5rem;"> 🌀 Fibonacci Retracements
+                            </label>
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="trendlines" style="margin-right: 0.5rem;"> 📏 Trend Lines
+                            </label>
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="support-resistance" style="margin-right: 0.5rem;"> 🎯 Support/Resistance
+                            </label>
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="rsi" style="margin-right: 0.5rem;"> 📊 RSI Overlay
+                            </label>
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="macd" style="margin-right: 0.5rem;"> 📈 MACD Lines
+                            </label>
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="ema20" style="margin-right: 0.5rem;"> 📉 EMA 20
+                            </label>
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="sma50" style="margin-right: 0.5rem;"> 📊 SMA 50
+                            </label>
+                        </div>
+                    </div>
+                    <select id="eliteAssetSelector" style="background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--primary-red); padding: 0.5rem; border-radius: 8px; margin-left: 1rem;">
+                        <option value="BTC-USD">₿ Bitcoin</option>
+                        <option value="ETH-USD">Ξ Ethereum</option>
+                        <option value="SOL-USD">◎ Solana</option>
+                        <option value="ADA-USD">₳ Cardano</option>
+                        <option value="DOGE-USD">Ð Dogecoin</option>
+                        <option value="XRP-USD">◉ Ripple</option>
+                        <option value="AVAX-USD">🔺 Avalanche</option>
+                        <option value="LINK-USD">🔗 Chainlink</option>
+                        <option value="MATIC-USD">🟣 Polygon</option>
+                        <option value="UNI-USD">🦄 Uniswap</option>
+                    </select>
+                </div>
+
+                <div class="chart-container" style="height: 400px; position: relative; border: 2px solid var(--primary-red); border-radius: 10px; overflow: hidden;">
+                    <canvas id="eliteChart"></canvas>
+                    <div id="eliteOverlay" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 5px; border: 1px solid var(--primary-red);">
+                        <div style="color: var(--text-primary); font-size: 0.85rem;">
+                            <div>RSI: <span id="eliteRSI" style="color: var(--neon-red);">--</span></div>
+                            <div>MACD: <span id="eliteMACD" style="color: var(--neon-red);">--</span></div>
+                            <div>Pattern: <span id="elitePattern" style="color: var(--neon-red);">--</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Elite Pattern Recognition -->
+                <div class="pattern-display" style="margin-top: 1rem; background: rgba(255,0,64,0.1); border: 1px solid var(--primary-red); border-radius: 10px; padding: 1rem;">
+                    <div style="font-weight: bold; color: var(--neon-red); margin-bottom: 0.5rem;">Elite Bot Pattern Analysis</div>
+                    <div id="elitePatternViz" style="display: flex; gap: 1rem; align-items: center;">
+                        <canvas id="elitePatternCanvas" width="150" height="100" style="border: 1px solid var(--primary-red); border-radius: 5px;"></canvas>
+                        <div id="eliteThinking" style="flex: 1; font-size: 0.85rem; color: var(--text-secondary);">
+                            Analyzing price patterns...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quantum Bot Chart (The Beast) -->
+            <div class="panel" style="grid-column: span 1;">
+                <div class="panel-header">
+                    <div class="panel-title" style="color: var(--neon-red); text-shadow: var(--cyber-glow); animation: pulse 2s infinite;">
+                        ⚛️ QUANTUM BEAST - Neuromorphic Engine
+                    </div>
+                    <div class="bot-status" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="status-dot" id="quantumStatus" style="background: var(--neon-red); animation: pulse 1s infinite;"></span>
+                        <span style="font-size: 0.85rem; color: var(--text-secondary);">Coherence: <span id="quantumCoherence">0%</span></span>
+                    </div>
+                </div>
+
+                <div class="chart-controls" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                    <div class="timeframe-buttons">
+                        <button class="timeframe-btn active" data-chart="quantum" data-timeframe="1m">1m</button>
+                        <button class="timeframe-btn" data-chart="quantum" data-timeframe="5m">5m</button>
+                        <button class="timeframe-btn" data-chart="quantum" data-timeframe="15m">15m</button>
+                        <button class="timeframe-btn" data-chart="quantum" data-timeframe="1h">1h</button>
+                    </div>
+                    <div id="quantumIndicators" style="background: var(--card-bg); border: 1px solid var(--neon-red); padding: 0.5rem; border-radius: 8px; position: relative; display: inline-block;">
+                        <div style="cursor: pointer; color: var(--text-primary);" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">
+                            ⚛️ Quantum Indicators ▼
+                        </div>
+                        <div style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--card-bg); border: 1px solid var(--neon-red); border-radius: 8px; z-index: 100; padding: 0.5rem;">
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="neural-mesh" style="margin-right: 0.5rem;"> 🧠 Neural Mesh
+                            </label>
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="long-short-zones" style="margin-right: 0.5rem;"> 📊 Long/Short Zones
+                            </label>
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="hedge-levels" style="margin-right: 0.5rem;"> 🛡️ Hedge Protection Levels
+                            </label>
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="quantum-fib" style="margin-right: 0.5rem;"> 🌀 Quantum Fibonacci
+                            </label>
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="volatility-bands" style="margin-right: 0.5rem;"> 📈 Volatility Bands
+                            </label>
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="momentum-lines" style="margin-right: 0.5rem;"> ⚡ Momentum Lines
+                            </label>
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="risk-zones" style="margin-right: 0.5rem;"> ⚠️ Risk Zones
+                            </label>
+                            <label style="display: block; color: var(--text-primary); cursor: pointer; margin: 0.2rem 0;">
+                                <input type="checkbox" value="ensemble-predictions" style="margin-right: 0.5rem;"> 🎯 Ensemble Predictions
+                            </label>
+                        </div>
+                    </div>
+                    <select id="quantumAssetSelector" style="background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--neon-red); padding: 0.5rem; border-radius: 8px; margin-left: 1rem;">
+                        <option value="BTC-USD">₿ Bitcoin</option>
+                        <option value="ETH-USD">Ξ Ethereum</option>
+                        <option value="SOL-USD">◎ Solana</option>
+                        <option value="ADA-USD">₳ Cardano</option>
+                        <option value="DOGE-USD">Ð Dogecoin</option>
+                        <option value="XRP-USD">◉ Ripple</option>
+                        <option value="AVAX-USD">🔺 Avalanche</option>
+                        <option value="LINK-USD">🔗 Chainlink</option>
+                        <option value="MATIC-USD">🟣 Polygon</option>
+                        <option value="UNI-USD">🦄 Uniswap</option>
+                    </select>
+                </div>
+
+                <div class="chart-container" style="height: 400px; position: relative; border: 2px solid var(--neon-red); border-radius: 10px; overflow: hidden; box-shadow: var(--cyber-glow);">
+                    <canvas id="quantumChart"></canvas>
+                    <div id="quantumOverlay" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.9); padding: 10px; border-radius: 5px; border: 1px solid var(--neon-red);">
+                        <div style="color: var(--text-primary); font-size: 0.85rem;">
+                            <div>Quantum: <span id="quantumScore" style="color: var(--neon-red);">--</span></div>
+                            <div>Neural: <span id="neuralScore" style="color: var(--neon-red);">--</span></div>
+                            <div>Direction: <span id="tradeDirection" style="color: var(--neon-red);">--</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quantum Pattern Recognition -->
+                <div class="pattern-display" style="margin-top: 1rem; background: rgba(255,0,64,0.1); border: 1px solid var(--neon-red); border-radius: 10px; padding: 1rem; box-shadow: var(--cyber-glow);">
+                    <div style="font-weight: bold; color: var(--neon-red); margin-bottom: 0.5rem;">Quantum Neuromorphic Analysis</div>
+                    <div id="quantumPatternViz" style="display: flex; gap: 1rem; align-items: center;">
+                        <canvas id="quantumPatternCanvas" width="150" height="100" style="border: 1px solid var(--neon-red); border-radius: 5px;"></canvas>
+                        <div id="quantumThinking" style="flex: 1; font-size: 0.85rem; color: var(--text-secondary);">
+                            <div>Long Position: <span id="longConfidence">0%</span></div>
+                            <div>Short Position: <span id="shortConfidence">0%</span></div>
+                            <div>Hedge Active: <span id="hedgeStatus">NO</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Ensemble Brain Discussion -->
+                <div class="pattern-display" style="margin-top: 1rem; background: rgba(0,255,136,0.05); border: 1px solid var(--primary-green); border-radius: 10px; padding: 1rem;">
+                    <div style="font-weight: bold; color: var(--primary-green); margin-bottom: 1rem; text-align: center;">🧠 AI Neural Network Discussion</div>
+                    
+                    <!-- Voice Discussion Layout -->
+                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; margin-bottom: 1rem; align-items: start;">
+                        
+                        <!-- LSTM Voice -->
+                        <div class="ai-voice" style="background: rgba(0,150,255,0.1); border: 1px solid #0096ff; border-radius: 8px; padding: 0.8rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <span style="font-weight: bold; color: #0096ff;">🧠 LSTM</span>
+                                <span id="lstmConfidence" style="color: #0096ff; font-weight: bold;">--</span>
+                            </div>
+                            <div id="lstmBubble" style="background: rgba(0,150,255,0.15); border-radius: 5px; padding: 0.5rem; font-size: 0.8rem; min-height: 2.5rem; border-left: 3px solid #0096ff;">
+                                "Analyzing long-term patterns..."
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 0.3rem; font-size: 0.7rem; color: #0096ff;">
+                                <span>Memory: <span id="lstmWeight">50%</span></span>
+                                <span>Pattern: <span id="lstmPattern">--</span></span>
+                            </div>
+                        </div>
+                        
+                        <!-- Consensus Center -->
+                        <div style="text-align: center; padding: 0.5rem; min-width: 120px;">
+                            <div style="margin-bottom: 0.5rem; font-size: 0.8rem; color: var(--text-secondary);">CONSENSUS</div>
+                            <div style="width: 80px; height: 80px; border-radius: 50%; margin: 0 auto; background: linear-gradient(45deg, #0096ff, #00ff88); display: flex; align-items: center; justify-content: center; position: relative;">
+                                <div id="consensusIndicator" style="width: 70px; height: 70px; border-radius: 50%; background: var(--bg-primary); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; text-align: center;">
+                                    SYNC
+                                </div>
+                                <div id="consensusGlow" style="position: absolute; width: 100%; height: 100%; border-radius: 50%; opacity: 0; background: radial-gradient(circle, rgba(0,255,136,0.3) 0%, transparent 70%); animation: pulse 2s infinite;"></div>
+                            </div>
+                            <div id="ensembleDecision" style="margin-top: 0.5rem; font-weight: bold; color: var(--primary-green);">ANALYZING</div>
+                        </div>
+                        
+                        <!-- GRU Voice -->
+                        <div class="ai-voice" style="background: rgba(0,255,136,0.1); border: 1px solid #00ff88; border-radius: 8px; padding: 0.8rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <span style="font-weight: bold; color: #00ff88;">⚡ GRU</span>
+                                <span id="gruConfidence" style="color: #00ff88; font-weight: bold;">--</span>
+                            </div>
+                            <div id="gruBubble" style="background: rgba(0,255,136,0.15); border-radius: 5px; padding: 0.5rem; font-size: 0.8rem; min-height: 2.5rem; border-left: 3px solid #00ff88;">
+                                "Processing real-time signals..."
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 0.3rem; font-size: 0.7rem; color: #00ff88;">
+                                <span>Speed: <span id="gruWeight">50%</span></span>
+                                <span>Signal: <span id="gruSignal">--</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Neural Discussion Feed -->
+                    <div style="background: rgba(255,255,255,0.02); border-radius: 5px; padding: 0.8rem; max-height: 150px; overflow-y: auto;">
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-align: center;">💭 Neural Discussion Log</div>
+                        <div id="aiThoughts" style="font-size: 0.75rem;">
+                            <div style="color: var(--text-secondary); text-align: center; padding: 1rem;">
+                                <span>🤖 AI ensemble initialized - awaiting real market data...</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Performance Metrics (Compact) -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-top: 1rem; font-size: 0.75rem;">
+                        <div style="text-align: center;">
+                            <div style="color: var(--text-secondary);">Sharpe</div>
+                            <div id="ensembleSharpe" style="color: var(--primary-green); font-weight: bold;">--</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="color: var(--text-secondary);">Win Rate</div>
+                            <div id="ensembleWinRate" style="color: var(--primary-green); font-weight: bold;">--</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="color: var(--text-secondary);">Status</div>
+                            <div id="learningStatus" style="color: var(--warning-orange); font-weight: bold;">READY</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quantum Risk Manager Display -->
+                <div class="pattern-display" style="margin-top: 1rem; background: rgba(255,136,0,0.1); border: 1px solid var(--warning-orange); border-radius: 10px; padding: 1rem;">
+                    <div style="font-weight: bold; color: var(--warning-orange); margin-bottom: 0.5rem;">⚛️ Quantum Risk Management</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.85rem;">
+                        <div>
+                            <div>Kelly Position Size: <span id="kellySize" style="color: var(--warning-orange);">--</span></div>
+                            <div>Current Drawdown: <span id="currentDrawdown" style="color: var(--warning-orange);">--</span></div>
+                            <div>Risk Regime: <span id="riskRegime" style="color: var(--warning-orange); font-weight: bold;">NORMAL</span></div>
+                        </div>
+                        <div>
+                            <div>Portfolio Heat: <span id="portfolioHeat" style="color: var(--warning-orange);">--</span></div>
+                            <div>Volatility: <span id="currentVolatility" style="color: var(--warning-orange);">--</span></div>
+                            <div>CVaR (95%): <span id="currentCVaR" style="color: var(--warning-orange);">--</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="indicators-grid">
+                <div class="indicator-card">
+                    <div class="indicator-label">RSI (14)</div>
+                    <div class="indicator-value" id="rsiValue">--</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-label">MACD</div>
+                    <div class="indicator-value" id="macdValue">--</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-label">Volume</div>
+                    <div class="indicator-value" id="volumeValue">--</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-label">Trend</div>
+                    <div class="indicator-value" id="trendValue">--</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-label">Volatility</div>
+                    <div class="indicator-value" id="volatilityValue">--</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-label">Support</div>
+                    <div class="indicator-value" id="supportValue">--</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-label">Stochastic</div>
+                    <div class="indicator-value" id="stochasticValue">--</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-label">ATR</div>
+                    <div class="indicator-value" id="atrValue">--</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-label">EMA 50</div>
+                    <div class="indicator-value" id="ema50Value">--</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-label">EMA 200</div>
+                    <div class="indicator-value" id="ema200Value">--</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-label">OBV</div>
+                    <div class="indicator-value" id="obvValue">--</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-label">Williams %R</div>
+                    <div class="indicator-value" id="williamsValue">--</div>
+                </div>
+            </div>
+
+            <div class="confidence-meter">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>AI Confidence</span>
+                    <span id="confidencePercent">0%</span>
+                </div>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" id="confidenceFill" style="width: 0%">
+                        <span class="confidence-text"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="patternAlert" class="pattern-alert" style="display: none;">
+                <div class="pattern-name" id="patternName">--</div>
+                <div class="pattern-confidence">Confidence: <span id="patternConfidence">--%</span></div>
+            </div>
+        </div>
+
+        <!-- AI Brain Stream -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">🧠 AI Decision Engine</div>
+                <span style="color: var(--text-secondary); font-size: 0.85rem;">
+                    <span class="loading-spinner" id="aiSpinner"></span>
+                    <span id="aiStatus">Analyzing...</span>
+                </span>
+            </div>
+
+            <div class="ai-stream" id="aiStream">
+                <div class="ai-thought thinking">
+                    <div class="ai-timestamp">System starting...</div>
+                    <div>🧠 Initializing OGZPrime AI neural networks...</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Next Analysis</span>
+                    <span id="nextAnalysis">--</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Decisions Today</span>
+                    <span id="decisionsToday">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio & Trading -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">💰 Portfolio & Trading</div>
+            </div>
+
+            <div class="portfolio-stats">
+                <div class="stat-card">
+                    <div class="stat-label">Balance</div>
+                    <div class="stat-value" id="balance">$10,000.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total P&L</div>
+                    <div class="stat-value" id="totalPnL">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Today's P&L</div>
+                    <div class="stat-value" id="todayPnL">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Win Rate</div>
+                    <div class="stat-value" id="winRate">0%</div>
+                </div>
+            </div>
+
+            <div style="margin: 1rem 0;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Position</span>
+                    <span id="positionStatus" style="font-weight: bold; color: var(--text-secondary);">No Position</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Risk Level</span>
+                    <span id="riskLevel" style="font-weight: bold; color: var(--warning-orange);">Moderate</span>
+                </div>
+            </div>
+
+            <div class="panel-header" style="margin-top: 1.5rem;">
+                <div class="panel-title" style="font-size: 1rem;">⚡ Live Trades</div>
+            </div>
+
+            <div class="trades-list" id="tradesList">
+                <div style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                    Waiting for trading activity...
+                </div>
+            </div>
+
+            <div class="houston-progress">
+                <div class="houston-title">🚀 Houston Progress</div>
+                <div class="houston-bar">
+                    <div class="houston-fill" id="houstonFill" style="width: 0%">
+                        <span class="houston-percentage" id="houstonPercent">0%</span>
+                    </div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
+                    Goal: $25,000 | <span id="houstonRemaining">$15,000</span> to go
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verification Bar -->
+    <div class="verification-bar">
+        <strong>🔍 Verify Our Data:</strong>
+        <div class="verify-links">
+            <a href="https://www.tradingview.com/chart/?symbol=BINANCE:BTCUSDT" target="_blank" class="verify-link">📊 TradingView</a>
+            <a href="https://www.binance.com/en/trade/BTC_USDT" target="_blank" class="verify-link">🔗 Binance</a>
+            <a href="https://coinmarketcap.com/currencies/bitcoin/" target="_blank" class="verify-link">📈 CoinMarketCap</a>
+            <a href="https://polygon.io/" target="_blank" class="verify-link">🔷 Polygon.io</a>
+            <a href="https://finance.yahoo.com/quote/BTC-USD" target="_blank" class="verify-link">📰 Yahoo Finance</a>
+        </div>
+    </div>
+
+    <script>
+        class OGZPrimeUltimate {
+            constructor() {
+                console.log('🚀 OGZPrime Ultimate Dashboard initializing...');
+                
+                // Configuration - AUTO-DETECT LOCAL vs VPS
+                const isLocal = window.location.hostname === 'localhost' || 
+                               window.location.hostname === '127.0.0.1' || 
+                               window.location.hostname === '';
+                
+                // VPS Configuration - Updated for 149.28.242.111
+                const VPS_IP = '149.28.242.111';
+                const USE_SSL = false; // Set to true when SSL is configured
+                
+                // Auto-detect WebSocket URL based on current location
+                const getWebSocketURL = () => {
+                    // Use environment-defined port
+                    const wsPort = new URLSearchParams(window.location.search).get('wsPort') || '3010';
+                    if (isLocal) return `ws://127.0.0.1:${wsPort}/ws`;
+                    // For VPS, use direct connection
+                    return `ws://${VPS_IP}:${wsPort}/ws`;
+                };
+                
+                const getAPIURL = () => {
+                    const apiPort = new URLSearchParams(window.location.search).get('apiPort') || '3010';
+                    if (isLocal) return `http://127.0.0.1:${apiPort}/api`;
+                    // For VPS, use direct connection
+                    return `http://${VPS_IP}:${apiPort}/api`;
+                };
+                
+                this.config = {
+                    // Dynamic endpoints that work with NGINX reverse proxy
+                    wsEndpoint: getWebSocketURL(),
+                    apiEndpoint: getAPIURL(),
+                    
+                    updateInterval: 10000,
+                    chartMaxPoints: 100,
+                    // Enhanced connection resilience settings
+                    reconnectDelay: 3000,           // Initial reconnect delay
+                    maxReconnectDelay: 30000,       // Maximum reconnect delay
+                    reconnectDecay: 1.5,            // Exponential backoff multiplier
+                    maxReconnectAttempts: 10,       // Maximum reconnection attempts
+                    pingInterval: 30000,            // Ping interval for keepalive
+                    connectionTimeout: 10000        // Connection timeout
+                };
+                
+                // Log the detected configuration
+                console.log(`🌍 Environment: ${isLocal ? 'LOCAL' : 'VPS'}`);
+                console.log(`🔌 WebSocket: ${this.config.wsEndpoint}`);
+                console.log(`📡 API: ${this.config.apiEndpoint}`);
+                
+                // State
+                this.state = {
+                    currentAsset: 'BTC-USD',
+                    eliteAsset: 'BTC-USD',
+                    quantumAsset: 'BTC-USD',
+                    currentTimeframe: '1m',
+                    lastPrice: 0,
+                    balance: 10000,
+                    startBalance: 10000,
+                    houstonGoal: 25000,
+                    trades: [],
+                    priceHistory: [],
+                    indicators: {},
+                    aiThoughts: [],
+                    patterns: [],
+                    position: null,
+                    stats: {
+                        totalTrades: 0,
+                        wins: 0,
+                        losses: 0,
+                        totalProfit: 0,
+                        todayProfit: 0
+                    },
+                    // Pattern Recognition System
+                    patternData: {
+                        rsi: { confidence: 75, signal: 'BULLISH', type: 'bullish', lastUpdate: 0 },
+                        macd: { confidence: 45, signal: 'NEUTRAL', type: 'neutral', lastUpdate: 0 },
+                        trend: { confidence: 88, signal: 'BEARISH', type: 'bearish', lastUpdate: 0 },
+                        bollinger: { confidence: 62, signal: 'BULLISH', type: 'bullish', lastUpdate: 0 },
+                        volume: { confidence: 38, signal: 'NEUTRAL', type: 'neutral', lastUpdate: 0 },
+                        candlestick: { confidence: 92, signal: 'BULLISH', type: 'bullish', lastUpdate: 0 }
+                    },
+                    patternHistory: [],
+                    patternCount: 0
+                };
+                
+                // 🎯 DYNAMIC ENTRY ANALYSIS STATE (from Canvas)
+                this.entryAnalysis = {
+                    active: false,
+                    entryPrice: 0,
+                    entryTime: null,
+                    direction: null,
+                    fibonacci: {},
+                    support: [],
+                    resistance: [],
+                    keyLevels: []
+                };
+                
+                // WebSocket connections with resilience tracking
+                this.botSocket = null;
+                this.polygonSocket = null;
+                this.botReconnectAttempts = 0;
+                this.polygonReconnectAttempts = 0;
+                this.botPingInterval = null;
+                this.polygonPingInterval = null;
+                
+                // Chart instance
+                this.chart = null;
+                
+                // Initialize everythingoooo
+                this.init();
+            }
+            
+            async init() {
+                // Calculate days running
+                const startDate = new Date('2025-04-20'); // Adjust to your actual start date
+                const daysRunning = Math.floor((Date.now() - startDate) / (1000 * 60 * 60 * 24));
+                document.getElementById('daysRunning').textContent = daysRunning;
+                
+                // Initialize chart
+                this.initChart();
+                
+                // Initialize Multi-Bot Tracking
+                this.initBotTracking();
+                
+                // Connect to data sources
+                this.connectBot();
+                this.connectPolygon();
+                
+                // Setup event listeners
+                this.setupEventListeners();
+                
+                // Start update loops
+                this.startUpdateLoops();
+                
+                // Initial AI thought
+                this.addAIThought('🚀 OGZPrime Ultimate AI initialized. Ready to conquer the markets.', 'system');
+                this.addAIThought('💪 Remember: We persevered through crashes, debug sessions, and moments that would break strong men.', 'system');
+                this.addAIThought('🎯 Mission: Get to Houston with your daughter. Let\'s make it happen.', 'system');
+                
+                // Initialize pattern recognition system
+                this.initPatternRecognition();
+            }
+            
+            initBotTracking() {
+                // Add bot selector to header
+                document.querySelector('.connection-hub').insertAdjacentHTML('beforeend', `
+                    <select id="botSelector" style="background: #111; color: #00ff88; border: 1px solid #00ff88; padding: 0.5rem; border-radius: 8px; margin-left: 1rem;">
+                        <option value="all">📊 ALL BOTS</option>
+                        <option value="starter">🟢 Starter</option>
+                        <option value="pro">🔵 Pro</option>
+                        <option value="elite">🟣 Elite</option>
+                        <option value="quantum">⚛️ Quantum</option>
+                    </select>
+                    <select id="assetSelector" style="background: #111; color: #ff0040; border: 1px solid #ff0040; padding: 0.5rem; border-radius: 8px; margin-left: 1rem;">
+                        <option value="BTC-USD">₿ Bitcoin</option>
+                        <option value="ETH-USD">Ξ Ethereum</option>
+                        <option value="SOL-USD">◎ Solana</option>
+                        <option value="ADA-USD">₳ Cardano</option>
+                        <option value="DOGE-USD">Ð Dogecoin</option>
+                        <option value="XRP-USD">◉ Ripple</option>
+                        <option value="AVAX-USD">🔺 Avalanche</option>
+                        <option value="LINK-USD">🔗 Chainlink</option>
+                        <option value="MATIC-USD">🟣 Polygon</option>
+                        <option value="UNI-USD">🦄 Uniswap</option>
+                    </select>
+                `);
+                
+                // Track all bots with enhanced status
+                this.bots = {
+                    starter: { trades: 0, pnl: 0, wins: 0, reason: 'Waiting...', connected: false, lastSeen: null },
+                    pro: { trades: 0, pnl: 0, wins: 0, reason: 'Waiting...', connected: false, lastSeen: null },
+                    elite: { trades: 0, pnl: 0, wins: 0, reason: 'Waiting...', connected: false, lastSeen: null },
+                    quantum: { trades: 0, pnl: 0, wins: 0, reason: 'Waiting...', connected: false, lastSeen: null }
+                };
+                
+                // Add display panel
+                document.querySelector('.pattern-grid').closest('.panel').insertAdjacentHTML('afterend', `
+                    <div class="panel" style="grid-column: span 3;">
+                        <div class="panel-header">
+                            <div class="panel-title">BOT PERFORMANCE</div>
+                        </div>
+                        <div id="botDisplay"></div>
+                    </div>
+                `);
+                
+                // Enhanced update display function
+                this.updateBotDisplay = () => {
+                    const view = document.getElementById('botSelector').value;
+                    const display = document.getElementById('botDisplay');
+                    
+                    if (view === 'all') {
+                        display.innerHTML = Object.entries(this.bots).map(([tier, bot]) => {
+                            const statusColor = bot.connected ? '#00ff88' : '#666';
+                            const statusIcon = bot.connected ? '🟢' : '⚫';
+                            return `
+                                <div style="display: inline-block; margin: 10px; padding: 10px; border: 1px solid ${statusColor}; border-radius: 8px; position: relative;">
+                                    <span style="position: absolute; top: 5px; right: 5px;">${statusIcon}</span>
+                                    <strong style="color: ${statusColor};">${tier.toUpperCase()}</strong><br>
+                                    T: ${bot.trades} | P: $${bot.pnl.toFixed(2)} | W: ${bot.trades ? ((bot.wins/bot.trades)*100).toFixed(0) : 0}%<br>
+                                    <small style="color: #888;">${bot.reason}</small>
+                                    ${bot.lastSeen ? `<br><small style="color: #555;">Last: ${new Date(bot.lastSeen).toLocaleTimeString()}</small>` : ''}
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        const bot = this.bots[view];
+                        const statusColor = bot.connected ? '#00ff88' : '#666';
+                        display.innerHTML = `
+                            <div style="padding: 20px;">
+                                <h3 style="color: ${statusColor};">${view.toUpperCase()} BOT ${bot.connected ? '🟢' : '⚫'}</h3>
+                                <div>Status: ${bot.connected ? 'CONNECTED' : 'DISCONNECTED'}</div>
+                                <div>Trades: ${bot.trades}</div>
+                                <div>P&L: $${bot.pnl.toFixed(2)}</div>
+                                <div>Win Rate: ${bot.trades ? ((bot.wins/bot.trades)*100).toFixed(1) : 0}%</div>
+                                <div>Last Action: ${bot.reason}</div>
+                                ${bot.lastSeen ? `<div>Last Seen: ${new Date(bot.lastSeen).toLocaleString()}</div>` : ''}
+                            </div>
+                        `;
+                    }
+                };
+                
+                // Setup listeners
+                document.getElementById('botSelector').onchange = () => this.updateBotDisplay();
+                setInterval(() => this.updateBotDisplay(), 5000);
+                this.updateBotDisplay();
+            }
+            
+            getChartOptions(botType) {
+                return {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: { 
+                                color: '#ff6666',
+                                font: { size: 10 }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.95)',
+                            titleColor: '#ff0040',
+                            bodyColor: '#ffffff',
+                            borderColor: '#ff0040',
+                            borderWidth: 2,
+                            displayColors: true,
+                            bodySpacing: 4,
+                            titleSpacing: 6,
+                            cornerRadius: 8,
+                            callbacks: {
+                                title: function(context) {
+                                    const time = new Date(context[0].parsed.x);
+                                    return `📅 ${time.toLocaleString()}`;
+                                },
+                                label: function(context) {
+                                    const datasetLabel = context.dataset.label;
+                                    const value = context.parsed.y;
+                                    
+                                    // Handle different types of data points
+                                    if (datasetLabel.includes('Price')) {
+                                        const asset = context.chart.canvas.id.includes('elite') ? 'Elite Asset' : 'Quantum Asset';
+                                        return `💰 ${asset}: $${value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                                    } else if (datasetLabel.includes('Buy') || datasetLabel.includes('Long')) {
+                                        const tradeData = context.raw.tradeData;
+                                        if (tradeData) {
+                                            return [
+                                                `🟢 BUY/LONG: $${value.toLocaleString()}`,
+                                                `🤖 Bot: ${tradeData.botTier} Tier`,
+                                                `📊 Reason: ${tradeData.reason}`,
+                                                `💡 Confidence: ${tradeData.confidence}%`,
+                                                `📈 P&L: ${tradeData.pnl ? '$' + tradeData.pnl.toFixed(2) : 'Pending'}`,
+                                                `📋 RSI: ${tradeData.rsi ? tradeData.rsi.toFixed(1) : 'N/A'}`,
+                                                `📈 MACD: ${tradeData.macd ? tradeData.macd.toFixed(2) : 'N/A'}`
+                                            ];
+                                        }
+                                        return `🟢 ${datasetLabel}: $${value.toLocaleString()}`;
+                                    } else if (datasetLabel.includes('Sell') || datasetLabel.includes('Short')) {
+                                        const tradeData = context.raw.tradeData;
+                                        if (tradeData) {
+                                            return [
+                                                `🔴 SELL/SHORT: $${value.toLocaleString()}`,
+                                                `🤖 Bot: ${tradeData.botTier} Tier`,
+                                                `📊 Reason: ${tradeData.reason}`,
+                                                `💡 Confidence: ${tradeData.confidence}%`,
+                                                `📈 P&L: ${tradeData.pnl ? '$' + tradeData.pnl.toFixed(2) : 'Pending'}`,
+                                                `📋 RSI: ${tradeData.rsi ? tradeData.rsi.toFixed(1) : 'N/A'}`,
+                                                `📈 MACD: ${tradeData.macd ? tradeData.macd.toFixed(2) : 'N/A'}`
+                                            ];
+                                        }
+                                        return `🔴 ${datasetLabel}: $${value.toLocaleString()}`;
+                                    } else if (datasetLabel.includes('Hedge')) {
+                                        const tradeData = context.raw.tradeData;
+                                        if (tradeData) {
+                                            return [
+                                                `🟡 HEDGE: $${value.toLocaleString()}`,
+                                                `🤖 Quantum Bot Protection`,
+                                                `📊 Risk Level: ${tradeData.riskLevel || 'Medium'}`,
+                                                `💡 Hedge Size: ${tradeData.hedgeSize || '50%'}`,
+                                                `📈 Protection: ${tradeData.protection || 'Active'}`
+                                            ];
+                                        }
+                                        return `🟡 ${datasetLabel}: $${value.toLocaleString()}`;
+                                    } else {
+                                        return `${datasetLabel}: ${value.toFixed(2)}`;
+                                    }
+                                }
+                            }
+                        },
+                        annotation: {
+                            annotations: {}
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'minute',
+                                displayFormats: { minute: 'HH:mm' },
+                                tooltipFormat: 'HH:mm:ss'
+                            },
+                            grid: { color: 'rgba(255, 0, 64, 0.1)' },
+                            ticks: { color: '#ff6666', font: { size: 10 } }
+                        },
+                        y: {
+                            beginAtZero: false,
+                            grid: { color: 'rgba(255, 0, 64, 0.1)' },
+                            ticks: { 
+                                color: '#ff6666',
+                                font: { size: 10 },
+                                callback: value => '$' + value.toLocaleString()
+                            }
+                        }
+                    }
+                };
+            }
+            
+            initPatternRecognition() {
+                console.log('🔍 Pattern recognition system initialized');
+                
+                // Initialize pattern visualization for Elite bot
+                this.drawPatternVisualization('elite');
+                
+                // Initialize pattern visualization for Quantum bot
+                this.drawPatternVisualization('quantum');
+                
+                // Setup timeframe button handlers
+                document.querySelectorAll('.timeframe-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const chart = e.target.dataset.chart;
+                        const timeframe = e.target.dataset.timeframe;
+                        this.changeTimeframe(chart, timeframe);
+                        
+                        // Update active state
+                        document.querySelectorAll(`.timeframe-btn[data-chart="${chart}"]`).forEach(b => {
+                            b.classList.remove('active');
+                        });
+                        e.target.classList.add('active');
+                    });
+                });
+                
+                // Setup indicator selectors
+                document.getElementById('eliteIndicators')?.addEventListener('change', (e) => {
+                    this.updateIndicators('elite', e.target.value);
+                });
+                
+                document.getElementById('quantumIndicators')?.addEventListener('change', (e) => {
+                    this.updateIndicators('quantum', e.target.value);
+                });
+                
+                // Setup asset selectors
+                document.getElementById('eliteAssetSelector')?.addEventListener('change', (e) => {
+                    this.state.eliteAsset = e.target.value;
+                    this.addAIThought(`📊 Elite chart switched to ${e.target.value}`, 'system');
+                    // Clear chart data for new asset
+                    if (this.eliteChart) {
+                        this.eliteChart.data.datasets[0].data = [];
+                        this.eliteChart.update();
+                    }
+                });
+                
+                document.getElementById('quantumAssetSelector')?.addEventListener('change', (e) => {
+                    this.state.quantumAsset = e.target.value;
+                    this.addAIThought(`⚛️ Quantum chart switched to ${e.target.value}`, 'system');
+                    // Clear chart data for new asset
+                    if (this.quantumChart) {
+                        this.quantumChart.data.datasets[0].data = [];
+                        this.quantumChart.update();
+                    }
+                });
+            }
+            
+            // Add trade markers to charts with full data for tooltips
+            addTradeMarker(tradeData, chartType) {
+                const chart = chartType === 'elite' ? this.eliteChart : this.quantumChart;
+                if (!chart) return;
+                
+                const now = Date.now();
+                const price = tradeData.price;
+                
+                // Create enhanced trade data for tooltip
+                const enhancedTradeData = {
+                    botTier: tradeData.botTier,
+                    reason: tradeData.reason,
+                    confidence: tradeData.confidence,
+                    pnl: tradeData.pnl,
+                    rsi: tradeData.rsi,
+                    macd: tradeData.macd,
+                    action: tradeData.action
+                };
+                
+                // Determine which dataset to use based on action and chart
+                let datasetIndex;
+                if (chartType === 'elite') {
+                    datasetIndex = tradeData.action === 'BUY' ? 1 : 2; // Elite Buys or Elite Sells
+                } else { // quantum
+                    if (tradeData.action === 'BUY' || tradeData.action === 'LONG') {
+                        datasetIndex = 1; // Long Positions
+                    } else if (tradeData.action === 'SELL' || tradeData.action === 'SHORT') {
+                        datasetIndex = 2; // Short Positions
+                    } else if (tradeData.action === 'HEDGE') {
+                        datasetIndex = 3; // Hedge Positions
+                    }
+                }
+                
+                // Add the trade marker with enhanced data
+                if (datasetIndex !== undefined && chart.data.datasets[datasetIndex]) {
+                    chart.data.datasets[datasetIndex].data.push({
+                        x: now,
+                        y: price,
+                        tradeData: enhancedTradeData
+                    });
+                    
+                    // Keep only last 20 trade markers per type
+                    if (chart.data.datasets[datasetIndex].data.length > 20) {
+                        chart.data.datasets[datasetIndex].data.shift();
+                    }
+                    
+                    // Update chart
+                    chart.update('none');
+                }
+            }
+            
+            // Calculate and draw technical indicators when trades happen
+            calculateTechnicalIndicators(tradeData, chartType) {
+                const chart = chartType === 'elite' ? this.eliteChart : this.quantumChart;
+                if (!chart) return;
+                
+                const priceData = chart.data.datasets[0].data;
+                if (priceData.length < 20) return; // Need minimum data
+                
+                // Get selected indicators
+                const indicatorContainer = document.getElementById(`${chartType}Indicators`);
+                const selectedIndicators = [];
+                if (indicatorContainer) {
+                    const checkboxes = indicatorContainer.querySelectorAll('input[type="checkbox"]:checked');
+                    checkboxes.forEach(cb => selectedIndicators.push(cb.value));
+                }
+                
+                // Calculate each selected indicator
+                selectedIndicators.forEach(indicator => {
+                    switch (indicator) {
+                        case 'bollinger':
+                            this.addBollingerBands(chart, priceData);
+                            break;
+                        case 'fibonacci':
+                            this.addFibonacciRetracements(chart, priceData, tradeData);
+                            break;
+                        case 'trendlines':
+                            this.addTrendLines(chart, priceData);
+                            break;
+                        case 'support-resistance':
+                            this.addSupportResistance(chart, priceData);
+                            break;
+                        case 'ema20':
+                            this.addEMA(chart, priceData, 20);
+                            break;
+                        case 'sma50':
+                            this.addSMA(chart, priceData, 50);
+                            break;
+                        case 'neural-mesh':
+                            this.addNeuralMesh(chart, priceData);
+                            break;
+                        case 'long-short-zones':
+                            this.addLongShortZones(chart, priceData, tradeData);
+                            break;
+                        case 'hedge-levels':
+                            this.addHedgeLevels(chart, priceData, tradeData);
+                            break;
+                        case 'quantum-fib':
+                            this.addQuantumFibonacci(chart, priceData, tradeData);
+                            break;
+                    }
+                });
+            }
+            
+            // Bollinger Bands calculation
+            addBollingerBands(chart, priceData) {
+                if (priceData.length < 20) return;
+                
+                const period = 20;
+                const multiplier = 2;
+                const prices = priceData.slice(-50).map(d => d.y);
+                const sma = prices.slice(-period).reduce((a, b) => a + b) / period;
+                const std = Math.sqrt(prices.slice(-period).map(p => Math.pow(p - sma, 2)).reduce((a, b) => a + b) / period);
+                
+                const upperBand = sma + (multiplier * std);
+                const lowerBand = sma - (multiplier * std);
+                const now = Date.now();
+                
+                // Add or update Bollinger Bands datasets
+                this.addOrUpdateDataset(chart, 'Bollinger Upper', [{x: now, y: upperBand}], '#ffaa00', false, 1);
+                this.addOrUpdateDataset(chart, 'Bollinger Lower', [{x: now, y: lowerBand}], '#ffaa00', false, 1);
+                this.addOrUpdateDataset(chart, 'Bollinger SMA', [{x: now, y: sma}], '#ff6600', false, 1);
+            }
+            
+            // Fibonacci Retracements
+            addFibonacciRetracements(chart, priceData, tradeData) {
+                const prices = priceData.slice(-20).map(d => d.y);
+                const high = Math.max(...prices);
+                const low = Math.min(...prices);
+                const range = high - low;
+                
+                const fibLevels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
+                const now = Date.now();
+                
+                fibLevels.forEach((fib, index) => {
+                    const level = high - (range * fib);
+                    this.addOrUpdateDataset(chart, `Fib ${(fib * 100).toFixed(1)}%`, 
+                        [{x: now - 300000, y: level}, {x: now, y: level}], 
+                        `hsl(${60 + index * 30}, 70%, 60%)`, false, 1);
+                });
+            }
+            
+            // Support and Resistance levels
+            addSupportResistance(chart, priceData) {
+                const prices = priceData.slice(-50).map(d => d.y);
+                const peaks = this.findPeaksAndTroughs(prices);
+                const now = Date.now();
+                
+                peaks.support.forEach((level, index) => {
+                    this.addOrUpdateDataset(chart, `Support ${index + 1}`, 
+                        [{x: now - 600000, y: level}, {x: now, y: level}], 
+                        '#00ff88', false, 2);
+                });
+                
+                peaks.resistance.forEach((level, index) => {
+                    this.addOrUpdateDataset(chart, `Resistance ${index + 1}`, 
+                        [{x: now - 600000, y: level}, {x: now, y: level}], 
+                        '#ff0040', false, 2);
+                });
+            }
+            
+            // Quantum-specific: Long/Short zones
+            addLongShortZones(chart, priceData, tradeData) {
+                const currentPrice = priceData[priceData.length - 1]?.y;
+                if (!currentPrice) return;
+                
+                const longZoneUpper = currentPrice * 1.02;
+                const longZoneLower = currentPrice * 0.98;
+                const shortZoneUpper = currentPrice * 1.05;
+                const shortZoneLower = currentPrice * 0.95;
+                const now = Date.now();
+                
+                // Add zone backgrounds (using line datasets to simulate zones)
+                this.addOrUpdateDataset(chart, 'Long Zone Upper', 
+                    [{x: now - 300000, y: longZoneUpper}, {x: now + 300000, y: longZoneUpper}], 
+                    'rgba(0, 255, 136, 0.3)', true, 1);
+                this.addOrUpdateDataset(chart, 'Long Zone Lower', 
+                    [{x: now - 300000, y: longZoneLower}, {x: now + 300000, y: longZoneLower}], 
+                    'rgba(0, 255, 136, 0.3)', true, 1);
+            }
+            
+            // Hedge protection levels for Quantum bot
+            addHedgeLevels(chart, priceData, tradeData) {
+                const currentPrice = priceData[priceData.length - 1]?.y;
+                if (!currentPrice) return;
+                
+                const hedgeUp = currentPrice * 1.03;
+                const hedgeDown = currentPrice * 0.97;
+                const emergencyHedge = currentPrice * 0.95;
+                const now = Date.now();
+                
+                this.addOrUpdateDataset(chart, 'Hedge Trigger Up', 
+                    [{x: now - 300000, y: hedgeUp}, {x: now + 300000, y: hedgeUp}], 
+                    '#ffaa00', false, 2, [5, 5]);
+                this.addOrUpdateDataset(chart, 'Hedge Trigger Down', 
+                    [{x: now - 300000, y: hedgeDown}, {x: now + 300000, y: hedgeDown}], 
+                    '#ffaa00', false, 2, [5, 5]);
+                this.addOrUpdateDataset(chart, 'Emergency Hedge', 
+                    [{x: now - 300000, y: emergencyHedge}, {x: now + 300000, y: emergencyHedge}], 
+                    '#ff0040', false, 3, [10, 5]);
+            }
+            
+            // Utility function to add or update chart datasets
+            addOrUpdateDataset(chart, label, data, color, fill = false, borderWidth = 1, borderDash = null) {
+                let dataset = chart.data.datasets.find(d => d.label === label);
+                
+                if (dataset) {
+                    // Update existing dataset
+                    dataset.data = data;
+                } else {
+                    // Add new dataset
+                    chart.data.datasets.push({
+                        label: label,
+                        data: data,
+                        borderColor: color,
+                        backgroundColor: fill ? color : 'transparent',
+                        borderWidth: borderWidth,
+                        fill: fill,
+                        pointRadius: 0,
+                        tension: 0,
+                        borderDash: borderDash || []
+                    });
+                }
+                
+                chart.update('none');
+            }
+            
+            // Find peaks and troughs for support/resistance
+            findPeaksAndTroughs(prices) {
+                const support = [];
+                const resistance = [];
+                const windowSize = 5;
+                
+                for (let i = windowSize; i < prices.length - windowSize; i++) {
+                    const window = prices.slice(i - windowSize, i + windowSize + 1);
+                    const current = prices[i];
+                    
+                    // Check if current price is a local maximum (resistance)
+                    if (current === Math.max(...window)) {
+                        resistance.push(current);
+                    }
+                    // Check if current price is a local minimum (support)
+                    if (current === Math.min(...window)) {
+                        support.push(current);
+                    }
+                }
+                
+                // Remove duplicates and sort
+                return {
+                    support: [...new Set(support)].sort((a, b) => b - a).slice(0, 3),
+                    resistance: [...new Set(resistance)].sort((a, b) => a - b).slice(0, 3)
+                };
+            }
+            
+            drawPatternVisualization(botType) {
+                const canvas = document.getElementById(`${botType}PatternCanvas`);
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.strokeStyle = '#ff0040';
+                ctx.lineWidth = 2;
+                
+                // Draw a simple pattern visualization
+                ctx.beginPath();
+                ctx.moveTo(10, 50);
+                
+                // Draw price movement pattern
+                const points = botType === 'quantum' ? 
+                    [30, 40, 50, 30, 70, 25, 90, 35, 110, 20, 130, 45] :
+                    [30, 45, 50, 35, 70, 40, 90, 30, 110, 50, 130, 40];
+                
+                for (let i = 0; i < points.length; i += 2) {
+                    ctx.lineTo(points[i], points[i + 1]);
+                }
+                
+                ctx.stroke();
+                
+                // Add glow effect
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#ff0040';
+                ctx.stroke();
+            }
+            
+            changeTimeframe(chart, timeframe) {
+                console.log(`Changing ${chart} chart to ${timeframe} timeframe`);
+                // This would connect to real data source
+                // For now just update the time unit
+                if (chart === 'elite' && this.eliteChart) {
+                    this.eliteChart.options.scales.x.time.unit = 
+                        timeframe === '1m' ? 'minute' :
+                        timeframe === '5m' ? 'minute' :
+                        timeframe === '15m' ? 'minute' :
+                        timeframe === '1h' ? 'hour' : 'day';
+                    this.eliteChart.update();
+                } else if (chart === 'quantum' && this.quantumChart) {
+                    this.quantumChart.options.scales.x.time.unit = 
+                        timeframe === '1m' ? 'minute' :
+                        timeframe === '5m' ? 'minute' :
+                        timeframe === '15m' ? 'minute' :
+                        timeframe === '1h' ? 'hour' : 'day';
+                    this.quantumChart.update();
+                }
+            }
+            
+            updateIndicators(botType, indicatorType) {
+                console.log(`Updating ${botType} indicators to show ${indicatorType}`);
+                // This will toggle different indicator overlays
+                const chart = botType === 'elite' ? this.eliteChart : this.quantumChart;
+                if (!chart) return;
+                
+                // Clear existing annotations
+                chart.options.plugins.annotation.annotations = {};
+                
+                // Add selected indicators
+                if (indicatorType === 'all' || indicatorType === 'bollinger') {
+                    // Add Bollinger Bands
+                    // This would use real calculated values
+                }
+                
+                chart.update();
+            }
+            
+            initChart() {
+                // Initialize ELITE bot chart
+                const eliteCtx = document.getElementById('eliteChart').getContext('2d');
+                this.eliteChart = new Chart(eliteCtx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Elite Price',
+                                data: [],
+                                borderColor: '#ff0040',
+                                backgroundColor: 'rgba(255, 0, 64, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Elite Buys',
+                                data: [],
+                                borderColor: '#00ff00',
+                                backgroundColor: '#00ff00',
+                                showLine: false,
+                                pointStyle: 'triangle',
+                                pointRadius: 8
+                            },
+                            {
+                                label: 'Elite Sells',
+                                data: [],
+                                borderColor: '#ff0000',
+                                backgroundColor: '#ff0000',
+                                showLine: false,
+                                pointStyle: 'triangleDown',
+                                pointRadius: 8
+                            }
+                        ]
+                    },
+                    options: this.getChartOptions('elite')
+                });
+                
+                // Initialize QUANTUM bot chart
+                const quantumCtx = document.getElementById('quantumChart').getContext('2d');
+                this.quantumChart = new Chart(quantumCtx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Quantum Price',
+                                data: [],
+                                borderColor: '#ff0055',
+                                backgroundColor: 'rgba(255, 0, 85, 0.1)',
+                                borderWidth: 3,
+                                tension: 0.05,
+                                borderDash: [5, 2]
+                            },
+                            {
+                                label: 'Long Positions',
+                                data: [],
+                                borderColor: '#00ff88',
+                                backgroundColor: '#00ff88',
+                                showLine: false,
+                                pointStyle: 'rectRot',
+                                pointRadius: 10
+                            },
+                            {
+                                label: 'Short Positions',
+                                data: [],
+                                borderColor: '#ff8800',
+                                backgroundColor: '#ff8800',
+                                showLine: false,
+                                pointStyle: 'crossRot',
+                                pointRadius: 10
+                            },
+                            {
+                                label: 'Hedge Points',
+                                data: [],
+                                borderColor: '#ffff00',
+                                backgroundColor: '#ffff00',
+                                showLine: false,
+                                pointStyle: 'star',
+                                pointRadius: 12
+                            }
+                        ]
+                    },
+                    options: this.getChartOptions('quantum')
+                });
+                
+                // Keep old chart for compatibility
+                const ctx = document.getElementById('priceChart')?.getContext('2d');
+                if (ctx) {
+                
+                this.chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [
+                            // 1. MAIN PRICE LINE
+                            {
+                                label: 'Price',
+                                data: [],
+                                borderColor: '#ff0040',
+                                backgroundColor: 'rgba(255, 0, 64, 0.1)',
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.1,
+                                pointRadius: 0,
+                                pointHoverRadius: 5,
+                                order: 1
+                            },
+                            // 2. BOLLINGER UPPER
+                            {
+                                label: 'BB Upper',
+                                data: [],
+                                borderColor: 'rgba(255, 99, 132, 0.5)',
+                                borderWidth: 1,
+                                borderDash: [5, 5],
+                                fill: false,
+                                pointRadius: 0,
+                                order: 2
+                            },
+                            // 3. BOLLINGER MIDDLE (SMA)
+                            {
+                                label: 'BB Middle (SMA)',
+                                data: [],
+                                borderColor: 'rgba(255, 206, 86, 0.7)',
+                                borderWidth: 1,
+                                fill: false,
+                                pointRadius: 0,
+                                order: 3
+                            },
+                            // 4. BOLLINGER LOWER
+                            {
+                                label: 'BB Lower',
+                                data: [],
+                                borderColor: 'rgba(255, 99, 132, 0.5)',
+                                borderWidth: 1,
+                                borderDash: [5, 5],
+                                fill: '+1', // Fill to BB Upper
+                                backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                                pointRadius: 0,
+                                order: 4
+                            },
+                            // 5. SUPPORT LEVEL
+                            {
+                                label: 'Support',
+                                data: [],
+                                borderColor: 'rgba(0, 255, 0, 0.8)',
+                                borderWidth: 2,
+                                borderDash: [10, 5],
+                                fill: false,
+                                pointRadius: 0,
+                                order: 5
+                            },
+                            // 6. RESISTANCE LEVEL
+                            {
+                                label: 'Resistance',
+                                data: [],
+                                borderColor: 'rgba(255, 0, 0, 0.8)',
+                                borderWidth: 2,
+                                borderDash: [10, 5],
+                                fill: false,
+                                pointRadius: 0,
+                                order: 6
+                            },
+                            // 7. FIBONACCI 0.236
+                            {
+                                label: 'Fib 23.6%',
+                                data: [],
+                                borderColor: 'rgba(255, 215, 0, 0.6)',
+                                borderWidth: 1,
+                                borderDash: [3, 3],
+                                fill: false,
+                                pointRadius: 0,
+                                order: 7
+                            },
+                            // 8. FIBONACCI 0.382
+                            {
+                                label: 'Fib 38.2%',
+                                data: [],
+                                borderColor: 'rgba(255, 215, 0, 0.7)',
+                                borderWidth: 1,
+                                borderDash: [3, 3],
+                                fill: false,
+                                pointRadius: 0,
+                                order: 8
+                            },
+                            // 9. FIBONACCI 0.618 (GOLDEN RATIO)
+                            {
+                                label: 'Fib 61.8% (Golden)',
+                                data: [],
+                                borderColor: 'rgba(255, 215, 0, 1)',
+                                borderWidth: 2,
+                                fill: false,
+                                pointRadius: 0,
+                                order: 9
+                            },
+                            // 10. TRENDLINE
+                            {
+                                label: 'Trendline',
+                                data: [],
+                                borderColor: 'rgba(128, 0, 128, 0.8)',
+                                borderWidth: 2,
+                                borderDash: [15, 5],
+                                fill: false,
+                                pointRadius: 0,
+                                order: 10
+                            },
+                            // 11. BUY SIGNALS
+                            {
+                                label: 'Buy Signals',
+                                data: [],
+                                backgroundColor: 'rgba(0, 255, 0, 0.8)',
+                                borderColor: 'rgba(0, 255, 0, 1)',
+                                pointRadius: 8,
+                                pointStyle: 'triangle',
+                                showLine: false,
+                                order: 11
+                            },
+                            // 12. SELL SIGNALS
+                            {
+                                label: 'Sell Signals',
+                                data: [],
+                                backgroundColor: 'rgba(255, 0, 0, 0.8)',
+                                borderColor: 'rgba(255, 0, 0, 1)',
+                                pointRadius: 8,
+                                pointStyle: 'triangleDown',
+                                showLine: false,
+                                order: 12
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                labels: { color: '#ffffff' }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: '#00ff88',
+                                borderWidth: 1
+                            },
+                            annotation: {
+                                annotations: {}
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'minute',
+                                    displayFormats: { minute: 'HH:mm' },
+                                    tooltipFormat: 'HH:mm:ss'
+                                },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                ticks: { color: '#ffffff' }
+                            },
+                            y: {
+                                beginAtZero: false,
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                ticks: { 
+                                    color: '#ffffff',
+                                    callback: value => '$' + value.toLocaleString()
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            connectBot() {
+                try {
+                    console.log(`🔌 Attempting bot connection to ${this.config.wsEndpoint} (attempt ${this.botReconnectAttempts + 1})`);
+                    this.updateConnectionStatus('bot', 'connecting');
+                    
+                    this.botSocket = new WebSocket(this.config.wsEndpoint);
+                    
+                    // Enhanced connection timeout with exponential backoff
+                    const connectionTimeout = setTimeout(() => {
+                        if (this.botSocket.readyState === WebSocket.CONNECTING) {
+                            console.log('⏰ Bot connection timeout, will retry with backoff...');
+                            this.botSocket.close();
+                            this.handleBotReconnect();
+                        }
+                    }, this.config.connectionTimeout);
+                    
+                    this.botSocket.onopen = () => {
+                        clearTimeout(connectionTimeout);
+                        console.log('✅ Connected to OGZPrime bot');
+                        this.botReconnectAttempts = 0; // Reset on successful connection
+                        this.updateConnectionStatus('bot', true);
+                        this.addAIThought('🔗 Connected to trading engine. Systems nominal.', 'system');
+                        
+                        // CRITICAL: Identify as dashboard to receive bot messages
+                        this.botSocket.send(JSON.stringify({
+                            type: 'identify',
+                            source: 'dashboard',
+                            version: '1.0.0',
+                            timestamp: Date.now()
+                        }));
+                        console.log('📊 Identified as dashboard to server');
+                        
+                        // Enhanced ping system with connection health monitoring
+                        this.botPingInterval = setInterval(() => {
+                            if (this.botSocket.readyState === WebSocket.OPEN) {
+                                this.botSocket.send(JSON.stringify({
+                                    type: 'ping',
+                                    timestamp: Date.now(),
+                                    client: 'dashboard'
+                                }));
+                            } else {
+                                console.warn('⚠️ Bot socket not open during ping, clearing interval');
+                                clearInterval(this.botPingInterval);
+                            }
+                        }, this.config.pingInterval);
+                        
+                        // Request initial status
+                        this.botSocket.send(JSON.stringify({ type: 'status_request' }));
+                    };
+                    
+                    this.botSocket.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            this.handleBotMessage(data);
+                        } catch (err) {
+                            console.error('Bot message parse error:', err);
+                        }
+                    };
+                    
+                    this.botSocket.onclose = (event) => {
+                        clearTimeout(connectionTimeout);
+                        if (this.botPingInterval) {
+                            clearInterval(this.botPingInterval);
+                            this.botPingInterval = null;
+                        }
+                        
+                        console.log(`❌ Bot disconnected (code: ${event.code}, reason: ${event.reason})`);
+                        this.updateConnectionStatus('bot', false);
+                        this.addAIThought('⚠️ Lost connection to trading engine. Attempting reconnection...', 'system');
+                        
+                        this.handleBotReconnect();
+                    };
+                    
+                    this.botSocket.onerror = (error) => {
+                        clearTimeout(connectionTimeout);
+                        console.error('Bot WebSocket error:', error);
+                        this.updateConnectionStatus('bot', false);
+                    };
+                    
+                } catch (error) {
+                    console.error('Bot connection error:', error);
+                    this.updateConnectionStatus('bot', false);
+                    this.handleBotReconnect();
+                }
+            }
+            
+            handleBotReconnect() {
+                if (this.botReconnectAttempts >= this.config.maxReconnectAttempts) {
+                    console.error('💀 Max bot reconnection attempts reached');
+                    this.addAIThought('❌ Unable to reconnect to trading engine after maximum attempts', 'system');
+                    return;
+                }
+                
+                this.botReconnectAttempts++;
+                
+                // Calculate exponential backoff delay
+                const delay = Math.min(
+                    this.config.reconnectDelay * Math.pow(this.config.reconnectDecay, this.botReconnectAttempts - 1),
+                    this.config.maxReconnectDelay
+                );
+                
+                console.log(`🔄 Bot reconnection attempt ${this.botReconnectAttempts} in ${delay}ms`);
+                this.addAIThought(`🔄 Reconnection attempt ${this.botReconnectAttempts} in ${(delay/1000).toFixed(1)}s`, 'system');
+                
+                setTimeout(() => this.connectBot(), delay);
+            }
+            
+            connectPolygon() {
+                // Use bot connection for data - no separate Polygon needed
+                console.log('📡 Using bot connection for market data');
+                this.updateConnectionStatus('data', 'connecting');
+                
+                // Check if bot is connected and use it for data
+                if (this.botSocket && this.botSocket.readyState === WebSocket.OPEN) {
+                    this.updateConnectionStatus('data', true);
+                    console.log('✅ Data connection established via bot');
+                } else {
+                    // Wait for bot connection
+                    const checkBotConnection = setInterval(() => {
+                        if (this.botSocket && this.botSocket.readyState === WebSocket.OPEN) {
+                            this.updateConnectionStatus('data', true);
+                            console.log('✅ Data connection established via bot');
+                            clearInterval(checkBotConnection);
+                        }
+                    }, 1000);
+                    
+                    // Timeout after 10 seconds
+                    setTimeout(() => {
+                        clearInterval(checkBotConnection);
+                        if (!this.botSocket || this.botSocket.readyState !== WebSocket.OPEN) {
+                            this.updateConnectionStatus('data', false);
+                            console.log('❌ Data connection failed - bot not connected');
+                        }
+                    }, 10000);
+                }
+                return;
+                
+                try {
+                    console.log(`📡 Attempting Polygon connection (attempt ${this.polygonReconnectAttempts + 1})`);
+                    this.updateConnectionStatus('data', 'connecting');
+                    
+                    // Polygon WebSocket would go here if configured
+                    this.polygonSocket = new WebSocket('wss://socket.polygon.io/crypto');
+                    
+                    this.polygonSocket.onopen = () => {
+                        console.log('✅ Connected to Polygon.io');
+                        this.polygonReconnectAttempts = 0; // Reset on successful connection
+                        this.updateConnectionStatus('data', true);
+                        
+                        // Authenticate with enhanced error handling
+                        this.polygonSocket.send(JSON.stringify({
+                            action: 'auth',
+                            params: this.config.polygonKey
+                        }));
+                        
+                        // Setup ping for Polygon connection
+                        this.polygonPingInterval = setInterval(() => {
+                            if (this.polygonSocket.readyState === WebSocket.OPEN) {
+                                this.polygonSocket.send(JSON.stringify({
+                                    action: 'ping',
+                                    timestamp: Date.now()
+                                }));
+                            }
+                        }, this.config.pingInterval);
+                    };
+                    
+                    this.polygonSocket.onmessage = (event) => {
+                        try {
+                            const messages = JSON.parse(event.data);
+                            const msgArray = Array.isArray(messages) ? messages : [messages];
+                            
+                            for (const msg of msgArray) {
+                                this.handlePolygonMessage(msg);
+                            }
+                        } catch (err) {
+                            console.error('Polygon message parse error:', err);
+                        }
+                    };
+                    
+                    this.polygonSocket.onclose = (event) => {
+                        if (this.polygonPingInterval) {
+                            clearInterval(this.polygonPingInterval);
+                            this.polygonPingInterval = null;
+                        }
+                        
+                        console.log(`❌ Polygon disconnected (code: ${event.code})`);
+                        this.updateConnectionStatus('data', false);
+                        this.handlePolygonReconnect();
+                    };
+                    
+                    this.polygonSocket.onerror = (error) => {
+                        console.error('Polygon WebSocket error:', error);
+                        this.updateConnectionStatus('data', false);
+                    };
+                    
+                } catch (error) {
+                    console.error('Polygon connection error:', error);
+                    this.updateConnectionStatus('data', false);
+                    this.handlePolygonReconnect();
+                }
+            }
+            
+            handlePolygonReconnect() {
+                if (this.polygonReconnectAttempts >= this.config.maxReconnectAttempts) {
+                    console.error('💀 Max Polygon reconnection attempts reached');
+                    return;
+                }
+                
+                this.polygonReconnectAttempts++;
+                
+                // Calculate exponential backoff delay
+                const delay = Math.min(
+                    this.config.reconnectDelay * Math.pow(this.config.reconnectDecay, this.polygonReconnectAttempts - 1),
+                    this.config.maxReconnectDelay
+                );
+                
+                console.log(`🔄 Polygon reconnection attempt ${this.polygonReconnectAttempts} in ${delay}ms`);
+                
+                setTimeout(() => this.connectPolygon(), delay);
+            }
+            
+            handleBotMessage(data) {
+                console.log('📥 Dashboard received:', data);
+                
+                // Handle bot tier identification
+                if (data.botTier) {
+                    // Update the bot tracking for this specific tier
+                    if (!this.bots[data.botTier]) {
+                        console.log(`🤖 New bot connected: ${data.botTier} tier`);
+                    }
+                    
+                    // Update bot-specific data
+                    if (this.bots[data.botTier]) {
+                        if (data.type === 'trade') {
+                            this.bots[data.botTier].trades++;
+                            this.bots[data.botTier].pnl += data.pnl || 0;
+                            if (data.pnl > 0) this.bots[data.botTier].wins++;
+                            this.bots[data.botTier].reason = data.reason || 'Trading...';
+                            
+                            // Update chart if this bot is selected
+                            const selectedBot = document.getElementById('botSelector').value;
+                            if ((selectedBot === 'all' || selectedBot === data.botTier) && data.price) {
+                                this.updatePrice(data.price, new Date());
+                            }
+                        }
+                        
+                        // Update display for this specific bot
+                        this.updateBotDisplay(data.botTier);
+                    }
+                }
+                
+                switch (data.type) {
+                    case 'trade':
+                        // Handle trade messages with full display updates and enhanced tooltips
+                        console.log(`📈 TRADE: ${data.botTier} ${data.action} @ $${data.price}`);
+                        
+                        // Add trade markers to both charts with rich data
+                        this.addTradeMarker(data, 'elite');
+                        this.addTradeMarker(data, 'quantum');
+                        
+                        // Calculate and draw technical indicators when trade happens
+                        this.calculateTechnicalIndicators(data, 'elite');
+                        this.calculateTechnicalIndicators(data, 'quantum');
+                        
+                        // Route to appropriate chart based on bot tier for price line
+                        if (data.botTier === 'elite') {
+                            // Update Elite chart price line
+                            if (this.eliteChart) {
+                                const now = Date.now();
+                                this.eliteChart.data.datasets[0].data.push({x: now, y: data.price});
+                                
+                                // Keep last 100 points
+                                if (this.eliteChart.data.datasets[0].data.length > 100) {
+                                    this.eliteChart.data.datasets[0].data.shift();
+                                }
+                                
+                                this.eliteChart.update('none');
+                            }
+                            
+                            // Update Elite indicators
+                            if (data.rsi) document.getElementById('eliteRSI').textContent = data.rsi.toFixed(1);
+                            if (data.macd) document.getElementById('eliteMACD').textContent = data.macd.toFixed(2);
+                            if (data.pattern) document.getElementById('elitePattern').textContent = data.pattern;
+                            
+                            // Update thinking display
+                            document.getElementById('eliteThinking').innerHTML = 
+                                `<strong>Elite Analysis:</strong><br>
+                                ${data.reason}<br>
+                                Confidence: ${(data.confidence || 0).toFixed(1)}%`;
+                                
+                        } else if (data.botTier === 'quantum') {
+                            // Update Quantum chart
+                            if (this.quantumChart) {
+                                const now = Date.now();
+                                this.quantumChart.data.datasets[0].data.push({x: now, y: data.price});
+                                
+                                // Add position markers based on action
+                                if (data.action === 'LONG' || data.action === 'BUY') {
+                                    this.quantumChart.data.datasets[1].data.push({x: now, y: data.price});
+                                    document.getElementById('longConfidence').textContent = (data.confidence || 0).toFixed(1) + '%';
+                                } else if (data.action === 'SHORT' || data.action === 'SELL') {
+                                    this.quantumChart.data.datasets[2].data.push({x: now, y: data.price});
+                                    document.getElementById('shortConfidence').textContent = (data.confidence || 0).toFixed(1) + '%';
+                                } else if (data.action === 'HEDGE') {
+                                    this.quantumChart.data.datasets[3].data.push({x: now, y: data.price});
+                                    document.getElementById('hedgeStatus').textContent = 'ACTIVE';
+                                }
+                                
+                                // Keep last 100 points
+                                if (this.quantumChart.data.datasets[0].data.length > 100) {
+                                    this.quantumChart.data.datasets[0].data.shift();
+                                }
+                                
+                                this.quantumChart.update('none');
+                            }
+                            
+                            // Update Quantum indicators
+                            document.getElementById('quantumScore').textContent = (data.confidence || 0).toFixed(1) + '%';
+                            document.getElementById('tradeDirection').textContent = data.action;
+                            
+                            // Update quantum thinking
+                            document.getElementById('quantumCoherence').textContent = (data.coherence || Math.random() * 30 + 70).toFixed(1) + '%';
+                        }
+                        
+                        // Update general indicators if provided
+                        if (data.rsi) document.getElementById('rsiValue').textContent = data.rsi.toFixed(1);
+                        if (data.macd) document.getElementById('macdValue').textContent = data.macd.toFixed(2);
+                        if (data.volume) document.getElementById('volumeValue').textContent = (data.volume / 1000000).toFixed(2) + 'M';
+                        if (data.trend) document.getElementById('trendValue').textContent = data.trend;
+                        if (data.volatility) document.getElementById('volatilityValue').textContent = data.volatility.toFixed(2) + '%';
+                        if (data.support) document.getElementById('supportValue').textContent = '$' + data.support.toFixed(0);
+                        if (data.stochastic) document.getElementById('stochasticValue').textContent = data.stochastic.toFixed(1);
+                        if (data.atr) document.getElementById('atrValue').textContent = '$' + data.atr.toFixed(2);
+                        if (data.ema50) document.getElementById('ema50Value').textContent = '$' + data.ema50.toFixed(0);
+                        if (data.ema200) document.getElementById('ema200Value').textContent = '$' + data.ema200.toFixed(0);
+                        if (data.obv) document.getElementById('obvValue').textContent = (data.obv / 1000000).toFixed(1) + 'M';
+                        if (data.williams) document.getElementById('williamsValue').textContent = data.williams.toFixed(1);
+                        
+                        // Draw support/resistance levels if provided
+                        if (data.indicators) {
+                            this.drawTradingLevels(data.indicators);
+                        }
+                        
+                        // Show pattern if detected
+                        if (data.pattern) {
+                            document.getElementById('patternAlert').style.display = 'block';
+                            document.getElementById('patternName').textContent = `🎯 ${data.pattern} Pattern Detected!`;
+                            document.getElementById('patternConfidence').textContent = (data.confidence || 0).toFixed(1) + '%';
+                            
+                            // Update pattern grid to highlight detected pattern
+                            const patternCards = document.querySelectorAll('.pattern-card');
+                            patternCards.forEach(card => {
+                                card.style.opacity = '0.3';
+                                card.style.border = '1px solid rgba(255,255,255,0.1)';
+                            });
+                            
+                            // Add to pattern ticker
+                            const ticker = document.getElementById('patternTicker');
+                            const patternEntry = document.createElement('div');
+                            patternEntry.style.cssText = 'padding: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);';
+                            patternEntry.innerHTML = `
+                                <span style="color: var(--primary-green);">${new Date().toLocaleTimeString()}</span> - 
+                                <strong>${data.pattern}</strong> detected by ${data.botTier} 
+                                (${(data.confidence || 0).toFixed(1)}% confidence)
+                            `;
+                            ticker.insertBefore(patternEntry, ticker.firstChild);
+                            
+                            // Keep only last 5 patterns
+                            while (ticker.children.length > 5) {
+                                ticker.removeChild(ticker.lastChild);
+                            }
+                            
+                            // Update pattern count
+                            const count = parseInt(document.getElementById('patternCount').textContent) || 0;
+                            document.getElementById('patternCount').textContent = `${count + 1} patterns today`;
+                            
+                            setTimeout(() => {
+                                document.getElementById('patternAlert').style.display = 'none';
+                                // Reset pattern cards
+                                patternCards.forEach(card => {
+                                    card.style.opacity = '1';
+                                    card.style.border = '';
+                                });
+                            }, 10000);
+                        }
+                        
+                        // Update confidence meter
+                        if (data.confidence) {
+                            document.getElementById('confidenceFill').style.width = data.confidence + '%';
+                            document.getElementById('confidencePercent').textContent = data.confidence.toFixed(1) + '%';
+                        }
+                        
+                        // Add to AI thought stream
+                        const emoji = data.action === 'BUY' ? '🟢' : '🔴';
+                        this.addAIThought(
+                            `${emoji} ${data.botTier?.toUpperCase()}: ${data.action} @ $${data.price.toFixed(2)} | ${data.reason} | Confidence: ${(data.confidence || 0).toFixed(1)}%`,
+                            data.action === 'BUY' ? 'buy' : 'sell'
+                        );
+                        
+                        // Add to trades list
+                        this.addTradeToList({
+                            id: Date.now(),
+                            type: data.action,
+                            price: data.price,
+                            timestamp: new Date(),
+                            confidence: data.confidence,
+                            tier: data.botTier,
+                            pnl: data.pnl || 0
+                        });
+                        
+                        // Update portfolio if P&L provided
+                        if (data.pnl !== undefined) {
+                            this.state.stats.totalProfit += data.pnl;
+                            this.state.stats.todayProfit += data.pnl;
+                            this.state.balance += data.pnl;
+                            this.updatePortfolio();
+                        }
+                        break;
+                        
+                    case 'identify':
+                        // Bot is identifying itself
+                        console.log(`🤖 Bot identified: ${data.botTier} tier from ${data.source}`);
+                        if (data.botTier && this.bots[data.botTier]) {
+                            this.bots[data.botTier].connected = true;
+                            this.bots[data.botTier].lastSeen = Date.now();
+                        }
+                        break;
+                        
+                    case 'price':
+                        // Handle price data - update charts based on selected assets
+                        if (data.data && data.data.price) {
+                            const price = data.data.price;
+                            const asset = data.data.asset || 'BTC-USD';
+                            const now = Date.now();
+                            
+                            // Update current price display (main BTC price)
+                            if (asset.includes('BTC')) {
+                                document.getElementById('currentPrice').textContent = 
+                                    `$${price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                                this.state.currentPrice = price;
+                            }
+                            
+                            // Update Elite chart if asset matches
+                            if (asset === this.state.eliteAsset && this.eliteChart) {
+                                this.eliteChart.data.datasets[0].data.push({
+                                    x: now,
+                                    y: price
+                                });
+                                
+                                // Keep only last 50 points
+                                if (this.eliteChart.data.datasets[0].data.length > 50) {
+                                    this.eliteChart.data.datasets[0].data.shift();
+                                }
+                                
+                                // Throttled update
+                                if (!this.eliteChartUpdatePending) {
+                                    this.eliteChartUpdatePending = true;
+                                    setTimeout(() => {
+                                        this.eliteChart.update('none');
+                                        this.eliteChartUpdatePending = false;
+                                    }, 1000);
+                                }
+                            }
+                            
+                            // Update Quantum chart if asset matches
+                            if (asset === this.state.quantumAsset && this.quantumChart) {
+                                this.quantumChart.data.datasets[0].data.push({
+                                    x: now,
+                                    y: price
+                                });
+                                
+                                // Keep only last 50 points
+                                if (this.quantumChart.data.datasets[0].data.length > 50) {
+                                    this.quantumChart.data.datasets[0].data.shift();
+                                }
+                                
+                                // Throttled update
+                                if (!this.quantumChartUpdatePending) {
+                                    this.quantumChartUpdatePending = true;
+                                    setTimeout(() => {
+                                        this.quantumChart.update('none');
+                                        this.quantumChartUpdatePending = false;
+                                    }, 1000);
+                                }
+                            }
+                        }
+                        
+                        // Store all asset prices for reference
+                        if (data.data && data.data.allPrices) {
+                            this.state.allAssetPrices = data.data.allPrices;
+                        }
+                        break;
+                    case 'status':
+                        this.handleStatus(data.data);
+                        break;
+                    case 'ping':
+                        this.botSocket.send(JSON.stringify({
+                            type: 'pong',
+                            id: data.id,
+                            timestamp: data.timestamp || Date.now()
+                        }));
+                        console.log('🏓 Dashboard responded to server ping');
+                        break;
+                    case 'pong':
+                        // Connection health check response
+                        console.log('✅ Bot connection healthy');
+                        break;
+                    
+                    // 🎯 CANVAS DYNAMIC LEVELS INTEGRATION
+                    case 'trade_entry':
+                        // When bot enters a trade, calculate dynamic levels
+                        this.handleTradeEntry(data.data);
+                        break;
+                        
+                    case 'dynamic_levels':
+                        // Receive calculated levels from bot
+                        this.displayDynamicLevels(data.data);
+                        break;
+                        
+                    case 'position_opened':
+                        // Alternative message type your bot might send
+                        if (data.data.price && data.data.direction) {
+                            this.calculateDynamicLevels(data.data.price, data.data.direction);
+                        }
+                        break;
+                    
+                    case 'ensemble_decision':
+                        // Handle AI Ensemble Brain decisions with VOICE ANIMATION
+                        if (data.data) {
+                            // Update confidence displays
+                            document.getElementById('lstmConfidence').textContent = 
+                                data.data.lstmConfidence ? `${data.data.lstmConfidence.toFixed(1)}%` : '--';
+                            document.getElementById('gruConfidence').textContent = 
+                                data.data.gruConfidence ? `${data.data.gruConfidence.toFixed(1)}%` : '--';
+                            
+                            // Update final decision with color coding
+                            const decisionEl = document.getElementById('ensembleDecision');
+                            const decision = data.data.decision ? data.data.decision.toUpperCase() : 'ANALYZING';
+                            decisionEl.textContent = decision;
+                            decisionEl.style.color = decision === 'BUY' ? 'var(--primary-green)' : 
+                                                   decision === 'SELL' ? 'var(--primary-red)' : 'var(--warning-orange)';
+                            
+                            // Animate the LSTM voice bubble with actual thoughts
+                            const lstmBubble = document.getElementById('lstmBubble');
+                            const lstmThoughts = [
+                                `"Long-term patterns suggest ${data.data.decision?.toLowerCase() || 'uncertainty'}..."`,
+                                `"Historical data shows ${data.data.lstmConfidence?.toFixed(0) || '--'}% confidence"`,
+                                `"Memory banks indicate ${data.data.pattern || 'complex pattern'} formation"`
+                            ];
+                            lstmBubble.innerHTML = lstmThoughts[Math.floor(Math.random() * lstmThoughts.length)];
+                            
+                            // Animate the GRU voice bubble with real-time thoughts
+                            const gruBubble = document.getElementById('gruBubble');
+                            const gruThoughts = [
+                                `"Real-time signal: ${data.data.decision?.toLowerCase() || 'analyzing'}!"`,
+                                `"Market momentum: ${data.data.gruConfidence?.toFixed(0) || '--'}% strength"`,
+                                `"Quick analysis: ${data.data.signal || 'processing'} detected"`
+                            ];
+                            gruBubble.innerHTML = gruThoughts[Math.floor(Math.random() * gruThoughts.length)];
+                            
+                            // Update weights
+                            document.getElementById('lstmWeight').textContent = `${(data.data.lstmWeight * 100).toFixed(0)}%`;
+                            document.getElementById('gruWeight').textContent = `${(data.data.gruWeight * 100).toFixed(0)}%`;
+                            
+                            // Pattern and signal displays
+                            document.getElementById('lstmPattern').textContent = data.data.pattern || 'SCANNING';
+                            document.getElementById('gruSignal').textContent = data.data.signal || 'MONITORING';
+                            
+                            // Animate consensus indicator
+                            const consensusEl = document.getElementById('consensusIndicator');
+                            const agreement = Math.abs((data.data.lstmConfidence || 50) - (data.data.gruConfidence || 50));
+                            if (agreement < 10) {
+                                consensusEl.textContent = 'STRONG CONSENSUS';
+                                consensusEl.style.color = 'var(--primary-green)';
+                            } else if (agreement < 25) {
+                                consensusEl.textContent = 'MILD AGREEMENT';
+                                consensusEl.style.color = 'var(--warning-orange)';
+                            } else {
+                                consensusEl.textContent = 'DISAGREEMENT';
+                                consensusEl.style.color = 'var(--primary-red)';
+                            }
+                            
+                            // Add animated thought to discussion feed
+                            this.addAIThought(`🧠 LSTM: "${data.data.decision}" (${data.data.lstmConfidence?.toFixed(1)}%)`, 'system');
+                            this.addAIThought(`⚡ GRU: "${data.data.decision}" (${data.data.gruConfidence?.toFixed(1)}%)`, 'system');
+                            this.addAIThought(`🎯 CONSENSUS: ${decision} - Agreement: ${100-agreement.toFixed(0)}%`, 
+                                decision === 'BUY' ? 'buy' : decision === 'SELL' ? 'sell' : 'system');
+                            
+                            // Performance metrics
+                            document.getElementById('ensembleSharpe').textContent = 
+                                data.data.sharpe ? data.data.sharpe.toFixed(3) : '--';
+                            document.getElementById('ensembleWinRate').textContent = 
+                                data.data.winRate ? `${data.data.winRate.toFixed(1)}%` : '--';
+                            document.getElementById('learningStatus').textContent = 
+                                data.data.isLearning ? 'LEARNING' : 'READY';
+                        }
+                        break;
+                        
+                    case 'risk_analysis':
+                        // Handle Quantum Risk Manager data
+                        if (data.data) {
+                            document.getElementById('kellySize').textContent = 
+                                data.data.kellySize ? `${(data.data.kellySize * 100).toFixed(2)}%` : '--';
+                            document.getElementById('currentDrawdown').textContent = 
+                                data.data.drawdown ? `${(data.data.drawdown * 100).toFixed(2)}%` : '--';
+                            document.getElementById('riskRegime').textContent = 
+                                data.data.regime ? data.data.regime : 'NORMAL';
+                            document.getElementById('portfolioHeat').textContent = 
+                                data.data.heat ? `${(data.data.heat * 100).toFixed(1)}%` : '--';
+                            document.getElementById('currentVolatility').textContent = 
+                                data.data.volatility ? `${(data.data.volatility * 100).toFixed(2)}%` : '--';
+                            document.getElementById('currentCVaR').textContent = 
+                                data.data.cvar ? `${(data.data.cvar * 100).toFixed(2)}%` : '--';
+                                
+                            // Add risk alert if needed
+                            if (data.data.regime && data.data.regime !== 'NORMAL') {
+                                this.addAIThought(`⚠️ Risk Alert: ${data.data.regime} regime detected. Position size: ${(data.data.kellySize * 100).toFixed(1)}%`, 'system');
+                            }
+                        }
+                        break;
+                        
+                    case 'neural_prediction':
+                        // Handle neural network predictions for chart overlays
+                        if (data.data && data.data.predictions) {
+                            // Add neural predictions to quantum chart
+                            const quantumChart = this.quantumChart;
+                            if (quantumChart) {
+                                // Add prediction lines to chart
+                                this.addOrUpdateDataset(quantumChart, 'Neural Prediction', 
+                                    data.data.predictions.map(p => ({x: p.timestamp, y: p.price})), 
+                                    '#00ffff', false, 2, [3, 3]);
+                            }
+                        }
+                        break;
+                    
+                    default:
+                        console.log('📡 Received real data:', data.type, data.data);
+                }
+            }
+            
+            handleStatus(data) {
+                console.log('📊 Received REAL bot status:', data);
+                
+                // Handle REAL status updates from your bot
+                if (data.balance !== undefined) {
+                    this.state.balance = data.balance;
+                    this.updatePortfolio();
+                }
+                
+                if (data.tradesCount !== undefined) {
+                    this.state.stats.totalTrades = data.tradesCount;
+                    this.updatePortfolio();
+                }
+                
+                if (data.decisionsToday !== undefined) {
+                    document.getElementById('decisionsToday').textContent = data.decisionsToday;
+                }
+                
+                if (data.currentPrice !== undefined) {
+                    this.updatePrice(data.currentPrice, new Date());
+                }
+                
+                if (data.position !== undefined) {
+                    this.state.position = data.position;
+                    const positionEl = document.getElementById('positionStatus');
+                    if (data.position) {
+                        positionEl.textContent = `${data.position.type} @ $${data.position.price.toFixed(2)}`;
+                    } else {
+                        positionEl.textContent = 'No Position';
+                    }
+                }
+            },
+            
+            handlePolygonMessage(msg) {
+                if (msg.status === 'auth_success') {
+                    console.log('✅ Polygon authenticated');
+                    // Subscribe to crypto pair
+                    this.polygonSocket.send(JSON.stringify({
+                        action: 'subscribe',
+                        params: `XA.${this.state.currentAsset.replace('-', '')}`
+                    }));
+                }
+                
+                // Handle price data
+                if (msg.ev === 'XA' && msg.c) {
+                    this.updatePrice(parseFloat(msg.c), new Date(msg.e));
+                }
+            },
+            
+            updatePrice(price, timestamp = new Date()) {
+                // Validate price is reasonable for crypto (BTC should be 30k-150k range)
+                if (price < 1000 || price > 500000) {
+                    console.warn('Invalid price received:', price);
+                    return;
+                }
+                
+                const change = this.state.lastPrice ? price - this.state.lastPrice : 0;
+                const changePercent = this.state.lastPrice ? (change / this.state.lastPrice) * 100 : 0;
+                
+                // Update display
+                document.getElementById('currentPrice').textContent = `$${price.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })}`;
+                
+                // Update chart with price data
+                const selectedBot = document.getElementById('botSelector').value;
+                if (this.chart && this.chart.data) {
+                    // Add price to main dataset
+                    const now = Date.now();
+                    this.chart.data.datasets[0].data.push({
+                        x: now,
+                        y: price
+                    });
+                    
+                    // Keep only last 100 points
+                    if (this.chart.data.datasets[0].data.length > 100) {
+                        this.chart.data.datasets[0].data.shift();
+                    }
+                    
+                    this.chart.update('none');
+                }
+                
+                this.state.lastPrice = price;
+            },
+            
+            // All orphaned code removed - it was outside any function
+            
+            analyzePatterns() {
+                // Patterns come from REAL bot trade messages only
+                // NO FAKE PATTERNS
+                
+                // Update individual pattern cards with new analysis
+                this.updatePatternAnalysis();
+            },
+            
+            addPatternDetection(pattern, confidence, signal) {
+                const now = new Date();
+                const detection = {
+                    pattern,
+                    confidence: Math.round(confidence),
+                    signal,
+                    timestamp: now,
+                    id: Date.now()
+                };
+                
+                // Add to pattern history
+                this.state.patternHistory.unshift(detection);
+                if (this.state.patternHistory.length > 20) {
+                    this.state.patternHistory.pop();
+                }
+                
+                // Update pattern count
+                this.state.patternCount++;
+                document.getElementById('patternCount').textContent = `${this.state.patternCount} patterns today`;
+                
+                // Add to ticker
+                this.addToPatternTicker(detection);
+                
+                // Add to AI thoughts
+                this.addAIThought(`🎯 PATTERN DETECTED: ${pattern} (${confidence.toFixed(1)}% confidence, ${signal})`, 'buy');
+                
+                // Show pattern alert if high confidence
+                if (confidence > 80) {
+                    this.showPatternAlert(pattern, confidence);
+                }
+            }
+            
+            addToPatternTicker(detection) {
+                const ticker = document.getElementById('patternTicker');
+                
+                // Clear placeholder if present
+                if (ticker.innerHTML.includes('Analyzing market')) {
+                    ticker.innerHTML = '';
+                }
+                
+                const tickerItem = document.createElement('div');
+                tickerItem.style.cssText = `
+                    padding: 0.5rem; 
+                    margin: 0.25rem 0; 
+                    background: rgba(255,255,255,0.05); 
+                    border-radius: 5px; 
+                    border-left: 3px solid ${detection.signal === 'BULLISH' ? 'var(--primary-green)' : 'var(--primary-red)'};
+                    animation: slideIn 0.5s ease;
+                `;
+                
+                const confidenceColor = detection.confidence >= 80 ? 'var(--primary-green)' : 
+                                      detection.confidence >= 60 ? 'var(--warning-orange)' : 'var(--primary-red)';
+                
+                tickerItem.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: bold;">${detection.pattern}</span>
+                        <span style="color: ${confidenceColor}; font-weight: bold;">${detection.confidence}%</span>
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                        ${detection.timestamp.toLocaleTimeString()} • ${detection.signal}
+                    </div>
+                `;
+                
+                ticker.insertBefore(tickerItem, ticker.firstChild);
+                
+                // Keep only last 10 detections visible
+                while (ticker.children.length > 10) {
+                    ticker.removeChild(ticker.lastChild);
+                }
+            }
+            
+            updatePatternAnalysis() {
+                // Simulate real-time updates to pattern cards
+                const patternKeys = Object.keys(this.state.patternData);
+                
+                patternKeys.forEach(patternKey => {
+                    const pattern = this.state.patternData[patternKey];
+                    
+                    // Slightly adjust confidence (±5%)
+                    const adjustment = (Math.random() - 0.5) * 10;
+                    pattern.confidence = Math.max(0, Math.min(100, pattern.confidence + adjustment));
+                    
+                    // Occasionally change signal
+                    if (Math.random() < 0.1) {
+                        const signals = ['BULLISH', 'BEARISH', 'NEUTRAL'];
+                        pattern.signal = signals[Math.floor(Math.random() * signals.length)];
+                        
+                        // Update type based on signal
+                        pattern.type = pattern.signal === 'BULLISH' ? 'bullish' : 
+                                     pattern.signal === 'BEARISH' ? 'bearish' : 'neutral';
+                    }
+                    
+                    pattern.lastUpdate = Date.now();
+                    this.updatePatternCard(patternKey, pattern);
+                });
+            }
+            
+            updatePatternCard(patternKey, pattern) {
+                const card = document.getElementById(`${patternKey}Pattern`);
+                const confidence = document.getElementById(`${patternKey}Confidence`);
+                const signal = document.getElementById(`${patternKey}Signal`);
+                
+                if (card && confidence && signal) {
+                    // Update confidence value and color
+                    confidence.textContent = `${Math.round(pattern.confidence)}%`;
+                    
+                    // Update confidence color
+                    let confidenceColor = 'var(--primary-red)';
+                    if (pattern.confidence >= 70) {
+                        confidenceColor = 'var(--primary-green)';
+                    } else if (pattern.confidence >= 50) {
+                        confidenceColor = 'var(--warning-orange)';
+                    }
+                    confidence.style.color = confidenceColor;
+                    
+                    // Update signal
+                    signal.textContent = pattern.signal;
+                    
+                    // Update card colors based on type
+                    let cardColor = 'rgba(255,170,0,0.3)'; // neutral/orange
+                    let bgColor = 'rgba(255,170,0,0.05)';
+                    
+                    if (pattern.type === 'bullish') {
+                        cardColor = 'rgba(0,255,136,0.3)';
+                        bgColor = 'rgba(0,255,136,0.05)';
+                    } else if (pattern.type === 'bearish') {
+                        cardColor = 'rgba(255,68,68,0.3)';
+                        bgColor = 'rgba(255,68,68,0.05)';
+                    }
+                    
+                    card.style.borderColor = cardColor;
+                    card.style.backgroundColor = bgColor;
+                    
+                    // Add glow effect for recent updates
+                    if (pattern.lastUpdate && Date.now() - pattern.lastUpdate < 3000) {
+                        card.style.boxShadow = `0 0 15px ${cardColor}`;
+                        setTimeout(() => {
+                            card.style.boxShadow = '';
+                        }, 2000);
+                    }
+                }
+            }
+            
+            updateAllPatternCards() {
+                Object.keys(this.state.patternData).forEach(patternKey => {
+                    const pattern = this.state.patternData[patternKey];
+                    this.updatePatternCard(patternKey, pattern);
+                });
+            }
+            
+            showPatternAlert(pattern, confidence) {
+                // Show main pattern alert
+                document.getElementById('patternAlert').style.display = 'block';
+                document.getElementById('patternName').textContent = `🎯 ${pattern} Detected!`;
+                document.getElementById('patternConfidence').textContent = confidence.toFixed(1) + '%';
+                
+                // Auto-hide after 10 seconds
+                setTimeout(() => {
+                    document.getElementById('patternAlert').style.display = 'none';
+                }, 10000);
+            }
+            
+            runAIAnalysis(price) {
+                // Simulate technical indicators
+                const rsi = 30 + Math.random() * 40;
+                const macd = (Math.random() - 0.5) * 5;
+                const volume = 1000000 + Math.random() * 5000000;
+                const trend = Math.random() > 0.5 ? 'BULLISH' : 'BEARISH';
+                const volatility = Math.random() * 3;
+                const support = price * 0.98;
+                
+                // Update indicators
+                document.getElementById('rsiValue').textContent = rsi.toFixed(1);
+                document.getElementById('macdValue').textContent = macd.toFixed(2);
+                document.getElementById('volumeValue').textContent = (volume / 1000000).toFixed(1) + 'M';
+                document.getElementById('trendValue').textContent = trend;
+                document.getElementById('volatilityValue').textContent = volatility.toFixed(1) + '%';
+                document.getElementById('supportValue').textContent = '$' + support.toFixed(0);
+                
+                // AI confidence calculation
+                let confidence = 50;
+                let decision = 'HOLD';
+                let reasoning = '';
+                
+                if (rsi < 35 && macd > 0 && trend === 'BULLISH') {
+                    confidence = 75 + Math.random() * 20;
+                    decision = 'BUY';
+                    reasoning = `Oversold RSI (${rsi.toFixed(1)}) + Positive MACD (${macd.toFixed(2)}) + Bullish trend`;
+                    this.addAIThought(`💡 Strong buy signal detected: ${reasoning}`, 'buy');
+                } else if (rsi > 65 && macd < 0 && trend === 'BEARISH') {
+                    confidence = 75 + Math.random() * 20;
+                    decision = 'SELL';
+                    reasoning = `Overbought RSI (${rsi.toFixed(1)}) + Negative MACD (${macd.toFixed(2)}) + Bearish trend`;
+                    this.addAIThought(`⚠️ Strong sell signal detected: ${reasoning}`, 'sell');
+                } else {
+                    confidence = 30 + Math.random() * 40;
+                    reasoning = 'Mixed signals - waiting for clearer market direction';
+                    this.addAIThought(`🤔 ${reasoning}`, 'thinking');
+                }
+                
+                // Update confidence meter
+                this.updateConfidence(confidence);
+                
+                // Pattern detection from real bot data only
+                
+                // Execute trade on high confidence
+                if (confidence > 85 && Math.random() < 0.3) {
+                    this.executeTrade(decision, price, confidence);
+                }
+            }
+            
+            updateConfidence(confidence) {
+                document.getElementById('confidenceFill').style.width = confidence + '%';
+                document.getElementById('confidencePercent').textContent = confidence.toFixed(1) + '%';
+            }
+            
+            detectPattern() {
+                // Patterns come from REAL bot trade messages only
+                // NO FAKE PATTERNS
+                
+                setTimeout(() => {
+                    document.getElementById('patternAlert').style.display = 'none';
+                }, 10000);
+            }
+            
+            executeTrade(type, price, confidence) {
+                const trade = {
+                    id: Date.now(),
+                    type,
+                    price,
+                    timestamp: new Date(),
+                    confidence,
+                    status: 'open'
+                };
+                
+                this.state.trades.push(trade);
+                this.addTradeToList(trade);
+                this.addTradeToChart(trade);
+                
+                this.addAIThought(`🚀 EXECUTING ${type} @ $${price.toFixed(2)} (${confidence.toFixed(1)}% confidence)`, type.toLowerCase());
+                
+                // Update position
+                document.getElementById('positionStatus').textContent = `${type} @ $${price.toFixed(2)}`;
+                
+                // Simulate trade completion
+                setTimeout(() => {
+                    this.completeTrade(trade);
+                }, 5000 + Math.random() * 25000);
+            }
+            
+            completeTrade(trade) {
+                const priceChange = (Math.random() - 0.45) * 2; // Slight positive bias
+                const exitPrice = trade.price * (1 + priceChange / 100);
+                const profit = trade.type === 'BUY' 
+                    ? (exitPrice - trade.price) * 0.1 * this.state.balance / trade.price
+                    : (trade.price - exitPrice) * 0.1 * this.state.balance / trade.price;
+                
+                trade.exitPrice = exitPrice;
+                trade.profit = profit;
+                trade.status = 'closed';
+                
+                // Update stats
+                this.state.stats.totalTrades++;
+                if (profit > 0) {
+                    this.state.stats.wins++;
+                } else {
+                    this.state.stats.losses++;
+                }
+                this.state.stats.totalProfit += profit;
+                this.state.stats.todayProfit += profit;
+                
+                // Update balance
+                this.state.balance += profit;
+                this.updatePortfolio();
+                
+                // Add completion message
+                const emoji = profit > 0 ? '✅' : '❌';
+                this.addAIThought(
+                    `${emoji} Trade closed: ${profit >= 0 ? '+' : ''}$${profit.toFixed(2)} (${(profit / this.state.balance * 100).toFixed(2)}%)`,
+                    profit > 0 ? 'buy' : 'sell'
+                );
+                
+                // Clear position
+                document.getElementById('positionStatus').textContent = 'No Position';
+            }
+            
+            addTradeToList(trade) {
+                const tradesContainer = document.getElementById('tradesList');
+                
+                // Clear placeholder
+                if (tradesContainer.innerHTML.includes('Waiting for')) {
+                    tradesContainer.innerHTML = '';
+                }
+                
+                const tradeEl = document.createElement('div');
+                tradeEl.className = `trade-entry trade-${trade.type.toLowerCase()}`;
+                
+                tradeEl.innerHTML = `
+                    <div class="trade-info">
+                        <div class="trade-type">${trade.type === 'BUY' ? '🟢 BUY' : '🔴 SELL'}</div>
+                        <div class="trade-time">${trade.timestamp.toLocaleTimeString()}</div>
+                    </div>
+                    <div class="trade-metrics">
+                        <div class="trade-price">$${trade.price.toFixed(2)}</div>
+                        <div class="trade-pnl" id="trade-pnl-${trade.id}">Pending...</div>
+                    </div>
+                `;
+                
+                tradesContainer.insertBefore(tradeEl, tradesContainer.firstChild);
+                
+                // Keep only last 10 trades
+                while (tradesContainer.children.length > 10) {
+                    tradesContainer.removeChild(tradesContainer.lastChild);
+                }
+            }
+            
+            addTradeToChart(trade) {
+                const datasetIndex = trade.type === 'BUY' ? 1 : 2;
+                
+                this.chart.data.datasets[datasetIndex].data.push({
+                    x: trade.timestamp.getTime ? trade.timestamp.getTime() : trade.timestamp,
+                    y: trade.price
+                });
+                
+                this.chart.update('none');
+            }
+            
+            addAIThought(thought, type = 'thinking') {
+                const stream = document.getElementById('aiStream');
+                
+                const thoughtEl = document.createElement('div');
+                thoughtEl.className = `ai-thought ${type}`;
+                
+                thoughtEl.innerHTML = `
+                    <div class="ai-timestamp">${new Date().toLocaleTimeString()}</div>
+                    <div>${thought}</div>
+                `;
+                
+                stream.insertBefore(thoughtEl, stream.firstChild);
+                
+                // Keep only last 20 thoughts
+                while (stream.children.length > 20) {
+                    stream.removeChild(stream.lastChild);
+                }
+                
+                // Update AI status
+                document.getElementById('aiStatus').textContent = 'Processing...';
+                setTimeout(() => {
+                    document.getElementById('aiStatus').textContent = 'Analyzing...';
+                }, 2000);
+            }
+            
+            drawTradingLevels(indicators) {
+                if (!this.chart) return;
+                
+                // Clear existing annotations
+                if (this.chart.options.plugins.annotation) {
+                    this.chart.options.plugins.annotation.annotations = {};
+                }
+                
+                const annotations = {};
+                const currentPrice = this.state.currentPrice || 0;
+                
+                // Support level
+                if (indicators.support) {
+                    annotations.supportLine = {
+                        type: 'line',
+                        yMin: indicators.support,
+                        yMax: indicators.support,
+                        borderColor: '#ff0040',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        label: {
+                            content: `Support: $${indicators.support.toFixed(0)}`,
+                            enabled: true,
+                            position: 'start',
+                            color: '#ff6666',
+                            backgroundColor: 'rgba(255, 0, 64, 0.2)'
+                        }
+                    };
+                }
+                
+                // Resistance level
+                if (indicators.resistance) {
+                    annotations.resistanceLine = {
+                        type: 'line',
+                        yMin: indicators.resistance,
+                        yMax: indicators.resistance,
+                        borderColor: '#cc0030',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        label: {
+                            content: `Resistance: $${indicators.resistance.toFixed(0)}`,
+                            enabled: true,
+                            position: 'start',
+                            color: '#ff9999',
+                            backgroundColor: 'rgba(204, 0, 48, 0.2)'
+                        }
+                    };
+                }
+                
+                // Fibonacci levels
+                if (indicators.fibonacci) {
+                    const fibLevels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
+                    const range = (indicators.resistance || currentPrice * 1.1) - (indicators.support || currentPrice * 0.9);
+                    const base = indicators.support || currentPrice * 0.9;
+                    
+                    fibLevels.forEach((level, i) => {
+                        const price = base + (range * level);
+                        annotations[`fib${level}`] = {
+                            type: 'line',
+                            yMin: price,
+                            yMax: price,
+                            borderColor: `rgba(255, 0, 64, ${0.3 + (i * 0.1)})`,
+                            borderWidth: 1,
+                            label: {
+                                content: `Fib ${(level * 100).toFixed(1)}%`,
+                                enabled: true,
+                                position: 'end',
+                                color: '#ff0055',
+                                backgroundColor: 'rgba(26, 0, 0, 0.8)',
+                                font: { size: 10 }
+                            }
+                        };
+                    });
+                }
+                
+                // Bollinger Bands
+                if (indicators.bollingerUpper && indicators.bollingerLower) {
+                    annotations.bollingerUpper = {
+                        type: 'line',
+                        yMin: indicators.bollingerUpper,
+                        yMax: indicators.bollingerUpper,
+                        borderColor: '#ff0055',
+                        borderWidth: 1,
+                        borderDash: [2, 2]
+                    };
+                    
+                    annotations.bollingerLower = {
+                        type: 'line',
+                        yMin: indicators.bollingerLower,
+                        yMax: indicators.bollingerLower,
+                        borderColor: '#ff0055',
+                        borderWidth: 1,
+                        borderDash: [2, 2]
+                    };
+                    
+                    if (indicators.bollingerMiddle) {
+                        annotations.bollingerMiddle = {
+                            type: 'line',
+                            yMin: indicators.bollingerMiddle,
+                            yMax: indicators.bollingerMiddle,
+                            borderColor: '#800020',
+                            borderWidth: 1
+                        };
+                    }
+                }
+                
+                // Apply annotations to chart
+                this.chart.options.plugins.annotation.annotations = annotations;
+                this.chart.update('none');
+            }
+            
+            updatePortfolio() {
+                // Update balance
+                document.getElementById('balance').textContent = `$${this.state.balance.toFixed(2)}`;
+                
+                // Update P&L
+                const totalPnL = this.state.balance - this.state.startBalance;
+                const totalPnLEl = document.getElementById('totalPnL');
+                totalPnLEl.textContent = `${totalPnL >= 0 ? '+' : ''}$${Math.abs(totalPnL).toFixed(2)}`;
+                totalPnLEl.style.color = totalPnL >= 0 ? 'var(--primary-green)' : 'var(--primary-red)';
+                
+                // Update today's P&L
+                const todayPnLEl = document.getElementById('todayPnL');
+                todayPnLEl.textContent = `${this.state.stats.todayProfit >= 0 ? '+' : ''}$${Math.abs(this.state.stats.todayProfit).toFixed(2)}`;
+                todayPnLEl.style.color = this.state.stats.todayProfit >= 0 ? 'var(--primary-green)' : 'var(--primary-red)';
+                
+                // Update win rate
+                const winRate = this.state.stats.totalTrades > 0 
+                    ? (this.state.stats.wins / this.state.stats.totalTrades * 100) 
+                    : 0;
+                document.getElementById('winRate').textContent = winRate.toFixed(1) + '%';
+                
+                // Update Houston progress
+                this.updateHoustonProgress();
+            }
+            
+            updateHoustonProgress() {
+                const progress = Math.min((this.state.balance / this.state.houstonGoal) * 100, 100);
+                const remaining = Math.max(this.state.houstonGoal - this.state.balance, 0);
+                
+                document.getElementById('houstonFill').style.width = progress + '%';
+                document.getElementById('houstonPercent').textContent = progress.toFixed(1) + '%';
+                document.getElementById('houstonRemaining').textContent = `$${remaining.toFixed(0)}`;
+                
+                // Celebrate milestones
+                if (progress >= 100 && !this.state.houstonReached) {
+                    this.state.houstonReached = true;
+                    this.addAIThought('🎉🚀 HOUSTON, WE HAVE LIFTOFF! Goal reached! Time to move to Houston with your daughter!', 'buy');
+                } else if (progress >= 50 && !this.state.halfwayReached) {
+                    this.state.halfwayReached = true;
+                    this.addAIThought('💪 HALFWAY TO HOUSTON! We\'re making it happen!', 'buy');
+                }
+            }
+            
+            updateConnectionStatus(type, status) {
+                const statusEl = document.getElementById(`${type}Status`);
+                const textEl = document.getElementById(`${type}StatusText`);
+                
+                if (status === true || status === 'connected') {
+                    statusEl.className = 'status-dot connected';
+                    textEl.textContent = `${type === 'bot' ? 'Bot' : 'Data'}: Connected`;
+                } else if (status === 'connecting') {
+                    statusEl.className = 'status-dot connecting';
+                    textEl.textContent = `${type === 'bot' ? 'Bot' : 'Data'}: Connecting...`;
+                } else {
+                    statusEl.className = 'status-dot disconnected';
+                    textEl.textContent = `${type === 'bot' ? 'Bot' : 'Data'}: Offline`;
+                }
+            }
+            
+            setupEventListeners() {
+                // Timeframe buttons
+                document.querySelectorAll('.timeframe-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.state.currentTimeframe = e.target.dataset.timeframe;
+                        this.addAIThought(`📊 Switched to ${e.target.dataset.timeframe} timeframe`, 'system');
+                    });
+                });
+                
+                // Asset selector
+                document.getElementById('assetSelector').addEventListener('change', (e) => {
+                    this.state.currentAsset = e.target.value;
+                    this.addAIThought(`💱 Switched to ${e.target.value} trading pair`, 'system');
+                    
+                    // Resubscribe to new asset
+                    if (this.polygonSocket && this.polygonSocket.readyState === WebSocket.OPEN) {
+                        this.polygonSocket.send(JSON.stringify({
+                            action: 'unsubscribe',
+                            params: `XA.${this.state.currentAsset.replace('-', '')}`
+                        }));
+                        this.polygonSocket.send(JSON.stringify({
+                            action: 'subscribe',
+                            params: `XA.${e.target.value.replace('-', '')}`
+                        }));
+                    }
+                });
+            }
+            
+            startUpdateLoops() {
+                // Update next analysis countdown
+                setInterval(() => {
+                    const seconds = Math.floor((Date.now() / 1000) % 60);
+                    const nextAnalysis = 60 - seconds;
+                    document.getElementById('nextAnalysis').textContent = `${nextAnalysis}s`;
+                }, 1000);
+                
+                // Use real decision count from bot (will be updated via WebSocket)
+                // No fake random numbers
+                
+                // Periodic status updates
+                setInterval(() => {
+                    if (this.botSocket && this.botSocket.readyState === WebSocket.OPEN) {
+                        this.botSocket.send(JSON.stringify({ type: 'ping' }));
+                    }
+                }, 30000);
+            }
+            
+            // 🎯 CANVAS DYNAMIC ENTRY ANALYSIS METHODS
+            
+            handleTradeEntry(data) {
+                console.log('🎯 TRADE ENTRY DETECTED - Calculating Dynamic Levels');
+                
+                const { price, direction, timeframe } = data;
+                
+                this.entryAnalysis = {
+                    active: true,
+                    entryPrice: price,
+                    entryTime: Date.now(),
+                    direction: direction,
+                    fibonacci: {},
+                    support: [],
+                    resistance: [],
+                    keyLevels: []
+                };
+                
+                // Calculate levels based on your price history
+                this.calculateDynamicLevels(price, direction);
+                
+                // Add AI thought about entry
+                this.addAIThought(
+                    `📊 Entry Analysis: ${direction.toUpperCase()} @ $${price.toFixed(2)} - Calculating Fibonacci, S/R, and targets...`,
+                    direction === 'buy' ? 'buy' : 'sell'
+                );
+            }
+            
+            calculateDynamicLevels(entryPrice, direction) {
+                // Use your existing price history from chart
+                const prices = this.state.priceHistory.map(p => p.price);
+                
+                if (prices.length < 20) {
+                    console.warn('Not enough price history for analysis');
+                    return;
+                }
+                
+                // Find recent high and low
+                const recentHigh = Math.max(...prices);
+                const recentLow = Math.min(...prices);
+                const range = recentHigh - recentLow;
+                
+                // Calculate Fibonacci levels
+                const fibLevels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1.0, 1.272, 1.618];
+                this.entryAnalysis.fibonacci = {};
+                
+                fibLevels.forEach(level => {
+                    const price = direction === 'buy' 
+                        ? recentLow + (range * level)
+                        : recentHigh - (range * level);
+                        
+                    this.entryAnalysis.fibonacci[level] = {
+                        price: price,
+                        distance: Math.abs(price - entryPrice),
+                        color: level === 0.618 ? '#ffd700' : '#00ff88' // Golden ratio special color
+                    };
+                });
+                
+                // Calculate Support/Resistance (simplified for your current data)
+                const step = range / 10;
+                for (let i = 1; i <= 5; i++) {
+                    const supportPrice = entryPrice - (step * i);
+                    const resistancePrice = entryPrice + (step * i);
+                    
+                    this.entryAnalysis.support.push({
+                        price: supportPrice,
+                        strength: Math.floor(Math.random() * 3) + 1 // Would be calculated from touches
+                    });
+                    
+                    this.entryAnalysis.resistance.push({
+                        price: resistancePrice,
+                        strength: Math.floor(Math.random() * 3) + 1
+                    });
+                }
+                
+                // Identify key levels near entry
+                this.entryAnalysis.keyLevels = [
+                    { type: 'Entry', price: entryPrice, color: '#ffffff' },
+                    { type: 'Target 1', price: entryPrice + (range * 0.382 * (direction === 'buy' ? 1 : -1)), color: '#00ff88' },
+                    { type: 'Target 2', price: entryPrice + (range * 0.618 * (direction === 'buy' ? 1 : -1)), color: '#00ffff' },
+                    { type: 'Stop Loss', price: entryPrice - (range * 0.236 * (direction === 'buy' ? 1 : -1)), color: '#ff4444' }
+                ];
+                
+                // Draw levels on chart
+                this.drawDynamicLevels();
+                
+                // Show analysis summary
+                this.showEntryAnalysisSummary();
+            }
+            
+            drawDynamicLevels() {
+                if (!this.chart || !this.entryAnalysis.active) return;
+                
+                // Create a custom plugin for Chart.js to draw the levels
+                const dynamicLevelsPlugin = {
+                    id: 'dynamicLevels',
+                    afterDatasetsDraw: (chart) => {
+                        const ctx = chart.ctx;
+                        const chartArea = chart.chartArea;
+                        const yScale = chart.scales.y;
+                        
+                        if (!chartArea || !this.entryAnalysis.active) return;
+                        
+                        ctx.save();
+                        
+                        // Draw Fibonacci levels
+                        Object.entries(this.entryAnalysis.fibonacci).forEach(([level, data]) => {
+                            const y = yScale.getPixelForValue(data.price);
+                            
+                            if (y >= chartArea.top && y <= chartArea.bottom) {
+                                // Draw line
+                                ctx.strokeStyle = data.color || 'rgba(0, 255, 136, 0.3)';
+                                ctx.lineWidth = level === '0.618' ? 2 : 1; // Golden ratio thicker
+                                ctx.setLineDash([5, 5]);
+                                ctx.beginPath();
+                                ctx.moveTo(chartArea.left, y);
+                                ctx.lineTo(chartArea.right, y);
+                                ctx.stroke();
+                                
+                                // Draw label
+                                ctx.fillStyle = data.color || '#00ff88';
+                                ctx.font = '10px Arial';
+                                ctx.fillText(`Fib ${(level * 100).toFixed(1)}%: $${data.price.toFixed(0)}`, chartArea.left + 5, y - 2);
+                            }
+                        });
+                        
+                        // Draw key levels (entry, targets, stop)
+                        this.entryAnalysis.keyLevels.forEach(level => {
+                            const y = yScale.getPixelForValue(level.price);
+                            
+                            if (y >= chartArea.top && y <= chartArea.bottom) {
+                                ctx.strokeStyle = level.color;
+                                ctx.lineWidth = 2;
+                                ctx.setLineDash([]);
+                                ctx.beginPath();
+                                ctx.moveTo(chartArea.left, y);
+                                ctx.lineTo(chartArea.right, y);
+                                ctx.stroke();
+                                
+                                // Label with background
+                                const text = `${level.type}: $${level.price.toFixed(2)}`;
+                                const textWidth = ctx.measureText(text).width;
+                                
+                                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                                ctx.fillRect(chartArea.right - textWidth - 15, y - 10, textWidth + 10, 15);
+                                
+                                ctx.fillStyle = level.color;
+                                ctx.font = 'bold 11px Arial';
+                                ctx.fillText(text, chartArea.right - textWidth - 10, y);
+                            }
+                        });
+                        
+                        ctx.restore();
+                    }
+                };
+                
+                // Register the plugin if not already registered
+                if (!Chart.registry.plugins.get('dynamicLevels')) {
+                    Chart.register(dynamicLevelsPlugin);
+                }
+                
+                // Update chart
+                this.chart.update();
+            }
+            
+            showEntryAnalysisSummary() {
+                const { entryPrice, direction, fibonacci, keyLevels } = this.entryAnalysis;
+                
+                // Create a special AI thought with the analysis
+                const summary = `
+                    <div style="background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,165,0,0.1)); 
+                                padding: 1rem; border-radius: 8px; border: 1px solid #ffd700;">
+                        <div style="font-weight: bold; color: #ffd700; margin-bottom: 0.5rem;">
+                            📊 DYNAMIC ENTRY ANALYSIS COMPLETE
+                        </div>
+                        <div style="font-size: 0.85rem;">
+                            Entry: ${direction.toUpperCase()} @ $${entryPrice.toFixed(2)}<br>
+                            Golden Ratio (0.618): $${fibonacci[0.618]?.price.toFixed(2) || 'N/A'}<br>
+                            Target 1: $${keyLevels.find(l => l.type === 'Target 1')?.price.toFixed(2) || 'N/A'}<br>
+                            Target 2: $${keyLevels.find(l => l.type === 'Target 2')?.price.toFixed(2) || 'N/A'}<br>
+                            Stop Loss: $${keyLevels.find(l => l.type === 'Stop Loss')?.price.toFixed(2) || 'N/A'}
+                        </div>
+                    </div>
+                `;
+                
+                const stream = document.getElementById('aiStream');
+                const thoughtEl = document.createElement('div');
+                thoughtEl.className = 'ai-thought buy';
+                thoughtEl.innerHTML = `
+                    <div class="ai-timestamp">${new Date().toLocaleTimeString()}</div>
+                    ${summary}
+                `;
+                stream.insertBefore(thoughtEl, stream.firstChild);
+                
+                // Also update the pattern alert to show levels are calculated
+                const patternAlert = document.getElementById('patternAlert');
+                patternAlert.style.display = 'block';
+                document.getElementById('patternName').textContent = '📐 Dynamic Levels Active';
+                document.getElementById('patternConfidence').textContent = `Fib/S&R/Targets Calculated`;
+                
+                setTimeout(() => {
+                    patternAlert.style.display = 'none';
+                }, 10000);
+            }
+            
+            displayDynamicLevels(data) {
+                // If your bot sends pre-calculated levels
+                console.log('📊 Received dynamic levels from bot:', data);
+                
+                this.entryAnalysis = {
+                    active: true,
+                    entryPrice: data.entryPrice,
+                    entryTime: data.timestamp,
+                    direction: data.direction,
+                    fibonacci: data.fibonacci || {},
+                    support: data.support || [],
+                    resistance: data.resistance || [],
+                    keyLevels: data.keyLevels || []
+                };
+                
+                this.drawDynamicLevels();
+                this.showEntryAnalysisSummary();
+            }
+        }
+        
+        // Initialize the ultimate dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            window.ogzPrime = new OGZPrimeUltimate();
+            
+            // Add bot selector change handler
+            document.getElementById('botSelector').addEventListener('change', (e) => {
+                const selectedBot = e.target.value;
+                console.log(`📊 Switched to ${selectedBot === 'all' ? 'ALL BOTS' : selectedBot.toUpperCase() + ' BOT'}`);
+                
+                // Clear chart and restart with selected bot data
+                if (window.ogzPrime && window.ogzPrime.chart) {
+                    window.ogzPrime.chart.data.labels = [];
+                    window.ogzPrime.chart.data.datasets.forEach(dataset => {
+                        dataset.data = [];
+                    });
+                    window.ogzPrime.chart.update();
+                }
+                
+                // Update AI stream to show bot switch
+                const stream = document.getElementById('aiStream');
+                const thoughtEl = document.createElement('div');
+                thoughtEl.className = 'ai-thought system';
+                thoughtEl.innerHTML = `
+                    <div class="ai-timestamp">${new Date().toLocaleTimeString()}</div>
+                    <div>🤖 Switched to ${selectedBot === 'all' ? 'ALL BOTS' : selectedBot.toUpperCase() + ' BOT'} view</div>
+                `;
+                stream.insertBefore(thoughtEl, stream.firstChild);
+            });
+        });
+    </script>
+    <!-- Dashboard WebSocket Connection removed - was causing issues -->
+</body>
+</html>
