@@ -22,6 +22,9 @@ const AdvancedWebSocketBroadcastSystem = require('./core/AdvancedWebSocketBroadc
 // 🤖 IMPORT THE MOVER AI CLONE
 const TheMoverAIClone = require('./mover/the-mover-ai-clone');
 
+// 🔧 INITIALIZE MODULE AUTO LOADER
+const autoLoader = require('./ModuleAutoLoader');
+
 // Set QUANTUM SSL server flag
 process.env.OGZ_QUANTUM_SSL_SERVER = 'true';
 
@@ -85,25 +88,18 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files using auto loader
+app.use(express.static(autoLoader.getPath('public')));
 
-// Dashboard routes
+// Dashboard routes - using auto loader
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'ogz-ultimate-dashboard.html'));
+  const dashboardPath = autoLoader.resolvePath('ultdash.html');
+  res.sendFile(dashboardPath);
 });
 
 app.get('/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'ogz-ultimate-dashboard.html'));
-});
-
-// Dashboard routes
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'OGZFV-valhalla', 'ogz-ultimate-dashboard.html'));
-});
-
-app.get('/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'OGZFV-valhalla', 'ogz-ultimate-dashboard.html'));
+  const dashboardPath = autoLoader.resolvePath('ultdash.html');
+  res.sendFile(dashboardPath);
 });
 
 // Enhanced status endpoint with broadcaster stats
