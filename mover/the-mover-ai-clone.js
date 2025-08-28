@@ -40,6 +40,15 @@ class TheMoverAIClone extends EventEmitter {
       trading_focused: []
     };
 
+    // Initialize response weights
+    this.responseWeights = {
+      frustration: 0,
+      technical: 0,
+      casual: 0,
+      problem_solving: 0,
+      trading_focused: 0
+    };
+
     // Conversation context memory
     this.contextMemory = [];
     this.conversationHistory = [];
@@ -67,11 +76,25 @@ class TheMoverAIClone extends EventEmitter {
       } else {
         console.log('[TheMover] No saved state found - loading comprehensive training dataset...');
         
-        // Load all training categories
-        await this.loadTrainingCategory('emotions');
-        await this.loadTrainingCategory('training');
-        await this.loadTrainingCategory('architecture');
-        await this.loadTrainingCategory('rants');
+        // Load all training categories dynamically
+        const trainingDataPath = path.join(__dirname, 'training-data');
+        await fs.mkdir(trainingDataPath, { recursive: true });
+        
+        const categories = await fs.readdir(trainingDataPath);
+        console.log(`[TheMover] Found training categories: ${categories.join(', ')}`);
+        
+        for (const category of categories) {
+          const categoryPath = path.join(trainingDataPath, category);
+          const stats = await fs.stat(categoryPath);
+          if (stats.isDirectory()) {
+            // Add category to personality core if not exists
+            if (!this.personalityCore.has(category)) {
+              this.personalityCore.set(category, new Map());
+            }
+            
+            await this.loadTrainingCategory(category);
+          }
+        }
         
         // Process and integrate patterns
         await this.processPersonalityPatterns();
@@ -98,7 +121,7 @@ class TheMoverAIClone extends EventEmitter {
 
   async loadTrainingCategory(category) {
     try {
-      const categoryPath = path.join(__dirname, category);
+      const categoryPath = path.join(__dirname, 'training-data', category);
       const files = await fs.readdir(categoryPath);
       
       let categoryPatterns = 0;
@@ -386,25 +409,71 @@ class TheMoverAIClone extends EventEmitter {
     };
   }
 
+
+  async loadPersonalityState() {
+    try {
+      const memoryPath = this.config.memoryPath || path.join(__dirname, '../data/mover-memory');
+      const statePath = path.join(memoryPath, 'personality-state.json');
+      
+      // Check if memory directory exists
+      await fs.mkdir(memoryPath, { recursive: true });
+      
+      // Try to load existing state
+      const stateData = await fs.readFile(statePath, 'utf8');
+      const state = JSON.parse(stateData);
+      
+      // Restore personality core
+      this.personalityCore = new Map([
+        ['emotions', new Map(state.personalityCore.emotions || [])],
+        ['training', new Map(state.personalityCore.training || [])], 
+        ['architecture', new Map(state.personalityCore.architecture || [])],
+        ['rants', new Map(state.personalityCore.rants || [])],
+        ['brainstorming', new Map(state.personalityCore.brainstorming || [])],
+        ['problem_solving', new Map(state.personalityCore.problem_solving || [])],
+        ['development', new Map(state.personalityCore.development || [])],
+        ['casual_chat', new Map(state.personalityCore.casual_chat || [])]
+      ]);
+      
+      // Restore other state
+      this.responsePatterns = state.responsePatterns || this.responsePatterns;
+      this.learningStats = state.learningStats || this.learningStats;
+      this.conversationHistory = state.conversationHistory || [];
+      
+      console.log('[TheMover] Personality state loaded from memory');
+      return true;
+    } catch (error) {
+      console.log('[TheMover] No saved state found or error loading:', error.message);
+      return false;
+    }
+  }
+
   async savePersonalityState() {
     try {
-      const stateData = {
-        personalityCore: Array.from(this.personalityCore.entries()).map(([key, value]) => [
-          key, 
-          Array.from(value.entries())
-        ]),
+      const memoryPath = this.config.memoryPath || path.join(__dirname, '../data/mover-memory');
+      const statePath = path.join(memoryPath, 'personality-state.json');
+      
+      // Ensure memory directory exists
+      await fs.mkdir(memoryPath, { recursive: true });
+      
+      // Convert Maps to objects for JSON storage
+      const state = {
+        personalityCore: {
+          emotions: Array.from(this.personalityCore.get('emotions') || []),
+          training: Array.from(this.personalityCore.get('training') || []),
+          architecture: Array.from(this.personalityCore.get('architecture') || []),
+          rants: Array.from(this.personalityCore.get('rants') || []),
+          brainstorming: Array.from(this.personalityCore.get('brainstorming') || []),
+          problem_solving: Array.from(this.personalityCore.get('problem_solving') || []),
+          development: Array.from(this.personalityCore.get('development') || []),
+          casual_chat: Array.from(this.personalityCore.get('casual_chat') || [])
+        },
         responsePatterns: this.responsePatterns,
         learningStats: this.learningStats,
-        conversationHistory: this.conversationHistory.slice(-100), // Keep last 100
-        timestamp: Date.now()
+        conversationHistory: this.conversationHistory.slice(-100) // Keep last 100 conversations
       };
       
-      await fs.writeFile(
-        path.join(process.cwd(), 'the-mover-personality-state.json'),
-        JSON.stringify(stateData, null, 2)
-      );
-      
-      console.log('[TheMover] Personality state saved successfully');
+      await fs.writeFile(statePath, JSON.stringify(state, null, 2));
+      console.log('[TheMover] Personality state saved to memory');
       return true;
     } catch (error) {
       console.error('[TheMover] Error saving personality state:', error);

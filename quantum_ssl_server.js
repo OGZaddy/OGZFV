@@ -350,6 +350,7 @@ wss.on('connection', (ws, req) => {
         const connection = broadcaster.connections?.get(connectionId);
         if (connection && connection.metadata) {
           connection.metadata.type = 'bot';
+          connection.metadata.tier = data.botTier; // Store bot tier for manual trade routing
           connection.state.priority = 'critical';
           
           // Send confirmation
@@ -385,6 +386,58 @@ wss.on('connection', (ws, req) => {
           const trade = data.data;
           console.log(`   ${trade.side?.toUpperCase()} ${trade.size} @ $${trade.price}`);
           console.log(`   Balance: $${trade.balance} | Total Trades: ${trade.totalTrades}`);
+        }
+      }
+      
+      // Handle manual trade commands from dashboard
+      if (data.type === 'manual_trade') {
+        console.log(`🎯 MANUAL TRADE COMMAND: ${data.botType?.toUpperCase()} - ${data.action?.toUpperCase()}`);
+        
+        // Find target bot connections
+        const targetBots = [];
+        broadcaster.connections.forEach((connection, id) => {
+          if (connection.metadata?.type === 'bot' && 
+              connection.metadata?.tier === data.botType) {
+            targetBots.push(connection);
+          }
+        });
+        
+        if (targetBots.length > 0) {
+          const tradeCommand = {
+            type: 'manual_trade_command',
+            action: data.action,
+            botType: data.botType,
+            timestamp: data.timestamp || Date.now(),
+            source: 'dashboard'
+          };
+          
+          // Send command to target bots
+          targetBots.forEach(botConnection => {
+            broadcaster.sendDirect(botConnection, tradeCommand);
+          });
+          
+          console.log(`✅ Manual trade command sent to ${targetBots.length} ${data.botType} bot(s)`);
+          
+          // Acknowledge to dashboard
+          ws.send(JSON.stringify({
+            type: 'manual_trade_ack',
+            botType: data.botType,
+            action: data.action,
+            status: 'sent',
+            timestamp: Date.now()
+          }));
+        } else {
+          console.log(`❌ No ${data.botType} bots found to send manual trade command`);
+          
+          // Send error to dashboard
+          ws.send(JSON.stringify({
+            type: 'manual_trade_ack',
+            botType: data.botType,
+            action: data.action,
+            status: 'error',
+            error: `No ${data.botType} bots connected`,
+            timestamp: Date.now()
+          }));
         }
       }
       

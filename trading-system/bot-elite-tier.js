@@ -220,6 +220,26 @@ class EliteBot {
                 }
             }
             
+            // Handle manual trade commands from dashboard
+            if (msg.type === 'manual_trade_command') {
+                console.log(`🎯 ELITE: Received manual trade command - ${msg.action?.toUpperCase()}`);
+                
+                switch(msg.action?.toLowerCase()) {
+                    case 'buy':
+                        this.executeBuy();
+                        break;
+                    case 'sell':
+                        this.executeSell();
+                        break;
+                    case 'kill':
+                        this.killAllPositions();
+                        break;
+                    default:
+                        console.log(`❌ ELITE: Unknown manual trade action: ${msg.action}`);
+                }
+            }
+            
+            // Legacy support for old manual trade format
             if (msg.type === 'manual_buy') this.executeBuy();
             if (msg.type === 'manual_sell') this.executeSell();
         });
@@ -440,6 +460,21 @@ class EliteBot {
             manual: true,
             evolution: this.evolutionGen
         }));
+    }
+    
+    killAllPositions() {
+        this.ws.send(JSON.stringify({
+            type: 'trade',
+            source: 'trading_bot',
+            botTier: BOT_TIER,
+            action: 'KILL',
+            price: this.currentPrice || 100000,
+            pnl: 0,
+            reason: 'Manual kill all positions (Elite AI)',
+            manual: true,
+            evolution: this.evolutionGen
+        }));
+        console.log('💀 ELITE: Kill all positions command executed');
     }
     calculateRSI(prices, period = 14) {
         if (prices.length < period + 1) return 50;

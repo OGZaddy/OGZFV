@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OGZPrime Quantum Elite - LIVE TRADING SYSTEM</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/2.0.1/chartjs-plugin-annotation.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap');
@@ -118,12 +120,722 @@
         
         /* Main Container */
         .main-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
+            flex-direction: column;
             gap: 20px;
             padding: 20px;
             position: relative;
             z-index: 5;
+            width: 100%;
+        }
+        
+        .charts-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+        
+        .trading-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        .trading-panel h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 1px solid #330000;
+            padding-bottom: 8px;
+        }
+        
+        .current-trade {
+            background: linear-gradient(135deg, #1a0000 0%, #0d0000 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #330000;
+        }
+        
+        .current-trade.active {
+            border-color: #22c55e;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+        }
+        
+        .trade-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .trade-stat {
+            text-align: center;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+        }
+        
+        .trade-stat-label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        
+        .trade-stat-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ffd700;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .pnl-positive { color: #22c55e !important; }
+        .pnl-negative { color: #ef4444 !important; }
+        
+        .trade-log {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .trade-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 5px;
+            background: rgba(26, 0, 0, 0.8);
+            border-radius: 5px;
+            font-size: 12px;
+            border-left: 3px solid #ff0040;
+        }
+        
+        .trade-entry.profit {
+            border-left-color: #22c55e;
+        }
+        
+        .trade-entry.loss {
+            border-left-color: #ef4444;
+        }
+        
+        .trade-action {
+            font-weight: bold;
+            min-width: 50px;
+        }
+        
+        .trade-details {
+            flex: 1;
+            margin-left: 10px;
+        }
+        
+        .trade-pnl {
+            font-weight: bold;
+            min-width: 60px;
+            text-align: right;
+        }
+        
+        /* New Layout Structure */
+        .chart-bottom-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .left-panel, .right-panel {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(20, 20, 20, 0.9) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 8px 32px rgba(255, 215, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .panel-title {
+            color: #ffd700;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 8px;
+        }
+        
+        .chart-buttons-section {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 20;
+        }
+        
+        .futuristic-box {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(30, 30, 30, 0.9) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(8px);
+            box-shadow: 
+                0 4px 16px rgba(255, 215, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .futuristic-box:hover {
+            border-color: rgba(255, 215, 0, 0.6);
+            box-shadow: 
+                0 8px 24px rgba(255, 215, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .active-trade-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #ccc;
+            text-transform: uppercase;
+        }
+        
+        .stat-value {
+            font-size: 13px;
+            font-weight: bold;
+            color: #ffd700;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .pattern-analysis {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.1) 0%, rgba(75, 0, 130, 0.1) 100%);
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .pattern-visual {
+            width: 100%;
+            height: 80px;
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.2) 0%, transparent 70%);
+            border-radius: 8px;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pattern-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #8a2be2, transparent);
+            animation: patternFlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes patternFlow {
+            0%, 100% { transform: translateX(-100%); opacity: 0; }
+            50% { transform: translateX(100%); opacity: 1; }
+        }
+        
+        /* Chart Bottom Section - New Layout */
+        .chart-bottom-section {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .bottom-left-panel, .bottom-right-panel {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(20, 20, 20, 0.9));
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 0 30px rgba(255, 215, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .panel-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffd700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        /* Trading Controls */
+        .trade-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .futuristic-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .futuristic-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .futuristic-btn:hover:before {
+            left: 100%;
+        }
+        
+        .futuristic-btn.buy-btn {
+            background: linear-gradient(135deg, #00ff41, #00cc33);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+        
+        .futuristic-btn.buy-btn:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .futuristic-btn.sell-btn {
+            background: linear-gradient(135deg, #ff4444, #cc1111);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
+        }
+        
+        .futuristic-btn.sell-btn:hover {
+            box-shadow: 0 0 30px rgba(255, 68, 68, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .futuristic-btn.kill-btn {
+            background: linear-gradient(135deg, #ff6600, #cc4400);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 102, 0, 0.3);
+        }
+        
+        .futuristic-btn.kill-btn:hover {
+            box-shadow: 0 0 30px rgba(255, 102, 0, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        /* Recent Trades & Trade History */
+        .recent-trades, .trade-history {
+            margin-top: 20px;
+        }
+        
+        .trade-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .trade-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            margin: 8px 0;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .trade-item:hover {
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+        
+        .trade-symbol {
+            font-weight: 700;
+            color: #ffd700;
+        }
+        
+        .trade-action.buy {
+            color: #00ff41;
+            font-weight: 700;
+        }
+        
+        .trade-action.sell {
+            color: #ff4444;
+            font-weight: 700;
+        }
+        
+        .trade-price {
+            color: #ccc;
+        }
+        
+        .trade-pnl.positive {
+            color: #00ff41;
+            font-weight: 700;
+        }
+        
+        .trade-pnl.negative {
+            color: #ff4444;
+            font-weight: 700;
+        }
+        
+        /* Decision Log */
+        .decision-list {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .decision-item {
+            display: flex;
+            gap: 15px;
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 3px solid #ffd700;
+            border-radius: 0 6px 6px 0;
+            font-size: 12px;
+        }
+        
+        .decision-time {
+            color: #888;
+            min-width: 60px;
+            font-family: monospace;
+        }
+        
+        .decision-text {
+            color: #ccc;
+            flex: 1;
+        }
+        
+        /* Active Stats */
+        .active-stats {
+            margin-bottom: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .stat-item {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            border-color: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffd700;
+        }
+        
+        /* Pattern Analysis Enhanced */
+        .pattern-display {
+            text-align: center;
+        }
+        
+        .pattern-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            padding: 15px;
+            background: rgba(138, 43, 226, 0.05);
+            border-radius: 8px;
+        }
+        
+        .pattern-indicator {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #8a2be2;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pattern-indicator.analyzing:before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: conic-gradient(transparent, #8a2be2, transparent, #8a2be2);
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+        
+        .pattern-indicator.analyzing:after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 50%;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .pattern-name {
+            font-weight: 700;
+            color: #8a2be2;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .pattern-description {
+            font-size: 12px;
+            color: #aaa;
+            line-height: 1.4;
+        }
+        
+        /* The Mover AI Clone Chat Box */
+        .mover-chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 400px;
+            height: 500px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.95));
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 15px;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 0 40px rgba(255, 215, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 140, 0, 0.2));
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .chat-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: #ffd700;
+        }
+        
+        .mover-avatar {
+            font-size: 20px;
+        }
+        
+        .chat-status {
+            background: #00ff41;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .chat-controls {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .chat-control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+        }
+        
+        .chat-control-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 85%;
+            word-wrap: break-word;
+        }
+        
+        .bot-message {
+            align-self: flex-start;
+        }
+        
+        .user-message {
+            align-self: flex-end;
+        }
+        
+        .message-content {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 140, 0, 0.1));
+            padding: 12px 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            color: #fff;
+            line-height: 1.4;
+        }
+        
+        .user-message .message-content {
+            background: linear-gradient(135deg, rgba(0, 255, 65, 0.1), rgba(0, 204, 51, 0.1));
+            border-color: rgba(0, 255, 65, 0.2);
+        }
+        
+        .message-time {
+            font-size: 10px;
+            color: #666;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .chat-input-section {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255, 215, 0, 0.3);
+            display: flex;
+            gap: 10px;
+        }
+        
+        #chatInput {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px 15px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        #chatInput:focus {
+            border-color: rgba(255, 215, 0, 0.6);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+        
+        .send-btn {
+            background: linear-gradient(135deg, #00ff41, #00cc33);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .send-btn:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        /* Chat Toggle Button */
+        .chat-toggle-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 140, 0, 0.9));
+            color: #000;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chat-toggle-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        }
+        
+        .chat-icon {
+            font-size: 20px;
+        }
+        
+        .chat-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .bot-section {
@@ -200,10 +912,124 @@
             position: relative;
             background: rgba(0, 0, 0, 0.8);
             border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
             border: 1px solid var(--border-color);
-            min-height: 350px;
+            min-height: 800px;
+            height: 800px;
+            width: 100%;
+        }
+        
+        .chart-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 12px;
+            padding: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 8px 32px rgba(255, 215, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            z-index: 10;
+            min-width: 200px;
+        }
+        
+        .chart-top-bar {
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 215, 0, 0.1) 10%, 
+                rgba(255, 215, 0, 0.2) 50%, 
+                rgba(255, 215, 0, 0.1) 90%, 
+                transparent 100%);
+            border: 1px solid rgba(255, 215, 0, 0.6);
+            border-bottom: none;
+            border-radius: 15px 15px 0 0;
+            padding: 8px 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 0 20px rgba(255, 215, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            z-index: 15;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .chart-top-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 100px;
+        }
+        
+        .chart-top-label {
+            font-size: 9px;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+        }
+        
+        .chart-top-value {
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            animation: pulse 2s infinite ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; transform: scale(1.02); }
+        }
+        
+        .chart-session-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, rgba(220, 20, 60, 0.15) 0%, rgba(220, 20, 60, 0.05) 100%);
+            border: 1px solid rgba(220, 20, 60, 0.4);
+            border-radius: 12px;
+            padding: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 8px 32px rgba(220, 20, 60, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            z-index: 10;
+            min-width: 180px;
+        }
+        
+        .chart-overlay h4 {
+            color: #ffd700;
+            font-size: 12px;
+            margin: 0 0 8px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+        
+        .indicator-mini {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 11px;
+        }
+        
+        .indicator-mini .label {
+            color: #ccc;
+        }
+        
+        .indicator-mini .value {
+            color: #ffd700;
+            font-weight: bold;
         }
         
         canvas {
@@ -348,10 +1174,332 @@
             font-family: 'Orbitron', monospace;
         }
         
-        .vote-long { color: #00ff00; }
-        .vote-short { color: #ff0040; }
-        .vote-hold { color: #ffd700; }
-        .vote-hedge { color: #00ffff; }
+        .vote-long { color: #00ff41; text-shadow: 0 0 8px rgba(0, 255, 65, 0.6); }
+        .vote-short { color: #ff4444; text-shadow: 0 0 8px rgba(255, 68, 68, 0.6); }
+        .vote-hedge { color: #ff8c00; text-shadow: 0 0 8px rgba(255, 140, 0, 0.6); }
+        .vote-hold { color: #8b8b8b; text-shadow: 0 0 8px rgba(139, 139, 139, 0.6); }
+        
+        /* Confidence-based brain animations */
+        .brain-bullish {
+            background: linear-gradient(135deg, rgba(0, 255, 65, 0.1), rgba(0, 204, 51, 0.1));
+            border-color: rgba(0, 255, 65, 0.4);
+        }
+        
+        .brain-bearish {
+            background: linear-gradient(135deg, rgba(255, 68, 68, 0.1), rgba(204, 17, 17, 0.1));
+            border-color: rgba(255, 68, 68, 0.4);
+        }
+        
+        .brain-hedge {
+            background: linear-gradient(135deg, rgba(255, 140, 0, 0.1), rgba(204, 112, 0, 0.1));
+            border-color: rgba(255, 140, 0, 0.4);
+        }
+        
+        .brain-neutral {
+            background: rgba(139, 139, 139, 0.1);
+        }
+        
+        /* Confidence Display Styling */
+        .confidence-display {
+            color: #ffd700 !important;
+            font-weight: bold !important;
+        }
+        
+        .high-confidence-stat {
+            animation: confidenceStatPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes confidenceStatPulse {
+            0%, 100% {
+                text-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
+                color: #ffd700;
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 30px rgba(255, 215, 0, 0.8);
+                color: #fff;
+            }
+        }
+        
+        /* Standalone Confidence Boxes */
+        .standalone-confidence-box {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 120px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(20, 0, 0, 0.9));
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+            z-index: 15;
+            transition: all 0.3s ease;
+        }
+        
+        .confidence-box-title {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .confidence-box-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffd700;
+            text-align: center;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .confidence-box-high {
+            animation: confidenceBoxPulse 2s ease-in-out infinite;
+            border-color: #ffd700;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        @keyframes confidenceBoxPulse {
+            0%, 100% {
+                background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 140, 0, 0.1));
+                border-color: #ffd700;
+                box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+            }
+            50% {
+                background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 140, 0, 0.2));
+                border-color: #fff;
+                box-shadow: 0 4px 30px rgba(255, 215, 0, 0.8);
+            }
+        }
+        
+        /* Lower Tier Bot Column */
+        .lower-tier-column {
+            position: absolute;
+            left: 20px;
+            top: 120px;
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 12;
+        }
+        
+        .tier-bot-box {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(30, 15, 0, 0.9));
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.8),
+                0 0 20px rgba(255, 215, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .tier-bot-box:hover {
+            border-color: #ffd700;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.8),
+                0 0 30px rgba(255, 215, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .tier-bot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .tier-bot-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .tier-bot-status {
+            font-size: 10px;
+            color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+            padding: 3px 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+        
+        .tier-bot-stats {
+            margin-bottom: 8px;
+        }
+        
+        .tier-stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 11px;
+        }
+        
+        .tier-stat-label {
+            color: #888;
+        }
+        
+        .tier-stat-value {
+            color: #fff;
+            font-weight: bold;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .tier-bot-reason {
+            font-size: 9px;
+            color: #ccc;
+            font-style: italic;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 6px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Pro Bot specific styling */
+        #proBox .tier-bot-title {
+            color: #ff6600;
+        }
+        
+        #proBox:hover {
+            border-color: #ff6600;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.8),
+                0 0 30px rgba(255, 102, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* Starter Bot specific styling */
+        #starterBox .tier-bot-title {
+            color: #00ccff;
+        }
+        
+        #starterBox:hover {
+            border-color: #00ccff;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.8),
+                0 0 30px rgba(0, 204, 255, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .high-confidence {
+            animation: brainPulseHigh 2s infinite ease-in-out;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        .medium-confidence {
+            animation: brainPulseMedium 3s infinite ease-in-out;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+        
+        @keyframes brainPulseHigh {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            }
+            50% { 
+                transform: scale(1.05); 
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+            }
+        }
+        
+        @keyframes brainPulseMedium {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+            }
+            50% { 
+                transform: scale(1.02); 
+                box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            }
+        }
+        
+        /* Floating Neural Column (Left Side) */
+        .neural-column {
+            position: absolute;
+            left: 10px;
+            top: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 15;
+        }
+        
+        .brain-module {
+            width: 110px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(20, 20, 20, 0.9));
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            padding: 8px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .brain-title {
+            font-size: 9px;
+            font-weight: 700;
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .brain-vote {
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2px;
+        }
+        
+        .brain-confidence {
+            font-size: 9px;
+            text-align: center;
+            color: #888;
+        }
+        
+        /* Your exact confidence pulse animation */
+        .high-confidence {
+            animation: confidencePulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes confidencePulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+            }
+        }
+        
+        /* Brain vote colors for floating modules */
+        .brain-module .brain-vote.vote-long { 
+            color: #00ff41; 
+            text-shadow: 0 0 6px rgba(0, 255, 65, 0.6); 
+        }
+        .brain-module .brain-vote.vote-short { 
+            color: #ff4444; 
+            text-shadow: 0 0 6px rgba(255, 68, 68, 0.6); 
+        }
+        .brain-module .brain-vote.vote-hedge { 
+            color: #ff8c00; 
+            text-shadow: 0 0 6px rgba(255, 140, 0, 0.6); 
+        }
+        .brain-module .brain-vote.vote-hold { 
+            color: #8b8b8b; 
+            text-shadow: 0 0 6px rgba(139, 139, 139, 0.6); 
+        }
         
         /* Trade Buttons */
         .trade-buttons {
@@ -413,6 +1561,103 @@
         .trade-btn:hover {
             transform: translateY(-3px);
             filter: brightness(1.2);
+        }
+        
+        /* Chart Trade Buttons */
+        .chart-trade-btn {
+            padding: 12px 20px;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-trade-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .chart-trade-btn:hover:before {
+            left: 100%;
+        }
+        
+        .chart-trade-btn.buy-btn {
+            background: linear-gradient(135deg, #00ff41, #00cc33);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+        
+        .chart-trade-btn.buy-btn:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .chart-trade-btn.sell-btn {
+            background: linear-gradient(135deg, #ff4444, #cc1111);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
+        }
+        
+        .chart-trade-btn.sell-btn:hover {
+            box-shadow: 0 0 30px rgba(255, 68, 68, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .chart-trade-btn.long-btn {
+            background: linear-gradient(135deg, #1e90ff, #0066cc);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(30, 144, 255, 0.3);
+        }
+        
+        .chart-trade-btn.long-btn:hover {
+            box-shadow: 0 0 30px rgba(30, 144, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .chart-trade-btn.short-btn {
+            background: linear-gradient(135deg, #9400d3, #6a0dad);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(148, 0, 211, 0.3);
+        }
+        
+        .chart-trade-btn.short-btn:hover {
+            box-shadow: 0 0 30px rgba(148, 0, 211, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .chart-trade-btn.hedge-btn {
+            background: linear-gradient(135deg, #ff8c00, #cc7000);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.3);
+        }
+        
+        .chart-trade-btn.hedge-btn:hover {
+            box-shadow: 0 0 30px rgba(255, 140, 0, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .chart-trade-btn.kill-btn {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+        }
+        
+        .chart-trade-btn.kill-btn:hover {
+            box-shadow: 0 0 30px rgba(220, 38, 38, 0.6);
+            transform: translateY(-2px);
         }
         
         /* Decision Log */
@@ -511,9 +1756,16 @@
         }
         
         /* Responsive */
-        @media (max-width: 1400px) {
-            .main-container {
-                grid-template-columns: 1fr;
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 500px;
+                min-height: 500px;
+            }
+            
+            .chart-overlay {
+                position: static;
+                margin-top: 15px;
+                backdrop-filter: none;
             }
         }
     </style>
@@ -535,8 +1787,10 @@
     </div>
     
     <div class="main-container">
-        <!-- Elite Bot Section -->
-        <div class="bot-section">
+        <!-- Charts Column -->
+        <div class="charts-column">
+            <!-- Elite Bot Section -->
+            <div class="bot-section">
             <div class="bot-header">
                 <h2 class="bot-title elite-title">Elite Bot <span class="live-indicator" style="display: none;"></span></h2>
                 <div class="controls">
@@ -582,84 +1836,193 @@
             <div class="chart-container">
                 <canvas id="eliteChart"></canvas>
                 <div class="loading-message">Connecting to WebSocket...</div>
+                
+                <!-- Top Bar: P&L and Running Time -->
+                <div class="chart-top-bar">
+                    <div class="chart-top-stat">
+                        <div class="chart-top-label">Current P&L</div>
+                        <div class="chart-top-value" id="eliteTopPnL">$0.00</div>
+                    </div>
+                    <div class="chart-top-stat">
+                        <div class="chart-top-label">Confidence</div>
+                        <div class="chart-top-value" id="eliteTopConfidence">--%</div>
+                    </div>
+                    <div class="chart-top-stat">
+                        <div class="chart-top-label">Drawdown</div>
+                        <div class="chart-top-value" id="eliteTopDrawdown">0.0%</div>
+                    </div>
+                    <div class="chart-top-stat">
+                        <div class="chart-top-label">Session Time</div>
+                        <div class="chart-top-value" id="eliteTopRuntime">0m</div>
+                    </div>
+                </div>
+                
+                <!-- Session Stats Overlay (Top Right) -->
+                <div class="chart-overlay" style="top: 20px;">
+                    <h4>📊 Session Stats</h4>
+                    <div class="indicator-mini">
+                        <span class="label">Risk Level:</span>
+                        <span class="value" id="eliteRiskLevel">MEDIUM</span>
+                    </div>
+                    <div class="indicator-mini">
+                        <span class="label">Decisions:</span>
+                        <span class="value" id="eliteDecisionCount">0</span>
+                    </div>
+                    <div class="indicator-mini">
+                        <span class="label">Win Rate:</span>
+                        <span class="value" id="eliteWinRate">0%</span>
+                    </div>
+                </div>
+                
+                <!-- Elite Indicators Overlay (Right, Below Session Stats) -->
+                <div class="chart-overlay" style="top: 140px;">
+                    <h4>🏆 Elite Indicators</h4>
+                    <div class="indicator-mini">
+                        <span class="label">RSI:</span>
+                        <span class="value" id="eliteRSI">--%</span>
+                    </div>
+                    <div class="indicator-mini">
+                        <span class="label">MACD:</span>
+                        <span class="value" id="eliteMACD">--%</span>
+                    </div>
+                    <div class="indicator-mini">
+                        <span class="label">Trend:</span>
+                        <span class="value" id="eliteTrend">--%</span>
+                    </div>
+                    <div class="indicator-mini">
+                        <span class="label">Pattern:</span>
+                        <span class="value" id="eliteCurrentPattern">--</span>
+                    </div>
+                </div>
+                
+                <!-- Lower Tier Bots Column (Left Side - Moved Up) -->
+                <div class="lower-tier-column" style="top: 60px;">
+                    <!-- Pro Bot Box -->
+                    <div class="tier-bot-box" id="proBox">
+                        <div class="tier-bot-header">
+                            <div class="tier-bot-title">PRO BOT</div>
+                            <div class="tier-bot-status" id="proStatus">ACTIVE</div>
+                        </div>
+                        <div class="tier-bot-stats">
+                            <div class="tier-stat">
+                                <span class="tier-stat-label">P&L:</span>
+                                <span class="tier-stat-value" id="proTierPnL">$0.00</span>
+                            </div>
+                            <div class="tier-stat">
+                                <span class="tier-stat-label">Confidence:</span>
+                                <span class="tier-stat-value" id="proTierConfidence">--%</span>
+                            </div>
+                            <div class="tier-stat">
+                                <span class="tier-stat-label">Position:</span>
+                                <span class="tier-stat-value" id="proTierPosition">FLAT</span>
+                            </div>
+                        </div>
+                        <div class="tier-bot-reason" id="proTradeReason">Waiting for signal...</div>
+                    </div>
+                    
+                    <!-- Starter Bot Box -->
+                    <div class="tier-bot-box" id="starterBox">
+                        <div class="tier-bot-header">
+                            <div class="tier-bot-title">STARTER</div>
+                            <div class="tier-bot-status" id="starterStatus">ACTIVE</div>
+                        </div>
+                        <div class="tier-bot-stats">
+                            <div class="tier-stat">
+                                <span class="tier-stat-label">P&L:</span>
+                                <span class="tier-stat-value" id="starterTierPnL">$0.00</span>
+                            </div>
+                            <div class="tier-stat">
+                                <span class="tier-stat-label">Confidence:</span>
+                                <span class="tier-stat-value" id="starterTierConfidence">--%</span>
+                            </div>
+                            <div class="tier-stat">
+                                <span class="tier-stat-label">Position:</span>
+                                <span class="tier-stat-value" id="starterTierPosition">FLAT</span>
+                            </div>
+                        </div>
+                        <div class="tier-bot-reason" id="starterTradeReason">Building experience...</div>
+                    </div>
+                </div>
+                
+                
+                <!-- Trading Buttons at Bottom of Chart -->
+                <div class="chart-buttons-section">
+                    <button class="trade-btn buy-btn" onclick="sendTrade('elite', 'buy')">BUY</button>
+                    <button class="trade-btn sell-btn" onclick="sendTrade('elite', 'sell')">SELL</button>
+                    <button class="trade-btn kill-btn" onclick="sendTrade('elite', 'kill')">KILL</button>
+                </div>
             </div>
             
-            <div class="info-grid">
-                <div class="info-card">
-                    <div class="info-label">Current PnL</div>
-                    <div class="info-value" id="elitePnl">$0.00</div>
+            <!-- Chart Bottom Section -->
+            <div class="chart-bottom-section">
+                <div class="bottom-left-panel">
+                    <div class="pattern-analysis">
+                        <div class="panel-title">Pattern Analysis</div>
+                        <div id="elitePatternAnalysis" class="pattern-display">
+                            <div class="pattern-visual">
+                                <div class="pattern-indicator analyzing"></div>
+                                <span class="pattern-name">Analyzing...</span>
+                            </div>
+                            <div class="pattern-description">
+                                Scanning market structure for high-probability setups
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="decision-log">
+                        <div class="panel-title">Decision Log</div>
+                        <div id="eliteDecisionLog" class="decision-list">
+                            <div class="decision-item">
+                                <span class="decision-time">14:32:15</span>
+                                <span class="decision-text">Pattern: Bull Flag confirmed, entering long position</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="info-card">
-                    <div class="info-label">Running Time</div>
-                    <div class="info-value neutral" id="eliteRuntime">0m</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Decisions Made</div>
-                    <div class="info-value neutral" id="eliteDecisions">0</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Drawdown</div>
-                    <div class="info-value neutral" id="eliteDrawdown">0.0%</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Risk Level</div>
-                    <div class="info-value neutral" id="eliteRisk">Medium</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Position</div>
-                    <div class="info-value neutral" id="elitePosition">NONE</div>
+                
+                <div class="bottom-right-panel">
+                    <div class="active-stats">
+                        <div class="panel-title">Active Trading Stats</div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-label">Buy Price</div>
+                                <div class="stat-value" id="eliteBuyPrice">$0.00</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Trade Time</div>
+                                <div class="stat-value" id="eliteTradeTime">--:--</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Current P&L</div>
+                                <div class="stat-value" id="eliteCurrentPnl">$0.00</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Win Rate</div>
+                                <div class="stat-value" id="eliteWinRate">0%</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="trade-history">
+                        <div class="panel-title">Trade History</div>
+                        <div id="eliteTradeHistory" class="trade-list">
+                            <div class="trade-item">
+                                <span class="trade-symbol">BTC</span>
+                                <span class="trade-action buy">BUY</span>
+                                <span class="trade-price">$42,150</span>
+                                <span class="trade-pnl positive">+$287.50</span>
+                            </div>
+                            <div class="trade-item">
+                                <span class="trade-symbol">ETH</span>
+                                <span class="trade-action sell">SELL</span>
+                                <span class="trade-price">$2,845</span>
+                                <span class="trade-pnl negative">-$45.20</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div class="indicators-panel">
-                <h3 style="margin-bottom: 10px;">Active Indicators</h3>
-                <div id="eliteIndicators">
-                    <div class="indicator-row">
-                        <span>RSI</span>
-                        <span class="neutral" id="eliteRSI">--%</span>
-                    </div>
-                    <div class="confidence-bar">
-                        <div class="confidence-fill" id="eliteRSIBar" style="width: 0%"></div>
-                    </div>
-                    <div class="indicator-row">
-                        <span>MACD</span>
-                        <span class="neutral" id="eliteMACD">--%</span>
-                    </div>
-                    <div class="confidence-bar">
-                        <div class="confidence-fill" id="eliteMACDBar" style="width: 0%"></div>
-                    </div>
-                    <div class="indicator-row">
-                        <span>Trend</span>
-                        <span class="neutral" id="eliteTrend">--%</span>
-                    </div>
-                    <div class="confidence-bar">
-                        <div class="confidence-fill" id="eliteTrendBar" style="width: 0%"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="pattern-panel">
-                <h3 style="margin-bottom: 10px;">Pattern Recognition</h3>
-                <div id="elitePatterns">
-                    <span class="pattern-badge">Waiting...</span>
-                </div>
-            </div>
-            
-            <div class="trade-buttons">
-                <button class="trade-btn buy-btn" onclick="sendTrade('elite', 'buy')">BUY</button>
-                <button class="trade-btn sell-btn" onclick="sendTrade('elite', 'sell')">SELL</button>
-                <button class="trade-btn kill-btn" onclick="sendTrade('elite', 'kill')">KILL</button>
-            </div>
-            
-            <div class="decision-log">
-                <h3 style="margin-bottom: 10px;">Decision Log</h3>
-                <div id="eliteDecisionLog">
-                    <div class="decision-entry">
-                        <span>Waiting for real-time data...</span>
-                        <span class="timestamp">--:--:--</span>
-                    </div>
-                </div>
-            </div>
         </div>
         
         <!-- Quantum Bot Section -->
@@ -706,40 +2069,161 @@
                 </div>
             </div>
             
-            <div class="chart-container">
+            <div class="chart-container" style="height: 800px; position: relative;">
                 <canvas id="quantumChart"></canvas>
                 <div class="loading-message">Connecting to WebSocket...</div>
+                
+                <!-- Superimposed P&L and Runtime Bar -->
+                <div class="chart-top-bar">
+                    <span class="pnl-display">P&L: <span id="quantumTopPnl">$0.00</span></span>
+                    <span class="confidence-display">Confidence: <span id="quantumTopConfidence">--%</span></span>
+                    <span class="drawdown-display">Drawdown: <span id="quantumTopDrawdown">0.0%</span></span>
+                    <span class="runtime-display">Runtime: <span id="quantumTopRuntime">0m</span></span>
+                </div>
+                
+                <!-- Trading Buttons at Chart Bottom -->
+                <div class="chart-buttons-section">
+                    <button class="chart-trade-btn buy-btn" onclick="sendTrade('quantum', 'buy')">BUY</button>
+                    <button class="chart-trade-btn sell-btn" onclick="sendTrade('quantum', 'sell')">SELL</button>
+                    <button class="chart-trade-btn long-btn" onclick="sendTrade('quantum', 'long')">LONG</button>
+                    <button class="chart-trade-btn short-btn" onclick="sendTrade('quantum', 'short')">SHORT</button>
+                    <button class="chart-trade-btn hedge-btn" onclick="sendTrade('quantum', 'hedge')">HEDGE</button>
+                    <button class="chart-trade-btn kill-btn" onclick="sendTrade('quantum', 'kill')">KILL</button>
+                </div>
+                <!-- Quantum Standalone Confidence Box -->
+                <div class="standalone-confidence-box" id="quantumConfidenceBox" style="top: 120px;">
+                    <div class="confidence-box-title">Quantum Confidence</div>
+                    <div class="confidence-box-value" id="quantumConfidenceValue">--%</div>
+                </div>
+                
+                <!-- Quantum Indicators Overlay -->
+                <div class="chart-overlay">
+                    <h4>⚛️ Quantum Analysis</h4>
+                    <div class="indicator-mini">
+                        <span class="label">Coherence:</span>
+                        <span class="value" id="quantumCoherence">--%</span>
+                    </div>
+                    <div class="indicator-mini">
+                        <span class="label">Entanglement:</span>
+                        <span class="value" id="quantumEntanglement">--%</span>
+                    </div>
+                    <div class="indicator-mini">
+                        <span class="label">Supremacy:</span>
+                        <span class="value" id="quantumSupremacy">PENDING</span>
+                    </div>
+                    <div class="indicator-mini">
+                        <span class="label">Reality:</span>
+                        <span class="value" id="quantumReality">STABLE</span>
+                    </div>
+                </div>
+                
+                <!-- Floating Neural Column (Left Side) -->
+                <div class="neural-column">
+                    <div class="brain-module" id="pattern-brain">
+                        <div class="brain-title">PATTERN</div>
+                        <div class="brain-vote" id="patternVoteFloat">WAIT</div>
+                        <div class="brain-confidence" id="patternConfFloat">--%</div>
+                    </div>
+                    
+                    <div class="brain-module" id="momentum-brain">
+                        <div class="brain-title">MOMENTUM</div>
+                        <div class="brain-vote" id="momentumVoteFloat">WAIT</div>
+                        <div class="brain-confidence" id="momentumConfFloat">--%</div>
+                    </div>
+                    
+                    <div class="brain-module" id="sentiment-brain">
+                        <div class="brain-title">SENTIMENT</div>
+                        <div class="brain-vote" id="sentimentVoteFloat">WAIT</div>
+                        <div class="brain-confidence" id="sentimentConfFloat">--%</div>
+                    </div>
+                    
+                    <div class="brain-module" id="risk-brain">
+                        <div class="brain-title">RISK</div>
+                        <div class="brain-vote" id="riskVoteFloat">WAIT</div>
+                        <div class="brain-confidence" id="riskConfFloat">--%</div>
+                    </div>
+                    
+                    <div class="brain-module" id="quantum-brain">
+                        <div class="brain-title">QUANTUM</div>
+                        <div class="brain-vote" id="quantumVoteFloat">WAIT</div>
+                        <div class="brain-confidence" id="quantumConfFloat">--%</div>
+                    </div>
+                </div>
             </div>
             
-            <div class="info-grid">
-                <div class="info-card">
-                    <div class="info-label">Current PnL</div>
-                    <div class="info-value" id="quantumPnl">$0.00</div>
+            <!-- Quantum Chart Bottom Section -->
+            <div class="chart-bottom-section">
+                <div class="bottom-left-panel">
+                    <div class="decision-log">
+                        <div class="panel-title">Quantum Decision Log</div>
+                        <div id="quantumDecisionLog" class="decision-list">
+                            <div class="decision-item">
+                                <span class="decision-time">14:32:15</span>
+                                <span class="decision-text">⚛️ Quantum coherence detected, entering superposition trade</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-analysis">
+                        <div class="panel-title">Quantum Pattern Analysis</div>
+                        <div id="quantumPatternAnalysis" class="pattern-display">
+                            <div class="pattern-visual">
+                                <div class="pattern-indicator analyzing"></div>
+                                <span class="pattern-name">⚛️ Quantum Scanning...</span>
+                            </div>
+                            <div class="pattern-description">
+                                Analyzing quantum superposition states and entangled market patterns
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="info-card">
-                    <div class="info-label">Running Time</div>
-                    <div class="info-value neutral" id="quantumRuntime">0m</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Decisions Made</div>
-                    <div class="info-value neutral" id="quantumDecisions">0</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Drawdown</div>
-                    <div class="info-value neutral" id="quantumDrawdown">0.0%</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Risk Level</div>
-                    <div class="info-value neutral" id="quantumRisk">Adaptive</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Position</div>
-                    <div class="info-value neutral" id="quantumPosition">NONE</div>
+                
+                <div class="bottom-right-panel">
+                    <div class="active-stats">
+                        <div class="panel-title">Quantum Trading Stats</div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-label">Buy Price</div>
+                                <div class="stat-value" id="quantumBuyPrice">$0.00</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Trade Time</div>
+                                <div class="stat-value" id="quantumTradeTime">--:--</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Current P&L</div>
+                                <div class="stat-value" id="quantumCurrentPnl">$0.00</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Win Rate</div>
+                                <div class="stat-value" id="quantumWinRate">0%</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="trade-history">
+                        <div class="panel-title">Quantum Trade History</div>
+                        <div id="quantumTradeHistory" class="trade-list">
+                            <div class="trade-item">
+                                <span class="trade-symbol">⚛️ BTC</span>
+                                <span class="trade-action buy">LONG</span>
+                                <span class="trade-price">$42,890</span>
+                                <span class="trade-pnl positive">+$456.70</span>
+                            </div>
+                            <div class="trade-item">
+                                <span class="trade-symbol">⚛️ ETH</span>
+                                <span class="trade-action sell">SHORT</span>
+                                <span class="trade-price">$2,910</span>
+                                <span class="trade-pnl positive">+$123.45</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
             <div class="indicators-panel">
                 <h3 style="margin-bottom: 10px;">Neuromorphic Analysis</h3>
+                <div class="ensemble-last-update" style="font-size: 10px; color: #666; margin-bottom: 10px;">Waiting for data...</div>
                 <div class="ensemble-vote" id="quantumEnsemble">
                     <div class="brain-vote">
                         <div class="brain-name">Pattern</div>
@@ -764,34 +2248,45 @@
                 </div>
             </div>
             
-            <div class="pattern-panel">
-                <h3 style="margin-bottom: 10px;">Quantum Pattern Analysis</h3>
-                <div id="quantumPatterns">
-                    <span class="pattern-badge">Waiting...</span>
-                </div>
-            </div>
             
-            <div class="trade-buttons">
-                <button class="trade-btn buy-btn" onclick="sendTrade('quantum', 'buy')">BUY</button>
-                <button class="trade-btn sell-btn" onclick="sendTrade('quantum', 'sell')">SELL</button>
-                <button class="trade-btn long-btn" onclick="sendTrade('quantum', 'long')">LONG</button>
-                <button class="trade-btn short-btn" onclick="sendTrade('quantum', 'short')">SHORT</button>
-                <button class="trade-btn hedge-btn" onclick="sendTrade('quantum', 'hedge')">HEDGE</button>
-                <button class="trade-btn kill-btn" onclick="sendTrade('quantum', 'kill')">KILL</button>
-            </div>
-            
-            <div class="decision-log">
-                <h3 style="margin-bottom: 10px;">Quantum Decision Log</h3>
-                <div id="quantumDecisionLog">
-                    <div class="decision-entry">
-                        <span>Waiting for real-time data...</span>
-                        <span class="timestamp">--:--:--</span>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
     
+    <!-- The Mover AI Clone Chat Box -->
+    <div id="moverChatBox" class="mover-chat-container">
+        <div class="chat-header">
+            <div class="chat-title">
+                <span class="mover-avatar">🤖</span>
+                <span>The Mover AI Clone</span>
+                <span class="chat-status">Online</span>
+            </div>
+            <div class="chat-controls">
+                <button id="minimizeChat" class="chat-control-btn">−</button>
+                <button id="closeChat" class="chat-control-btn">×</button>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                <div class="message-content">
+                    <strong>The Mover:</strong> Hey there! I'm The Mover AI Clone. Ask me anything about trading, the bots, market analysis, or just chat! I'm here to help you dominate these markets. 💪
+                </div>
+                <div class="message-time">Just now</div>
+            </div>
+        </div>
+        
+        <div class="chat-input-section">
+            <input type="text" id="chatInput" placeholder="Ask The Mover anything about trading..." />
+            <button id="sendMessage" class="send-btn">Send</button>
+        </div>
+    </div>
+    
+    <!-- Chat Toggle Button -->
+    <button id="toggleChat" class="chat-toggle-btn">
+        <span class="chat-icon">💬</span>
+        <span class="chat-label">Chat with The Mover</span>
+    </button>
+
     <!-- Educational Ticker -->
     <div class="education-ticker">
         <div class="ticker-content">
@@ -819,17 +2314,76 @@
             ? 'ws://127.0.0.1:3010/ws'
             : 'wss://ogzprime.com/ws';
         
-        // Chart configuration
+        // Trade tracking system
+        const tradeHistory = {
+            elite: [],
+            quantum: []
+        };
+        
+        const currentTrades = {
+            elite: null,
+            quantum: null
+        };
+        
+        // Chart configuration with advanced tooltips
         const chartOptions = {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
             plugins: {
                 legend: {
                     display: false
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                    titleColor: '#ffd700',
+                    bodyColor: '#ffffff',
+                    borderColor: '#ffd700',
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    displayColors: false,
+                    callbacks: {
+                        title: function(context) {
+                            const timestamp = context[0].parsed.x;
+                            const date = new Date(timestamp);
+                            return date.toLocaleTimeString() + ' - ' + date.toLocaleDateString();
+                        },
+                        beforeBody: function(context) {
+                            const timestamp = context[0].parsed.x;
+                            const price = context[0].parsed.y;
+                            const trade = findTradeAtTime(context[0].chart.canvas.id, timestamp);
+                            
+                            let lines = [`💰 Price: $${price.toLocaleString()}`];
+                            
+                            if (trade) {
+                                const actionIcon = getTradeIcon(trade.action);
+                                const actionColor = trade.type === 'open' ? '🟢' : '🟠';
+                                lines.push(`${actionColor} ${actionIcon} ${trade.action.toUpperCase()} ${trade.type.toUpperCase()}`);
+                                lines.push(`📊 Size: ${trade.size || 'N/A'}`);
+                                lines.push(`💡 Reason: ${trade.reason || 'N/A'}`);
+                                if (trade.confidence) {
+                                    lines.push(`🎯 Confidence: ${trade.confidence}%`);
+                                }
+                                if (trade.pattern) {
+                                    lines.push(`📈 Pattern: ${trade.pattern}`);
+                                }
+                            }
+                            
+                            return lines;
+                        },
+                        label: function() {
+                            return null; // We handle all content in beforeBody
+                        }
+                    }
                 }
             },
             scales: {
                 x: {
+                    type: 'linear',
                     grid: {
                         color: 'rgba(255, 255, 255, 0.05)',
                         borderColor: '#330000'
@@ -838,6 +2392,10 @@
                         color: '#888',
                         font: {
                             family: 'JetBrains Mono'
+                        },
+                        callback: function(value) {
+                            const date = new Date(value);
+                            return date.toLocaleTimeString();
                         }
                     }
                 },
@@ -850,13 +2408,19 @@
                         color: '#888',
                         font: {
                             family: 'JetBrains Mono'
+                        },
+                        callback: function(value) {
+                            return '$' + value.toLocaleString();
                         }
                     }
                 }
             }
         };
         
-        // Initialize charts
+        // Chart.js v4 auto-registers most components - no manual registration needed
+        console.log('📊 Chart.js version:', Chart.version || 'unknown');
+        
+        // Initialize charts with annotations support
         const eliteCtx = document.getElementById('eliteChart').getContext('2d');
         charts.elite = new Chart(eliteCtx, {
             type: 'line',
@@ -868,10 +2432,14 @@
                     borderColor: '#ffd700',
                     backgroundColor: 'rgba(255, 215, 0, 0.1)',
                     tension: 0.4,
-                    borderWidth: 2
+                    borderWidth: 3,
+                    pointRadius: 0,
+                    pointHoverRadius: 6
                 }]
             },
-            options: chartOptions
+            options: {
+                ...chartOptions
+            }
         });
         
         const quantumCtx = document.getElementById('quantumChart').getContext('2d');
@@ -888,7 +2456,9 @@
                     borderWidth: 2
                 }]
             },
-            options: chartOptions
+            options: {
+                ...chartOptions
+            }
         });
         
         // Selected assets for each bot
@@ -987,6 +2557,7 @@
         
         // Handle WebSocket messages - REAL DATA ONLY
         function handleWebSocketMessage(data) {
+            console.log('🔌 WebSocket message received:', data.type, data);
             switch(data.type) {
                 case 'ping':
                     // Respond to ping
@@ -998,6 +2569,7 @@
                     
                 case 'price':
                     // Update charts with REAL price data
+                    console.log('📊 Received price data:', data);
                     if (data.data && data.data.price) {
                         const price = data.data.price;
                         const asset = data.data.asset || 'BTC-USD';
@@ -1007,11 +2579,13 @@
                         // Update Elite chart if this asset matches selected asset
                         if (asset === selectedAssets.elite) {
                             updateChart('elite', price);
+                            updateUnrealizedPnL('elite', price);
                         }
                         
                         // Update Quantum chart if this asset matches selected asset  
                         if (asset === selectedAssets.quantum) {
                             updateChart('quantum', price);
+                            updateUnrealizedPnL('quantum', price);
                         }
                         
                         // Update current asset display for any major asset
@@ -1026,6 +2600,40 @@
                     if (data.botTier) {
                         addDecisionLog(data.botTier, data);
                         updateBotMetrics(data.botTier, data);
+                        addTradeSymbolToChart(data.botTier, data.action, data.price);
+                        
+                        // Update tier bot displays if it's pro or starter
+                        if (data.botTier === 'pro' || data.botTier === 'starter') {
+                            updateTierBotDisplay(data.botTier, data);
+                        }
+                    }
+                    break;
+                    
+                case 'bot_status':
+                    // Handle bot status updates for all tiers
+                    if (data.botType && (data.botType === 'pro' || data.botType === 'starter')) {
+                        updateTierBotStatus(data.botType, data);
+                    }
+                    break;
+                    
+                case 'manual_trade_ack':
+                    // Handle manual trade acknowledgment
+                    console.log(`✅ Manual trade acknowledged: ${data.botType} ${data.action} - ${data.status}`);
+                    if (data.status === 'sent') {
+                        showTradeNotification(data.botType, data.action, 'success');
+                    } else if (data.status === 'error') {
+                        showTradeNotification(data.botType, data.action, 'error', data.error);
+                    }
+                    break;
+                    
+                case 'trade_executed':
+                    // Handle executed trades from bots
+                    if (data.data) {
+                        const trade = data.data;
+                        console.log(`💰 Trade executed: ${trade.side} at $${trade.price}`);
+                        addTradeSymbolToChart(trade.botType || 'elite', trade.side, trade.price);
+                        addDecisionLog(trade.botType || 'elite', trade);
+                        updateBotMetrics(trade.botType || 'elite', trade);
                     }
                     break;
                     
@@ -1049,11 +2657,20 @@
                         updateEnsembleVotes(data.votes);
                     }
                     break;
+                    
+                case 'mover_response':
+                    // Handle The Mover AI response
+                    if (data.message) {
+                        console.log('💬 Received Mover AI response:', data.message);
+                        addMessageToChat('bot', data.message);
+                    }
+                    break;
             }
         }
         
         // Update chart with real data
         function updateChart(botType, price) {
+            console.log(`📈 Updating ${botType} chart with price: $${price}`);
             const chart = charts[botType];
             if (!chart) {
                 console.error(`❌ Chart not found for bot type: ${botType}`);
@@ -1123,18 +2740,42 @@
         
         // Update indicators
         function updateIndicators(botType, indicators) {
-            if (botType === 'elite') {
-                if (indicators.rsi !== undefined) {
-                    document.getElementById('eliteRSI').textContent = indicators.rsi.toFixed(0) + '%';
-                    document.getElementById('eliteRSIBar').style.width = indicators.rsi + '%';
+            const prefix = botType === 'quantum' ? 'quantum' : 'elite';
+            
+            if (indicators.rsi !== undefined) {
+                const rsiElement = document.getElementById(`${prefix}RSI`);
+                const rsiBarElement = document.getElementById(`${prefix}RSIBar`);
+                if (rsiElement) rsiElement.textContent = indicators.rsi.toFixed(0) + '%';
+                if (rsiBarElement) rsiBarElement.style.width = indicators.rsi + '%';
+            }
+            
+            if (indicators.macd !== undefined) {
+                const macdElement = document.getElementById(`${prefix}MACD`);
+                const macdBarElement = document.getElementById(`${prefix}MACDBar`);
+                if (macdElement) macdElement.textContent = indicators.macd.toFixed(0) + '%';
+                if (macdBarElement) macdBarElement.style.width = Math.abs(indicators.macd) + '%';
+            }
+            
+            if (indicators.trend !== undefined) {
+                const trendElement = document.getElementById(`${prefix}Trend`);
+                const trendBarElement = document.getElementById(`${prefix}TrendBar`);
+                if (trendElement) trendElement.textContent = indicators.trend + '%';
+                if (trendBarElement) trendBarElement.style.width = indicators.trend + '%';
+            }
+            
+            // Add quantum-specific indicators
+            if (botType === 'quantum') {
+                if (indicators.coherence !== undefined) {
+                    const coherenceElement = document.getElementById('quantumCoherence');
+                    if (coherenceElement) coherenceElement.textContent = indicators.coherence.toFixed(1) + '%';
                 }
-                if (indicators.macd !== undefined) {
-                    document.getElementById('eliteMACD').textContent = indicators.macd.toFixed(0) + '%';
-                    document.getElementById('eliteMACDBar').style.width = Math.abs(indicators.macd) + '%';
+                if (indicators.entanglement !== undefined) {
+                    const entanglementElement = document.getElementById('quantumEntanglement');
+                    if (entanglementElement) entanglementElement.textContent = indicators.entanglement.toFixed(1) + '%';
                 }
-                if (indicators.trend !== undefined) {
-                    document.getElementById('eliteTrend').textContent = indicators.trend + '%';
-                    document.getElementById('eliteTrendBar').style.width = indicators.trend + '%';
+                if (indicators.supremacy !== undefined) {
+                    const supremacyElement = document.getElementById('quantumSupremacy');
+                    if (supremacyElement) supremacyElement.textContent = indicators.supremacy ? 'ACHIEVED' : 'PENDING';
                 }
             }
         }
@@ -1155,24 +2796,131 @@
         
         // Update ensemble votes for quantum bot
         function updateEnsembleVotes(votes) {
-            if (votes.pattern) document.getElementById('patternVote').textContent = votes.pattern;
-            if (votes.momentum) document.getElementById('momentumVote').textContent = votes.momentum;
-            if (votes.sentiment) document.getElementById('sentimentVote').textContent = votes.sentiment;
-            if (votes.risk) document.getElementById('riskVote').textContent = votes.risk;
-            if (votes.quantum) document.getElementById('quantumVote').textContent = votes.quantum;
+            console.log('🧠 REAL Ensemble Votes Update:', votes);
             
-            // Update vote colors
-            ['pattern', 'momentum', 'sentiment', 'risk', 'quantum'].forEach(type => {
-                const el = document.getElementById(type + 'Vote');
-                if (el) {
-                    el.className = 'vote-decision';
-                    const vote = el.textContent.toLowerCase();
-                    if (vote === 'long' || vote === 'buy') el.classList.add('vote-long');
-                    else if (vote === 'short' || vote === 'sell') el.classList.add('vote-short');
-                    else if (vote === 'hold') el.classList.add('vote-hold');
-                    else if (vote === 'hedge') el.classList.add('vote-hedge');
+            // Update each brain with vote and confidence
+            ['pattern', 'momentum', 'sentiment', 'risk', 'quantum'].forEach(brainType => {
+                const voteEl = document.getElementById(brainType + 'Vote');
+                const brainEl = document.querySelector(`.brain-vote:has(#${brainType}Vote)`);
+                
+                // Also update floating neural column
+                const floatVoteEl = document.getElementById(brainType + 'VoteFloat');
+                const floatConfEl = document.getElementById(brainType + 'ConfFloat');
+                const floatModuleEl = document.getElementById(brainType + '-brain');
+                
+                if (votes[brainType]) {
+                    const brain = votes[brainType];
+                    const vote = brain.vote || brain;
+                    const confidence = brain.confidence || 50;
+                    
+                    // Update original bottom section
+                    if (voteEl) {
+                        voteEl.innerHTML = `${vote}<br><small>${confidence}%</small>`;
+                        voteEl.className = 'vote-decision';
+                        
+                        if (vote === 'LONG' || vote === 'BUY') voteEl.classList.add('vote-long');
+                        else if (vote === 'SHORT' || vote === 'SELL') voteEl.classList.add('vote-short');
+                        else if (vote === 'HEDGE') voteEl.classList.add('vote-hedge');
+                        else if (vote === 'HOLD' || vote === 'WAIT') voteEl.classList.add('vote-hold');
+                    }
+                    
+                    // Update floating neural column
+                    if (floatVoteEl && floatConfEl && floatModuleEl) {
+                        floatVoteEl.textContent = vote;
+                        floatConfEl.textContent = `${confidence}%`;
+                        
+                        // Reset classes
+                        floatVoteEl.className = 'brain-vote';
+                        floatModuleEl.className = 'brain-module';
+                        
+                        // Apply vote colors to floating module
+                        if (vote === 'LONG' || vote === 'BUY') {
+                            floatVoteEl.classList.add('vote-long');
+                        }
+                        else if (vote === 'SHORT' || vote === 'SELL') {
+                            floatVoteEl.classList.add('vote-short');
+                        }
+                        else if (vote === 'HEDGE') {
+                            floatVoteEl.classList.add('vote-hedge');
+                        }
+                        else if (vote === 'HOLD' || vote === 'WAIT') {
+                            floatVoteEl.classList.add('vote-hold');
+                        }
+                        
+                        // Apply YOUR EXACT confidence pulsing (80%+ = pulse)
+                        if (confidence >= 80) {
+                            floatModuleEl.classList.add('high-confidence');
+                        } else {
+                            floatModuleEl.classList.remove('high-confidence');
+                        }
+                    }
+                    
+                    // Apply confidence-based pulse to original section
+                    if (confidence > 80 && brainEl) {
+                        brainEl.classList.add('high-confidence');
+                    } else if (confidence > 60 && brainEl) {
+                        brainEl.classList.add('medium-confidence');
+                    }
+                    
+                    console.log(`🧠 ${brainType}: ${vote} (${confidence}%)`);
                 }
             });
+            
+            // Calculate overall confidence from all brains
+            let totalConfidence = 0;
+            let validBrains = 0;
+            ['pattern', 'momentum', 'sentiment', 'risk', 'quantum'].forEach(brainType => {
+                if (votes[brainType] && votes[brainType].confidence) {
+                    totalConfidence += votes[brainType].confidence;
+                    validBrains++;
+                }
+            });
+            
+            const overallConfidence = validBrains > 0 ? Math.round(totalConfidence / validBrains) : 0;
+            
+            // Update Elite bot confidence (top bar only)
+            const eliteTopConf = document.getElementById('eliteTopConfidence');
+            
+            if (eliteTopConf) {
+                eliteTopConf.textContent = `${overallConfidence}%`;
+                // Add pulsing if high confidence
+                if (overallConfidence >= 80) {
+                    eliteTopConf.classList.add('high-confidence-stat');
+                } else {
+                    eliteTopConf.classList.remove('high-confidence-stat');
+                }
+            }
+            
+            // Update Quantum bot confidence (top bar and standalone) 
+            const quantumTopConf = document.getElementById('quantumTopConfidence');
+            const quantumConfValue = document.getElementById('quantumConfidenceValue');
+            const quantumConfBox = document.getElementById('quantumConfidenceBox');
+            
+            if (quantumTopConf) {
+                quantumTopConf.textContent = `${overallConfidence}%`;
+                // Add pulsing if high confidence
+                if (overallConfidence >= 80) {
+                    quantumTopConf.classList.add('high-confidence-stat');
+                } else {
+                    quantumTopConf.classList.remove('high-confidence-stat');
+                }
+            }
+            
+            if (quantumConfValue && quantumConfBox) {
+                quantumConfValue.textContent = `${overallConfidence}%`;
+                if (overallConfidence >= 80) {
+                    quantumConfBox.classList.add('confidence-box-high');
+                } else {
+                    quantumConfBox.classList.remove('confidence-box-high');
+                }
+            }
+            
+            // Add timestamp for last update
+            const timestamp = new Date().toLocaleTimeString();
+            const lastUpdate = document.querySelector('.ensemble-last-update');
+            if (lastUpdate) {
+                lastUpdate.textContent = `Updated: ${timestamp}`;
+            }
         }
         
         // Send trade command
@@ -1184,19 +2932,337 @@
                     action: action,
                     timestamp: Date.now()
                 }));
+                
+                // Show immediate feedback
+                showTradeNotification(botType, action, 'sending');
             }
         }
         
-        // Update running time
+        // Add trade symbol to chart
+        function addTradeSymbolToChart(botType, action, price, data = {}) {
+            const chartId = botType === 'quantum' ? 'quantumChart' : 'eliteChart';
+            const chart = charts[chartId];
+            if (!chart) return;
+            
+            const now = Date.now();
+            const symbol = getTradeSymbol(action);
+            const tradeType = determineTradeType(action, data);
+            const color = getTradeColor(action, tradeType);
+            
+            // Track the trade in our system
+            const trade = trackTrade(botType, action, price, data);
+            
+            // Add annotation if chart.js annotation plugin is available
+            if (chart.options.plugins && chart.options.plugins.annotation) {
+                if (!chart.options.plugins.annotation.annotations) {
+                    chart.options.plugins.annotation.annotations = {};
+                }
+                
+                const annotationId = `trade_${now}_${Math.random()}`;
+                chart.options.plugins.annotation.annotations[annotationId] = {
+                    type: 'point',
+                    xValue: now,
+                    yValue: price,
+                    backgroundColor: color,
+                    borderColor: color,
+                    borderWidth: 2,
+                    radius: tradeType === 'close' ? 10 : 8, // Slightly larger for closing trades
+                    pointStyle: symbol,
+                    display: true
+                };
+                chart.update('none');
+            } else {
+                // Fallback: Console log with enhanced information
+                const typeColor = tradeType === 'open' ? '🟢' : '🟠';
+                const actionIcon = getTradeIcon(action);
+                console.log(`📈 ${typeColor} ${actionIcon} ${action.toUpperCase()} ${tradeType.toUpperCase()} @ $${price.toLocaleString()} [${botType.toUpperCase()}]`);
+                if (trade.reason) console.log(`   💡 Reason: ${trade.reason}`);
+                if (trade.confidence) console.log(`   🎯 Confidence: ${trade.confidence}%`);
+                if (trade.pattern) console.log(`   📈 Pattern: ${trade.pattern}`);
+            }
+            
+            // Update trade counters and current trade display
+            updateTradeCounters(botType);
+            updateCurrentTradeDisplay(botType);
+            updateTradeLog(botType);
+        }
+        
+        // Get trade symbol based on action
+        function getTradeSymbol(action) {
+            switch(action?.toLowerCase()) {
+                case 'buy': return 'circle';
+                case 'sell': return 'rect';
+                case 'long': return 'triangle';
+                case 'short': return 'rectRot';
+                case 'hedge': return 'star';
+                case 'kill': return 'cross';
+                default: return 'circle';
+            }
+        }
+        
+        // Get trade color based on action and type (open/close)
+        function getTradeColor(action, type = 'open') {
+            // Green for opening trades, Orange for closing trades
+            if (type === 'close') {
+                return '#ff8c00'; // Orange for closing
+            }
+            
+            // Green variations for opening trades
+            switch(action?.toLowerCase()) {
+                case 'buy': return '#22c55e';
+                case 'long': return '#10b981';
+                case 'sell': return '#22c55e'; // Sell to open is still opening
+                case 'short': return '#16a34a'; // Short to open is still opening
+                case 'hedge': return '#059669';
+                case 'kill': return '#dc2626'; // Kill is always red
+                default: return '#22c55e';
+            }
+        }
+        
+        // Find trade at specific timestamp
+        function findTradeAtTime(chartId, timestamp) {
+            const botType = chartId.includes('elite') ? 'elite' : 'quantum';
+            const trades = tradeHistory[botType];
+            
+            // Find trade within 30 seconds of timestamp
+            return trades.find(trade => 
+                Math.abs(trade.timestamp - timestamp) < 30000
+            );
+        }
+        
+        // Get trade icon based on action
+        function getTradeIcon(action) {
+            switch(action?.toLowerCase()) {
+                case 'buy': return '💚';
+                case 'sell': return '🟠';
+                case 'long': return '🚀';
+                case 'short': return '📉';
+                case 'hedge': return '⚖️';
+                case 'kill': return '💀';
+                default: return '🔵';
+            }
+        }
+        
+        // Track trade execution
+        function trackTrade(botType, action, price, data = {}) {
+            const trade = {
+                timestamp: Date.now(),
+                action: action,
+                price: price,
+                type: determineTradeType(action, data),
+                size: data.size || calculateTradeSize(price),
+                reason: data.reason || 'Manual trade',
+                confidence: data.confidence,
+                pattern: data.pattern,
+                botType: botType
+            };
+            
+            // Add to trade history
+            tradeHistory[botType].push(trade);
+            
+            // Update current trade if opening
+            if (trade.type === 'open') {
+                currentTrades[botType] = {
+                    ...trade,
+                    startTime: Date.now(),
+                    unrealizedPnL: 0
+                };
+            } else if (trade.type === 'close' && currentTrades[botType]) {
+                // Calculate realized P&L
+                const openTrade = currentTrades[botType];
+                const pnl = calculatePnL(openTrade, trade);
+                trade.realizedPnL = pnl;
+                currentTrades[botType] = null;
+            }
+            
+            // Keep only last 100 trades
+            if (tradeHistory[botType].length > 100) {
+                tradeHistory[botType] = tradeHistory[botType].slice(-100);
+            }
+            
+            return trade;
+        }
+        
+        // Determine if trade is opening or closing
+        function determineTradeType(action, data) {
+            if (action?.toLowerCase() === 'kill') return 'close';
+            if (data.manual) return 'open'; // Manual trades are usually opens
+            return data.type || 'open';
+        }
+        
+        // Calculate trade size based on price
+        function calculateTradeSize(price) {
+            const balance = 10000; // Default balance
+            return (balance * 0.1 / price).toFixed(6); // 10% of balance
+        }
+        
+        // Calculate P&L between open and close
+        function calculatePnL(openTrade, closeTrade) {
+            const size = parseFloat(openTrade.size) || 0.01;
+            const priceDiff = closeTrade.price - openTrade.price;
+            return (size * priceDiff).toFixed(2);
+        }
+        
+        // Show trade notification
+        function showTradeNotification(botType, action, status, error = null) {
+            const message = error 
+                ? `❌ ${botType.toUpperCase()} ${action.toUpperCase()}: ${error}`
+                : status === 'sending' 
+                    ? `⏳ Sending ${botType.toUpperCase()} ${action.toUpperCase()}...`
+                    : `✅ ${botType.toUpperCase()} ${action.toUpperCase()} executed`;
+                    
+            console.log(message);
+            
+            // You could add a toast notification system here
+            // For now, we'll use console logging and update decision log
+            if (status !== 'sending') {
+                addDecisionLog(botType, {
+                    action: action.toUpperCase(),
+                    reason: status === 'error' ? `Manual trade failed: ${error}` : 'Manual trade executed',
+                    manual: true,
+                    timestamp: Date.now()
+                });
+            }
+        }
+        
+        // Update trade counters
+        function updateTradeCounters(botType) {
+            const trades = tradeHistory[botType];
+            const totalTrades = trades.length;
+            const wins = trades.filter(t => t.realizedPnL && parseFloat(t.realizedPnL) > 0).length;
+            const winRate = totalTrades > 0 ? ((wins / totalTrades) * 100) : 0;
+            const totalPnL = trades.reduce((sum, t) => sum + (parseFloat(t.realizedPnL) || 0), 0);
+            
+            const prefix = botType === 'quantum' ? 'quantum' : 'elite';
+            
+            const tradeCountEl = document.getElementById(`${prefix}-trade-count`);
+            const winRateEl = document.getElementById(`${prefix}-win-rate`);
+            const totalPnLEl = document.getElementById(`${prefix}-total-pnl`);
+            
+            if (tradeCountEl) tradeCountEl.textContent = totalTrades;
+            if (winRateEl) winRateEl.textContent = winRate.toFixed(1) + '%';
+            if (totalPnLEl) {
+                totalPnLEl.textContent = '$' + totalPnL.toFixed(2);
+                totalPnLEl.className = `trade-stat-value ${totalPnL >= 0 ? 'pnl-positive' : 'pnl-negative'}`;
+            }
+        }
+        
+        // Update current trade display
+        function updateCurrentTradeDisplay(botType) {
+            const currentTrade = currentTrades[botType];
+            const prefix = botType === 'quantum' ? 'quantum' : 'elite';
+            
+            const currentTradeEl = document.getElementById(`${prefix}-current-trade`);
+            const currentTradeInfoEl = document.getElementById(`${prefix}-current-trade-info`);
+            const currentActionEl = document.getElementById(`${prefix}-current-action`);
+            const entryPriceEl = document.getElementById(`${prefix}-entry-price`);
+            const unrealizedPnLEl = document.getElementById(`${prefix}-unrealized-pnl`);
+            const tradeReasonEl = document.getElementById(`${prefix}-trade-reason`);
+            const tradeConfidenceEl = document.getElementById(`${prefix}-trade-confidence`);
+            const detectedPatternEl = document.getElementById(`${prefix}-detected-pattern`);
+            const tradeDurationEl = document.getElementById(`${prefix}-trade-duration`);
+            
+            if (currentTrade && currentTradeEl && currentTradeInfoEl) {
+                currentTradeEl.classList.add('active');
+                currentTradeInfoEl.style.display = 'block';
+                
+                if (currentActionEl) currentActionEl.textContent = currentTrade.action.toUpperCase();
+                if (entryPriceEl) entryPriceEl.textContent = currentTrade.price.toLocaleString();
+                if (tradeReasonEl) tradeReasonEl.textContent = currentTrade.reason || 'Manual trade';
+                if (tradeConfidenceEl) tradeConfidenceEl.textContent = currentTrade.confidence ? `${currentTrade.confidence}%` : '--';
+                if (detectedPatternEl) detectedPatternEl.textContent = currentTrade.pattern || '--';
+                
+                // Update duration
+                if (tradeDurationEl) {
+                    const duration = Math.floor((Date.now() - currentTrade.startTime) / 1000);
+                    const minutes = Math.floor(duration / 60);
+                    const seconds = duration % 60;
+                    tradeDurationEl.textContent = `${minutes}m ${seconds}s`;
+                }
+                
+                // Calculate unrealized P&L (would need current price)
+                if (unrealizedPnLEl) {
+                    const unrealized = currentTrade.unrealizedPnL || 0;
+                    unrealizedPnLEl.textContent = '$' + unrealized.toFixed(2);
+                    unrealizedPnLEl.className = unrealized >= 0 ? 'pnl-positive' : 'pnl-negative';
+                }
+            } else {
+                if (currentTradeEl) currentTradeEl.classList.remove('active');
+                if (currentTradeInfoEl) currentTradeInfoEl.style.display = 'none';
+                if (tradeDurationEl) tradeDurationEl.textContent = '--';
+            }
+        }
+        
+        // Update trade log
+        function updateTradeLog(botType) {
+            const trades = tradeHistory[botType];
+            const prefix = botType === 'quantum' ? 'quantum' : 'elite';
+            const tradeLogEl = document.getElementById(`${prefix}-trade-log`);
+            
+            if (!tradeLogEl) return;
+            
+            if (trades.length === 0) {
+                tradeLogEl.innerHTML = '<div class="trade-entry"><span>Waiting for trades...</span></div>';
+                return;
+            }
+            
+            const recentTrades = trades.slice(-20).reverse(); // Show last 20 trades, newest first
+            
+            tradeLogEl.innerHTML = recentTrades.map(trade => {
+                const pnl = trade.realizedPnL || 0;
+                const pnlClass = pnl > 0 ? 'profit' : pnl < 0 ? 'loss' : '';
+                const actionIcon = getTradeIcon(trade.action);
+                const typeColor = trade.type === 'open' ? '🟢' : '🟠';
+                
+                return `
+                    <div class="trade-entry ${pnlClass}">
+                        <div class="trade-action">${typeColor} ${actionIcon} ${trade.action.toUpperCase()}</div>
+                        <div class="trade-details">
+                            <div>$${trade.price.toLocaleString()}</div>
+                            <div style="font-size: 10px; color: #666;">${new Date(trade.timestamp).toLocaleTimeString()}</div>
+                        </div>
+                        <div class="trade-pnl ${pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">
+                            ${pnl ? '$' + pnl : '--'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Update unrealized P&L for current trades (call this with price updates)
+        function updateUnrealizedPnL(botType, currentPrice) {
+            const currentTrade = currentTrades[botType];
+            if (!currentTrade || !currentPrice) return;
+            
+            const size = parseFloat(currentTrade.size) || 0.01;
+            const priceDiff = currentPrice - currentTrade.price;
+            const unrealizedPnL = size * priceDiff;
+            
+            currentTrade.unrealizedPnL = unrealizedPnL;
+            updateCurrentTradeDisplay(botType);
+        }
+        
+        // Update running time and current trade durations
         setInterval(() => {
             const elapsed = Date.now() - startTime;
             const minutes = Math.floor(elapsed / 60000);
             const hours = Math.floor(minutes / 60);
             const timeStr = hours > 0 ? `${hours}h ${minutes % 60}m` : `${minutes}m`;
             
-            document.getElementById('eliteRuntime').textContent = timeStr;
-            document.getElementById('quantumRuntime').textContent = timeStr;
-        }, 60000);
+            // Update bot runtime displays
+            const eliteRuntimeEl = document.getElementById('eliteRuntime');
+            const quantumRuntimeEl = document.getElementById('quantumRuntime');
+            if (eliteRuntimeEl) eliteRuntimeEl.textContent = timeStr;
+            if (quantumRuntimeEl) quantumRuntimeEl.textContent = timeStr;
+            
+            // Update current trade durations
+            if (currentTrades.elite) {
+                updateCurrentTradeDisplay('elite');
+            }
+            if (currentTrades.quantum) {
+                updateCurrentTradeDisplay('quantum');
+            }
+        }, 1000); // Update every second for real-time duration tracking
         
         // Connect to WebSocket immediately
         connectWebSocket();
@@ -1210,6 +3276,189 @@
                 }));
             }
         }, 30000);
+        
+        // The Mover AI Clone Chat Functionality
+        const chatBox = document.getElementById('moverChatBox');
+        const toggleChatBtn = document.getElementById('toggleChat');
+        const closeChatBtn = document.getElementById('closeChat');
+        const minimizeChatBtn = document.getElementById('minimizeChat');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendMessage');
+        const chatMessages = document.getElementById('chatMessages');
+        
+        let chatMinimized = false;
+        
+        // Toggle chat visibility
+        toggleChatBtn.addEventListener('click', () => {
+            const isVisible = chatBox.style.display === 'flex';
+            if (isVisible) {
+                chatBox.style.display = 'none';
+            } else {
+                chatBox.style.display = 'flex';
+                toggleChatBtn.style.display = 'none';
+            }
+        });
+        
+        // Close chat
+        closeChatBtn.addEventListener('click', () => {
+            chatBox.style.display = 'none';
+            toggleChatBtn.style.display = 'flex';
+        });
+        
+        // Minimize/maximize chat
+        minimizeChatBtn.addEventListener('click', () => {
+            if (chatMinimized) {
+                chatBox.style.height = '500px';
+                minimizeChatBtn.textContent = '−';
+                chatMinimized = false;
+            } else {
+                chatBox.style.height = '60px';
+                minimizeChatBtn.textContent = '□';
+                chatMinimized = true;
+            }
+        });
+        
+        // Send message function
+        function sendChatMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessageToChat('user', message);
+            chatInput.value = '';
+            
+            // Send message to The Mover AI via WebSocket
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'mover_chat',
+                    message: message,
+                    timestamp: Date.now()
+                }));
+                
+                console.log('💬 Sent message to The Mover AI:', message);
+            } else {
+                // Fallback if WebSocket not available
+                console.warn('WebSocket not connected, using fallback response');
+                setTimeout(() => {
+                    addMessageToChat('bot', "WebSocket connection needed for real-time chat. I'm here when you get connected! 🤖");
+                }, 1000);
+            }
+        }
+        
+        // Add message to chat
+        function addMessageToChat(type, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    ${type === 'bot' ? '<strong>The Mover:</strong> ' : ''}${content}
+                </div>
+                <div class="message-time">${timeString}</div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Send message on button click
+        sendBtn.addEventListener('click', sendChatMessage);
+        
+        // Send message on Enter key
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+        
+        // Update tier bot display with trade data
+        function updateTierBotDisplay(botType, tradeData) {
+            const prefix = botType; // 'pro' or 'starter'
+            
+            // Update P&L
+            const pnlEl = document.getElementById(`${prefix}TierPnL`);
+            if (pnlEl && tradeData.pnl) {
+                const pnl = parseFloat(tradeData.pnl);
+                pnlEl.textContent = `$${pnl.toFixed(2)}`;
+                pnlEl.style.color = pnl >= 0 ? '#00ff88' : '#ff3366';
+            }
+            
+            // Update Position
+            const posEl = document.getElementById(`${prefix}TierPosition`);
+            if (posEl && tradeData.position) {
+                posEl.textContent = tradeData.position.toUpperCase();
+                posEl.style.color = tradeData.position === 'LONG' ? '#00ff88' : 
+                                  tradeData.position === 'SHORT' ? '#ff3366' : '#8b8b8b';
+            }
+            
+            // Update Confidence
+            const confEl = document.getElementById(`${prefix}TierConfidence`);
+            if (confEl && tradeData.confidence) {
+                const conf = parseInt(tradeData.confidence);
+                confEl.textContent = `${conf}%`;
+                confEl.style.color = conf >= 80 ? '#ffd700' : conf >= 60 ? '#00ff88' : '#8b8b8b';
+            }
+            
+            // Update Trade Reason
+            const reasonEl = document.getElementById(`${prefix}TradeReason`);
+            if (reasonEl && tradeData.reason) {
+                reasonEl.textContent = tradeData.reason;
+                
+                // Add pulse animation for new trades
+                if (tradeData.action && tradeData.action !== 'hold') {
+                    reasonEl.style.animation = 'confidenceStatPulse 1s ease-out';
+                    setTimeout(() => {
+                        reasonEl.style.animation = '';
+                    }, 1000);
+                }
+            }
+            
+            console.log(`🤖 Updated ${botType} tier display:`, tradeData);
+        }
+        
+        // Update tier bot status 
+        function updateTierBotStatus(botType, statusData) {
+            const prefix = botType; // 'pro' or 'starter'
+            
+            // Update Status
+            const statusEl = document.getElementById(`${prefix}Status`);
+            if (statusEl && statusData.status) {
+                statusEl.textContent = statusData.status.toUpperCase();
+                statusEl.style.color = statusData.status === 'active' ? '#00ff88' : 
+                                     statusData.status === 'inactive' ? '#ff3366' : '#ffd700';
+            }
+            
+            // Update general stats if provided
+            if (statusData.pnl) {
+                const pnlEl = document.getElementById(`${prefix}TierPnL`);
+                if (pnlEl) {
+                    const pnl = parseFloat(statusData.pnl);
+                    pnlEl.textContent = `$${pnl.toFixed(2)}`;
+                    pnlEl.style.color = pnl >= 0 ? '#00ff88' : '#ff3366';
+                }
+            }
+            
+            if (statusData.position) {
+                const posEl = document.getElementById(`${prefix}TierPosition`);
+                if (posEl) {
+                    posEl.textContent = statusData.position.toUpperCase();
+                    posEl.style.color = statusData.position === 'LONG' ? '#00ff88' : 
+                                      statusData.position === 'SHORT' ? '#ff3366' : '#8b8b8b';
+                }
+            }
+            
+            if (statusData.activity) {
+                const reasonEl = document.getElementById(`${prefix}TradeReason`);
+                if (reasonEl) {
+                    reasonEl.textContent = statusData.activity;
+                }
+            }
+            
+            console.log(`📊 Updated ${botType} status:`, statusData);
+        }
     </script>
 </body>
 </html>

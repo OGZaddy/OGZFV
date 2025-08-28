@@ -1414,12 +1414,101 @@ class QuantumSingularityLauncher {
         }));
         break;
         
+      case 'manual_trade_command':
+        console.log(`🎯 QUANTUM: Received manual trade command - ${data.action?.toUpperCase()}`);
+        await this.executeQuantumManualTrade(data.action);
+        break;
+        
       default:
         ws.send(JSON.stringify({
           type: 'quantum_error',
           error: `Unknown message type: ${data.type}`,
           timestamp: Date.now()
         }));
+    }
+  }
+
+  async executeQuantumManualTrade(action) {
+    try {
+      console.log(`⚛️ QUANTUM: Executing manual trade action - ${action?.toUpperCase()}`);
+      
+      // Quantum trade execution with interdimensional precision
+      switch(action?.toLowerCase()) {
+        case 'buy':
+          if (this.quantumTradingSystem) {
+            await this.quantumTradingSystem.executeQuantumTrade('BUY', {
+              reason: 'Manual quantum buy command',
+              manual: true,
+              quantumBoost: true
+            });
+          }
+          console.log('🚀 QUANTUM BUY executed with quantum supremacy');
+          break;
+          
+        case 'sell':
+          if (this.quantumTradingSystem) {
+            await this.quantumTradingSystem.executeQuantumTrade('SELL', {
+              reason: 'Manual quantum sell command',
+              manual: true,
+              quantumBoost: true
+            });
+          }
+          console.log('📉 QUANTUM SELL executed with quantum coherence');
+          break;
+          
+        case 'long':
+          if (this.quantumTradingSystem) {
+            await this.quantumTradingSystem.executeQuantumTrade('LONG', {
+              reason: 'Manual quantum long position',
+              manual: true,
+              quantumBoost: true,
+              multiverseOptimization: true
+            });
+          }
+          console.log('📈 QUANTUM LONG position opened across multiple dimensions');
+          break;
+          
+        case 'short':
+          if (this.quantumTradingSystem) {
+            await this.quantumTradingSystem.executeQuantumTrade('SHORT', {
+              reason: 'Manual quantum short position',
+              manual: true,
+              quantumBoost: true,
+              multiverseOptimization: true
+            });
+          }
+          console.log('📉 QUANTUM SHORT position opened with reality bending');
+          break;
+          
+        case 'hedge':
+          if (this.quantumTradingSystem) {
+            await this.quantumTradingSystem.executeQuantumHedge({
+              reason: 'Manual quantum hedge position',
+              manual: true,
+              quantumEntanglement: true
+            });
+          }
+          console.log('⚖️ QUANTUM HEDGE activated with entangled positions');
+          break;
+          
+        case 'kill':
+          if (this.quantumTradingSystem) {
+            await this.quantumTradingSystem.killAllQuantumPositions({
+              reason: 'Manual quantum position termination',
+              manual: true,
+              emergencyProtocol: true
+            });
+          }
+          console.log('💀 ALL QUANTUM POSITIONS TERMINATED - Reality restored');
+          break;
+          
+        default:
+          console.log(`❌ QUANTUM: Unknown manual trade action: ${action}`);
+      }
+      
+    } catch (error) {
+      console.error('❌ QUANTUM MANUAL TRADE ERROR:', error);
+      console.log('🚨 Quantum emergency protocols activated due to trade error');
     }
   }
 
