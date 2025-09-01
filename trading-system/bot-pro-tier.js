@@ -109,13 +109,13 @@ class ProBot {
             if (!this.connected) return;
             
             // REAL TRADING WITH PATTERN RECOGNITION (REDUCED FOR TESTING)
-            if (this.currentPrice && this.priceHistory.length >= 5) {
+            if (this.currentPrice && this.priceHistory.length >= 26) {
                 // Add price to history
                 this.priceHistory.push(this.currentPrice);
                 if (this.priceHistory.length > 50) this.priceHistory.shift();
                 
                 // Calculate indicators
-                const rsi = this.calculateRSI(this.priceHistory, 3); // Reduced for testing
+                const rsi = this.calculateRSI(this.priceHistory, 14); // Standard 14-period RSI
                 const macd = this.calculateMACD(this.priceHistory);
                 const pattern = this.detectPattern(this.priceHistory);
                 
@@ -182,7 +182,7 @@ class ProBot {
             manual: true
         }));
     }
-    calculateRSI(prices, period = 3) { // REDUCED FOR TESTING
+    calculateRSI(prices, period = 14) { // Standard 14-period RSI
         if (prices.length < period + 1) return 50;
         
         let gains = 0;
@@ -201,10 +201,10 @@ class ProBot {
     }
     
     calculateMACD(prices) {
-        if (prices.length < 5) return { histogram: 0, crossover: false }; // REDUCED
+        if (prices.length < 26) return { histogram: 0, crossover: false }; // Minimum for 26-period EMA
         
-        const ema12 = this.calculateEMA(prices, 3);
-        const ema26 = this.calculateEMA(prices, 5); // Reduced for testing
+        const ema12 = this.calculateEMA(prices, 12);
+        const ema26 = this.calculateEMA(prices, 26); // Standard MACD periods
         const macdLine = ema12 - ema26;
         const signal = macdLine * 0.2;
         const histogram = macdLine - signal;
@@ -230,7 +230,7 @@ class ProBot {
     }
     
     detectPattern(prices) {
-        if (prices.length < 5) return null; // REDUCED FOR TESTING
+        if (prices.length < 20) return null; // Minimum for pattern detection
         
         const recent = prices.slice(-20);
         const avg = recent.reduce((a, b) => a + b) / recent.length;
@@ -304,7 +304,7 @@ class ProBot {
         this.performanceTracker.trackEverything(tradeData, this.balance, ['RSI', 'MACD', 'PatternRecognition', pattern || 'NoPattern']);
         
         // Calculate current indicators for educational display
-        const rsi = this.calculateRSI(this.priceHistory, 3);
+        const rsi = this.calculateRSI(this.priceHistory, 14);
         const macd = this.calculateMACD(this.priceHistory);
         
         // Send real trade to dashboard with actual indicator values

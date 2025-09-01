@@ -121,9 +121,9 @@ class StarterBot {
             }
             
             // REAL TRADING LOGIC - Use actual indicators (REDUCED FOR TESTING)
-            if (this.currentPrice && this.priceHistory.length >= 3) {
+            if (this.currentPrice && this.priceHistory.length >= 26) {
                 // Calculate real RSI (reduced period for testing)
-                const rsi = this.calculateRSI(this.priceHistory, 3);
+                const rsi = this.calculateRSI(this.priceHistory, 14);
                 
                 // Calculate real MACD
                 const macd = this.calculateMACD(this.priceHistory);
@@ -188,7 +188,7 @@ class StarterBot {
             manual: true
         }));
     }
-    calculateRSI(prices, period = 3) { // REDUCED FOR TESTING
+    calculateRSI(prices, period = 14) { // Standard 14-period RSI
         if (prices.length < period + 1) return 50; // Neutral if not enough data
         
         let gains = 0;
@@ -207,11 +207,11 @@ class StarterBot {
     }
     
     calculateMACD(prices) {
-        if (prices.length < 5) return { histogram: 0, crossover: false }; // REDUCED FOR TESTING
+        if (prices.length < 26) return { histogram: 0, crossover: false }; // Minimum for 26-period EMA
         
         // Simple EMA calculation (reduced for testing)
-        const ema12 = this.calculateEMA(prices, 3);
-        const ema26 = this.calculateEMA(prices, 5);
+        const ema12 = this.calculateEMA(prices, 12);
+        const ema26 = this.calculateEMA(prices, 26);
         const macdLine = ema12 - ema26;
         
         // Simplified signal line (9-period EMA of MACD)
@@ -280,7 +280,7 @@ class StarterBot {
         this.performanceTracker.trackEverything(tradeData, this.balance, ['RSI', 'MACD', 'BasicLogic']);
         
         // Calculate current indicators for educational display
-        const rsi = this.calculateRSI(this.priceHistory, 3);
+        const rsi = this.calculateRSI(this.priceHistory, 14);
         const macd = this.calculateMACD(this.priceHistory);
         
         // Send real trade to dashboard with actual indicator values
