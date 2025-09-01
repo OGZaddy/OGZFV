@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/2.0.1/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.2.1/dist/chartjs-chart-financial.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap');
         
@@ -648,8 +649,8 @@
             line-height: 1.4;
         }
         
-        /* The Mover AI Clone Chat Box */
-        .mover-chat-container {
+        /* Trai AI Clone Chat Box */
+        .trai-chat-container {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -685,7 +686,7 @@
             color: #ffd700;
         }
         
-        .mover-avatar {
+        .trai-avatar {
             font-size: 20px;
         }
         
@@ -1440,8 +1441,25 @@
             border-radius: 8px;
             padding: 8px;
             backdrop-filter: blur(10px);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 
+                0 2px 10px rgba(0, 0, 0, 0.5),
+                0 0 15px rgba(255, 215, 0, 0.1);
             transition: all 0.3s ease;
+        }
+        
+        .brain-module:hover {
+            transform: scale(1.02);
+            box-shadow: 
+                0 4px 20px rgba(0, 0, 0, 0.7),
+                0 0 25px rgba(255, 215, 0, 0.3);
+        }
+        
+        .brain-module.high-confidence {
+            box-shadow: 
+                0 2px 10px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(0, 255, 255, 0.4),
+                0 0 60px rgba(0, 255, 255, 0.2);
+            border-color: rgba(0, 255, 255, 0.6);
         }
         
         .brain-title {
@@ -1673,13 +1691,69 @@
         
         .decision-entry {
             padding: 8px;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             background: rgba(26, 0, 0, 0.8);
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 12px;
+            border-left: 3px solid #ff0040;
+            border: 1px solid rgba(255, 0, 64, 0.2);
+        }
+        
+        .trade-header {
             display: flex;
             justify-content: space-between;
-            border-left: 3px solid #ff0040;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        
+        .trade-details {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 4px;
+        }
+        
+        .decision-action {
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .decision-action.buy {
+            color: #00ff41;
+        }
+        
+        .decision-action.sell {
+            color: #ff3333;
+        }
+        
+        .pnl {
+            font-weight: bold;
+            font-size: 11px;
+        }
+        
+        .pnl.profit {
+            color: #00ff41;
+        }
+        
+        .pnl.loss {
+            color: #ff3333;
+        }
+        
+        .decision-reason {
+            color: #ccc;
+            font-size: 10px;
+        }
+        
+        .confidence {
+            color: #ffd700;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .pattern {
+            color: #00bfff;
+            font-size: 10px;
+            font-weight: bold;
         }
         
         .timestamp {
@@ -1755,17 +1829,158 @@
             background: #dc143c;
         }
         
-        /* Responsive */
+        /* Tablet and larger mobile responsive */
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column !important;
+            }
+            
+            .left-panel, .right-panel {
+                width: 100% !important;
+                margin-bottom: 20px !important;
+            }
+            
+            /* Hide neural column on tablets */
+            .neural-column {
+                display: none !important;
+            }
+        }
+        
+        /* Mobile responsive */
         @media (max-width: 768px) {
             .chart-container {
-                height: 500px;
-                min-height: 500px;
+                height: 400px;
+                min-height: 400px;
+                position: relative !important;
             }
             
             .chart-overlay {
                 position: static;
                 margin-top: 15px;
                 backdrop-filter: none;
+            }
+            
+            /* Hide problematic absolute positioned elements */
+            .neural-column,
+            .lower-tier-column,
+            .chart-session-overlay,
+            .standalone-confidence-box,
+            .chart-top-bar {
+                display: none !important;
+            }
+            
+            /* Mobile optimizations */
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .left-panel, .right-panel {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            /* Chart controls - make them static and stack properly */
+            .elite-chart-type-controls, .quantum-chart-type-controls {
+                position: static !important;
+                top: auto !important;
+                left: auto !important;
+                margin: 10px 0 !important;
+                display: flex !important;
+                justify-content: center !important;
+                flex-wrap: wrap !important;
+                gap: 5px;
+            }
+            
+            .chart-type-btn {
+                padding: 5px 10px !important;
+                font-size: 10px !important;
+            }
+            
+            .elite-indicator-controls, .indicator-controls {
+                position: static !important;
+                bottom: auto !important;
+                left: auto !important;
+                right: auto !important;
+                margin: 10px 0 !important;
+                display: flex !important;
+                justify-content: center !important;
+                flex-wrap: wrap !important;
+                gap: 5px;
+                max-width: none;
+            }
+            
+            .elite-indicator-btn, .indicator-btn {
+                padding: 5px 8px !important;
+                font-size: 9px !important;
+            }
+            
+            /* Trading buttons */
+            .trading-controls,
+            .chart-buttons-section {
+                position: static !important;
+                bottom: auto !important;
+                left: auto !important;
+                transform: none !important;
+                margin: 10px 0 !important;
+                display: flex !important;
+                justify-content: center !important;
+                flex-wrap: wrap !important;
+                gap: 8px;
+            }
+            
+            .trade-btn, .chart-trade-btn {
+                padding: 8px 12px !important;
+                font-size: 10px !important;
+                flex: 1 1 auto;
+                max-width: 120px;
+            }
+            
+            /* Mobile header and layout fixes */
+            .header {
+                padding: 10px !important;
+                flex-wrap: wrap !important;
+            }
+            
+            .header .logo {
+                font-size: 1.2rem !important;
+            }
+            
+            .tagline {
+                font-size: 0.8rem !important;
+                text-align: center !important;
+                width: 100% !important;
+                margin: 5px 0 !important;
+            }
+            
+            .connection-status {
+                margin-top: 10px !important;
+                width: 100% !important;
+                justify-content: center !important;
+                gap: 10px !important;
+            }
+            
+            /* Make sections stack nicely */
+            .elite-section, .quantum-section {
+                margin: 15px 5px !important;
+                border-radius: 10px !important;
+            }
+            
+            .section-header {
+                padding: 15px !important;
+                text-align: center !important;
+                font-size: 1rem !important;
+            }
+            
+            .confidence-value {
+                font-size: 10px !important;
+            }
+            
+            .trai-chat-box {
+                width: 95% !important;
+                height: 300px !important;
+                position: fixed !important;
+                bottom: 10px !important;
+                right: 2.5% !important;
             }
         }
     </style>
@@ -1951,6 +2166,152 @@
                     <button class="trade-btn sell-btn" onclick="sendTrade('elite', 'sell')">SELL</button>
                     <button class="trade-btn kill-btn" onclick="sendTrade('elite', 'kill')">KILL</button>
                 </div>
+                
+                <!-- Elite Chart Type Switcher -->
+                <div class="elite-chart-type-controls" style="
+                    position: absolute;
+                    top: 10px;
+                    left: 10px;
+                    display: flex;
+                    gap: 5px;
+                    z-index: 25;
+                ">
+                    <button class="chart-type-btn" onclick="switchChartType('elite', 'candlestick')" style="
+                        background: linear-gradient(135deg, #ffd700, #ffed4e);
+                        color: black;
+                        border: 1px solid #ffd700;
+                        border-radius: 6px;
+                        padding: 4px 8px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        🕯️
+                    </button>
+                    <button class="chart-type-btn" onclick="switchChartType('elite', 'line')" style="
+                        background: linear-gradient(135deg, #00ff88, #4dff9d);
+                        color: black;
+                        border: 1px solid #00ff88;
+                        border-radius: 6px;
+                        padding: 4px 8px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        📈
+                    </button>
+                    <button class="chart-type-btn" onclick="switchChartType('elite', 'bar')" style="
+                        background: linear-gradient(135deg, #00ffff, #4dffff);
+                        color: black;
+                        border: 1px solid #00ffff;
+                        border-radius: 6px;
+                        padding: 4px 8px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        📊
+                    </button>
+                    <button class="chart-type-btn" onclick="switchChartType('elite', 'scatter')" style="
+                        background: linear-gradient(135deg, #8a2be2, #9932cc);
+                        color: white;
+                        border: 1px solid #8a2be2;
+                        border-radius: 6px;
+                        padding: 4px 8px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        🔵
+                    </button>
+                </div>
+                
+                <!-- Elite Technical Analysis Controls -->
+                <div class="elite-indicator-controls" style="
+                    position: absolute;
+                    bottom: 80px;
+                    left: 20px;
+                    display: flex;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                    max-width: 300px;
+                    z-index: 20;
+                ">
+                    <button class="elite-indicator-btn" onclick="addFibonacciLevels('eliteChart')" style="
+                        background: linear-gradient(135deg, #ffd700, #ffed4e);
+                        color: black;
+                        border: none;
+                        padding: 6px 10px;
+                        border-radius: 4px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+                    " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        FIB
+                    </button>
+                    <button class="elite-indicator-btn" onclick="addBollingerBands('eliteChart')" style="
+                        background: linear-gradient(135deg, #8a2be2, #9932cc);
+                        color: white;
+                        border: none;
+                        padding: 6px 10px;
+                        border-radius: 4px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 2px 8px rgba(138, 43, 226, 0.3);
+                    " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        BB
+                    </button>
+                    <button class="elite-indicator-btn" onclick="addSupportResistance('eliteChart')" style="
+                        background: linear-gradient(135deg, #00ff88, #4dff4d);
+                        color: black;
+                        border: none;
+                        padding: 6px 10px;
+                        border-radius: 4px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 2px 8px rgba(0, 255, 136, 0.3);
+                    " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        S/R
+                    </button>
+                    <button class="elite-indicator-btn" onclick="addTrendLines('eliteChart')" style="
+                        background: linear-gradient(135deg, #ff3366, #ff6b9d);
+                        color: white;
+                        border: none;
+                        padding: 6px 10px;
+                        border-radius: 4px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 2px 8px rgba(255, 51, 102, 0.3);
+                    " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        TREND
+                    </button>
+                    <button class="elite-indicator-btn" onclick="clearIndicators('eliteChart')" style="
+                        background: linear-gradient(135deg, #666, #888);
+                        color: white;
+                        border: none;
+                        padding: 6px 10px;
+                        border-radius: 4px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 2px 8px rgba(102, 102, 102, 0.3);
+                    " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        CLEAR
+                    </button>
+                </div>
             </div>
             
             <!-- Chart Bottom Section -->
@@ -2089,6 +2450,147 @@
                     <button class="chart-trade-btn short-btn" onclick="sendTrade('quantum', 'short')">SHORT</button>
                     <button class="chart-trade-btn hedge-btn" onclick="sendTrade('quantum', 'hedge')">HEDGE</button>
                     <button class="chart-trade-btn kill-btn" onclick="sendTrade('quantum', 'kill')">KILL</button>
+                </div>
+                
+                <!-- Quantum Chart Type Switcher -->
+                <div class="quantum-chart-type-controls" style="
+                    position: absolute;
+                    top: 10px;
+                    left: 10px;
+                    display: flex;
+                    gap: 5px;
+                    z-index: 25;
+                ">
+                    <button class="chart-type-btn" onclick="switchChartType('quantum', 'candlestick')" style="
+                        background: linear-gradient(135deg, #00ffff, #4dffff);
+                        color: black;
+                        border: 1px solid #00ffff;
+                        border-radius: 6px;
+                        padding: 4px 8px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        🕯️
+                    </button>
+                    <button class="chart-type-btn" onclick="switchChartType('quantum', 'line')" style="
+                        background: linear-gradient(135deg, #00ff88, #4dff9d);
+                        color: black;
+                        border: 1px solid #00ff88;
+                        border-radius: 6px;
+                        padding: 4px 8px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        📈
+                    </button>
+                    <button class="chart-type-btn" onclick="switchChartType('quantum', 'bar')" style="
+                        background: linear-gradient(135deg, #ffd700, #ffed4e);
+                        color: black;
+                        border: 1px solid #ffd700;
+                        border-radius: 6px;
+                        padding: 4px 8px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        📊
+                    </button>
+                    <button class="chart-type-btn" onclick="switchChartType('quantum', 'scatter')" style="
+                        background: linear-gradient(135deg, #8a2be2, #9932cc);
+                        color: white;
+                        border: 1px solid #8a2be2;
+                        border-radius: 6px;
+                        padding: 4px 8px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        🔵
+                    </button>
+                </div>
+                
+                <!-- Technical Analysis Controls -->
+                <div class="indicator-controls" style="
+                    position: absolute;
+                    bottom: 80px;
+                    right: 20px;
+                    display: flex;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                    max-width: 300px;
+                    z-index: 20;
+                ">
+                    <button class="indicator-btn" onclick="addFibonacciLevels('quantumChart')" style="
+                        background: linear-gradient(135deg, #ffd700, #ffed4e);
+                        color: black;
+                        border: none;
+                        padding: 6px 10px;
+                        border-radius: 4px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        FIB
+                    </button>
+                    <button class="indicator-btn" onclick="addBollingerBands('quantumChart')" style="
+                        background: linear-gradient(135deg, #8a2be2, #9932cc);
+                        color: white;
+                        border: none;
+                        padding: 6px 10px;
+                        border-radius: 4px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        BB
+                    </button>
+                    <button class="indicator-btn" onclick="addSupportResistance('quantumChart')" style="
+                        background: linear-gradient(135deg, #00ff88, #4dff4d);
+                        color: black;
+                        border: none;
+                        padding: 6px 10px;
+                        border-radius: 4px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        S/R
+                    </button>
+                    <button class="indicator-btn" onclick="addTrendLines('quantumChart')" style="
+                        background: linear-gradient(135deg, #ff3366, #ff6b9d);
+                        color: white;
+                        border: none;
+                        padding: 6px 10px;
+                        border-radius: 4px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        TREND
+                    </button>
+                    <button class="indicator-btn" onclick="clearIndicators('quantumChart')" style="
+                        background: linear-gradient(135deg, #666, #888);
+                        color: white;
+                        border: none;
+                        padding: 6px 10px;
+                        border-radius: 4px;
+                        font-size: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        CLEAR
+                    </button>
                 </div>
                 <!-- Quantum Standalone Confidence Box -->
                 <div class="standalone-confidence-box" id="quantumConfidenceBox" style="top: 120px;">
@@ -2252,12 +2754,12 @@
         </div>
     </div>
     
-    <!-- The Mover AI Clone Chat Box -->
-    <div id="moverChatBox" class="mover-chat-container">
+    <!-- Trai AI Clone Chat Box -->
+    <div id="traiChatBox" class="trai-chat-container">
         <div class="chat-header">
             <div class="chat-title">
-                <span class="mover-avatar">🤖</span>
-                <span>The Mover AI Clone</span>
+                <span class="trai-avatar">🤖</span>
+                <span>Trai AI Clone</span>
                 <span class="chat-status">Online</span>
             </div>
             <div class="chat-controls">
@@ -2269,14 +2771,14 @@
         <div class="chat-messages" id="chatMessages">
             <div class="message bot-message">
                 <div class="message-content">
-                    <strong>The Mover:</strong> Hey there! I'm The Mover AI Clone. Ask me anything about trading, the bots, market analysis, or just chat! I'm here to help you dominate these markets. 💪
+                    <strong>Trai:</strong> Hey there! I'm Trai, your AI trading clone. Ask me anything about trading, the bots, market analysis, or just chat! I'm here to help you dominate these markets. 💪
                 </div>
                 <div class="message-time">Just now</div>
             </div>
         </div>
         
         <div class="chat-input-section">
-            <input type="text" id="chatInput" placeholder="Ask The Mover anything about trading..." />
+            <input type="text" id="chatInput" placeholder="Ask Trai anything about trading..." />
             <button id="sendMessage" class="send-btn">Send</button>
         </div>
     </div>
@@ -2284,7 +2786,7 @@
     <!-- Chat Toggle Button -->
     <button id="toggleChat" class="chat-toggle-btn">
         <span class="chat-icon">💬</span>
-        <span class="chat-label">Chat with The Mover</span>
+        <span class="chat-label">Chat with Trai</span>
     </button>
 
     <!-- Educational Ticker -->
@@ -2302,6 +2804,14 @@
     </div>
     
     <script>
+        // Boot guard - prevent double initialization
+        if (window.__OGZ_BOOT__) { 
+            console.warn('🚫 OGZ: duplicate boot ignored'); 
+            throw new Error('Dashboard already initialized');
+        }
+        window.__OGZ_BOOT__ = true;
+        console.count('INIT main bundle loaded');
+        
         // CRITICAL: WebSocket connection to 127.0.0.1:3010 ONLY - NO FAKE DATA
         let ws = null;
         let reconnectAttempts = 0;
@@ -2309,10 +2819,535 @@
         const charts = {};
         const startTime = Date.now();
         
+        // Performance optimization variables
+        const lastSeen = new Map(); // key: symbol -> {v:number, seq:number}
+        const pendingUpdates = new Map(); // symbol -> {price, seq, ts}
+        let legacyRafId = null;
+        let latestSeq = 0;
+        let pingTimer = null;
+        let deathTimer = null;
+        const PING_MS = 15000;
+        const TIMEOUT_MS = 35000;
+        let backoff = 1000;
+        
+        // Asset precision configuration
+        const assetPrecision = {
+            'BTC-USD': 2,
+            'ETH-USD': 2,
+            'SOL-USD': 3,
+            'XRP-USD': 4,
+            'MATIC-USD': 4,
+            'ADA-USD': 4,
+            'DOT-USD': 3,
+            'LINK-USD': 3
+        };
+        
+        // Performance metrics
+        const metrics = {
+            recv: 0,
+            proc: 0,
+            dedup: 0,
+            dropped: 0,
+            lag: [],
+            bytesPerSec: 0
+        };
+        const botStartTimes = {};
+        
         // WebSocket URL - connects through nginx proxy
         const wsUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
             ? 'ws://127.0.0.1:3010/ws'
             : 'wss://ogzprime.com/ws';
+        
+        // WebSocket singleton to prevent duplicate connections
+        const wsClient = {
+            ws: null,
+            connected: false,
+            subscribers: new Set(),
+            
+            connect(url) {
+                if (this.ws && (this.ws.readyState === 0 || this.ws.readyState === 1)) {
+                    console.log('🔌 WebSocket already connected/connecting');
+                    return this.ws;
+                }
+                
+                console.log('🔌 Creating new WebSocket connection to:', url);
+                this.ws = new WebSocket(url);
+                
+                this.ws.addEventListener('open', () => {
+                    this.connected = true;
+                    console.log('✅ WebSocket Connected!');
+                    reconnectAttempts = 0;
+                    backoff = 1000; // Reset backoff
+                    
+                    // Update status
+                    document.querySelectorAll('.status-dot').forEach(dot => {
+                        dot.style.background = '#00ff00';
+                    });
+                    document.getElementById('elite-status').textContent = 'Elite Bot: Connected';
+                    document.getElementById('quantum-status').textContent = 'Quantum Bot: Connected';
+                    
+                    // Start heartbeat monitoring
+                    startHeartbeat();
+                    
+                    // Request backfill since last timestamp
+                    const since = localStorage.getItem('lastCandleTs') || (Date.now() - 5*60*1000);
+                    this.send({
+                        type: 'resubscribe',
+                        symbols: Object.values(selectedAssets),
+                        since: parseInt(since)
+                    });
+                    
+                    // Send identification
+                    this.send({
+                        type: 'identify',
+                        source: 'dashboard',
+                        clientType: 'ultimate-dashboard'
+                    });
+                    
+                    // Remove loading messages
+                    document.querySelectorAll('.loading-message').forEach(msg => {
+                        msg.style.display = 'none';
+                    });
+                });
+                
+                this.ws.addEventListener('close', (event) => {
+                    this.connected = false;
+                    console.log('❌ WebSocket disconnected, code:', event.code, 'reason:', event.reason);
+                    
+                    // Clear heartbeat timers
+                    clearInterval(pingTimer);
+                    clearTimeout(deathTimer);
+                    
+                    // Update status
+                    document.querySelectorAll('.status-dot').forEach(dot => {
+                        dot.style.background = '#ff0040';
+                    });
+                    document.getElementById('elite-status').textContent = 'Elite Bot: Disconnected';
+                    document.getElementById('quantum-status').textContent = 'Quantum Bot: Disconnected';
+                    
+                    // Save last timestamp for backfill
+                    localStorage.setItem('lastCandleTs', Date.now().toString());
+                    
+                    // Use exponential backoff reconnection
+                    if (reconnectAttempts < 20) {
+                        reconnectAttempts++;
+                        safeReconnect(`connection-closed-${event.code}`);
+                    } else {
+                        console.error('❌ Max reconnection attempts reached');
+                    }
+                });
+                
+                this.ws.addEventListener('message', (event) => {
+                    let msg;
+                    try { 
+                        msg = JSON.parse(event.data); 
+                    } catch (e) { 
+                        console.error('Failed to parse WebSocket message:', e);
+                        return; 
+                    }
+                    
+                    // Track bytes received for metrics
+                    metrics.bytesPerSec += event.data.length;
+                    
+                    // Fanout to all subscribers with error isolation
+                    this.subscribers.forEach(fn => {
+                        try { 
+                            fn(msg); 
+                        } catch (e) { 
+                            console.error('Subscriber error:', e); 
+                        }
+                    });
+                });
+                
+                return this.ws;
+            },
+            
+            subscribe(fn) {
+                this.subscribers.add(fn);
+                return () => this.subscribers.delete(fn);
+            },
+            
+            isConnected() {
+                return this.connected;
+            },
+            
+            send(data) {
+                if (this.ws && this.ws.readyState === 1) {
+                    this.ws.send(typeof data === 'string' ? data : JSON.stringify(data));
+                }
+            }
+        };
+        
+        // Bulletproof frame coalescing
+        const frameBuf = new Map(); // symbol -> { price, seq, ts }
+        let rafId = 0;
+        const lastAppliedSeq = new Map();
+        
+        // Global authoritative price cache
+        const lastPrice = new Map(); // symbol -> { price, seq, ts }
+        
+        // Single price formatting site
+        const dp = { 'BTC-USD': 2, 'XRP-USD': 4, 'MATIC-USD': 4 };
+        const fmt = (sym, n) => '$' + Number(n).toFixed(dp[sym] ?? 2);
+        
+        // Safe P&L updater with once-warn
+        const onceWarn = (() => {
+            let seen = false;
+            return (...args) => { if (!seen) { seen = true; console.warn(...args); } };
+        })();
+
+        function safeUpdatePnl(sym, price) {
+            const fn = window.updateProfitLossDisplays;
+            if (typeof fn !== 'function') { 
+                onceWarn('⚠️ P&L updater missing, skipping (define updateProfitLossDisplays)');
+                return;
+            }
+            try { fn({ symbol: sym, price }); } 
+            catch (e) { onceWarn('⚠️ P&L updater threw once:', e); }
+        }
+
+        // Throttled P&L updates (2Hz)
+        const pnlDirty = new Set();
+        let pnlTimer = 0;
+
+        function markPnlDirty(sym) { 
+            pnlDirty.add(sym); 
+            schedulePnl(); 
+        }
+
+        function schedulePnl() {
+            if (pnlTimer) return;
+            pnlTimer = setTimeout(flushPnl, 500);
+        }
+
+        function flushPnl() {
+            pnlTimer = 0;
+            for (const sym of pnlDirty) {
+                const px = latestPrice(sym);
+                if (px == null) continue;          // quietly skip until primed
+                safeUpdatePnl(sym, px);
+            }
+            pnlDirty.clear();
+        }
+
+        // Replace any ad hoc getCurrentPrice()
+        function latestPrice(sym) {
+            const p = lastPrice.get(sym);
+            return p ? p.price : null;
+        }
+
+        // Define P&L updater to eliminate warning
+        window.updateProfitLossDisplays = function({ symbol, price }) {
+            // Update P&L displays for this symbol/price
+            // This connects to existing P&L update logic
+            try {
+                updateUnrealizedPnL('elite', price);
+                updateUnrealizedPnL('quantum', price);
+            } catch (e) {
+                // Silently handle missing P&L functions
+            }
+        };
+
+        function applyToCharts(sym, price, seq) {
+            // Single logging site only
+            console.log(`📈 Updating ${sym} charts with price: ${fmt(sym, price)}`);
+            if (sym === selectedAssets.elite) {
+                updateChart('elite', price);
+            }
+            if (sym === selectedAssets.quantum) {
+                updateChart('quantum', price);
+            }
+            
+            // Mark P&L dirty for throttled updates
+            markPnlDirty(sym);
+        }
+        
+        function queuePrice(symbol, price, seq, ts) {
+            const cur = frameBuf.get(symbol);
+            if (!cur || seq > cur.seq) {
+                if (cur) metrics.dedup++;        // overwrite within the same frame is DEDUP, not drop
+                frameBuf.set(symbol, { price, seq, ts });
+            } else {
+                metrics.dedup++;                  // older or equal seq is also DEDUP
+                return;
+            }
+
+            if (rafId) return;                  // a flush is already scheduled
+
+            rafId = requestAnimationFrame(() => {
+                try {
+                    flushFrame();
+                } catch (e) {
+                    console.error('RAF flush error', e);
+                } finally {
+                    frameBuf.clear();
+                    rafId = 0;                      // ALWAYS reset so future frames schedule
+                }
+            });
+        }
+        
+        function flushFrame() {
+            for (const [sym, p] of frameBuf) {
+                const prev = lastAppliedSeq.get(sym) ?? -1;
+                if (p.seq <= prev) {              // truly stale across frames → count as drop
+                    metrics.dropped++;
+                    continue;
+                }
+                lastAppliedSeq.set(sym, p.seq);
+                applyToCharts(sym, p.price, p.seq);
+                metrics.proc++;
+            }
+        }
+        
+        // Performance utility functions
+        function formatPrice(symbol, price) {
+            const dp = assetPrecision[symbol] ?? 2;
+            return Number(price).toFixed(dp);
+        }
+        
+        function handlePriceDeduped(msg) {
+            const { symbol, price, seq, ts } = msg.data || {};
+            
+            // Schema validation
+            if (!symbol || !Number.isFinite(price) || !Number.isInteger(seq)) {
+                console.warn('Invalid price message:', msg);
+                return;
+            }
+            
+            metrics.recv++;
+            if (ts) metrics.lag.push(Date.now() - ts);
+            
+            // Update authoritative price cache
+            const cur = lastPrice.get(symbol);
+            if (!cur || seq > cur.seq) {
+                lastPrice.set(symbol, { price, seq, ts });
+            }
+            
+            // Use bulletproof coalescer AND keep legacy path
+            queuePrice(symbol, price, seq, ts);
+            
+            // Keep existing legacy fallback
+            const prev = lastSeen.get(symbol);
+            if (prev && prev.v === price && prev.seq === seq) {
+                return;
+            }
+            lastSeen.set(symbol, { v: price, seq });
+            scheduleChartUpdate(symbol, price, seq, ts || Date.now());
+        }
+        
+        function scheduleChartUpdate(symbol, price, seq, ts) {
+            pendingUpdates.set(symbol, { price, seq, ts });
+            
+            if (legacyRafId) return;
+            
+            legacyRafId = requestAnimationFrame(() => {
+                performance.mark('batch_update_start');
+                
+                for (const [sym, data] of pendingUpdates) {
+                    // Calculate end-to-end latency
+                    const latency = Date.now() - data.ts;
+                    
+                    // Update charts for matching assets
+                    if (sym === selectedAssets.elite) {
+                        updateChart('elite', data.price);
+                        updateUnrealizedPnL('elite', data.price);
+                    }
+                    
+                    if (sym === selectedAssets.quantum) {
+                        updateChart('quantum', data.price);
+                        updateUnrealizedPnL('quantum', data.price);
+                    }
+                    
+                    // Update price display for major assets
+                    if (sym.includes('BTC') || sym.includes('ETH') || sym.includes('SOL')) {
+                        updatePriceDisplay(data.price);
+                    }
+                    
+                    metrics.proc++;
+                }
+                
+                pendingUpdates.clear();
+                legacyRafId = null;
+                
+                performance.mark('batch_update_end');
+                performance.measure('batch_update', 'batch_update_start', 'batch_update_end');
+            });
+        }
+        
+        function handlePatternResult(res) {
+            // Guard against stale pattern analysis results
+            if (res.seq < latestSeq) {
+                console.log('🚫 Dropping stale pattern result, seq:', res.seq, 'latest:', latestSeq);
+                return;
+            }
+            latestSeq = res.seq;
+            
+            // Call the actual pattern update function
+            if (res.patterns && res.botTier) {
+                updatePatterns(res.botTier, res.patterns);
+            }
+        }
+        
+        function startHeartbeat() {
+            clearInterval(pingTimer);
+            clearTimeout(deathTimer);
+            
+            pingTimer = setInterval(() => {
+                if (wsClient.isConnected()) {
+                    wsClient.send({ type: 'ping', t: Date.now() });
+                    deathTimer = setTimeout(() => safeReconnect('heartbeat-timeout'), TIMEOUT_MS);
+                }
+            }, PING_MS);
+        }
+        
+        function handlePong() {
+            clearTimeout(deathTimer);
+            console.log('💓 Heartbeat OK');
+        }
+        
+        function safeReconnect(reason) {
+            console.log('🔄 Reconnecting due to:', reason);
+            try { 
+                ws?.close(); 
+            } catch (e) {
+                console.log('Error closing WebSocket:', e);
+            }
+            backoffReconnect(reason);
+        }
+        
+        function backoffReconnect(reason) {
+            console.log(`⏱️ Reconnecting in ${backoff}ms due to: ${reason}`);
+            setTimeout(() => {
+                wsClient.connect(wsUrl);
+            }, backoff);
+            backoff = Math.min(backoff * 2, 30000); // Max 30 second backoff
+        }
+        
+        function logMetrics() {
+            const avgLat = metrics.lag.length > 0 ? metrics.lag.reduce((a,b) => a+b, 0) / metrics.lag.length : 0;
+            const performanceData = {
+                ticksReceived: metrics.recv,
+                ticksProcessed: metrics.proc,
+                dedupeRate: Math.round(metrics.dedup / Math.max(metrics.recv, 1) * 100),
+                dropped: metrics.dropped,
+                avgLatencyMs: Math.round(avgLat),
+                uptime: Math.round((Date.now() - (window.startTime || Date.now())) / 1000),
+                memoryUsage: performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1024 / 1024) + 'MB' : 'N/A'
+            };
+            
+            console.log('📊 Performance Metrics:', performanceData);
+            
+            // Update performance display on dashboard
+            updatePerformanceDisplay(performanceData);
+            
+            // Clear lag samples after logging
+            metrics.lag = [];
+        }
+        
+        function updatePerformanceDisplay(data) {
+            // Find or create performance metrics display
+            let perfDisplay = document.getElementById('performance-metrics');
+            if (!perfDisplay) {
+                // Create performance metrics panel
+                perfDisplay = document.createElement('div');
+                perfDisplay.id = 'performance-metrics';
+                perfDisplay.className = 'performance-panel';
+                perfDisplay.style.cssText = `
+                    position: fixed;
+                    bottom: 60px;
+                    left: 20px;
+                    background: rgba(0, 0, 0, 0.9);
+                    border: 1px solid #ff0040;
+                    border-radius: 8px;
+                    padding: 12px;
+                    color: #fff;
+                    font-size: 11px;
+                    font-family: monospace;
+                    z-index: 1000;
+                    min-width: 200px;
+                    backdrop-filter: blur(10px);
+                `;
+                document.body.appendChild(perfDisplay);
+            }
+            
+            // Update display with current metrics
+            perfDisplay.innerHTML = `
+                <div style="color: #00ff41; font-weight: bold; margin-bottom: 8px;">⚡ System Performance</div>
+                <div>📡 Ticks Received: <span style="color: #00ff41;">${data.ticksReceived}</span></div>
+                <div>⚙️ Processed: <span style="color: #00ff41;">${data.ticksProcessed}</span></div>
+                <div>🔄 Dedupe Rate: <span style="color: #ffd700;">${data.dedupeRate}%</span></div>
+                <div>📉 Dropped: <span style="color: ${data.dropped > 0 ? '#ff3333' : '#00ff41'}">${data.dropped}</span></div>
+                <div>⏱️ Avg Latency: <span style="color: #00bfff;">${data.avgLatencyMs}ms</span></div>
+                <div>🕒 Uptime: <span style="color: #ffd700;">${data.uptime}s</span></div>
+                <div>💾 Memory: <span style="color: #00bfff;">${data.memoryUsage}</span></div>
+            `;
+        }
+        
+        function clearFakeData() {
+            console.log('🧹 Clearing all fake/demo data displays');
+            
+            // Clear pattern analysis displays
+            const patternAnalysisElements = document.querySelectorAll('[id*="PatternAnalysis"]');
+            patternAnalysisElements.forEach(el => {
+                el.innerHTML = '<div class="pattern-waiting">Waiting for real pattern data...</div>';
+            });
+            
+            // Clear decision logs
+            const decisionLogs = document.querySelectorAll('[id*="DecisionLog"]');
+            decisionLogs.forEach(log => {
+                log.innerHTML = '<div class="log-waiting">Waiting for real trade data...</div>';
+            });
+            
+            // Clear neuromorphic brain displays
+            const brainModules = document.querySelectorAll('.brain-module');
+            brainModules.forEach(module => {
+                const voteEl = module.querySelector('[id*="Vote"]');
+                const confEl = module.querySelector('[id*="Conf"]');
+                if (voteEl) voteEl.textContent = '--';
+                if (confEl) confEl.textContent = '--%';
+                module.classList.remove('high-confidence');
+                module.style.animation = 'none';
+            });
+            
+            console.log('✅ All fake data cleared - displaying only real WebSocket data');
+        }
+        
+        // Teardown function for cleanup during reconnects/reloads
+        function teardown() {
+            console.log('🧹 Cleaning up OGZ Prime dashboard');
+            
+            // Stop performance timer
+            if (window.__OGZ_PERF_TIMER__) {
+                clearInterval(window.__OGZ_PERF_TIMER__);
+                window.__OGZ_PERF_TIMER__ = null;
+            }
+            
+            // Clear heartbeat timers
+            clearInterval(pingTimer);
+            clearTimeout(deathTimer);
+            
+            // Cancel any pending RAF
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = 0;
+                frameBuf.clear();
+            }
+            if (legacyRafId) {
+                cancelAnimationFrame(legacyRafId);
+                legacyRafId = null;
+                pendingUpdates.clear();
+            }
+            
+            // Unsubscribe from WebSocket
+            if (typeof unsubscribePrice === 'function') {
+                unsubscribePrice();
+            }
+            
+            console.log('✅ Teardown complete');
+        }
+        
+        // Expose teardown for debugging
+        window.ogzTeardown = teardown;
         
         // Trade tracking system
         const tradeHistory = {
@@ -2354,10 +3389,16 @@
                         },
                         beforeBody: function(context) {
                             const timestamp = context[0].parsed.x;
-                            const price = context[0].parsed.y;
+                            let price = context[0].parsed.y;
+                            
+                            // Handle candlestick data format
+                            if (!price && context[0].raw) {
+                                price = context[0].raw.c || context[0].raw;
+                            }
+                            
                             const trade = findTradeAtTime(context[0].chart.canvas.id, timestamp);
                             
-                            let lines = [`💰 Price: $${price.toLocaleString()}`];
+                            let lines = [`💰 Price: $${price ? Number(price).toLocaleString() : 'N/A'}`];
                             
                             if (trade) {
                                 const actionIcon = getTradeIcon(trade.action);
@@ -2423,18 +3464,20 @@
         // Initialize charts with annotations support
         const eliteCtx = document.getElementById('eliteChart').getContext('2d');
         charts.elite = new Chart(eliteCtx, {
-            type: 'line',
+            type: 'candlestick',
             data: {
                 labels: [],
                 datasets: [{
-                    label: 'Price',
+                    label: 'OHLC',
                     data: [],
                     borderColor: '#ffd700',
                     backgroundColor: 'rgba(255, 215, 0, 0.1)',
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    pointHoverRadius: 6
+                    color: {
+                        up: '#00ff41',
+                        down: '#ff0041',
+                        unchanged: '#ffd700'
+                    },
+                    borderWidth: 1
                 }]
             },
             options: {
@@ -2444,16 +3487,20 @@
         
         const quantumCtx = document.getElementById('quantumChart').getContext('2d');
         charts.quantum = new Chart(quantumCtx, {
-            type: 'line',
+            type: 'candlestick',
             data: {
                 labels: [],
                 datasets: [{
-                    label: 'Price',
+                    label: 'OHLC',
                     data: [],
                     borderColor: '#00ffff',
                     backgroundColor: 'rgba(0, 255, 255, 0.1)',
-                    tension: 0.4,
-                    borderWidth: 2
+                    color: {
+                        up: '#00ff41',
+                        down: '#ff0041',
+                        unchanged: '#00ffff'
+                    },
+                    borderWidth: 1
                 }]
             },
             options: {
@@ -2488,110 +3535,40 @@
             });
         });
 
-        // WebSocket connection - REAL DATA ONLY
-        function connectWebSocket() {
-            
-            try {
-                // Connect to VPS on port 3010
-                console.log('🔌 Connecting to:', wsUrl);
-                ws = new WebSocket(wsUrl);
-                
-                ws.onopen = () => {
-                    console.log('✅ WebSocket Connected!');
-                    reconnectAttempts = 0;
-                    
-                    // Update status
-                    document.querySelectorAll('.status-dot').forEach(dot => {
-                        dot.style.background = '#00ff00';
-                    });
-                    document.getElementById('elite-status').textContent = 'Elite Bot: Connected';
-                    document.getElementById('quantum-status').textContent = 'Quantum Bot: Connected';
-                    
-                    // Send identification
-                    ws.send(JSON.stringify({
-                        type: 'identify',
-                        source: 'dashboard',
-                        clientType: 'ultimate-dashboard'
-                    }));
-                    
-                    // Remove loading messages
-                    document.querySelectorAll('.loading-message').forEach(msg => {
-                        msg.style.display = 'none';
-                    });
-                };
-                
-                ws.onmessage = (event) => {
-                    try {
-                        const data = JSON.parse(event.data);
-                        handleWebSocketMessage(data);
-                    } catch (err) {
-                        console.error('Error parsing message:', err);
-                    }
-                };
-                
-                ws.onerror = (error) => {
-                    console.error('WebSocket error:', error);
-                };
-                
-                ws.onclose = () => {
-                    console.log('WebSocket disconnected');
-                    
-                    // Update status
-                    document.querySelectorAll('.status-dot').forEach(dot => {
-                        dot.style.background = '#ff0040';
-                    });
-                    document.getElementById('elite-status').textContent = 'Elite Bot: Disconnected';
-                    document.getElementById('quantum-status').textContent = 'Quantum Bot: Disconnected';
-                    
-                    // Reconnect with exponential backoff
-                    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), maxReconnectDelay);
-                    reconnectAttempts++;
-                    console.log(`Reconnecting in ${delay}ms...`);
-                    setTimeout(connectWebSocket, delay);
-                };
-                
-            } catch (error) {
-                console.error('Failed to create WebSocket:', error);
-            }
-        }
+        // Old connectWebSocket function removed - using wsClient singleton only
+        
+        // System message deduplication
+        let lastWelcomeKey = null;
         
         // Handle WebSocket messages - REAL DATA ONLY
         function handleWebSocketMessage(data) {
-            console.log('🔌 WebSocket message received:', data.type, data);
+            // Message logging and deduplication now handled in subscriber
+            // This function only processes the message content
+            
             switch(data.type) {
                 case 'ping':
                     // Respond to ping
-                    ws.send(JSON.stringify({
+                    wsClient.send({
                         type: 'pong',
                         timestamp: Date.now()
-                    }));
+                    });
+                    break;
+                    
+                case 'pong':
+                    handlePong();
                     break;
                     
                 case 'price':
-                    // Update charts with REAL price data
-                    console.log('📊 Received price data:', data);
+                    // Use optimized price handling with deduplication and batching
                     if (data.data && data.data.price) {
-                        const price = data.data.price;
-                        const asset = data.data.asset || 'BTC-USD';
-                        
-                        console.log(`📊 Price update: ${asset} = $${price}`); // Debug log
-                        
-                        // Update Elite chart if this asset matches selected asset
-                        if (asset === selectedAssets.elite) {
-                            updateChart('elite', price);
-                            updateUnrealizedPnL('elite', price);
-                        }
-                        
-                        // Update Quantum chart if this asset matches selected asset  
-                        if (asset === selectedAssets.quantum) {
-                            updateChart('quantum', price);
-                            updateUnrealizedPnL('quantum', price);
-                        }
-                        
-                        // Update current asset display for any major asset
-                        if (asset.includes('BTC') || asset.includes('ETH') || asset.includes('SOL')) {
-                            updatePriceDisplay(price);
-                        }
+                        handlePriceDeduped({
+                            data: {
+                                symbol: data.data.asset || 'BTC-USD',
+                                price: data.data.price,
+                                seq: data.seq || Date.now(),
+                                ts: data.timestamp || Date.now()
+                            }
+                        });
                     }
                     break;
                     
@@ -2645,9 +3622,13 @@
                     break;
                     
                 case 'pattern':
-                    // Update pattern recognition
+                    // Update pattern recognition with sequence guarding
                     if (data.botTier && data.patterns) {
-                        updatePatterns(data.botTier, data.patterns);
+                        handlePatternResult({
+                            seq: data.seq || Date.now(),
+                            patterns: data.patterns,
+                            botTier: data.botTier
+                        });
                     }
                     break;
                     
@@ -2658,10 +3639,10 @@
                     }
                     break;
                     
-                case 'mover_response':
-                    // Handle The Mover AI response
+                case 'trai_response':
+                    // Handle Trai AI response
                     if (data.message) {
-                        console.log('💬 Received Mover AI response:', data.message);
+                        console.log('💬 Received Trai AI response:', data.message);
                         addMessageToChat('bot', data.message);
                     }
                     break;
@@ -2670,7 +3651,7 @@
         
         // Update chart with real data
         function updateChart(botType, price) {
-            console.log(`📈 Updating ${botType} chart with price: $${price}`);
+            // Logging moved to centralized paintCharts function to prevent duplicates
             const chart = charts[botType];
             if (!chart) {
                 console.error(`❌ Chart not found for bot type: ${botType}`);
@@ -2678,12 +3659,32 @@
             }
             
             const now = new Date();
-            console.log(`📈 Updating ${botType} chart with price: $${price}`); // Debug log
             
-            chart.data.labels.push(now);
-            chart.data.datasets[0].data.push(price);
+            // For candlestick charts, we need OHLC data
+            // Since we only have current price, create a simple candle
+            const lastCandle = chart.data.datasets[0].data[chart.data.datasets[0].data.length - 1];
+            let candleData;
             
-            // Keep last 50 points
+            if (!lastCandle || (now - new Date(chart.data.labels[chart.data.labels.length - 1])) > 10000) {
+                // New candle (every 10 seconds for testing)
+                candleData = {
+                    x: now.getTime(),
+                    o: price, // open
+                    h: price, // high
+                    l: price, // low
+                    c: price  // close
+                };
+                chart.data.labels.push(now);
+                chart.data.datasets[0].data.push(candleData);
+            } else {
+                // Update current candle
+                const currentCandle = chart.data.datasets[0].data[chart.data.datasets[0].data.length - 1];
+                currentCandle.h = Math.max(currentCandle.h, price); // Update high
+                currentCandle.l = Math.min(currentCandle.l, price); // Update low  
+                currentCandle.c = price; // Update close
+            }
+            
+            // Keep last 50 candles
             if (chart.data.labels.length > 50) {
                 chart.data.labels.shift();
                 chart.data.datasets[0].data.shift();
@@ -2693,21 +3694,68 @@
         }
         
         // Update price display
-        function updatePriceDisplay(price) {
+        function updatePriceDisplay(price, symbol = 'BTC-USD') {
+            const formattedPrice = formatPrice(symbol, price);
+            
+            // Update any price display elements
             const priceElements = document.querySelectorAll('.info-value');
-            // You could update specific price displays here
+            priceElements.forEach(el => {
+                if (el.textContent.includes('$')) {
+                    el.textContent = `$${formattedPrice}`;
+                }
+            });
+            
+            // Store last price for current candle timestamp
+            localStorage.setItem('lastCandleTs', Date.now().toString());
         }
         
         // Add to decision log
         function addDecisionLog(botType, data) {
-            const logId = botType === 'elite' ? 'eliteDecisionLog' : 'quantumDecisionLog';
+            // Map all bot types to their decision log elements
+            const logIdMap = {
+                'elite': 'eliteDecisionLog',
+                'quantum': 'quantumDecisionLog', 
+                'pro': 'quantumDecisionLog',  // Pro trades go to quantum section
+                'starter': 'eliteDecisionLog'  // Starter trades go to elite section
+            };
+            
+            const logId = logIdMap[botType] || 'quantumDecisionLog';
             const log = document.getElementById(logId);
+            
+            if (!log) {
+                console.warn(`Decision log element not found: ${logId}`);
+                return;
+            }
             
             const entry = document.createElement('div');
             entry.className = 'decision-entry';
+            
+            // Fix time display - use current time with proper formatting
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            
+            // Enhanced trade display with P&L, confidence, and pattern info
+            const pnlText = data.pnl ? `P&L: ${data.pnl > 0 ? '+' : ''}$${data.pnl.toFixed(2)}` : '';
+            const confidenceText = data.confidence ? `${data.confidence}%` : '';
+            const patternText = data.pattern ? `${data.pattern}` : '';
+            const botTierBadge = botType ? `[${botType.toUpperCase()}]` : '';
+            
             entry.innerHTML = `
-                <span>${data.action} @ $${data.price.toFixed(2)} - ${data.reason || 'Manual'}</span>
-                <span class="timestamp">${new Date().toLocaleTimeString()}</span>
+                <div class="trade-header">
+                    <span class="decision-action ${data.action.toLowerCase()}">${botTierBadge} ${data.action} @ $${data.price.toFixed(2)}</span>
+                    ${pnlText ? `<span class="pnl ${data.pnl > 0 ? 'profit' : 'loss'}">${pnlText}</span>` : ''}
+                </div>
+                <div class="trade-details">
+                    <span class="decision-reason">${data.reason || 'Manual Trade'}</span>
+                    ${confidenceText ? `<span class="confidence">⚡${confidenceText}</span>` : ''}
+                    ${patternText ? `<span class="pattern">📊${patternText}</span>` : ''}
+                </div>
+                <span class="timestamp">${timeString}</span>
             `;
             
             log.insertBefore(entry, log.firstChild);
@@ -2716,26 +3764,83 @@
             while (log.children.length > 10) {
                 log.removeChild(log.lastChild);
             }
+            
+            console.log(`📝 Added decision log entry for ${botType}: ${data.action} @ ${data.price}`);
         }
         
         // Update bot metrics
         function updateBotMetrics(botType, data) {
-            const prefix = botType === 'elite' ? 'elite' : 'quantum';
+            // Map all bot types to their display sections
+            const prefixMap = {
+                'elite': 'elite',
+                'quantum': 'quantum',
+                'pro': 'quantum',     // Pro metrics go to quantum section
+                'starter': 'elite'    // Starter metrics go to elite section
+            };
             
+            const prefix = prefixMap[botType] || 'quantum';
+            
+            // Update P&L
             if (data.pnl !== undefined) {
                 const pnlEl = document.getElementById(prefix + 'Pnl');
-                pnlEl.textContent = `${data.pnl >= 0 ? '+' : ''}$${Math.abs(data.pnl).toFixed(2)}`;
-                pnlEl.className = data.pnl >= 0 ? 'info-value positive' : 'info-value negative';
+                const topPnlEl = document.getElementById(prefix + 'TopPnL');
+                const pnlText = `${data.pnl >= 0 ? '+' : ''}$${Math.abs(data.pnl).toFixed(2)}`;
+                
+                if (pnlEl) {
+                    pnlEl.textContent = pnlText;
+                    pnlEl.className = data.pnl >= 0 ? 'info-value positive' : 'info-value negative';
+                }
+                if (topPnlEl) {
+                    topPnlEl.textContent = pnlText;
+                    topPnlEl.style.color = data.pnl >= 0 ? '#00ff88' : '#ff3366';
+                }
             }
             
+            // Update position
             if (data.position) {
-                document.getElementById(prefix + 'Position').textContent = data.position;
+                const posEl = document.getElementById(prefix + 'Position');
+                if (posEl) posEl.textContent = data.position;
             }
+            
+            // Update confidence  
+            if (data.confidence !== undefined) {
+                const confEl = document.getElementById(prefix + 'Confidence');
+                const topConfEl = document.getElementById(prefix + 'TopConfidence');
+                if (confEl) confEl.textContent = `${data.confidence}%`;
+                if (topConfEl) topConfEl.textContent = `${data.confidence}%`;
+            }
+            
+            // Update drawdown
+            if (data.drawdown !== undefined) {
+                const ddEl = document.getElementById(prefix + 'Drawdown');
+                const topDdEl = document.getElementById(prefix + 'TopDrawdown');
+                const ddText = `${data.drawdown.toFixed(1)}%`;
+                if (ddEl) ddEl.textContent = ddText;
+                if (topDdEl) topDdEl.textContent = ddText;
+            }
+            
+            // Update runtime (calculate from start time)
+            if (!botStartTimes[botType]) {
+                botStartTimes[botType] = Date.now();
+            }
+            const elapsed = Date.now() - botStartTimes[botType];
+            const minutes = Math.floor(elapsed / 60000);
+            const hours = Math.floor(minutes / 60);
+            const timeStr = hours > 0 ? `${hours}h ${minutes % 60}m` : `${minutes}m`;
+            
+            const runtimeEl = document.getElementById(prefix + 'Runtime');
+            const topRuntimeEl = document.getElementById(prefix + 'TopRuntime');
+            if (runtimeEl) runtimeEl.textContent = timeStr;
+            if (topRuntimeEl) topRuntimeEl.textContent = timeStr;
             
             // Update decision count
             const decisionsEl = document.getElementById(prefix + 'Decisions');
-            const currentCount = parseInt(decisionsEl.textContent) || 0;
-            decisionsEl.textContent = currentCount + 1;
+            if (decisionsEl) {
+                const currentCount = parseInt(decisionsEl.textContent) || 0;
+                decisionsEl.textContent = currentCount + 1;
+            }
+            
+            console.log(`📊 Updated ${botType} metrics: P&L=${data.pnl}, Confidence=${data.confidence}%, Runtime=${timeStr}`);
         }
         
         // Update indicators
@@ -2924,19 +4029,7 @@
         }
         
         // Send trade command
-        function sendTrade(botType, action) {
-            if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
-                    type: 'manual_trade',
-                    botType: botType,
-                    action: action,
-                    timestamp: Date.now()
-                }));
-                
-                // Show immediate feedback
-                showTradeNotification(botType, action, 'sending');
-            }
-        }
+        // Removed duplicate - better version is below
         
         // Add trade symbol to chart
         function addTradeSymbolToChart(botType, action, price, data = {}) {
@@ -2951,6 +4044,11 @@
             
             // Track the trade in our system
             const trade = trackTrade(botType, action, price, data);
+            
+            // Auto-deploy technical indicators on trade execution
+            if (action !== 'hold' && action !== 'wait') {
+                setTimeout(() => deployIndicatorsOnTrade(botType, action, price), 100);
+            }
             
             // Add annotation if chart.js annotation plugin is available
             if (chart.options.plugins && chart.options.plugins.annotation) {
@@ -3264,8 +4362,65 @@
             }
         }, 1000); // Update every second for real-time duration tracking
         
+        // Message throttling to prevent console spam
+        const messageThrottle = new Map();
+        const THROTTLE_WINDOW = 5000; // 5 seconds
+        
+        function shouldLogMessage(type, subtype = '') {
+            const key = `${type}:${subtype}`;
+            const now = Date.now();
+            const lastLogged = messageThrottle.get(key) || 0;
+            
+            if (now - lastLogged > THROTTLE_WINDOW) {
+                messageThrottle.set(key, now);
+                return true;
+            }
+            return false;
+        }
+        
+        // Connect to WebSocket using singleton client
+        const unsubscribePrice = wsClient.subscribe((msg) => {
+            // Gate system/welcome messages to prevent duplicates
+            if (msg.type === 'system' && msg.action === 'welcome') {
+                const key = `${msg.clientId}:${msg.timestamp}`;
+                if (lastWelcomeKey === key) return;
+                lastWelcomeKey = key;
+                console.log('🔌 WebSocket message: system welcome');
+                handleWebSocketMessage(msg);
+                return; // Skip duplicate logging below
+            }
+            
+            // Throttled logging - only important messages, max once per 5 seconds
+            if (msg.type !== 'price' && msg.type !== 'pong' && shouldLogMessage(msg.type, msg.action)) {
+                console.log('🔌 WebSocket message:', msg.type, msg.action || '');
+            }
+            
+            // Handle different message types
+            handleWebSocketMessage(msg);
+        });
+        
         // Connect to WebSocket immediately
-        connectWebSocket();
+        wsClient.connect(wsUrl);
+        
+        // Track system start time for performance metrics
+        window.startTime = Date.now();
+        
+        // Clear any existing fake data and initialize real-only systems
+        clearFakeData();
+        startPatternAnalysis();
+        
+        // Start performance metrics logging (singleton)
+        if (!window.__OGZ_PERF_TIMER__) {
+            console.count('PERF interval started');
+            window.__OGZ_PERF_TIMER__ = setInterval(() => {
+                logMetrics();
+                // Reset byte counter periodically
+                metrics.bytesPerSec = 0;
+            }, 10000); // Log every 10 seconds
+        }
+        
+        // Neuromorphic updates now only happen via real WebSocket ensemble data
+        // Demo data generation removed - only real AI brain voting data will update displays
         
         // Ping interval to keep connection alive
         setInterval(() => {
@@ -3277,8 +4432,8 @@
             }
         }, 30000);
         
-        // The Mover AI Clone Chat Functionality
-        const chatBox = document.getElementById('moverChatBox');
+        // Trai AI Clone Chat Functionality
+        const chatBox = document.getElementById('traiChatBox');
         const toggleChatBtn = document.getElementById('toggleChat');
         const closeChatBtn = document.getElementById('closeChat');
         const minimizeChatBtn = document.getElementById('minimizeChat');
@@ -3327,15 +4482,15 @@
             addMessageToChat('user', message);
             chatInput.value = '';
             
-            // Send message to The Mover AI via WebSocket
+            // Send message to Trai AI via WebSocket
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
-                    type: 'mover_chat',
+                    type: 'trai_chat',
                     message: message,
                     timestamp: Date.now()
                 }));
                 
-                console.log('💬 Sent message to The Mover AI:', message);
+                console.log('💬 Sent message to Trai AI:', message);
             } else {
                 // Fallback if WebSocket not available
                 console.warn('WebSocket not connected, using fallback response');
@@ -3355,7 +4510,7 @@
             
             messageDiv.innerHTML = `
                 <div class="message-content">
-                    ${type === 'bot' ? '<strong>The Mover:</strong> ' : ''}${content}
+                    ${type === 'bot' ? '<strong>Trai:</strong> ' : ''}${content}
                 </div>
                 <div class="message-time">${timeString}</div>
             `;
@@ -3458,6 +4613,663 @@
             }
             
             console.log(`📊 Updated ${botType} status:`, statusData);
+        }
+        
+        // ==========================================
+        // ADVANCED TECHNICAL ANALYSIS OVERLAY SYSTEM
+        // ==========================================
+        
+        // Fibonacci retracement levels
+        function addFibonacciLevels(chartId, entryPrice, direction = 'up') {
+            const chart = Chart.getChart(chartId);
+            if (!chart) return;
+            
+            const data = chart.data.datasets[0].data;
+            if (!data || data.length < 20) return;
+            
+            // Calculate swing high/low for Fibonacci
+            const recentData = data.slice(-50);
+            const high = Math.max(...recentData.map(d => d.y));
+            const low = Math.min(...recentData.map(d => d.y));
+            
+            const fibLevels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1.0];
+            const range = high - low;
+            
+            const fibAnnotations = fibLevels.map(level => ({
+                type: 'line',
+                yMin: direction === 'up' ? low + (range * level) : high - (range * level),
+                yMax: direction === 'up' ? low + (range * level) : high - (range * level),
+                borderColor: `rgba(255, 215, 0, ${0.8 - level * 0.1})`,
+                borderWidth: 2,
+                borderDash: [5, 5],
+                label: {
+                    content: `Fib ${(level * 100).toFixed(1)}%`,
+                    enabled: true,
+                    position: 'end',
+                    backgroundColor: 'rgba(255, 215, 0, 0.8)',
+                    color: 'black',
+                    font: { size: 10 }
+                }
+            }));
+            
+            // Add to existing annotations
+            if (!chart.options.plugins.annotation) {
+                chart.options.plugins.annotation = { annotations: {} };
+            }
+            
+            fibAnnotations.forEach((annotation, index) => {
+                chart.options.plugins.annotation.annotations[`fib_${index}_${Date.now()}`] = annotation;
+            });
+            
+            chart.update('none');
+            console.log(`🌀 Added Fibonacci levels to ${chartId}`);
+        }
+        
+        // Bollinger Bands overlay
+        function addBollingerBands(chartId, period = 20, multiplier = 2) {
+            const chart = Chart.getChart(chartId);
+            if (!chart) return;
+            
+            const data = chart.data.datasets[0].data;
+            if (!data || data.length < period) return;
+            
+            // Calculate Bollinger Bands
+            const recentData = data.slice(-period);
+            const sma = recentData.reduce((sum, d) => sum + d.y, 0) / period;
+            const variance = recentData.reduce((sum, d) => sum + Math.pow(d.y - sma, 2), 0) / period;
+            const stdDev = Math.sqrt(variance);
+            
+            const upperBand = sma + (stdDev * multiplier);
+            const lowerBand = sma - (stdDev * multiplier);
+            
+            // Add Bollinger Band lines
+            const bbAnnotations = {
+                bb_upper: {
+                    type: 'line',
+                    yMin: upperBand,
+                    yMax: upperBand,
+                    borderColor: 'rgba(138, 43, 226, 0.8)',
+                    borderWidth: 2,
+                    label: {
+                        content: `BB Upper: $${upperBand.toFixed(2)}`,
+                        enabled: true,
+                        position: 'start',
+                        backgroundColor: 'rgba(138, 43, 226, 0.8)'
+                    }
+                },
+                bb_middle: {
+                    type: 'line',
+                    yMin: sma,
+                    yMax: sma,
+                    borderColor: 'rgba(138, 43, 226, 0.5)',
+                    borderWidth: 1,
+                    borderDash: [3, 3],
+                    label: {
+                        content: `SMA: $${sma.toFixed(2)}`,
+                        enabled: true,
+                        position: 'start',
+                        backgroundColor: 'rgba(138, 43, 226, 0.5)'
+                    }
+                },
+                bb_lower: {
+                    type: 'line',
+                    yMin: lowerBand,
+                    yMax: lowerBand,
+                    borderColor: 'rgba(138, 43, 226, 0.8)',
+                    borderWidth: 2,
+                    label: {
+                        content: `BB Lower: $${lowerBand.toFixed(2)}`,
+                        enabled: true,
+                        position: 'start',
+                        backgroundColor: 'rgba(138, 43, 226, 0.8)'
+                    }
+                }
+            };
+            
+            if (!chart.options.plugins.annotation) {
+                chart.options.plugins.annotation = { annotations: {} };
+            }
+            
+            Object.assign(chart.options.plugins.annotation.annotations, bbAnnotations);
+            chart.update('none');
+            console.log(`📊 Added Bollinger Bands to ${chartId}`);
+        }
+        
+        // Support and Resistance levels
+        function addSupportResistance(chartId) {
+            const chart = Chart.getChart(chartId);
+            if (!chart) return;
+            
+            const data = chart.data.datasets[0].data;
+            if (!data || data.length < 50) return;
+            
+            // Find support and resistance levels
+            const prices = data.slice(-100).map(d => d.y);
+            const levels = findSupportResistanceLevels(prices);
+            
+            const srAnnotations = {};
+            
+            levels.support.forEach((level, index) => {
+                srAnnotations[`support_${index}`] = {
+                    type: 'line',
+                    yMin: level,
+                    yMax: level,
+                    borderColor: 'rgba(0, 255, 136, 0.8)',
+                    borderWidth: 2,
+                    borderDash: [10, 5],
+                    label: {
+                        content: `Support: $${level.toFixed(2)}`,
+                        enabled: true,
+                        position: 'start',
+                        backgroundColor: 'rgba(0, 255, 136, 0.8)',
+                        color: 'black'
+                    }
+                };
+            });
+            
+            levels.resistance.forEach((level, index) => {
+                srAnnotations[`resistance_${index}`] = {
+                    type: 'line',
+                    yMin: level,
+                    yMax: level,
+                    borderColor: 'rgba(255, 51, 102, 0.8)',
+                    borderWidth: 2,
+                    borderDash: [10, 5],
+                    label: {
+                        content: `Resistance: $${level.toFixed(2)}`,
+                        enabled: true,
+                        position: 'end',
+                        backgroundColor: 'rgba(255, 51, 102, 0.8)',
+                        color: 'white'
+                    }
+                };
+            });
+            
+            if (!chart.options.plugins.annotation) {
+                chart.options.plugins.annotation = { annotations: {} };
+            }
+            
+            Object.assign(chart.options.plugins.annotation.annotations, srAnnotations);
+            chart.update('none');
+            console.log(`🎯 Added Support/Resistance levels to ${chartId}`);
+        }
+        
+        // Helper function to find support/resistance levels
+        function findSupportResistanceLevels(prices) {
+            const levels = { support: [], resistance: [] };
+            const threshold = 0.01; // 1% threshold for level clustering
+            
+            // Find local minima (support) and maxima (resistance)
+            for (let i = 2; i < prices.length - 2; i++) {
+                const current = prices[i];
+                const prev2 = prices[i - 2];
+                const prev1 = prices[i - 1];
+                const next1 = prices[i + 1];
+                const next2 = prices[i + 2];
+                
+                // Local minimum (support)
+                if (current < prev2 && current < prev1 && current < next1 && current < next2) {
+                    levels.support.push(current);
+                }
+                
+                // Local maximum (resistance)
+                if (current > prev2 && current > prev1 && current > next1 && current > next2) {
+                    levels.resistance.push(current);
+                }
+            }
+            
+            // Remove duplicates and keep only strongest levels
+            levels.support = levels.support.sort((a, b) => a - b).slice(0, 3);
+            levels.resistance = levels.resistance.sort((a, b) => b - a).slice(0, 3);
+            
+            return levels;
+        }
+        
+        // RSI Visual Indicator
+        function addRSIIndicator(chartId, data) {
+            const chart = Chart.getChart(chartId);
+            if (!chart) return;
+            
+            const prices = data.slice(-14).map(d => d.y);
+            if (prices.length < 14) return;
+            
+            // Calculate RSI
+            const rsi = calculateRSI(prices);
+            
+            let rsiColor = 'rgba(255, 215, 0, 0.8)'; // Neutral
+            let rsiLabel = 'RSI: NEUTRAL';
+            
+            if (rsi > 70) {
+                rsiColor = 'rgba(255, 51, 102, 0.9)'; // Overbought
+                rsiLabel = `RSI: OVERBOUGHT (${rsi.toFixed(1)})`;
+            } else if (rsi < 30) {
+                rsiColor = 'rgba(0, 255, 136, 0.9)'; // Oversold
+                rsiLabel = `RSI: OVERSOLD (${rsi.toFixed(1)})`;
+            } else {
+                rsiLabel = `RSI: ${rsi.toFixed(1)}`;
+            }
+            
+            // Add RSI annotation
+            const rsiAnnotation = {
+                rsi_indicator: {
+                    type: 'label',
+                    xValue: data[data.length - 1].x,
+                    yValue: data[data.length - 1].y,
+                    backgroundColor: rsiColor,
+                    color: 'white',
+                    content: rsiLabel,
+                    font: {
+                        size: 12,
+                        weight: 'bold'
+                    },
+                    padding: 8,
+                    borderRadius: 6,
+                    position: 'center'
+                }
+            };
+            
+            if (!chart.options.plugins.annotation) {
+                chart.options.plugins.annotation = { annotations: {} };
+            }
+            
+            Object.assign(chart.options.plugins.annotation.annotations, rsiAnnotation);
+            chart.update('none');
+        }
+        
+        // Helper function to calculate RSI
+        function calculateRSI(prices, period = 14) {
+            if (prices.length < period) return 50;
+            
+            const changes = [];
+            for (let i = 1; i < prices.length; i++) {
+                changes.push(prices[i] - prices[i - 1]);
+            }
+            
+            const gains = changes.map(change => change > 0 ? change : 0);
+            const losses = changes.map(change => change < 0 ? -change : 0);
+            
+            const avgGain = gains.slice(-period).reduce((sum, gain) => sum + gain, 0) / period;
+            const avgLoss = losses.slice(-period).reduce((sum, loss) => sum + loss, 0) / period;
+            
+            if (avgLoss === 0) return 100;
+            const rs = avgGain / avgLoss;
+            const rsi = 100 - (100 / (1 + rs));
+            
+            return rsi;
+        }
+        
+        // Trend Line Detection and Drawing
+        function addTrendLines(chartId) {
+            const chart = Chart.getChart(chartId);
+            if (!chart) return;
+            
+            const data = chart.data.datasets[0].data;
+            if (!data || data.length < 20) return;
+            
+            const recentData = data.slice(-50);
+            const trendLines = detectTrendLines(recentData);
+            
+            const trendAnnotations = {};
+            
+            trendLines.forEach((line, index) => {
+                trendAnnotations[`trend_${index}_${Date.now()}`] = {
+                    type: 'line',
+                    xMin: line.start.x,
+                    xMax: line.end.x,
+                    yMin: line.start.y,
+                    yMax: line.end.y,
+                    borderColor: line.direction === 'up' ? 'rgba(0, 255, 136, 0.8)' : 'rgba(255, 51, 102, 0.8)',
+                    borderWidth: 3,
+                    label: {
+                        content: `${line.direction.toUpperCase()} TREND`,
+                        enabled: true,
+                        position: 'center',
+                        backgroundColor: line.direction === 'up' ? 'rgba(0, 255, 136, 0.8)' : 'rgba(255, 51, 102, 0.8)',
+                        color: 'white'
+                    }
+                };
+            });
+            
+            if (!chart.options.plugins.annotation) {
+                chart.options.plugins.annotation = { annotations: {} };
+            }
+            
+            Object.assign(chart.options.plugins.annotation.annotations, trendAnnotations);
+            chart.update('none');
+            console.log(`📈 Added trend lines to ${chartId}`);
+        }
+        
+        // Helper function to detect trend lines
+        function detectTrendLines(data) {
+            const trendLines = [];
+            
+            // Simple trend detection - find significant highs and lows
+            const highs = [];
+            const lows = [];
+            
+            for (let i = 2; i < data.length - 2; i++) {
+                const current = data[i];
+                
+                // Check for local high
+                if (current.y > data[i-1].y && current.y > data[i+1].y && 
+                    current.y > data[i-2].y && current.y > data[i+2].y) {
+                    highs.push(current);
+                }
+                
+                // Check for local low  
+                if (current.y < data[i-1].y && current.y < data[i+1].y &&
+                    current.y < data[i-2].y && current.y < data[i+2].y) {
+                    lows.push(current);
+                }
+            }
+            
+            // Connect highs for resistance trend
+            if (highs.length >= 2) {
+                const start = highs[highs.length - 2];
+                const end = highs[highs.length - 1];
+                const slope = (end.y - start.y) / (end.x - start.x);
+                
+                trendLines.push({
+                    start: start,
+                    end: end,
+                    direction: slope > 0 ? 'up' : 'down',
+                    type: 'resistance'
+                });
+            }
+            
+            // Connect lows for support trend
+            if (lows.length >= 2) {
+                const start = lows[lows.length - 2];
+                const end = lows[lows.length - 1];
+                const slope = (end.y - start.y) / (end.x - start.x);
+                
+                trendLines.push({
+                    start: start,
+                    end: end,
+                    direction: slope > 0 ? 'up' : 'down',
+                    type: 'support'
+                });
+            }
+            
+            return trendLines;
+        }
+        
+        // Auto-deploy indicators on new trade
+        function deployIndicatorsOnTrade(botType, action, price) {
+            const chartId = botType === 'elite' ? 'eliteChart' : 'quantumChart';
+            
+            // Add Fibonacci levels based on trade direction
+            const direction = (action === 'buy' || action === 'long') ? 'up' : 'down';
+            addFibonacciLevels(chartId, price, direction);
+            
+            // Add other indicators with small delays to prevent overload
+            setTimeout(() => addBollingerBands(chartId), 500);
+            setTimeout(() => addSupportResistance(chartId), 1000);
+            setTimeout(() => addTrendLines(chartId), 1500);
+            
+            console.log(`🎯 Deployed full technical analysis suite on ${botType} trade`);
+        }
+        
+        // Clear all indicators from chart
+        // Chart Type Switcher Function
+        function switchChartType(botType, chartType) {
+            const chart = charts[botType];
+            if (!chart) {
+                console.error(`Chart not found for bot type: ${botType}`);
+                return;
+            }
+            
+            console.log(`🔄 Switching ${botType} chart to ${chartType} type`);
+            
+            // Store current data
+            const currentData = chart.data.datasets[0].data.slice();
+            const currentLabels = chart.data.labels.slice();
+            
+            // Update chart type
+            chart.config.type = chartType;
+            
+            // Update dataset configuration based on chart type
+            if (chartType === 'candlestick') {
+                chart.data.datasets[0] = {
+                    label: 'OHLC',
+                    data: currentData,
+                    borderColor: botType === 'elite' ? '#ffd700' : '#00ffff',
+                    backgroundColor: botType === 'elite' ? 'rgba(255, 215, 0, 0.1)' : 'rgba(0, 255, 255, 0.1)',
+                    color: {
+                        up: '#00ff41',
+                        down: '#ff0041',
+                        unchanged: botType === 'elite' ? '#ffd700' : '#00ffff'
+                    },
+                    borderWidth: 1
+                };
+            } else if (chartType === 'line') {
+                // Convert OHLC data to simple price points for line chart
+                const lineData = currentData.map(candle => {
+                    if (typeof candle === 'object' && candle.c) {
+                        return candle.c; // Use close price
+                    }
+                    return candle; // Already a simple value
+                });
+                
+                chart.data.datasets[0] = {
+                    label: 'Price',
+                    data: lineData,
+                    borderColor: botType === 'elite' ? '#ffd700' : '#00ffff',
+                    backgroundColor: botType === 'elite' ? 'rgba(255, 215, 0, 0.1)' : 'rgba(0, 255, 255, 0.1)',
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    pointHoverRadius: 6
+                };
+            } else if (chartType === 'bar') {
+                // Convert data for bar chart
+                const barData = currentData.map(candle => {
+                    if (typeof candle === 'object' && candle.c) {
+                        return candle.c; // Use close price
+                    }
+                    return candle;
+                });
+                
+                chart.data.datasets[0] = {
+                    label: 'Price',
+                    data: barData,
+                    borderColor: botType === 'elite' ? '#ffd700' : '#00ffff',
+                    backgroundColor: botType === 'elite' ? 'rgba(255, 215, 0, 0.3)' : 'rgba(0, 255, 255, 0.3)',
+                    borderWidth: 1
+                };
+            } else if (chartType === 'scatter') {
+                // Convert data for scatter plot
+                const scatterData = currentData.map((candle, index) => {
+                    const price = typeof candle === 'object' && candle.c ? candle.c : candle;
+                    return {
+                        x: currentLabels[index] || index,
+                        y: price
+                    };
+                });
+                
+                chart.data.datasets[0] = {
+                    label: 'Price Points',
+                    data: scatterData,
+                    borderColor: botType === 'elite' ? '#ffd700' : '#00ffff',
+                    backgroundColor: botType === 'elite' ? 'rgba(255, 215, 0, 0.6)' : 'rgba(0, 255, 255, 0.6)',
+                    pointRadius: 3,
+                    pointHoverRadius: 6
+                };
+            }
+            
+            // Update and redraw chart
+            chart.update('none');
+            
+            // Visual feedback - briefly highlight active button
+            const buttons = document.querySelectorAll(`${botType}-chart-type-controls .chart-type-btn`);
+            buttons.forEach(btn => btn.style.boxShadow = 'none');
+            
+            // Find and highlight the active button
+            const activeButton = event.target;
+            activeButton.style.boxShadow = '0 0 10px rgba(255, 255, 255, 0.5)';
+            setTimeout(() => {
+                activeButton.style.boxShadow = 'none';
+            }, 1000);
+            
+            console.log(`✅ Successfully switched ${botType} chart to ${chartType}`);
+        }
+
+        function clearIndicators(chartId) {
+            const chart = Chart.getChart(chartId);
+            if (!chart || !chart.options.plugins.annotation) return;
+            
+            // Clear all annotation-based indicators
+            const annotations = chart.options.plugins.annotation.annotations;
+            Object.keys(annotations).forEach(key => {
+                if (key.includes('fib_') || key.includes('bb_') || key.includes('support_') || 
+                    key.includes('resistance_') || key.includes('trend_') || key.includes('rsi_')) {
+                    delete annotations[key];
+                }
+            });
+            
+            chart.update('none');
+            console.log(`🧹 Cleared all indicators from ${chartId}`);
+        }
+
+        // Manual trading function
+        function sendTrade(botType, action) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                showTradeNotification(botType, action, 'error', 'WebSocket not connected');
+                return;
+            }
+            
+            console.log(`🎯 Sending manual trade: ${botType} ${action}`);
+            
+            // Get current price for the trade
+            const currentPrice = getCurrentPrice(botType);
+            
+            const tradeMessage = {
+                type: 'manual_trade',
+                botType: botType,
+                action: action,
+                price: currentPrice,
+                timestamp: Date.now()
+            };
+            
+            ws.send(JSON.stringify(tradeMessage));
+            
+            // Create immediate local feedback with real data only
+            const tradeData = {
+                action: action.toUpperCase(),
+                price: currentPrice,
+                reason: 'Manual Trade',
+                pnl: 0, // Will be updated when real P&L is calculated
+                confidence: null, // Will be updated from real analysis
+                drawdown: null, // Will be updated from real risk metrics
+                timestamp: new Date().toISOString()
+            };
+            
+            // Update displays immediately for better UX
+            addDecisionLog(botType, tradeData);
+            updateBotMetrics(botType, tradeData);
+            addTradeSymbolToChart(botType, action, currentPrice, tradeData);
+            
+            showTradeNotification(botType, action, 'pending');
+        }
+        
+        // Get current price for bot type
+        function getCurrentPrice(botType) {
+            const chart = charts[botType];
+            if (chart && chart.data.datasets[0].data.length > 0) {
+                const lastData = chart.data.datasets[0].data[chart.data.datasets[0].data.length - 1];
+                return typeof lastData === 'object' && lastData.c ? lastData.c : lastData;
+            }
+            // Return null if no real chart data - no fake prices
+            console.warn(`No real price data available for ${botType} chart`);
+            return null;
+        }
+        
+        // Update pattern analysis display with real data only
+        function updatePatternAnalysis(botType, patternData) {
+            const analysisId = botType === 'elite' ? 'elitePatternAnalysis' : 'quantumPatternAnalysis';
+            const analysisEl = document.getElementById(analysisId);
+            
+            if (!analysisEl || !patternData) {
+                console.log(`No real pattern data available for ${botType}`);
+                return;
+            }
+            
+            // Only use real pattern data from WebSocket
+            const pattern = patternData.pattern || 'No Pattern Detected';
+            const confidence = patternData.confidence || 0;
+            const bullish = patternData.bullish || false;
+            
+            analysisEl.innerHTML = `
+                <div class="pattern-visual">
+                    <div class="pattern-indicator ${bullish ? 'bullish' : 'bearish'}"></div>
+                    <span class="pattern-name">${pattern}</span>
+                </div>
+                <div class="pattern-confidence">${confidence}% confidence</div>
+                <div class="pattern-signal ${bullish ? 'bullish' : 'bearish'}">
+                    ${bullish ? '🟢 Bullish Signal' : '🔴 Bearish Signal'}
+                </div>
+            `;
+            
+            console.log(`📈 Real pattern analysis for ${botType}: ${pattern} (${confidence}%)`);
+        }
+        
+        // Pattern analysis updates now only happen via real WebSocket pattern data
+        function startPatternAnalysis() {
+            console.log('🔬 Pattern analysis will be updated via WebSocket data only');
+            // Demo pattern generation removed - waiting for real pattern recognition data
+        }
+        
+        // Trade notification system
+        function showTradeNotification(botType, action, status, error = '') {
+            const notification = document.createElement('div');
+            notification.className = `trade-notification ${status}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: bold;
+                z-index: 1000;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255,255,255,0.2);
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            
+            // Enhanced notification with trade details
+            const tradeData = window.lastTradeData || {};
+            let message = `[${botType.toUpperCase()}] ${action.toUpperCase()}`;
+            if (tradeData.price) message += ` @ $${tradeData.price.toFixed(2)}`;
+            if (tradeData.pnl) message += ` | P&L: ${tradeData.pnl > 0 ? '+' : ''}$${tradeData.pnl.toFixed(2)}`;
+            
+            switch(status) {
+                case 'pending':
+                    notification.style.background = 'rgba(255, 215, 0, 0.9)';
+                    message += ' - Processing...';
+                    break;
+                case 'success':
+                    notification.style.background = 'rgba(0, 255, 136, 0.9)';
+                    message += ' - Sent!';
+                    break;
+                case 'error':
+                    notification.style.background = 'rgba(255, 51, 102, 0.9)';
+                    message += ` - Error: ${error}`;
+                    break;
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Fade in
+            setTimeout(() => notification.style.opacity = '1', 100);
+            
+            // Auto remove
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
         }
     </script>
 </body>

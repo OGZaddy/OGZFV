@@ -278,7 +278,7 @@ class ProBot {
         if (action === 'SELL' && this.positions.length > 0) {
             const position = this.positions.shift();
             pnl = (this.currentPrice - position.price) * position.size;
-            pnl -= pnl * 0.034; // Apply 3.4% fees
+            pnl -= Math.abs(pnl) * 0.012; // Apply 1.2% total costs (middle ground: exchange + slippage + gas + broker)
         } else if (action === 'BUY') {
             this.positions.push({
                 price: this.currentPrice,

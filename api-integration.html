@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OGZPrime API - Developer Integration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3a 100%);
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 2px solid #4f46e5;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(45deg, #4f46e5, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+        
+        .live-status {
+            display: inline-flex;
+            align-items: center;
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .pricing-tiers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .tier-card {
+            background: rgba(15, 15, 35, 0.8);
+            border: 1px solid #4f46e5;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .tier-card:hover {
+            transform: translateY(-5px);
+            border-color: #06b6d4;
+        }
+        
+        .tier-name {
+            font-size: 1.5rem;
+            color: #4f46e5;
+            margin-bottom: 10px;
+        }
+        
+        .tier-price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #10b981;
+            margin-bottom: 20px;
+        }
+        
+        .tier-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+        
+        .tier-features li {
+            padding: 5px 0;
+            color: #94a3b8;
+        }
+        
+        .tier-features li:before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        .api-section {
+            background: rgba(15, 15, 35, 0.6);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid #334155;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: #4f46e5;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: "🚀";
+            margin-right: 10px;
+        }
+        
+        .code-block {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            color: #e2e8f0;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .copy-btn:hover {
+            background: #3730a3;
+        }
+        
+        .endpoint-card {
+            background: rgba(79, 70, 229, 0.1);
+            border: 1px solid #4f46e5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .endpoint-method {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+        
+        .endpoint-url {
+            font-family: 'Courier New', monospace;
+            color: #06b6d4;
+            font-weight: bold;
+        }
+        
+        .live-test {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .test-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background 0.3s ease;
+        }
+        
+        .test-btn:hover {
+            background: #059669;
+        }
+        
+        .test-output {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .websocket-demo {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid #06b6d4;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        #wsStatus {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+        
+        .ws-connected {
+            background: #10b981;
+            color: white;
+        }
+        
+        .ws-disconnected {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid #334155;
+            margin-top: 50px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>OGZPrime API</h1>
+            <div class="subtitle">Professional Trading Signals API</div>
+            <div class="live-status">
+                <div class="status-dot"></div>
+                System Online • Live Trading Data
+            </div>
+        </div>
+
+        <div class="pricing-tiers">
+            <div class="tier-card">
+                <div class="tier-name">Basic</div>
+                <div class="tier-price">$97<span style="font-size:1rem;color:#64748b;">/month</span></div>
+                <ul class="tier-features">
+                    <li>REST API Access</li>
+                    <li>Latest Signals Endpoint</li>
+                    <li>100 Requests / 15 Minutes</li>
+                    <li>Email Support</li>
+                </ul>
+            </div>
+            
+            <div class="tier-card">
+                <div class="tier-name">Premium</div>
+                <div class="tier-price">$297<span style="font-size:1rem;color:#64748b;">/month</span></div>
+                <ul class="tier-features">
+                    <li>Everything in Basic</li>
+                    <li>WebSocket Real-Time Signals</li>
+                    <li>Historical Data Access</li>
+                    <li>Performance Metrics</li>
+                    <li>500 Requests / 15 Minutes</li>
+                    <li>Priority Support</li>
+                </ul>
+            </div>
+            
+            <div class="tier-card">
+                <div class="tier-name">Elite</div>
+                <div class="tier-price">$997<span style="font-size:1rem;color:#64748b;">/month</span></div>
+                <ul class="tier-features">
+                    <li>Everything in Premium</li>
+                    <li>Custom Integration Support</li>
+                    <li>Advanced Analytics</li>
+                    <li>2000 Requests / 15 Minutes</li>
+                    <li>Direct Phone Support</li>
+                    <li>White-label Options</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="api-section">
+            <div class="section-title">API Endpoints</div>
+            
+            <div class="endpoint-card">
+                <div>
+                    <span class="endpoint-method">GET</span>
+                    <span class="endpoint-url">/api/status</span>
+                </div>
+                <p>Get API status and information (No authentication required)</p>
+            </div>
+            
+            <div class="endpoint-card">
+                <div>
+                    <span class="endpoint-method">GET</span>
+                    <span class="endpoint-url">/api/signals/latest</span>
+                </div>
+                <p>Get the latest trading signals (All tiers)</p>
+            </div>
+            
+            <div class="endpoint-card">
+                <div>
+                    <span class="endpoint-method">GET</span>
+                    <span class="endpoint-url">/api/signals/history</span>
+                </div>
+                <p>Get historical signals (Premium+ only)</p>
+            </div>
+            
+            <div class="endpoint-card">
+                <div>
+                    <span class="endpoint-method">GET</span>
+                    <span class="endpoint-url">/api/performance</span>
+                </div>
+                <p>Get performance metrics and analytics (Premium+ only)</p>
+            </div>
+            
+            <div class="endpoint-card">
+                <div>
+                    <span class="endpoint-method">WS</span>
+                    <span class="endpoint-url">wss://ogzprime.com/api/realtime</span>
+                </div>
+                <p>Real-time WebSocket signals (Premium+ only)</p>
+            </div>
+        </div>
+
+        <div class="api-section">
+            <div class="section-title">Quick Start Code Examples</div>
+            
+            <h3 style="color: #4f46e5; margin: 20px 0 10px;">JavaScript / Node.js</h3>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre>
+// Get Latest Signals
+const apiKey = 'YOUR_API_KEY_HERE';
+
+fetch('https://ogzprime.com/api/signals/latest', {
+    headers: {
+        'Authorization': `Bearer ${apiKey}`
+    }
+})
+.then(response => response.json())
+.then(data => {
+    console.log('Latest signals:', data.signals);
+    data.signals.forEach(signal => {
+        console.log(`${signal.action} ${signal.symbol} at $${signal.price} (${signal.confidence}% confidence)`);
+    });
+})
+.catch(error => console.error('Error:', error));
+                </pre>
+            </div>
+            
+            <h3 style="color: #4f46e5; margin: 20px 0 10px;">WebSocket Real-Time (Premium+)</h3>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre>
+// Real-time WebSocket Connection
+const WebSocket = require('ws');
+const apiKey = 'YOUR_API_KEY_HERE';
+
+const ws = new WebSocket('wss://ogzprime.com/api/realtime', {
+    headers: { 'Authorization': `Bearer ${apiKey}` }
+});
+
+ws.on('open', () => {
+    console.log('🚀 Connected to OGZPrime real-time signals');
+});
+
+ws.on('message', (data) => {
+    const signal = JSON.parse(data);
+    
+    if (signal.type === 'trade_signal') {
+        console.log(`🔔 NEW SIGNAL: ${signal.action} ${signal.symbol} at $${signal.price}`);
+        console.log(`   Confidence: ${signal.confidence}%`);
+        console.log(`   Reasoning: ${signal.reasoning}`);
+        
+        // Your trading logic here
+        executeTradeSignal(signal);
+    }
+});
+
+ws.on('error', (error) => {
+    console.error('WebSocket error:', error);
+});
+                </pre>
+            </div>
+            
+            <h3 style="color: #4f46e5; margin: 20px 0 10px;">Python Example</h3>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre>
+import requests
+import json
+
+# Get Latest Signals
+api_key = 'YOUR_API_KEY_HERE'
+headers = {'Authorization': f'Bearer {api_key}'}
+
+response = requests.get('https://ogzprime.com/api/signals/latest', headers=headers)
+data = response.json()
+
+for signal in data['signals']:
+    print(f"{signal['action']} {signal['symbol']} at ${signal['price']} ({signal['confidence']}% confidence)")
+    
+# Get Performance Metrics (Premium+)
+perf_response = requests.get('https://ogzprime.com/api/performance', headers=headers)
+metrics = perf_response.json()
+print(f"Total signals (30 days): {metrics['metrics']['total_signals']}")
+print(f"Average confidence: {metrics['metrics']['average_confidence']}%")
+                </pre>
+            </div>
+        </div>
+
+        <div class="api-section">
+            <div class="section-title">Live API Testing</div>
+            
+            <div class="live-test">
+                <h4>Test API Endpoints</h4>
+                <p>Enter your API key to test endpoints:</p>
+                <input type="text" id="testApiKey" placeholder="Enter your API key" style="width: 300px; padding: 8px; margin: 10px 5px; background: #1e293b; color: #e2e8f0; border: 1px solid #475569; border-radius: 4px;">
+                
+                <div style="margin: 15px 0;">
+                    <button class="test-btn" onclick="testEndpoint('status')">Test Status</button>
+                    <button class="test-btn" onclick="testEndpoint('signals')">Test Latest Signals</button>
+                    <button class="test-btn" onclick="testEndpoint('performance')">Test Performance</button>
+                    <button class="test-btn" onclick="testEndpoint('account')">Test Account</button>
+                </div>
+                
+                <div class="test-output" id="testOutput">
+                    Click a test button above to see live API responses...
+                </div>
+            </div>
+        </div>
+
+        <div class="api-section">
+            <div class="section-title">WebSocket Live Demo</div>
+            
+            <div class="websocket-demo">
+                <h4>Real-Time Signal Stream</h4>
+                <p>Connect to live WebSocket for real-time signals (Premium+ required):</p>
+                
+                <input type="text" id="wsApiKey" placeholder="Enter Premium/Elite API key" style="width: 300px; padding: 8px; margin: 10px 5px; background: #1e293b; color: #e2e8f0; border: 1px solid #475569; border-radius: 4px;">
+                
+                <div style="margin: 15px 0;">
+                    <button class="test-btn" onclick="connectWebSocket()">Connect Live Stream</button>
+                    <button class="test-btn" onclick="disconnectWebSocket()">Disconnect</button>
+                    <span id="wsStatus" class="ws-disconnected">Disconnected</span>
+                </div>
+                
+                <div class="test-output" id="wsOutput">
+                    WebSocket output will appear here when connected...
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>OGZPrime API • Professional Trading Signals • Houston, TX</p>
+            <p>Support: <a href="mailto:support@ogzprime.com" style="color: #4f46e5;">support@ogzprime.com</a></p>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        
+        function copyCode(button) {
+            const codeBlock = button.parentElement.querySelector('pre');
+            navigator.clipboard.writeText(codeBlock.textContent).then(() => {
+                button.textContent = 'Copied!';
+                setTimeout(() => button.textContent = 'Copy', 2000);
+            });
+        }
+        
+        function testEndpoint(endpoint) {
+            const apiKey = document.getElementById('testApiKey').value;
+            const output = document.getElementById('testOutput');
+            
+            if (!apiKey && endpoint !== 'status') {
+                output.textContent = 'Please enter your API key first.';
+                return;
+            }
+            
+            output.textContent = `Testing ${endpoint} endpoint...`;
+            
+            const url = endpoint === 'status' 
+                ? '/api/status'
+                : `/api/${endpoint === 'signals' ? 'signals/latest' : endpoint}`;
+            
+            const options = {
+                method: 'GET',
+                headers: endpoint !== 'status' ? {
+                    'Authorization': `Bearer ${apiKey}`
+                } : {}
+            };
+            
+            fetch(url, options)
+                .then(response => response.json())
+                .then(data => {
+                    output.textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    output.textContent = `Error: ${error.message}`;
+                });
+        }
+        
+        function connectWebSocket() {
+            const apiKey = document.getElementById('wsApiKey').value;
+            const output = document.getElementById('wsOutput');
+            const status = document.getElementById('wsStatus');
+            
+            if (!apiKey) {
+                output.textContent = 'Please enter your API key first.';
+                return;
+            }
+            
+            if (ws) {
+                ws.close();
+            }
+            
+            output.textContent = 'Connecting to WebSocket...\n';
+            status.textContent = 'Connecting...';
+            status.className = 'ws-disconnected';
+            
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/api/realtime?key=${apiKey}`;
+            
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = () => {
+                output.textContent += '✅ Connected to real-time stream!\n';
+                status.textContent = 'Connected';
+                status.className = 'ws-connected';
+            };
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                const timestamp = new Date().toLocaleTimeString();
+                output.textContent += `[${timestamp}] ${JSON.stringify(data, null, 2)}\n`;
+                output.scrollTop = output.scrollHeight;
+            };
+            
+            ws.onclose = () => {
+                output.textContent += '❌ WebSocket connection closed.\n';
+                status.textContent = 'Disconnected';
+                status.className = 'ws-disconnected';
+            };
+            
+            ws.onerror = (error) => {
+                output.textContent += `❌ WebSocket error: ${error}\n`;
+                status.textContent = 'Error';
+                status.className = 'ws-disconnected';
+            };
+        }
+        
+        function disconnectWebSocket() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+        
+        // Demo data for testing
+        window.addEventListener('load', () => {
+            // Set demo API keys for easy testing
+            document.getElementById('testApiKey').value = 'basic_demo_key_123';
+            document.getElementById('wsApiKey').value = 'premium_demo_key_456';
+        });
+    </script>
+</body>
+</html>

@@ -387,7 +387,7 @@ class QuantumSingularityLauncher {
             if (this.divineModules && finalDecision.divine) {
               if (!this.entryPrice || !this.currentPrice) return;
               const realPnL = (this.currentPrice - this.entryPrice) * this.positionSize;
-              const netPnL = realPnL - (Math.abs(realPnL) * 0.034); // 3.4% fees like Elite
+              const netPnL = realPnL - (Math.abs(realPnL) * 0.012); // 1.2% total costs (middle ground: exchange + slippage + gas + broker)
               this.trades++;
               if (netPnL > 0) this.wins++;
               this.pnl += netPnL;
@@ -697,7 +697,7 @@ class QuantumSingularityLauncher {
                 let pnl = 0;
                 if (action === 'SELL' && this.entryPrice && this.positionSize > 0) {
                   const realPnL = (this.currentPrice - this.entryPrice) * this.positionSize;
-                  pnl = realPnL - (Math.abs(realPnL) * 0.034); // 3.4% fees
+                  pnl = realPnL - (Math.abs(realPnL) * 0.012); // 1.2% total costs (middle ground: exchange + slippage + gas + broker)
                   this.trades++;
                   if (pnl > 0) this.wins++;
                   this.pnl += pnl;

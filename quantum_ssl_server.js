@@ -16,11 +16,11 @@ const fs = require('fs');
 const path = require('path');
 // const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Disabled - not needed for core functionality
 
-// 🔥 IMPORT THE ADVANCED WEBSOCKET SYSTEM
-const AdvancedWebSocketBroadcastSystem = require('./core/AdvancedWebSocketBroadcastSystem');
+// 🔥 ADVANCED WEBSOCKET SYSTEM - STRIPPED OUT FOR DEBUGGING
+// const AdvancedWebSocketBroadcastSystem = require('./core/AdvancedWebSocketBroadcastSystem');
 
-// 🤖 IMPORT THE MOVER AI CLONE
-const TheMoverAIClone = require('./mover/the-mover-ai-clone');
+// 🤖 IMPORT TRAI AI SYSTEM
+const TheMoverAIClone = require('./trai/trai-core');
 
 // 🔧 INITIALIZE MODULE AUTO LOADER
 const autoLoader = require('./ModuleAutoLoader');
@@ -28,49 +28,20 @@ const autoLoader = require('./ModuleAutoLoader');
 // Set QUANTUM SSL server flag
 process.env.OGZ_QUANTUM_SSL_SERVER = 'true';
 
-// Initialize THE MOVER with persistent memory
-const mover = new TheMoverAIClone({
-  memoryPath: '/root/OGZFV-valhalla/data/mover-memory',
+// Initialize TRAI (not Mover)
+const trai = new TheMoverAIClone({
+  memoryPath: '/root/OGZFV-valhalla/data/trai-memory',
   learningRate: 0.8,
   responseStyle: 'authentic_og'
 });
 
-// Initialize the ADVANCED broadcasting system
-const broadcaster = new AdvancedWebSocketBroadcastSystem({
-  // Connection health
-  heartbeatInterval: 5000,
-  connectionTimeout: 30000,
-  
-  // Message delivery
-  messageTimeout: 3000,
-  maxRetries: 3,
-  ackTimeout: 2000,
-  
-  // Performance optimization
-  maxQueueSize: 10000,
-  batchSize: 50,
-  throttleMs: 10,
-  compressionThreshold: 1024,
-  
-  // Circuit breaker for resilience
-  circuitBreakerThreshold: 10,
-  circuitBreakerResetTime: 60000,
-  
-  // Monitoring
-  metricsInterval: 30000,
-  performanceAlertThreshold: 100
-});
+// ADVANCED BROADCASTING SYSTEM - KILLED
+// const broadcaster = new AdvancedWebSocketBroadcastSystem({...});
+// broadcaster.on('bot_disconnected', ...);
 
-// Special handling for bot connections
-broadcaster.on('bot_disconnected', (connection) => {
-  console.error('🚨 CRITICAL: Trading bot disconnected!');
-  console.error(`   Connection ID: ${connection.id}`);
-  console.error(`   Connected for: ${((Date.now() - connection.metadata.connectedAt) / 1000).toFixed(2)}s`);
-  console.error(`   Last activity: ${new Date(connection.metadata.lastActivity).toLocaleTimeString()}`);
-  
-  // Alert system - in production, this would send notifications
-  console.error('🔔 ALERT: Attempting automatic recovery...');
-});
+// SIMPLE WEBSOCKET STORAGE
+const connectedBots = new Map();
+const connectedDashboards = new Map();
 
 console.log(`[QUANTUM-SSL-${Date.now()}] QUANTUM SSL Server starting...`);
 console.log('⚛️ OGZPrime QUANTUM SSL Server with ADVANCED BROADCASTING SYSTEM');
@@ -79,6 +50,16 @@ console.log('🌌 Built for quantum supremacy operations');
 // Express setup
 const app = express();
 const apiPort = parseInt(process.env.QUANTUM_SSL_PORT) || 3010;
+
+// WEBSOCKET PATH BLOCKER - PREVENT EXPRESS FROM INTERFERING
+app.use((req, res, next) => {
+  if (req.url === '/ws') {
+    console.log('🚫 BLOCKED: WebSocket request from reaching Express middleware');
+    // Don't call next() - stop Express processing here
+    return;
+  }
+  next();
+});
 
 app.use(express.json());
 app.use((req, res, next) => {
@@ -102,48 +83,33 @@ app.get('/dashboard', (req, res) => {
   res.sendFile(dashboardPath);
 });
 
-// Enhanced status endpoint with broadcaster stats
+// SIMPLE STATUS ENDPOINT
 app.get('/api/live-status', (req, res) => {
-  const broadcasterStats = broadcaster.getStatistics();
-  
   res.json({
     balance: 10000,
     timestamp: new Date().toISOString(),
     isRunning: true,
     trades: 0,
+    connectedBots: connectedBots.size,
+    connectedDashboards: connectedDashboards.size,
     decisionsToday: 0,
     currentPrice: lastKnownPrice,
     
-    // ADVANCED METRICS
-    websocketStats: {
-      totalConnections: broadcasterStats.connections.total,
-      connectionsByType: broadcasterStats.connections.byType,
-      messageRate: broadcasterStats.performance.messagesPerSecond,
-      averageLatency: broadcasterStats.performance.averageLatency,
-      successRate: broadcasterStats.performance.successRate,
-      queuedMessages: broadcasterStats.queues.totalQueued
-    },
-    
     serverInfo: {
-      supportsSSL: true,
       wsPort: apiPort,
-      secureWsPort: 443,
-      apiPort: apiPort,
-      secureApiPort: parseInt(process.env.SSL_SECURE_PORT) || 443,
-      advancedBroadcasting: true
+      apiPort: apiPort
     }
   });
 });
 
-// System health endpoint
+// SIMPLE HEALTH ENDPOINT
 app.get('/api/health', (req, res) => {
-  const stats = broadcaster.getStatistics();
-  
   res.json({
     status: 'healthy',
     uptime: process.uptime(),
     memory: process.memoryUsage(),
-    websockets: stats,
+    connectedBots: connectedBots.size,
+    connectedDashboards: connectedDashboards.size,
     timestamp: Date.now()
   });
 });
@@ -286,18 +252,29 @@ console.log('🔄 SSL handled by nginx reverse proxy');
 console.log(`   WebSocket: wss://${process.env.DOMAIN || 'ogzprime.com'}/ws → nginx → ws://localhost:${apiPort}/ws`);
 
 // 🤖 Initialize The Mover before starting server
+// 🤖 Initialize TRAI before starting server  
 (async () => {
   try {
-    console.log('🤖 Initializing The Mover AI Clone...');
-    await mover.initializeFinalForm();
-    console.log('✅ The Mover initialized successfully!');
+    console.log('🤖 Initializing TRAI AI System...');
+    await trai.initializeFinalForm();
+    console.log('✅ TRAI initialized successfully!');
   } catch (error) {
-    console.error('❌ Failed to initialize The Mover:', error);
+    console.error('❌ Failed to initialize TRAI:', error);
   }
 })();
 
-// Regular HTTP server
-const httpServer = http.createServer(app);
+// HTTP server - INTERCEPT WEBSOCKETS BEFORE EXPRESS KILLS THEM
+const httpServer = http.createServer((req, res) => {
+  // CHECK FOR WEBSOCKET UPGRADE BEFORE EXPRESS SEES IT
+  if (req.headers.upgrade === 'websocket') {
+    console.log('🔍 WEBSOCKET UPGRADE DETECTED - BYPASSING EXPRESS');
+    // Don't respond - let upgrade event handle it
+    return;
+  }
+  
+  // Only non-WebSocket requests go to Express
+  app(req, res);
+});
 httpServer.listen(apiPort, '127.0.0.1', () => {
   console.log(`🌐 HTTP API Server running on port ${apiPort} (127.0.0.1)`);
 });
@@ -305,21 +282,33 @@ httpServer.listen(apiPort, '127.0.0.1', () => {
 // HTTPS server removed - nginx handles SSL termination
 // All connections come through nginx proxy on port 3010
 
-// Single WebSocket server on unified port
-const wss = new WebSocket.Server({ 
-  server: httpServer,
-  path: '/ws'  // Optional: use path-based routing
+// BULLETPROOF WEBSOCKET SERVER - MANUAL UPGRADE HANDLING
+const wss = new WebSocket.Server({ noServer: true });
+
+// MANUAL UPGRADE - BYPASS ALL MIDDLEWARE INTERFERENCE
+httpServer.on('upgrade', (request, socket, head) => {
+  const pathname = request.url;
+  console.log(`🔍 UPGRADE REQUEST: ${pathname}`);
+  
+  if (pathname === '/ws') {
+    console.log('✅ WebSocket upgrade approved');
+    wss.handleUpgrade(request, socket, head, (ws) => {
+      console.log('🚀 WebSocket upgrade completed');
+      wss.emit('connection', ws, request);
+    });
+  } else {
+    console.log(`❌ Unknown upgrade path: ${pathname}`);
+    socket.destroy();
+  }
 });
 
 wss.on('connection', (ws, req) => {
-  // Register ALL connections with broadcaster
-  const connectionId = broadcaster.registerClient(ws, {
-    type: 'unknown',
-    ip: req.socket.remoteAddress,
-    userAgent: req.headers['user-agent']
-  });
+  // SIMPLE CONNECTION REGISTRATION
+  const connectionId = `conn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  ws.connectionId = connectionId;
+  ws.connectionType = 'unknown';
   
-  console.log(`✅ New connection registered: ${connectionId}`);
+  console.log(`✅ New WebSocket connection: ${connectionId}`);
   
   // Handle incoming messages
   ws.on('message', async (message) => {
@@ -342,46 +331,51 @@ wss.on('connection', (ws, req) => {
         return;
       }
       
-      // Special handling for bot identification
+      // BOT IDENTIFICATION - SIMPLIFIED
       if (data.type === 'identify' && data.source === 'trading_bot') {
         console.log('🤖 TRADING BOT IDENTIFIED!');
         
-        // Update connection metadata with safety check
-        const connection = broadcaster.connections?.get(connectionId);
-        if (connection && connection.metadata) {
-          connection.metadata.type = 'bot';
-          connection.metadata.tier = data.botTier; // Store bot tier for manual trade routing
-          connection.state.priority = 'critical';
-          
-          // Send confirmation
-          broadcaster.sendDirect(connection, {
-            type: 'identification_confirmed',
-            connectionId: connectionId,
-            priority: 'critical',
-            message: 'You are now registered as a critical trading bot connection'
-          });
-          
-          console.log('✅ Trading bot successfully registered with enterprise security');
-        } else {
-          console.log('⚠️ Connection not found during bot identification');
-        }
+        // Simple bot registration
+        ws.connectionType = 'bot';
+        ws.botTier = data.botTier;
+        connectedBots.set(connectionId, {
+          ws: ws,
+          tier: data.botTier,
+          connectedAt: Date.now()
+        });
+        
+        // Send confirmation
+        ws.send(JSON.stringify({
+          type: 'identification_confirmed',
+          connectionId: connectionId,
+          message: 'Bot registered successfully'
+        }));
+        
+        console.log(`✅ Bot registered: ${data.botTier} tier`);
       }
       
-      // Special handling for dashboard identification
+      // DASHBOARD IDENTIFICATION - SIMPLIFIED
       if (data.type === 'identify' && data.source === 'dashboard') {
-        const connection = broadcaster.connections.get(connectionId);
-        if (connection) {
-          connection.metadata.type = 'dashboard';
-          console.log('📊 Dashboard identified');
-        }
+        ws.connectionType = 'dashboard';
+        connectedDashboards.set(connectionId, {
+          ws: ws,
+          connectedAt: Date.now()
+        });
+        console.log('📊 Dashboard identified');
       }
       
-      // Broadcast trade executions from bot to all clients
+      // BROADCAST TRADE EXECUTIONS - SIMPLE
       if (data.type === 'trade_executed') {
         console.log('💰 TRADE EXECUTED - Broadcasting to all clients');
-        broadcaster.broadcast(data);
         
-        // Also log the trade details
+        // Simple broadcast to all dashboards
+        connectedDashboards.forEach((dashboard) => {
+          if (dashboard.ws.readyState === WebSocket.OPEN) {
+            dashboard.ws.send(JSON.stringify(data));
+          }
+        });
+        
+        // Log trade details
         if (data.data) {
           const trade = data.data;
           console.log(`   ${trade.side?.toUpperCase()} ${trade.size} @ $${trade.price}`);
@@ -389,16 +383,15 @@ wss.on('connection', (ws, req) => {
         }
       }
       
-      // Handle manual trade commands from dashboard
+      // MANUAL TRADE COMMANDS - SIMPLE
       if (data.type === 'manual_trade') {
         console.log(`🎯 MANUAL TRADE COMMAND: ${data.botType?.toUpperCase()} - ${data.action?.toUpperCase()}`);
         
-        // Find target bot connections
+        // Find target bots
         const targetBots = [];
-        broadcaster.connections.forEach((connection, id) => {
-          if (connection.metadata?.type === 'bot' && 
-              connection.metadata?.tier === data.botType) {
-            targetBots.push(connection);
+        connectedBots.forEach((bot, id) => {
+          if (bot.tier === data.botType) {
+            targetBots.push(bot);
           }
         });
         
@@ -411,9 +404,11 @@ wss.on('connection', (ws, req) => {
             source: 'dashboard'
           };
           
-          // Send command to target bots
-          targetBots.forEach(botConnection => {
-            broadcaster.sendDirect(botConnection, tradeCommand);
+          // Send to target bots
+          targetBots.forEach(bot => {
+            if (bot.ws.readyState === WebSocket.OPEN) {
+              bot.ws.send(JSON.stringify(tradeCommand));
+            }
           });
           
           console.log(`✅ Manual trade command sent to ${targetBots.length} ${data.botType} bot(s)`);
@@ -452,9 +447,9 @@ wss.on('connection', (ws, req) => {
             return;
           }
           
-          // Generate response from The Mover
-          const reply = await mover.generateResponse(text);
-          console.log(`🤖 Mover replied: "${reply}"`);
+          // Generate response from TRAI
+          const reply = await trai.generateResponse(text);
+          console.log(`🤖 TRAI replied: "${reply}"`);
           
           // Send acknowledgment
           ws.send(JSON.stringify({ op: 'ack', action: 'mover:chat', ok: true }));
@@ -488,9 +483,9 @@ wss.on('connection', (ws, req) => {
         try {
           const status = {
             initialized: true,
-            personality: mover.config.personality,
-            conversationCount: mover.conversationHistory?.length || 0,
-            lastActivity: mover.lastActivity || null
+            personality: trai.config?.personality || 'TRAI',
+            conversationCount: trai.conversationHistory?.length || 0,
+            lastActivity: trai.lastActivity || null
           };
           
           ws.send(JSON.stringify({
@@ -514,6 +509,19 @@ wss.on('connection', (ws, req) => {
     } catch (err) {
       console.error(`Error parsing message from ${connectionId}:`, err);
     }
+  });
+  
+  // CLEANUP ON DISCONNECT
+  ws.on('close', () => {
+    console.log(`❌ Connection closed: ${connectionId}`);
+    connectedBots.delete(connectionId);
+    connectedDashboards.delete(connectionId);
+  });
+  
+  ws.on('error', (error) => {
+    console.error(`WebSocket error for ${connectionId}:`, error);
+    connectedBots.delete(connectionId);
+    connectedDashboards.delete(connectionId);
   });
 });
 
@@ -609,22 +617,28 @@ polygonSocket.on('message', (data) => {
           }
         };
         
-        // Broadcast to ALL connections with high priority
-        const result = broadcaster.broadcast(priceMessage, {
-          priority: 'high',
-          requiresAck: false // Don't require ACK for price updates
+        // SIMPLE PRICE BROADCAST
+        const message = JSON.stringify(priceMessage);
+        let sent = 0;
+        
+        // Send to all bots
+        connectedBots.forEach((bot) => {
+          if (bot.ws.readyState === WebSocket.OPEN) {
+            bot.ws.send(message);
+            sent++;
+          }
         });
         
-        // Broadcast specifically to bots with critical priority
-        broadcaster.broadcast(priceMessage, {
-          type: 'bot',
-          priority: 'critical',
-          requiresAck: true // Require ACK from bots
+        // Send to all dashboards
+        connectedDashboards.forEach((dashboard) => {
+          if (dashboard.ws.readyState === WebSocket.OPEN) {
+            dashboard.ws.send(message);
+            sent++;
+          }
         });
         
-        // Log broadcast results
-        if (result.sent > 0) {
-          console.log(`📡 Price broadcast: ${asset} $${price.toFixed(2)} to ${result.sent} clients`);
+        if (sent > 0) {
+          console.log(`📡 Price broadcast: ${asset} $${price.toFixed(2)} to ${sent} clients`);
         }
         
         // Price processed directly by broadcaster
@@ -637,13 +651,20 @@ polygonSocket.on('message', (data) => {
 
 polygonSocket.on('close', () => {
   console.warn('⚠️ Polygon WebSocket disconnected');
-  broadcaster.broadcast({
+  
+  // Simple status broadcast
+  const statusMessage = JSON.stringify({
     type: 'data_feed_status',
     status: 'disconnected',
     message: 'Polygon data feed disconnected',
     timestamp: Date.now()
-  }, {
-    priority: 'critical'
+  });
+  
+  // Broadcast to all connections
+  [...connectedBots.values(), ...connectedDashboards.values()].forEach(conn => {
+    if (conn.ws.readyState === WebSocket.OPEN) {
+      conn.ws.send(statusMessage);
+    }
   });
 });
 
@@ -651,22 +672,19 @@ polygonSocket.on('error', (err) => {
   console.error('🚨 Polygon WebSocket error:', err.message);
 });
 
-// 📊 Enhanced status monitoring
+// SIMPLE STATUS MONITORING
 setInterval(() => {
-  const stats = broadcaster.getStatistics();
-  
   console.log(`📊 SYSTEM STATUS:`);
   console.log(`   🔌 Polygon: ${polygonSocket.readyState === WebSocket.OPEN ? 'Connected ✅' : 'Disconnected ❌'}`);
   console.log(`   📊 Ticks: ${tickCount}`);
   console.log(`   💰 Balance: $10000`);
-  console.log(`   👥 Total Connections: ${stats.connections.total}`);
-  console.log(`   🤖 Bot Connections: ${stats.connections.byType.bot || 0}`);
-  console.log(`   📈 Messages/sec: ${stats.performance.messagesPerSecond.toFixed(2)}`);
-  console.log(`   ⚡ Avg Latency: ${stats.performance.averageLatency.toFixed(2)}ms`);
+  console.log(`   👥 Total Connections: ${connectedBots.size + connectedDashboards.size}`);
+  console.log(`   🤖 Bot Connections: ${connectedBots.size}`);
+  console.log(`   📱 Dashboard Connections: ${connectedDashboards.size}`);
   console.log(`   ✅ Success Rate: ${stats.performance.successRate}`);
   
   // Alert if no bot connections
-  if (!stats.connections.byType.bot || stats.connections.byType.bot === 0) {
+  if (connectedBots.size === 0) {
     console.warn('⚠️ WARNING: No trading bot connections detected!');
   }
   
@@ -676,7 +694,9 @@ setInterval(() => {
 process.on('SIGINT', () => {
   console.log('\n🛑 Shutting down SSL server...');
   
-  broadcaster.shutdown();
+  // Simple cleanup - close all connections
+  connectedBots.clear();
+  connectedDashboards.clear();
   
   if (polygonSocket.readyState === WebSocket.OPEN) {
     polygonSocket.close();

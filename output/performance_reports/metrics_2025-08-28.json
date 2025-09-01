@@ -14,7 +14,7 @@
     "sharpeRatio": 0,
     "maxDrawdown": 0,
     "currentDrawdown": 0,
-    "startTime": 1756342183259,
+    "startTime": 1756410848131,
     "lastTradeTime": null,
     "sessionDuration": 0,
     "houstonProgress": 0,
@@ -85,7 +85,7 @@
   "snapshots": {
     "minute": [
       {
-        "timestamp": 1756388203452,
+        "timestamp": 1756421948172,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -95,7 +95,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756388263452,
+        "timestamp": 1756422008172,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -105,7 +105,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756388323453,
+        "timestamp": 1756422068172,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -115,7 +115,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756388383453,
+        "timestamp": 1756422128173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -125,7 +125,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756388443452,
+        "timestamp": 1756422188173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -135,7 +135,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756388503453,
+        "timestamp": 1756422248173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -145,7 +145,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756388563454,
+        "timestamp": 1756422308173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -155,7 +155,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756388623454,
+        "timestamp": 1756422368173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -165,7 +165,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756388683454,
+        "timestamp": 1756422428173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -175,7 +175,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756388743454,
+        "timestamp": 1756422488173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -185,7 +185,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756388803454,
+        "timestamp": 1756422548173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -195,7 +195,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756388863455,
+        "timestamp": 1756422608173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -205,7 +205,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756388923455,
+        "timestamp": 1756422668173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -215,7 +215,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756388983455,
+        "timestamp": 1756422728173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -225,7 +225,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389043455,
+        "timestamp": 1756422788173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -235,7 +235,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389103455,
+        "timestamp": 1756422848173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -245,7 +245,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389163456,
+        "timestamp": 1756422908173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -255,7 +255,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389223457,
+        "timestamp": 1756422968173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -265,7 +265,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389283457,
+        "timestamp": 1756423028173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -275,7 +275,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389343457,
+        "timestamp": 1756423088173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -285,7 +285,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389403457,
+        "timestamp": 1756423148173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -295,7 +295,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389463457,
+        "timestamp": 1756423208173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -305,7 +305,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389523457,
+        "timestamp": 1756423268173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -315,7 +315,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389583457,
+        "timestamp": 1756423328173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -325,7 +325,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389643457,
+        "timestamp": 1756423388173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -335,7 +335,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389703457,
+        "timestamp": 1756423448173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -345,7 +345,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389763457,
+        "timestamp": 1756423508173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -355,7 +355,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389823457,
+        "timestamp": 1756423568173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -365,7 +365,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389883457,
+        "timestamp": 1756423628173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -375,7 +375,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756389943457,
+        "timestamp": 1756423688173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -385,7 +385,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390003458,
+        "timestamp": 1756423748173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -395,7 +395,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390063458,
+        "timestamp": 1756423808173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -405,7 +405,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390123458,
+        "timestamp": 1756423868173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -415,7 +415,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390183458,
+        "timestamp": 1756423928173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -425,7 +425,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390243458,
+        "timestamp": 1756423988173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -435,7 +435,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390303459,
+        "timestamp": 1756424048173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -445,7 +445,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390363459,
+        "timestamp": 1756424108173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -455,7 +455,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390423460,
+        "timestamp": 1756424168173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -465,7 +465,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390483459,
+        "timestamp": 1756424228173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -475,7 +475,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390543460,
+        "timestamp": 1756424288173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -485,7 +485,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390603460,
+        "timestamp": 1756424348173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -495,7 +495,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390663460,
+        "timestamp": 1756424408173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -505,7 +505,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390723460,
+        "timestamp": 1756424468174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -515,7 +515,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390783460,
+        "timestamp": 1756424528174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -525,7 +525,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390843460,
+        "timestamp": 1756424588174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -535,7 +535,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390903461,
+        "timestamp": 1756424648174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -545,7 +545,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390963462,
+        "timestamp": 1756424708175,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -555,7 +555,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391023462,
+        "timestamp": 1756424768174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -565,7 +565,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391083461,
+        "timestamp": 1756424828174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -575,7 +575,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391143462,
+        "timestamp": 1756424888174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -585,7 +585,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391203462,
+        "timestamp": 1756424948174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -595,7 +595,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391263462,
+        "timestamp": 1756425008174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -605,7 +605,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391323462,
+        "timestamp": 1756425068174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -615,7 +615,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391383462,
+        "timestamp": 1756425128174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -625,7 +625,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391443462,
+        "timestamp": 1756425188175,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -635,7 +635,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391503463,
+        "timestamp": 1756425248175,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -645,7 +645,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391563462,
+        "timestamp": 1756425308176,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -655,7 +655,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391623462,
+        "timestamp": 1756425368176,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -665,7 +665,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391683463,
+        "timestamp": 1756425428176,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -675,7 +675,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391743464,
+        "timestamp": 1756425488176,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -687,7 +687,7 @@
     ],
     "hourly": [
       {
-        "timestamp": 1756390363459,
+        "timestamp": 1756424168173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -697,7 +697,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390423460,
+        "timestamp": 1756424228173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -707,7 +707,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390483459,
+        "timestamp": 1756424288173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -717,7 +717,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390543460,
+        "timestamp": 1756424348173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -727,7 +727,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390603460,
+        "timestamp": 1756424408173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -737,7 +737,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390663460,
+        "timestamp": 1756424468174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -747,7 +747,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390723460,
+        "timestamp": 1756424528174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -757,7 +757,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390783460,
+        "timestamp": 1756424588174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -767,7 +767,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390843460,
+        "timestamp": 1756424648174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -777,7 +777,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390903461,
+        "timestamp": 1756424708174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -787,7 +787,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756390963462,
+        "timestamp": 1756424768174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -797,7 +797,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391023462,
+        "timestamp": 1756424828174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -807,7 +807,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391083461,
+        "timestamp": 1756424888173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -817,7 +817,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391143462,
+        "timestamp": 1756424948173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -827,7 +827,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391203462,
+        "timestamp": 1756425008173,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -837,7 +837,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391263462,
+        "timestamp": 1756425068174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -847,7 +847,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391323462,
+        "timestamp": 1756425128174,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -857,7 +857,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391383462,
+        "timestamp": 1756425188175,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -867,7 +867,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391443462,
+        "timestamp": 1756425248175,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -877,7 +877,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391503461,
+        "timestamp": 1756425308176,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -887,7 +887,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391563462,
+        "timestamp": 1756425368176,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -897,7 +897,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391623462,
+        "timestamp": 1756425428176,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -907,7 +907,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391683463,
+        "timestamp": 1756425488176,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -917,7 +917,7 @@
         "houstonProgress": 0
       },
       {
-        "timestamp": 1756391743464,
+        "timestamp": 1756425548176,
         "balance": 10000,
         "pnl": 0,
         "trades": 0,
@@ -927,108 +927,7 @@
         "houstonProgress": 0
       }
     ],
-    "daily": [
-      {
-        "timestamp": 1756342243260,
-        "balance": 10000,
-        "pnl": 0,
-        "trades": 0,
-        "winRate": 0,
-        "profitFactor": 0,
-        "drawdown": 0,
-        "houstonProgress": 0
-      },
-      {
-        "timestamp": 1756342303260,
-        "balance": 10000,
-        "pnl": 0,
-        "trades": 0,
-        "winRate": 0,
-        "profitFactor": 0,
-        "drawdown": 0,
-        "houstonProgress": 0
-      },
-      {
-        "timestamp": 1756342363259,
-        "balance": 10000,
-        "pnl": 0,
-        "trades": 0,
-        "winRate": 0,
-        "profitFactor": 0,
-        "drawdown": 0,
-        "houstonProgress": 0
-      },
-      {
-        "timestamp": 1756342423259,
-        "balance": 10000,
-        "pnl": 0,
-        "trades": 0,
-        "winRate": 0,
-        "profitFactor": 0,
-        "drawdown": 0,
-        "houstonProgress": 0
-      },
-      {
-        "timestamp": 1756342483260,
-        "balance": 10000,
-        "pnl": 0,
-        "trades": 0,
-        "winRate": 0,
-        "profitFactor": 0,
-        "drawdown": 0,
-        "houstonProgress": 0
-      },
-      {
-        "timestamp": 1756342543260,
-        "balance": 10000,
-        "pnl": 0,
-        "trades": 0,
-        "winRate": 0,
-        "profitFactor": 0,
-        "drawdown": 0,
-        "houstonProgress": 0
-      },
-      {
-        "timestamp": 1756342603260,
-        "balance": 10000,
-        "pnl": 0,
-        "trades": 0,
-        "winRate": 0,
-        "profitFactor": 0,
-        "drawdown": 0,
-        "houstonProgress": 0
-      },
-      {
-        "timestamp": 1756342663261,
-        "balance": 10000,
-        "pnl": 0,
-        "trades": 0,
-        "winRate": 0,
-        "profitFactor": 0,
-        "drawdown": 0,
-        "houstonProgress": 0
-      },
-      {
-        "timestamp": 1756342723261,
-        "balance": 10000,
-        "pnl": 0,
-        "trades": 0,
-        "winRate": 0,
-        "profitFactor": 0,
-        "drawdown": 0,
-        "houstonProgress": 0
-      },
-      {
-        "timestamp": 1756342783261,
-        "balance": 10000,
-        "pnl": 0,
-        "trades": 0,
-        "winRate": 0,
-        "profitFactor": 0,
-        "drawdown": 0,
-        "houstonProgress": 0
-      }
-    ]
+    "daily": []
   },
-  "savedAt": 1756391743464
+  "savedAt": 1756425548176
 }

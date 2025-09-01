@@ -1,0 +1,23 @@
+# STRIPE PRICE IDS - OGZ PRIME
+# Generated: 2025-08-31
+# Account: New Stripe Account
+
+# Paste your 4 price IDs below as you create them:
+
+OGZ_PRIME_CORE_PRICE_ID=price_YOUR_CORE_PRICE_ID_HERE
+# $99/month - Essential AI trading for crypto beginners
+
+OGZ_PRIME_PRO_PRICE_ID=price_YOUR_PRO_PRICE_ID_HERE  
+# $499/month - Advanced indicators and multi-timeframe analysis
+
+OGZ_PRIME_ODIN_PRICE_ID=price_YOUR_ODIN_PRICE_ID_HERE
+# $1,499/month - AI logic engine with quantum-enhanced algorithms
+
+OGZ_PRIME_VALHALLA_PRICE_ID=price_YOUR_VALHALLA_PRICE_ID_HERE
+# $14,999 one-time - Ultimate lifetime access with all features
+
+# Instructions:
+# 1. Create each product in your Stripe dashboard
+# 2. Copy the price ID (starts with "price_...")
+# 3. Replace the placeholder above
+# 4. Let me know when all 4 are done!

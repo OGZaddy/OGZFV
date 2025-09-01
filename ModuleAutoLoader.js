@@ -55,6 +55,7 @@ class ModuleAutoLoader {
       mobile: path.join(this.basePath, 'mobile'),
       streamdeck: path.join(this.basePath, 'streamdeck'),
       monetization: path.join(this.basePath, 'monetization'),
+      trai: path.join(this.basePath, 'trai'),
       
       // Data subdirectories
       patterns: path.join(this.basePath, 'data', 'patterns'),
@@ -209,7 +210,8 @@ class ModuleAutoLoader {
     // Define loading order and requirements
     const loadConfig = [
       { name: 'utils', required: ['discordNotifier', 'tradeLogger'] },
-      { name: 'core', required: ['OptimizedTradingBrain', 'RiskManager'] },
+      { name: 'core', required: ['OptimizedTradingBroadcastSystem'] },
+      { name: 'trai', required: ['trai-enhanced', 'desktop-websocket-client'] },
       { name: 'ui', required: [] },
       { name: 'analytics', required: [] },
       { name: 'deployment', required: [] }

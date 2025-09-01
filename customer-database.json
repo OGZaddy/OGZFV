@@ -1,0 +1,59 @@
+{
+  "customers": {
+    "basic_demo_key_123": {
+      "id": "cust_001",
+      "name": "Demo Basic User",
+      "email": "demo@basic.com", 
+      "tier": "basic",
+      "created": "2024-01-01",
+      "active": true,
+      "subscription_id": "sub_basic_demo",
+      "last_payment": "2024-12-01",
+      "notes": "Demo account for basic tier testing"
+    },
+    "premium_demo_key_456": {
+      "id": "cust_002", 
+      "name": "Demo Premium User",
+      "email": "demo@premium.com",
+      "tier": "premium", 
+      "created": "2024-01-01",
+      "active": true,
+      "subscription_id": "sub_premium_demo",
+      "last_payment": "2024-12-01", 
+      "notes": "Demo account for premium tier testing"
+    },
+    "elite_demo_key_789": {
+      "id": "cust_003",
+      "name": "Demo Elite User", 
+      "email": "demo@elite.com",
+      "tier": "elite",
+      "created": "2024-01-01", 
+      "active": true,
+      "subscription_id": "sub_elite_demo",
+      "last_payment": "2024-12-01",
+      "notes": "Demo account for elite tier testing"
+    },
+    "test_houston_key_2025": {
+      "id": "cust_houston",
+      "name": "Houston Beta Tester",
+      "email": "houston@ogzprime.com",
+      "tier": "elite",
+      "created": "2025-01-01",
+      "active": true,
+      "subscription_id": "sub_houston_special",
+      "last_payment": "2025-01-01",
+      "notes": "Special Houston launch customer - Elite access"
+    }
+  },
+  "metadata": {
+    "total_customers": 4,
+    "active_customers": 4,
+    "revenue_per_month": {
+      "basic": 97,
+      "premium": 297, 
+      "elite": 997
+    },
+    "last_updated": "2025-01-01",
+    "api_version": "1.0.0"
+  }
+}

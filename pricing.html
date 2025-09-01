@@ -193,6 +193,24 @@
       transition: all 0.3s ease;
       text-transform: uppercase;
       letter-spacing: 1px;
+      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tier-button:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .tier-button:hover:before {
+      left: 100%;
     }
 
     .tier-button:hover {
@@ -293,13 +311,46 @@
         font-size: 2.5rem;
       }
 
+      .header p {
+        font-size: 1.1rem;
+      }
+
       .pricing-grid {
         grid-template-columns: 1fr;
         gap: 20px;
       }
 
       .pricing-card {
-        padding: 30px 20px;
+        padding: 25px 15px;
+        margin: 0 5px;
+      }
+
+      .tier-name {
+        font-size: 1.6rem;
+      }
+
+      .price-amount {
+        font-size: 2.2rem;
+      }
+
+      .tier-description {
+        font-size: 1rem;
+        margin-bottom: 25px;
+      }
+
+      .features-list {
+        font-size: 0.9rem;
+      }
+
+      .features-list li {
+        padding: 8px 0;
+        padding-left: 25px;
+      }
+
+      .tier-button {
+        font-size: 1rem;
+        padding: 14px;
+        margin: 5px 0;
       }
 
       .feature-comparison {
@@ -309,6 +360,56 @@
 
       .feature-value {
         text-align: left;
+        padding: 10px;
+        font-size: 0.9rem;
+      }
+
+      .feature-name {
+        font-size: 0.9rem;
+        padding: 10px;
+      }
+
+      .comparison-table {
+        padding: 20px 15px;
+        margin-top: 40px;
+      }
+
+      .comparison-table h3 {
+        font-size: 1.6rem;
+      }
+
+      .back-link {
+        display: block;
+        margin: 20px auto;
+        text-align: center;
+        width: fit-content;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .pricing-card {
+        padding: 20px 10px;
+      }
+
+      .price-amount {
+        font-size: 1.8rem;
+      }
+
+      .tier-name {
+        font-size: 1.4rem;
+      }
+
+      .features-list {
+        font-size: 0.85rem;
+      }
+
+      .tier-button {
+        font-size: 0.9rem;
+        padding: 12px;
       }
     }
 
@@ -348,18 +449,28 @@
           Essential AI trading for crypto beginners. Start your journey with proven algorithms.
         </div>
         <ul class="features-list">
-          <li>BTC & ETH live trading</li>
-          <li>Basic pattern recognition</li>
-          <li>Risk management system</li>
-          <li>Performance analytics</li>
-          <li>Email alerts</li>
-          <li>Discord community access</li>
-          <li>Mobile app access</li>
-          <li>Basic backtesting</li>
+          <li>✅ BTC & ETH live trading (24/7 automated)</li>
+          <li>✅ Basic pattern recognition (10 patterns)</li>
+          <li>✅ Risk management system (1-2% max risk per trade)</li>
+          <li>✅ Performance analytics dashboard</li>
+          <li>✅ Email alerts & notifications</li>
+          <li>✅ Discord community access (500+ traders)</li>
+          <li>✅ Mobile app access (iOS/Android)</li>
+          <li>✅ Basic backtesting (1 year historical data)</li>
+          <li>❌ No setup fees or hidden costs</li>
+          <li>❌ Cancel anytime - no contracts</li>
         </ul>
-        <button class="tier-button" onclick="checkout('core')" id="core-btn">
-          🚀 Deploy Core
-        </button>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button class="tier-button" onclick="checkout('core')" id="core-btn">
+            💳 Pay with Card
+          </button>
+          <button class="tier-button" style="background: #0070ba;" onclick="paypalCheckout('core')" id="core-paypal-btn">
+            💰 Pay with PayPal
+          </button>
+          <button class="tier-button" style="background: #f7931a;" onclick="bitcoinCheckout('core')" id="core-btc-btn">
+            ₿ Pay with Bitcoin
+          </button>
+        </div>
       </div>
 
       <!-- Pro Tier -->
@@ -374,19 +485,29 @@
           Advanced indicators and multi-timeframe analysis for serious traders.
         </div>
         <ul class="features-list">
-          <li>Everything in Core</li>
-          <li class="premium">Advanced technical indicators</li>
-          <li class="premium">Multi-timeframe analysis</li>
-          <li class="premium">Custom strategy builder</li>
-          <li class="premium">Sentiment analysis integration</li>
-          <li class="premium">Priority customer support</li>
-          <li class="premium">Advanced backtesting suite</li>
-          <li class="premium">Risk optimization tools</li>
-          <li class="premium">Portfolio management</li>
+          <li>✅ Everything in Core tier</li>
+          <li class="premium">⭐ Advanced technical indicators (50+ indicators)</li>
+          <li class="premium">⭐ Multi-timeframe analysis (1m-4h sync)</li>
+          <li class="premium">⭐ Custom strategy builder (drag & drop)</li>
+          <li class="premium">⭐ Sentiment analysis (Twitter, Reddit, News)</li>
+          <li class="premium">⭐ Priority customer support (< 2hr response)</li>
+          <li class="premium">⭐ Advanced backtesting (5 year historical data)</li>
+          <li class="premium">⭐ Risk optimization tools (Kelly Criterion)</li>
+          <li class="premium">⭐ Portfolio management (multi-asset)</li>
+          <li>💎 One-time $99 setup (software configuration)</li>
+          <li>🔄 30-day money-back guarantee</li>
         </ul>
-        <button class="tier-button" onclick="checkout('pro')" id="pro-btn">
-          ⚡ Deploy Pro
-        </button>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button class="tier-button" onclick="checkout('pro')" id="pro-btn">
+            💳 Pay with Card
+          </button>
+          <button class="tier-button" style="background: #0070ba;" onclick="paypalCheckout('pro')" id="pro-paypal-btn">
+            💰 Pay with PayPal
+          </button>
+          <button class="tier-button" style="background: #f7931a;" onclick="bitcoinCheckout('pro')" id="pro-btc-btn">
+            ₿ Pay with Bitcoin
+          </button>
+        </div>
       </div>
 
       <!-- Odin Tier -->
@@ -411,9 +532,17 @@
           <li class="premium">Advanced position sizing</li>
           <li class="premium">Dedicated account manager</li>
         </ul>
-        <button class="tier-button" onclick="checkout('odin')" id="odin-btn">
-          ⚔️ Deploy Odin
-        </button>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button class="tier-button" onclick="checkout('odin')" id="odin-btn">
+            💳 Pay with Card
+          </button>
+          <button class="tier-button" style="background: #0070ba;" onclick="paypalCheckout('odin')" id="odin-paypal-btn">
+            💰 Pay with PayPal
+          </button>
+          <button class="tier-button" style="background: #f7931a;" onclick="bitcoinCheckout('odin')" id="odin-btc-btn">
+            ₿ Pay with Bitcoin
+          </button>
+        </div>
       </div>
 
       <!-- Valhalla Tier -->
@@ -438,9 +567,17 @@
           <li class="premium">White-label licensing rights</li>
           <li class="premium">Unlimited API calls</li>
         </ul>
-        <button class="tier-button" onclick="checkout('valhalla')" id="valhalla-btn">
-          👑 Deploy Valhalla
-        </button>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button class="tier-button" onclick="checkout('valhalla')" id="valhalla-btn">
+            💳 Pay with Card
+          </button>
+          <button class="tier-button" style="background: #0070ba;" onclick="paypalCheckout('valhalla')" id="valhalla-paypal-btn">
+            💰 Pay with PayPal
+          </button>
+          <button class="tier-button" style="background: #f7931a;" onclick="bitcoinCheckout('valhalla')" id="valhalla-btc-btn">
+            ₿ Pay with Bitcoin
+          </button>
+        </div>
       </div>
     </div>
 
@@ -526,11 +663,12 @@
         valhalla: "price_1Rc2kPGai7JiFhNg80KRIgbS"
       };
 
-      // Show loading state
+      // Enhanced loading state with better UX
       const button = document.getElementById(`${tier}-btn`);
       const originalText = button.innerHTML;
       button.disabled = true;
-      button.innerHTML = '<span class="loading"></span>Processing...';
+      button.style.opacity = '0.7';
+      button.innerHTML = '🔄 Securing Your Spot...';
 
       // Use our local Stripe handler
       fetch("/create-checkout-session", {
@@ -574,27 +712,129 @@
       })
       .catch(err => {
         console.error('Checkout error:', err);
-        alert(`Checkout error: ${err.message}\n\nPlease try again or contact support if the issue persists.`);
+        
+        // Enhanced error handling with better user experience
+        const errorContainer = document.getElementById('error-message') || createErrorContainer();
+        errorContainer.innerHTML = `
+          <div style="background: rgba(255, 51, 51, 0.1); border: 1px solid #ff3333; border-radius: 8px; padding: 15px; margin: 20px 0; text-align: center;">
+            <div style="color: #ff3333; font-weight: bold; margin-bottom: 10px;">⚠️ Payment Processing Issue</div>
+            <div style="color: #ccc; margin-bottom: 15px;">${err.message}</div>
+            <div style="color: #888; font-size: 0.9rem;">
+              Don't worry - no charges were made. Please try again or 
+              <a href="mailto:support@ogzprime.com" style="color: #00ff41;">contact support</a>
+            </div>
+          </div>
+        `;
+        errorContainer.scrollIntoView({ behavior: 'smooth' });
       })
       .finally(() => {
-        // Reset button state
-        button.disabled = false;
-        button.innerHTML = originalText;
+        // Reset button state with smooth transition
+        setTimeout(() => {
+          button.disabled = false;
+          button.style.opacity = '1';
+          button.innerHTML = originalText;
+        }, 500);
       });
+    }
+
+    // Create error container helper function
+    function createErrorContainer() {
+      const container = document.createElement('div');
+      container.id = 'error-message';
+      container.style.position = 'fixed';
+      container.style.top = '20px';
+      container.style.left = '50%';
+      container.style.transform = 'translateX(-50%)';
+      container.style.zIndex = '9999';
+      container.style.maxWidth = '500px';
+      container.style.width = '90%';
+      document.body.appendChild(container);
+      return container;
     }
 
     // Add visual feedback for better UX
     document.querySelectorAll('.tier-button').forEach(button => {
+      button.style.transition = 'all 0.3s ease';
+      
       button.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-3px) scale(1.02)';
+        if (!this.disabled) {
+          this.style.transform = 'translateY(-3px) scale(1.02)';
+          this.style.boxShadow = '0 8px 25px rgba(220, 38, 38, 0.4)';
+        }
       });
       
       button.addEventListener('mouseleave', function() {
         if (!this.disabled) {
           this.style.transform = 'translateY(0) scale(1)';
+          this.style.boxShadow = '0 4px 15px rgba(220, 38, 38, 0.2)';
         }
       });
     });
+
+    // PayPal Payment Function
+    function paypalCheckout(tier) {
+      const button = document.getElementById(`${tier}-paypal-btn`);
+      const originalText = button.innerHTML;
+      button.disabled = true;
+      button.innerHTML = '<span class="loading"></span>Processing...';
+
+      fetch("/create-paypal-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tier: tier })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.approvalUrl) {
+          window.location.href = data.approvalUrl;
+        } else {
+          throw new Error("PayPal payment creation failed");
+        }
+      })
+      .catch(err => {
+        alert(`PayPal error: ${err.message}`);
+        button.disabled = false;
+        button.innerHTML = originalText;
+      });
+    }
+
+    // Bitcoin Payment Function  
+    function bitcoinCheckout(tier) {
+      const button = document.getElementById(`${tier}-btc-btn`);
+      const originalText = button.innerHTML;
+      button.disabled = true;
+      button.innerHTML = '<span class="loading"></span>Processing...';
+
+      fetch("/create-btc-payment", {
+        method: "POST", 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tier: tier })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          // Show Bitcoin payment instructions
+          alert(`Bitcoin Payment Instructions:
+
+Amount: $${data.amount_usd} USD
+Wallet Address: ${data.wallet_address}
+
+${data.instructions}
+
+Support: ${data.support_email}
+${data.verification_note}`);
+        } else {
+          throw new Error("Bitcoin payment setup failed");
+        }
+      })
+      .catch(err => {
+        alert(`Bitcoin error: ${err.message}`);
+      })
+      .finally(() => {
+        button.disabled = false;
+        button.innerHTML = originalText;
+      });
+    }
 
     // Track pricing page view
     if (typeof gtag !== 'undefined') {

@@ -1,0 +1,134 @@
+{
+  "name": "trai-codellama-70b",
+  "description": "Trai AI with CodeLlama 70B integration for elite trading and code analysis",
+  "version": "1.0.0",
+  "author": "OGZ Prime Trading Systems",
+  "license": "MIT",
+  "mcpServers": {
+    "trai-codellama": {
+      "command": "node",
+      "args": [
+        "/root/OGZFV-valhalla/mcp-trai-server.js"
+      ],
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "capabilities": [
+        "code_analysis",
+        "trading_strategies", 
+        "system_debugging",
+        "market_analysis",
+        "ai_chat"
+      ],
+      "description": "Trai AI system with CodeLlama 70B reasoning power",
+      "tools": {
+        "analyze_code": {
+          "description": "Analyze code with CodeLlama 70B",
+          "parameters": {
+            "code": "Code to analyze",
+            "language": "Programming language",
+            "analysis_type": "debug, optimize, explain, or review"
+          }
+        },
+        "generate_trading_strategy": {
+          "description": "Generate trading strategies with live market data",
+          "parameters": {
+            "symbol": "Trading symbol (BTC, ETH, etc)",
+            "timeframe": "Analysis timeframe",
+            "strategy_type": "scalping, swing, or long-term"
+          }
+        },
+        "debug_system": {
+          "description": "Debug system issues with expert knowledge",
+          "parameters": {
+            "error_log": "Error description or log",
+            "system_type": "trading_bot, web_server, database, etc",
+            "context": "Additional context"
+          }
+        },
+        "market_analysis": {
+          "description": "Real-time market analysis",
+          "parameters": {
+            "symbols": "Array of symbols to analyze",
+            "analysis_depth": "quick, detailed, or comprehensive"
+          }
+        },
+        "trai_chat": {
+          "description": "Direct chat with Trai AI",
+          "parameters": {
+            "message": "Your question or request",
+            "context": "Additional context"
+          }
+        }
+      },
+      "connection": {
+        "type": "websocket",
+        "url": "wss://ogzprime.com/ws",
+        "authentication": "none",
+        "reconnect": true,
+        "timeout": 30000
+      }
+    }
+  },
+  "integration": {
+    "archon": {
+      "compatible": true,
+      "features": [
+        "code_analysis", 
+        "debugging",
+        "optimization_suggestions",
+        "architecture_review"
+      ]
+    },
+    "augment": {
+      "compatible": true, 
+      "features": [
+        "code_completion",
+        "refactoring_suggestions", 
+        "documentation_generation",
+        "test_generation"
+      ]
+    },
+    "claude_code": {
+      "compatible": true,
+      "features": [
+        "all_tools",
+        "streaming_responses",
+        "context_awareness"
+      ]
+    }
+  },
+  "setup_instructions": {
+    "step1": "Ensure Trai system is running on your VPS",
+    "step2": "Verify CodeLlama 70B desktop connection is active", 
+    "step3": "Add this config to your VS Code MCP settings",
+    "step4": "Restart VS Code extensions that use MCP",
+    "step5": "Test connection with a simple query"
+  },
+  "examples": {
+    "code_analysis": {
+      "tool": "analyze_code",
+      "input": {
+        "code": "function fibonacci(n) { return n < 2 ? n : fibonacci(n-1) + fibonacci(n-2); }",
+        "language": "javascript",
+        "analysis_type": "optimize"
+      }
+    },
+    "trading_strategy": {
+      "tool": "generate_trading_strategy", 
+      "input": {
+        "symbol": "BTC",
+        "timeframe": "15m",
+        "strategy_type": "scalping"
+      }
+    },
+    "debug_help": {
+      "tool": "debug_system",
+      "input": {
+        "error_log": "TypeError: Cannot read property 'price' of undefined",
+        "system_type": "trading_bot",
+        "context": "Error occurs during market data processing"
+      }
+    }
+  }
+}

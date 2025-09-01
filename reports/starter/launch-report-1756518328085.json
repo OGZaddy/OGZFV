@@ -1,0 +1,47 @@
+{
+  "tier": "STARTER",
+  "runtime": "29.86 hours",
+  "totalTrades": 3550,
+  "totalProfit": -312.30722039999966,
+  "winRate": "19.6%",
+  "profitPerHour": -10.460593521775836,
+  "tradesPerHour": 118.9056947026136,
+  "largestWin": 1.3216039199999956,
+  "largestLoss": -2.4386766600000094,
+  "metrics": {
+    "startBalance": 10000,
+    "currentBalance": 10000,
+    "totalTrades": 3550,
+    "winningTrades": 696,
+    "losingTrades": 2854,
+    "profitFactor": 0.3698881579675179,
+    "sharpeRatio": 0,
+    "maxDrawdown": 0,
+    "averageWin": 0.2631236601724138,
+    "averageLoss": 0.17359540570427434,
+    "winRate": 0.19605633802816902
+  },
+  "bestModules": [
+    "RSI",
+    "MACD"
+  ],
+  "worstModules": [],
+  "recommendations": [
+    "Continue current strategy"
+  ],
+  "modulesUsage": [
+    [
+      "RSI",
+      3550
+    ],
+    [
+      "MACD",
+      3550
+    ],
+    [
+      "BasicLogic",
+      3550
+    ]
+  ],
+  "timestamp": "2025-08-30T01:45:28.085Z"
+}
