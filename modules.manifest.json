@@ -1,0 +1,40 @@
+{
+  "version": "2.0.0",
+  "modules": {
+    "tier-configs": {
+      "location": "config/tier-configs.js",
+      "version": "1.0.0",
+      "integrated": "2025-09-02T07:25:00.000Z",
+      "source": "intake&integratethendelete/",
+      "dependencies": [],
+      "status": "active",
+      "description": "Single source of truth for all tier configurations"
+    },
+    "unified-bot": {
+      "location": "trading-system/unified-bot.js",
+      "version": "1.0.0",
+      "integrated": "2025-09-02T07:25:00.000Z",
+      "source": "intake&integratethendelete/",
+      "dependencies": ["tier-configs"],
+      "status": "active",
+      "description": "Unified trading bot implementation for all tiers"
+    }
+  },
+  "deprecated": {},
+  "integrationBranches": {
+    "main": "quantum",
+    "integration": "integration", 
+    "intake": "intake"
+  },
+  "lastUpdate": "2025-09-02T07:20:00.000Z",
+  "integrationRules": {
+    "singleEntryPoints": [
+      "run-trading-bot-v13-quantum.js",
+      "quantum_ssl_server.js"
+    ],
+    "coreDirectories": [
+      "core/",
+      "trading-system/"
+    ]
+  }
+}
