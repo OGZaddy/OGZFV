@@ -34,6 +34,29 @@
         "tests/harness/run-all-tests.js",
         "tests/harness/README.md"
       ]
+    },
+    "production-cleanup": {
+      "location": "fixes/production-cleanup/",
+      "version": "1.0.0",
+      "integrated": "2025-09-02T19:20:00.000Z",
+      "source": "intake&integratethendelete/boileddownmesss.md",
+      "dependencies": ["unified-bot", "tier-configs"],
+      "status": "critical",
+      "description": "Critical fixes to remove all simulation/random code from production",
+      "priority": "MUST_APPLY_BEFORE_PRODUCTION",
+      "files": [
+        "fixes/production-cleanup/01_remove_all_rng_from_quantum_core.js",
+        "fixes/production-cleanup/02_remove_paper_trading_execution.js",
+        "fixes/production-cleanup/03_disable_aggressive_flags.js",
+        "fixes/production-cleanup/04_fix_websocket_manager_singleton.js",
+        "fixes/production-cleanup/05_fix_dashboard_websocket.js",
+        "fixes/production-cleanup/06_remove_slippage_randomness.js",
+        "fixes/production-cleanup/07_cleanup_scan.js",
+        "fixes/production-cleanup/08_fix_commission_calculation.js",
+        "fixes/production-cleanup/09_add_position_sizing.js",
+        "fixes/production-cleanup/10_add_risk_reward_check.js",
+        "fixes/production-cleanup/README.md"
+      ]
     }
   },
   "deprecated": {},
