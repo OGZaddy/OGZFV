@@ -18,6 +18,22 @@
       "dependencies": ["tier-configs"],
       "status": "active",
       "description": "Unified trading bot implementation for all tiers"
+    },
+    "test-harness": {
+      "location": "tests/harness/",
+      "version": "1.0.0",
+      "integrated": "2025-09-02T08:15:00.000Z",
+      "source": "intake&integratethendelete/harnessscripts.md",
+      "dependencies": ["unified-bot", "tier-configs"],
+      "status": "active",
+      "description": "Production validation test suite for system integrity",
+      "files": [
+        "tests/harness/prod-match-test.js",
+        "tests/harness/scalper-cache-test.js", 
+        "tests/harness/volatility-spike-test.js",
+        "tests/harness/run-all-tests.js",
+        "tests/harness/README.md"
+      ]
     }
   },
   "deprecated": {},
