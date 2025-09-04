@@ -278,6 +278,8 @@ class PolygonWebSocket extends EventEmitter {
    */
   handleSingleMessage(msg) {
     try {
+      console.log('🔍 Processing Polygon message:', JSON.stringify(msg));
+      
       // Handle different message types
       switch (msg.ev || msg.status) {
         case 'status':
@@ -293,7 +295,11 @@ class PolygonWebSocket extends EventEmitter {
           break;
           
         default:
-          // Unknown message type - ignore
+          console.log('⚠️ Unknown message type:', msg.ev || msg.status);
+          // Check if this is an auth response without status field
+          if (msg.message && msg.message.includes('auth')) {
+            console.log('🔍 Possible auth response:', msg);
+          }
           break;
       }
     } catch (error) {
