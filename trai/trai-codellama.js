@@ -6,6 +6,9 @@
 const WebSocket = require('ws');
 const MoverMemory = require('./trai-memory');
 const ArchonClient = require('../lib/archon-client');
+const fs = require('fs').promises;
+const path = require('path');
+const axios = require('axios');
 
 class TraiCodeLlama {
   constructor(config = {}) {
@@ -23,6 +26,14 @@ class TraiCodeLlama {
     this.requestId = 0;
     this.pendingRequests = new Map();
     
+    // Training data system
+    this.personalityCore = new Map();
+    this.learningStats = { totalPatterns: 0, categoriesLoaded: 0 };
+    
+    // Ollama connection (local)
+    this.ollamaUrl = 'http://127.0.0.1:11434';
+    this.currentModel = 'codellama:70b-instruct-q4_K_M';
+    
     console.log('[Trai] Initializing with Code Llama 70B backend...');
   }
 
@@ -36,6 +47,9 @@ class TraiCodeLlama {
       
       // Load personality and doctrines
       await this.loadPersonality();
+      
+      // Load all training data categories
+      await this.loadAllTrainingData();
       
       console.log('[Trai] Initialization complete - Ready for elite trading operations');
     } catch (error) {
@@ -293,6 +307,160 @@ Query: ${prompt}`;
   }
 
   // Cleanup
+  // ==========================================
+  // TRAINING DATA SYSTEM (from trai-ai-clone.js)
+  // ==========================================
+  
+  async loadAllTrainingData() {
+    try {
+      const trainingDataPath = path.join(__dirname, 'training-data');
+      const categories = await fs.readdir(trainingDataPath);
+      
+      for (const category of categories) {
+        const categoryPath = path.join(trainingDataPath, category);
+        const stat = await fs.stat(categoryPath);
+        
+        if (stat.isDirectory()) {
+          this.personalityCore.set(category, new Map());
+          await this.loadTrainingCategory(category);
+          this.learningStats.categoriesLoaded++;
+        }
+      }
+      
+      console.log(`[Trai] Loaded ${this.learningStats.totalPatterns} training patterns from ${this.learningStats.categoriesLoaded} categories`);
+    } catch (error) {
+      console.error('[Trai] Failed to load training data:', error);
+    }
+  }
+
+  async loadTrainingCategory(category) {
+    try {
+      const categoryPath = path.join(__dirname, 'training-data', category);
+      const files = await fs.readdir(categoryPath);
+      
+      let categoryPatterns = 0;
+      
+      for (const file of files) {
+        if (file.endsWith('.md')) {
+          const filePath = path.join(categoryPath, file);
+          const content = await fs.readFile(filePath, 'utf8');
+          
+          // Parse conversation data
+          const conversationData = this.parseConversationFile(content, category, file);
+          
+          // Store in personality core
+          this.personalityCore.get(category).set(file, conversationData);
+          categoryPatterns++;
+        }
+      }
+      
+      console.log(`[Trai] Loaded ${categoryPatterns} patterns from ${category}`);
+      this.learningStats.totalPatterns += categoryPatterns;
+      
+    } catch (error) {
+      console.error(`[Trai] Error loading ${category}:`, error);
+    }
+  }
+
+  parseConversationFile(content, category, filename) {
+    const lines = content.split('\\n');
+    const conversationData = {
+      title: '',
+      date: '',
+      category: category,
+      filename: filename,
+      userMessages: [],
+      assistantResponses: [],
+      emotionalTone: 'neutral',
+      technicalLevel: 'basic',
+      context: '',
+      patterns: []
+    };
+
+    let currentSection = 'header';
+    let currentMessage = '';
+    
+    for (const line of lines) {
+      if (line.startsWith('# ') || line.startsWith('## ')) {
+        conversationData.title = line.replace(/^#+\\s*/, '');
+      } else if (line.includes('user:') || line.includes('assistant:')) {
+        if (line.includes('user:')) {
+          conversationData.userMessages.push(line.replace(/.*user:\\s*/, ''));
+        } else {
+          conversationData.assistantResponses.push(line.replace(/.*assistant:\\s*/, ''));
+        }
+      }
+    }
+    
+    return conversationData;
+  }
+
+  // ==========================================
+  // OLLAMA CONNECTION SYSTEM (from trai-coding-assistant.js)
+  // ==========================================
+  
+  async testOllamaConnection() {
+    try {
+      const response = await axios.post(`${this.ollamaUrl}/api/generate`, {
+        model: this.currentModel,
+        prompt: "Test connection - respond with 'OK'",
+        stream: false
+      }, { timeout: 5000 });
+      
+      return { success: true, response: response.data };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  async processCodeRequest(request) {
+    try {
+      // Build enhanced prompt with training data context
+      const trainingContext = this.getRelevantTrainingContext(request);
+      const enhancedPrompt = this.buildEnhancedPrompt(request, trainingContext);
+      
+      // Send to local Ollama
+      const response = await axios.post(`${this.ollamaUrl}/api/generate`, {
+        model: this.currentModel,
+        prompt: enhancedPrompt,
+        stream: false
+      });
+      
+      return { success: true, response: response.data.response };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  getRelevantTrainingContext(request) {
+    // Search through training data for relevant context
+    let context = '';
+    const requestLower = request.toLowerCase();
+    
+    for (const [category, files] of this.personalityCore) {
+      for (const [filename, data] of files) {
+        if (data.userMessages.some(msg => 
+          msg.toLowerCase().includes(requestLower.substring(0, 20)) ||
+          requestLower.includes(msg.toLowerCase().substring(0, 10))
+        )) {
+          context += `\\n[${category}] ${data.context || data.userMessages.join(' ')}`;
+        }
+      }
+    }
+    
+    return context.substring(0, 2000); // Limit context size
+  }
+
+  buildEnhancedPrompt(request, trainingContext) {
+    return `You are Trai, an elite AI trading assistant and tech support expert.
+
+Training Context: ${trainingContext}
+
+Current Request: ${request}
+
+Respond as Trai would - confident, knowledgeable about trading, tech support, and the OGZPrime system. Use your training data context to provide specific, helpful answers.`;
+  }
+
   async cleanup() {
     if (this.ws) {
       this.ws.close();
