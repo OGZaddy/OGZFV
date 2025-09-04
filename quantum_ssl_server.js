@@ -256,8 +256,9 @@ console.log(`   WebSocket: wss://${process.env.DOMAIN || 'ogzprime.com'}/ws → 
 (async () => {
   try {
     console.log('🤖 Initializing TRAI AI System...');
-    await trai.initializeFinalForm();
-    console.log('✅ TRAI initialized successfully!');
+    // TRAI initialization disabled temporarily - needs CodeLlama connection
+    // await trai.initializeFinalForm();
+    console.log('[MoverCore] Initialized with personality:', trai.config.personality);
   } catch (error) {
     console.error('❌ Failed to initialize TRAI:', error);
   }
@@ -681,7 +682,6 @@ setInterval(() => {
   console.log(`   👥 Total Connections: ${connectedBots.size + connectedDashboards.size}`);
   console.log(`   🤖 Bot Connections: ${connectedBots.size}`);
   console.log(`   📱 Dashboard Connections: ${connectedDashboards.size}`);
-  console.log(`   ✅ Success Rate: ${stats.performance.successRate}`);
   
   // Alert if no bot connections
   if (connectedBots.size === 0) {

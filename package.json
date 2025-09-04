@@ -38,6 +38,7 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
+    "@anthropic-ai/claude-code": "^1.0.103",
     "@modelcontextprotocol/sdk": "^1.17.4",
     "@sentry/node": "^10.5.0",
     "axios": "^1.10.0",
