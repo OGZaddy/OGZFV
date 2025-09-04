@@ -506,6 +506,29 @@ class PolygonWebSocket extends EventEmitter {
   }
 
   /**
+   * Get current market data for quantum trading system
+   */
+  getCurrentMarketData() {
+    if (!this.isAuthenticated || this.connectionState !== 'connected') {
+      throw new Error('Polygon WebSocket not connected or authenticated');
+    }
+    
+    if (!this.lastPrice || this.lastPrice <= 0) {
+      throw new Error('No valid price data available from Polygon WebSocket');
+    }
+    
+    return {
+      symbol: 'BTC-USD',
+      price: this.lastPrice,
+      timestamp: Date.now(),
+      volume: 0,
+      source: 'polygon',
+      connected: true,
+      lastUpdate: this.lastHeartbeat
+    };
+  }
+
+  /**
    * Get connection status
    */
   getStatus() {
