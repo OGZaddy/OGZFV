@@ -9,11 +9,23 @@ const WebSocket = require('ws');
 const EventEmitter = require('events');
 
 class PolygonWebSocket extends EventEmitter {
-  constructor(onTick) {
+  constructor(options) {
     super();
     
-    this.onTick = onTick;
-    this.apiKey = process.env.POLYGON_API_KEY;
+    // Handle both old format (single onTick function) and new format (options object)
+    if (typeof options === 'function') {
+      this.onTick = options;
+      this.apiKey = process.env.POLYGON_API_KEY;
+    } else if (options && typeof options === 'object') {
+      this.onTick = options.onTick;
+      this.apiKey = options.apiKey || process.env.POLYGON_API_KEY;
+    } else {
+      this.onTick = null;
+      this.apiKey = process.env.POLYGON_API_KEY;
+    }
+    
+    console.log('🔧 PolygonWebSocket constructor - API Key check:', this.apiKey ? this.apiKey.substring(0, 8) + '...' : 'MISSING FROM ENV');
+    
     this.socket = null;
     this.isAuthenticated = false;
     this.isIntentionalDisconnect = false;
