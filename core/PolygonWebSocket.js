@@ -179,12 +179,16 @@ class PolygonWebSocket extends EventEmitter {
     }
     
     console.log('🔐 Authenticating with Polygon...');
+    console.log('🔑 Using API key:', this.apiKey ? this.apiKey.substring(0, 8) + '...' : 'MISSING');
     
     try {
-      this.socket.send(JSON.stringify({ 
+      const authMessage = { 
         action: 'auth', 
         params: this.apiKey 
-      }));
+      };
+      
+      console.log('📤 Sending auth message:', JSON.stringify(authMessage));
+      this.socket.send(JSON.stringify(authMessage));
       
       // Wait for auth confirmation with timeout
       await this.waitForAuth();
