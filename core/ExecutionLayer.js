@@ -158,16 +158,31 @@ class ExecutionLayer {
       'CB-ACCESS-PASSPHRASE': this.config.passphrase
     };
     
-    const response = await fetch(this.apiUrl + path, {
-      method,
-      headers
-    });
-    
-    const accounts = await response.json();
-    
-    // Find USD account
-    const usdAccount = accounts.find(a => a.currency === 'USD');
-    return parseFloat(usdAccount?.available || this.balance);
+    try {
+      const response = await fetch(this.apiUrl + path, {
+        method,
+        headers
+      });
+      
+      const accounts = await response.json();
+      
+      console.log('🔍 ExecutionLayer getBalance - API response:', typeof accounts, Array.isArray(accounts));
+      
+      // Validate response is an array
+      if (!Array.isArray(accounts)) {
+        console.log('⚠️ API response is not an array, using fallback balance:', accounts);
+        return this.balance || 10000;
+      }
+      
+      // Find USD account
+      const usdAccount = accounts.find(a => a.currency === 'USD');
+      return parseFloat(usdAccount?.available || this.balance);
+      
+    } catch (error) {
+      console.error('❌ ExecutionLayer API error:', error.message);
+      console.log('💰 Using fallback balance:', this.balance || 10000);
+      return this.balance || 10000;
+    }
   }
   
   /**
