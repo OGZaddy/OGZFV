@@ -534,6 +534,11 @@ class QuantumSingularityLauncher {
       subNanosecondPrecision: this.config.targetAccuracy
     });
 
+    // Connect to Polygon WebSocket
+    this.polygonWS.connect().catch(error => {
+      console.error('❌ Failed to connect to Polygon WebSocket:', error);
+    });
+
     this.timeFrameManager = new EnhancedTimeframeManager({
       quantumEnhanced: true,
       neuromorphicProcessing: this.config.enableNeuromorphicProcessing,
