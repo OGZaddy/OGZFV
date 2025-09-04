@@ -46,44 +46,7 @@ class PolygonWebSocket extends EventEmitter {
     this.lastPrice = 0;
     this.priceChangeThreshold = 0.20; // 20% max price change
     
-    // Smart logging throttle
-    this.messageCount = 0;
-    this.lastLogTime = 0;
-    this.importantMessages = ['status', 'auth_success', 'auth_failed'];
-    
     console.log('🔌 PolygonWebSocket initialized - CASCADE-PROOF VERSION');
-  }
-
-  /**
-   * Determine if message should be logged (throttle spam)
-   */
-  shouldLogMessage(msg) {
-    this.messageCount++;
-    const now = Date.now();
-    
-    // Always log important messages
-    if (this.importantMessages.includes(msg.ev || msg.status)) {
-      return true;
-    }
-    
-    // Log every 50th trade message OR every 10 seconds
-    if (msg.ev === 'XT') {
-      if (this.messageCount % 50 === 0 || (now - this.lastLogTime) > 10000) {
-        this.lastLogTime = now;
-        return true;
-      }
-      return false;
-    }
-    
-    // Log aggregate messages less frequently
-    if (msg.ev === 'XA') {
-      if (this.messageCount % 10 === 0) {
-        return true;
-      }
-      return false;
-    }
-    
-    return true; // Log unknown message types
   }
 
   /**
@@ -331,12 +294,6 @@ class PolygonWebSocket extends EventEmitter {
    */
   handleSingleMessage(msg) {
     try {
-      // SMART LOGGING: Only log important messages, throttle noise
-      const shouldLog = this.shouldLogMessage(msg);
-      if (shouldLog) {
-        console.log('🔍 Processing Polygon message:', JSON.stringify(msg).substring(0, 150));
-      }
-      
       // Handle different message types
       switch (msg.ev || msg.status) {
         case 'status':
@@ -352,11 +309,7 @@ class PolygonWebSocket extends EventEmitter {
           break;
           
         default:
-          console.log('⚠️ Unknown message type:', msg.ev || msg.status);
-          // Check if this is an auth response without status field
-          if (msg.message && msg.message.includes('auth')) {
-            console.log('🔍 Possible auth response:', msg);
-          }
+          // Unknown message type - ignore
           break;
       }
     } catch (error) {
@@ -416,11 +369,6 @@ class PolygonWebSocket extends EventEmitter {
         volume: volume,
         source: 'polygon'
       });
-    }
-    
-    // Smart trade logging - summary every 10 seconds
-    if (this.messageCount % 50 === 0) {
-      console.log(`💹 TRADE SUMMARY: BTC $${price.toLocaleString()} | Vol: ${volume} | Msg: ${this.messageCount}`);
     }
     
     // Emit trade event
