@@ -7,7 +7,11 @@
 // ⚛️ Quantum-Neuromorphic Core - Reality-bending decision engine
 // 🌐 Ultimate Quantum Trading System - The singularity brain
 // 🔄 Multi-Directional Trading - Quantum-enhanced execution
-// 🧠 ML Learning Systems - Adaptive quantum intelligence  
+// 🧠 ML Learning Systems - Adaptive quantum intelligence
+
+// CRITICAL: Load environment variables FIRST
+require('dotenv').config();
+console.log('🔧 Dotenv loaded - POLYGON_API_KEY check:', process.env.POLYGON_API_KEY ? process.env.POLYGON_API_KEY.substring(0, 8) + '...' : 'MISSING');  
 // 🗣️ Hitch NLP - Quantum command interface
 // ⏱️ Sub-Nanosecond Timing - CERN-level precision
 // 🛡️ Quintuple Verification - 5x redundancy protocols
