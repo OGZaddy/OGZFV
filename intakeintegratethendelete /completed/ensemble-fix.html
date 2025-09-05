@@ -1,0 +1,122 @@
+<!-- Replace the existing neural-ensemble div with this -->
+<div class="neural-ensemble">
+    <div class="panel-title">Neural Ensemble Voting</div>
+    <div class="ensemble-grid">
+        <div class="brain-module">
+            <div class="brain-name">Pattern</div>
+            <div class="brain-vote vote-hold" id="patternVote">HOLD</div>
+            <div class="brain-confidence" id="patternConfidence">--</div>
+        </div>
+        <div class="brain-module">
+            <div class="brain-name">Momentum</div>
+            <div class="brain-vote vote-hold" id="momentumVote">HOLD</div>
+            <div class="brain-confidence" id="momentumConfidence">--</div>
+        </div>
+        <div class="brain-module">
+            <div class="brain-name">Sentiment</div>
+            <div class="brain-vote vote-hold" id="sentimentVote">HOLD</div>
+            <div class="brain-confidence" id="sentimentConfidence">--</div>
+        </div>
+        <div class="brain-module">
+            <div class="brain-name">Risk</div>
+            <div class="brain-vote vote-hold" id="riskVote">HOLD</div>
+            <div class="brain-confidence" id="riskConfidence">--</div>
+        </div>
+        <div class="brain-module">
+            <div class="brain-name">Quantum</div>
+            <div class="brain-vote vote-hold" id="quantumVote">HOLD</div>
+            <div class="brain-confidence" id="quantumConfidence">--</div>
+        </div>
+    </div>
+    <div class="consensus-display">
+        <div class="consensus-label">Ensemble Consensus:</div>
+        <div class="consensus-decision" id="consensusDecision">HOLD</div>
+        <div class="consensus-confidence" id="consensusConfidence">0%</div>
+        <div class="consensus-agreement" id="consensusAgreement">Agreement: 0%</div>
+    </div>
+</div>
+
+<!-- Add this CSS to the style section -->
+<style>
+.brain-confidence {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffd700;
+    margin-top: 5px;
+}
+
+.consensus-display {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.consensus-label {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 5px;
+}
+
+.consensus-decision {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.consensus-confidence {
+    font-size: 18px;
+    color: #ffd700;
+}
+
+.consensus-agreement {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 5px;
+}
+</style>
+
+<!-- Update the JavaScript updateNeuralVotes function -->
+<script>
+function updateNeuralVotes(data) {
+    const votes = data.votes || {};
+    
+    // Update each brain's vote AND confidence
+    Object.keys(votes).forEach(brain => {
+        const voteElement = document.getElementById(`${brain}Vote`);
+        const confElement = document.getElementById(`${brain}Confidence`);
+        
+        if (voteElement && votes[brain]) {
+            // Update vote
+            const vote = votes[brain].vote || votes[brain];
+            voteElement.textContent = vote;
+            voteElement.className = `brain-vote vote-${vote.toLowerCase()}`;
+            
+            // Update confidence
+            if (confElement && votes[brain].confidence !== undefined) {
+                confElement.textContent = `${votes[brain].confidence}%`;
+            }
+        }
+    });
+    
+    // Update consensus if provided
+    if (data.consensus) {
+        const consensusDecision = document.getElementById('consensusDecision');
+        const consensusConfidence = document.getElementById('consensusConfidence');
+        const consensusAgreement = document.getElementById('consensusAgreement');
+        
+        if (consensusDecision) {
+            consensusDecision.textContent = data.consensus.decision;
+            consensusDecision.className = `consensus-decision vote-${data.consensus.decision.toLowerCase()}`;
+        }
+        if (consensusConfidence) {
+            consensusConfidence.textContent = `${data.consensus.confidence}% Confidence`;
+        }
+        if (consensusAgreement) {
+            consensusAgreement.textContent = `Agreement: ${(data.consensus.agreement * 100).toFixed(0)}%`;
+        }
+    }
+}
+</script>
