@@ -94,13 +94,7 @@ class UnifiedTradingCore extends EventEmitter {
       timestamp: Date.now()
     });
     
-    if (this.mode === 'BACKTEST') {
-      return this.simulateTrade(decision, data);
-    } else if (this.mode === 'PAPER') {
-      return this.paperTrade(decision, data);
-    } else {
-      return this.executeTrade(decision, data);
-    }
+    return this.executeTrade(decision, data);
   }
   
   async generateSignals(data) {
@@ -164,29 +158,6 @@ class UnifiedTradingCore extends EventEmitter {
     return 0;
   }
   
-  async simulateTrade(decision, data) {
-    // Backtest mode - simulate trade execution
-    return {
-      mode: 'BACKTEST',
-      decision,
-      executedPrice: data.price,
-      slippage: 0,
-      commission: data.price * 0.001,
-      timestamp: data.timestamp
-    };
-  }
-  
-  async paperTrade(decision, data) {
-    // Paper trading mode
-    return {
-      mode: 'PAPER',
-      decision,
-      executedPrice: data.price,
-      slippage: this.simulateSlippage(data),
-      commission: data.price * 0.001,
-      timestamp: Date.now()
-    };
-  }
   
   async executeTrade(decision, data) {
     // Live trading mode - real execution
@@ -203,11 +174,6 @@ class UnifiedTradingCore extends EventEmitter {
     throw new Error('No execution module available for live trading');
   }
   
-  simulateSlippage(data) {
-    // Simulate realistic slippage
-    const volatility = data.volatility || 0.001;
-    return data.price * volatility * (Math.random() - 0.5);
-  }
   
   getEnabledModules() {
     return Array.from(this.modules.entries()).filter(([name, module]) => {

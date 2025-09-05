@@ -34,7 +34,7 @@ try {
 
 try {
   const master = require('../tools/ogz_master_integration_js');
-  OGZPrimeMasterBot = master.OGZPrimeMasterBot;
+  OGZPrimeMasterBot = master.OGZPrimeMasterBot || master;
 } catch (e) {
   console.log('⚠️ Master Integration not loaded - module in tools');
 }
