@@ -15,6 +15,7 @@ const EventEmitter = require('events');
 const QuantumNeuromorphicCore = require('./QuantumNeuromorphicCore');
 const CorrelationAnalyzer = require('./CorrelationAnalyzer');
 const MultiDirectionalTrader = require('./MultiDirectionalTrader');
+const QuantumSignalClassifier = require('./QuantumSignalClassifier');
 
 class UltimateQuantumTradingSystem extends EventEmitter {
   constructor(config = {}) {
@@ -103,6 +104,13 @@ class UltimateQuantumTradingSystem extends EventEmitter {
       quantumOptimized: true,
       neuromorphicTiming: true
     });
+    
+    // CRITICAL FIX: Initialize signal classifier to prevent infinite hold loops
+    this.signalClassifier = new QuantumSignalClassifier({
+      maxHoldCount: config.maxHoldCount || 5,
+      dynamicHoldThreshold: true
+    });
+    console.log('🔄 QUANTUM SIGNAL CLASSIFIER INITIALIZED - LOOP PREVENTION ACTIVE!');
     
     // System state with quantum enhancements
     this.systemState = {
@@ -247,6 +255,9 @@ class UltimateQuantumTradingSystem extends EventEmitter {
       this.rebalanceInterval = setInterval(() => {
         this.runQuantumRebalance();
       }, this.config.rebalanceInterval);
+      
+      // 5. CRITICAL: Start periodic reset to prevent state buildup and infinite loops
+      this.startPeriodicReset();
       
       console.log('✅ ULTIMATE QUANTUM TRADING SYSTEM ONLINE!');
       console.log('⚛️ Quantum analysis running every 5 seconds');
@@ -409,31 +420,15 @@ class UltimateQuantumTradingSystem extends EventEmitter {
   }
   
   /**
-   * 🌀⚛️ QUANTUM SIGNAL CLASSIFICATION
+   * 🌀⚛️ QUANTUM SIGNAL CLASSIFICATION WITH LOOP PREVENTION
    */
   async classifyQuantumSignal(features, historicalData = []) {
-    console.log('🌀⚛️ QUANTUM SIGNAL CLASSIFICATION...');
-    
-    try {
-      const quantumSignal = await this.quantumCore.quantumClassifyTradingSignal(
-        features,
-        historicalData
-      );
-      
-      if (quantumSignal.ensembleAgreement > 0.7) {
-        console.log(`⚛️ Quantum Signal: ${quantumSignal.action} (${(quantumSignal.confidence * 100).toFixed(1)}%)`);
-        console.log(`🌀 Quantum Advantage: ${quantumSignal.quantumAdvantage}`);
-        
-        return quantumSignal;
-      } else {
-        console.warn('⚠️ Quantum ensemble disagreement, requiring more data');
-        return { action: 'HOLD', confidence: 0, mode: 'INSUFFICIENT_CONSENSUS' };
-      }
-      
-    } catch (error) {
-      console.error('❌ Quantum signal classification error:', error);
-      return { action: 'HOLD', confidence: 0, mode: 'ERROR_FALLBACK' };
-    }
+    // CRITICAL FIX: Delegate to the new classifier that prevents infinite hold loops
+    return await this.signalClassifier.classifyQuantumSignal(
+      features,
+      historicalData,
+      this.quantumCore
+    );
   }
   
   /**
@@ -817,6 +812,39 @@ class UltimateQuantumTradingSystem extends EventEmitter {
     
     // Quantum-enhanced rebalancing logic would go here
     this.systemState.lastRebalance = Date.now();
+  }
+  
+  /**
+   * 🔄 Start periodic reset to prevent state buildup and infinite loops
+   */
+  startPeriodicReset() {
+    console.log('🔄 INITIALIZING PERIODIC STATE RESET SYSTEM...');
+    
+    // Reset classifier state every hour to prevent drift
+    this.periodicResetInterval = setInterval(() => {
+      console.log('🔄 Performing periodic state reset...');
+      
+      // Reset hold counts in signal classifier
+      if (this.signalClassifier) {
+        this.signalClassifier.reset();
+        console.log('✅ Signal classifier reset - hold loops prevented');
+      }
+      
+      // Clear old signals from market intelligence
+      if (this.quantumMarketIntelligence) {
+        this.quantumMarketIntelligence.quantumSignals = [];
+        this.quantumMarketIntelligence.neuromorphicSignals = [];
+        this.quantumMarketIntelligence.correlationSignals = [];
+        console.log('✅ Market intelligence signals cleared');
+      }
+      
+      // Log classifier status
+      const status = this.signalClassifier ? this.signalClassifier.getStatus() : {};
+      console.log('📊 Classifier status after reset:', status);
+      
+    }, 3600000); // Every hour
+    
+    console.log('✅ Periodic reset system active - runs every hour');
   }
 }
 

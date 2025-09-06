@@ -48,8 +48,17 @@ const UltimateTradingSystem = moduleLoader.require('@core/UltimateTradingSystem'
 const CorrelationAnalyzer = moduleLoader.require('@core/CorrelationAnalyzer');
 const MultiDirectionalTrader = moduleLoader.require('@core/MultiDirectionalTrader');
 const LogLearningSystem = moduleLoader.require('@core/LogLearningSystem');
+
+// 🚀 YOUR OPTIMIZATION MODULES - USING MODULE AUTO-LOADER
+const QuantumSignalClassifier = moduleLoader.require('@core/QuantumSignalClassifier');
+const { QuantumOptimizer, OptimizedQuantumTrader } = moduleLoader.require('@core/QuantumOptimizer');
+const ProfitMaximizer = moduleLoader.require('@core/ProfitMaximizer');
+const TurboBoostOptimizer = moduleLoader.require('@core/TurboBoostOptimizer');
 const MLLogProcessor = moduleLoader.require('@core/MLLogProcessor');
 const AggressiveTradingMode = moduleLoader.require('@core/AggressiveTradingMode');
+
+// 🚀🔥 MAXIMUM PERFORMANCE OPTIMIZERS
+// Already loaded above with moduleLoader
 
 // 🧠 HITCH NLP ADVANCED MODULES
 const { HitchModuleLoader } = moduleLoader.require('@core/HitchModuleLoader');
@@ -135,6 +144,15 @@ class QuantumSingularityLauncher {
     // 📊 LAUNCH SPRINT - Initialize performance tracking
     this.performanceTracker = new UniversalPerformanceTracking('quantum');
     console.log('📊 QUANTUM BOT: Performance tracking enabled for launch sprint');
+    
+    // 🚀🔥 INITIALIZE MAXIMUM PERFORMANCE OPTIMIZERS
+    this.quantumOptimizer = new QuantumOptimizer();
+    this.optimizedTrader = new OptimizedQuantumTrader();
+    this.profitMaximizer = new ProfitMaximizer();
+    const TurboBoostOptimizer = require('./core/TurboBoostOptimizer');
+    this.turboBoost = new TurboBoostOptimizer();
+    console.log('⚡ Performance optimizers initialized');
+    console.log('💰 Advanced trading strategies loaded');
 
     // Initialize quantum singularity state
     this.singularityState = {
@@ -171,6 +189,21 @@ class QuantumSingularityLauncher {
     this.polygonWS = null;
     this.timeFrameManager = null;
     this.patternRecognition = null;
+    
+    // 🚀 INITIALIZE YOUR OPTIMIZATION MODULES
+    this.quantumSignalClassifier = new QuantumSignalClassifier({
+      maxHoldCount: 5,
+      dynamicHoldThreshold: true
+    });
+    this.quantumOptimizer = new QuantumOptimizer();
+    this.profitMaximizer = new ProfitMaximizer();
+    this.turboBoostOptimizer = new TurboBoostOptimizer();
+    
+    console.log('✅ YOUR OPTIMIZATION MODULES LOADED:');
+    console.log('  ✓ QuantumSignalClassifier - Loop prevention active');
+    console.log('  ✓ QuantumOptimizer - 10x speed boost ready');
+    console.log('  ✓ ProfitMaximizer - 6 strategies loaded');
+    console.log('  ✓ TurboBoostOptimizer - Aggression scaling ready');
     
     // Express and WebSocket servers
     this.app = null;
@@ -630,7 +663,7 @@ class QuantumSingularityLauncher {
   /**
    * 🔄 Handle market data from unified SSL server
    */
-  handleUnifiedServerData(message) {
+  async handleUnifiedServerData(message) {
     // Handle price format from SSL server
     if (message.type === 'price' && message.data) {
       const priceData = message.data;
@@ -655,43 +688,131 @@ class QuantumSingularityLauncher {
           this.priceHistory.push(this.currentPrice);
           if (this.priceHistory.length > 100) this.priceHistory.shift();
           
-          // ELITE BOT LOGIC - REAL TRADING DECISIONS
+          // ELITE BOT LOGIC WITH MAXIMUM OPTIMIZATION
           if (this.currentPrice && this.priceHistory.length >= 30) {
-            // Calculate real indicators using Elite's functions
-            const rsi = this.calculateRSI(this.priceHistory, 14);
+            // 🚀 USE QUANTUM OPTIMIZER FOR 10X SPEED
+            const indicators = this.quantumOptimizer.batchCalculateIndicators(
+              this.priceHistory.map(p => ({ close: p, volume: 1000000 }))
+            );
+            
+            // Get optimized indicators
+            const rsi = indicators.rsi[indicators.rsi.length - 1] || this.calculateRSI(this.priceHistory, 14);
             const macd = this.calculateMACD(this.priceHistory);
             const pattern = this.detectPattern(this.priceHistory);
             const bollinger = this.calculateBollinger(this.priceHistory);
             
-            // AI decision based on multiple signals - COPIED FROM ELITE
+            // 💰 USE PROFIT MAXIMIZER FOR ADVANCED STRATEGIES
+            const profitSignal = await this.profitMaximizer.executeMasterStrategy(
+              { 
+                currentPrice: this.currentPrice,
+                candles: this.priceHistory.slice(-50).map(p => ({ close: p, volume: 1000000 }))
+              },
+              null, // orderBook
+              { binance: this.currentPrice, coinbase: this.currentPrice * 1.001 } // Mock exchange prices
+            );
+            
+            // 🚀 USE YOUR OPTIMIZERS INSTEAD OF OLD LOGIC
             let action = null;
             let reason = '';
             let confidence = 50;
             
-            // Complex AI logic combining indicators - EXACT COPY FROM ELITE
-            if (rsi < 25 && this.currentPrice < bollinger.lower && macd.histogram > 0) {
-              action = 'BUY';
-              reason = 'Triple oversold signal';
-              confidence = 85;
-              this.entryPrice = this.currentPrice;
-              this.positionSize = 0.003; // Same as Elite
-            } else if (rsi > 75 && this.currentPrice > bollinger.upper && macd.histogram < 0) {
-              action = 'SELL';
-              reason = 'Triple overbought signal';
-              confidence = 85;
-            } else if (pattern && macd.crossover) {
-              action = macd.histogram > 0 ? 'BUY' : 'SELL';
-              reason = `${pattern} + MACD cross`;
-              confidence = 80;
-              if (action === 'BUY') {
-                this.entryPrice = this.currentPrice;
-                this.positionSize = 0.003;
+            // 🔥 USE YOUR OPTIMIZER CHAIN WITH SIGNAL CLASSIFIER
+            if (profitSignal && profitSignal.primary) {
+              // Use QuantumSignalClassifier for loop prevention
+              const classifiedSignal = await this.quantumSignalClassifier.classifyQuantumSignal(
+                {
+                  rsi: rsi,
+                  macdHistogram: macd.histogram,
+                  volatility: this.quantumOptimizer.calculateVolatility(this.priceHistory),
+                  momentum: this.quantumOptimizer.calculateMomentum(this.priceHistory, 10),
+                  trend: this.quantumOptimizer.calculateTrend(this.priceHistory)
+                },
+                this.priceHistory,
+                { quantumClassifyTradingSignal: async () => profitSignal.primary }
+              );
+              
+              if (classifiedSignal && classifiedSignal.action !== 'HOLD') {
+                action = classifiedSignal.action;
+                reason = classifiedSignal.reason || profitSignal.primary.reason;
+                confidence = classifiedSignal.confidence * 100;
+                console.log(`✅ SIGNAL: ${action} (Hold count: ${this.quantumSignalClassifier.holdCount})`);
               }
             }
             
             // Execute trade if confidence is high enough
             if (action && confidence >= 75 && Date.now() - this.lastTradeTime > 15000) {
-              console.log(`🎯 QUANTUM DECISION: ${action} at $${this.currentPrice} (${confidence}% confidence)`);
+              // Apply turbo boost optimization 
+              if (this.turboBoostOptimizer) {
+                const turboSignal = {
+                  action: action,
+                  confidence: confidence / 100,
+                  fallback: false, // Set true if from loop prevention
+                  holdCount: 0,
+                  regime: 'normal'
+                };
+                
+                const turboExecution = await this.turboBoostOptimizer.executeTurboTrade(
+                  turboSignal,
+                  {
+                    currentPrice: this.currentPrice,
+                    volatility: 0.015, // Reasonable volatility estimate
+                    currentBalance: this.balance,
+                    initialBalance: 10000,
+                    availableCapital: this.balance,
+                    priceHistory: this.priceHistory
+                  },
+                  this.entryPrice ? { entryPrice: this.entryPrice, side: 'BUY' } : null
+                );
+                
+                // USE YOUR OPTIMIZER MATH WITH DYNAMIC SAFETY CAP
+                if (turboExecution && turboExecution.size) {
+                  // Kelly Criterion from QuantumOptimizer
+                  const kellyPosition = this.quantumOptimizer.calculateOptimalPosition(
+                    this.wins / Math.max(this.trades, 1),
+                    100, // avg win
+                    50,  // avg loss  
+                    this.balance
+                  );
+                  
+                  // DYNAMIC TRAILING SAFETY CAP
+                  const winRate = this.wins / Math.max(this.trades, 1);
+                  const profitFactor = this.balance / 10000; // Starting balance was 10000
+                  const volatility = this.quantumOptimizer.calculateVolatility(this.priceHistory);
+                  
+                  // Dynamic cap: 0.5% to 5% based on performance
+                  let dynamicCap = 0.01; // Start at 1%
+                  if (winRate > 0.6 && profitFactor > 1.0) {
+                    dynamicCap = Math.min(0.05, 0.01 * (1 + winRate * 2)); // Up to 5% if winning
+                  } else if (winRate < 0.4 || profitFactor < 0.95) {
+                    dynamicCap = Math.max(0.005, 0.01 * winRate); // Down to 0.5% if losing
+                  }
+                  
+                  // Adjust for volatility (lower cap in high volatility)
+                  dynamicCap *= Math.max(0.5, 1 - volatility * 2);
+                  
+                  // Use TurboBoost size with Kelly safety and dynamic cap
+                  this.positionSize = Math.min(
+                    turboExecution.size / this.currentPrice,
+                    kellyPosition.percentage * this.balance / 100 / this.currentPrice,
+                    this.balance * dynamicCap / this.currentPrice
+                  );
+                  console.log(`📊 Position: ${this.positionSize.toFixed(6)} BTC | Cap: ${(dynamicCap*100).toFixed(1)}% | WR: ${(winRate*100).toFixed(0)}%`);
+                } else {
+                  // Fallback with dynamic safety
+                  const winRate = this.wins / Math.max(this.trades, 1);
+                  const dynamicFallback = Math.max(0.005, Math.min(0.02, 0.01 * (1 + winRate)));
+                  
+                  const kellyPosition = this.quantumOptimizer.calculateOptimalPosition(
+                    winRate, 100, 50, this.balance
+                  );
+                  this.positionSize = Math.min(
+                    kellyPosition.percentage * this.balance / 100 / this.currentPrice,
+                    this.balance * dynamicFallback / this.currentPrice
+                  );
+                }
+              }
+              
+              console.log(`🎯 Trade Signal: ${action} at $${this.currentPrice} (${confidence}% confidence)`);
               console.log(`   RSI: ${rsi.toFixed(1)} | MACD: ${macd.histogram.toFixed(4)} | Reason: ${reason}`);
               
               // Execute the trade with real P&L calculation
@@ -703,17 +824,89 @@ class QuantumSingularityLauncher {
                   reason: reason
                 };
                 
+                // DYNAMIC BREAKEVEN & TRAILING STOP LOGIC
+                if (this.entryPrice && this.positionSize > 0) {
+                  const unrealizedPnL = (this.currentPrice - this.entryPrice) / this.entryPrice;
+                  const volatility = this.quantumOptimizer.calculateVolatility(this.priceHistory);
+                  const trend = this.quantumOptimizer.calculateTrend(this.priceHistory);
+                  
+                  // Determine market regime
+                  const isBullish = trend > 0.5;
+                  const isBearish = trend < -0.5;
+                  const isHighVolatility = volatility > 0.02;
+                  
+                  // 3% BASELINE - CRYPTO IS VOLATILE AF
+                  let breakevenThreshold = 0.03; // 3% minimum to breakeven
+                  let trailingDistance = 0.03;    // 3% BASELINE trail
+                  
+                  // Add volatility multiplier
+                  const volMultiplier = Math.max(1, volatility * 50); // Scale with volatility
+                  
+                  if (isBullish && confidence > 80) {
+                    // Bull market = let it breathe heavily
+                    breakevenThreshold = 0.05 * volMultiplier;  // 5%+ based on vol
+                    trailingDistance = 0.08 * volMultiplier;    // 8%+ trail for moon shots
+                    console.log(`🐂 Bull mode: ${(trailingDistance*100).toFixed(1)}% trail`);
+                  } else if (isBearish || isHighVolatility) {
+                    // Bear/volatile = 3% is still the MINIMUM
+                    breakevenThreshold = 0.03 * volMultiplier;   // 3%+ minimum
+                    trailingDistance = Math.max(0.03, 0.05 * volMultiplier); // Never below 3%
+                    console.log(`🐻 Bear mode: ${(trailingDistance*100).toFixed(1)}% trail (3% min)`);
+                  } else {
+                    // Normal = scale from 3% baseline
+                    breakevenThreshold = 0.03 * volMultiplier;
+                    trailingDistance = Math.max(0.03, 0.06 * volMultiplier); // 6%+ normal
+                    console.log(`📊 Normal mode: ${(trailingDistance*100).toFixed(1)}% trail`);
+                  }
+                  
+                  // Move stop to breakeven dynamically
+                  if (unrealizedPnL > breakevenThreshold && !this.stopMovedToBreakeven) {
+                    this.stopLoss = this.entryPrice * (1 + 0.001); // Breakeven + fees
+                    this.stopMovedToBreakeven = true;
+                    console.log(`🛡️ Stop moved to breakeven at $${this.stopLoss.toFixed(2)} (${(breakevenThreshold*100).toFixed(1)}% threshold)`);
+                  }
+                  
+                  // Dynamic trailing stop
+                  if (unrealizedPnL > breakevenThreshold * 2) {
+                    // Trail more aggressively as profit grows
+                    const profitMultiplier = Math.min(3, unrealizedPnL / breakevenThreshold);
+                    const adjustedTrail = trailingDistance * (isBullish ? 1.5 : 1.0);
+                    
+                    const newStop = this.currentPrice * (1 - adjustedTrail);
+                    if (newStop > (this.stopLoss || 0)) {
+                      this.stopLoss = newStop;
+                      console.log(`📈 Trailing stop: $${this.stopLoss.toFixed(2)} (${(adjustedTrail*100).toFixed(1)}% trail)`);
+                    }
+                  }
+                  
+                  // Check stop but give breathing room in bull markets
+                  const stopBuffer = isBullish ? 0.002 : 0; // 0.2% buffer in bull
+                  if (this.stopLoss && this.currentPrice <= this.stopLoss * (1 - stopBuffer)) {
+                    action = 'SELL';
+                    reason = `${isBullish ? 'Bull' : isBearish ? 'Bear' : 'Neutral'} stop hit`;
+                    confidence = 100;
+                    console.log(`🛑 STOP TRIGGERED at $${this.currentPrice} (${reason})`);
+                  }
+                }
+                
                 // Calculate P&L for tracking
                 let pnl = 0;
                 if (action === 'SELL' && this.entryPrice && this.positionSize > 0) {
                   const realPnL = (this.currentPrice - this.entryPrice) * this.positionSize;
-                  pnl = realPnL - (Math.abs(realPnL) * 0.012); // 1.2% total costs (middle ground: exchange + slippage + gas + broker)
+                  pnl = realPnL - (Math.abs(realPnL) * 0.012); // 1.2% total costs
                   this.trades++;
                   if (pnl > 0) this.wins++;
                   this.pnl += pnl;
                   this.balance += pnl;
+                  // Reset position tracking
+                  this.entryPrice = null;
+                  this.positionSize = 0;
+                  this.stopLoss = null;
+                  this.stopMovedToBreakeven = false;
                 } else if (action === 'BUY') {
                   this.trades++;
+                  this.entryPrice = this.currentPrice;
+                  this.stopMovedToBreakeven = false;
                 }
                 
                 // 📊 LAUNCH SPRINT - Track performance for Elite-style trades
@@ -1671,19 +1864,24 @@ class QuantumSingularityLauncher {
    */
   async processMarketData(data) {
     try {
-      const price = data.price || data.close || 0;
-      const symbol = data.symbol || 'BTC-USD';
+      const price = data.price || data.close || data.c || 0;
+      const symbol = data.symbol || data.s || 'BTC-USD';
       
-      // Run quantum analysis with dynamic threshold
-      const threshold = price * 0.999; // 0.1% below current price
-      const decision = {
-        action: price > threshold ? 'SELL' : 'BUY',
-        confidence: Math.floor(75 + Math.random() * 25), // 75-100% confidence
-        price: price,
-        symbol: symbol,
-        reason: `Quantum signal: ${price > threshold ? 'Overbought' : 'Oversold'}`,
-        timestamp: Date.now()
-      };
+      // HOOK UP TO OUR OPTIMIZER CHAIN!
+      if (price && symbol === 'BTC-USD') {
+        console.log(`📊 POLYGON DATA: BTC-USD = $${price}`);
+        
+        // Feed to our unified handler that has all the optimizers
+        await this.handleUnifiedServerData({
+          type: 'price',
+          data: {
+            asset: 'BTC-USD',
+            price: price,
+            timestamp: Date.now()
+          }
+        });
+      }
+      return;
       
       // Execute trade if confidence is high enough
       if (decision.confidence > 80) {

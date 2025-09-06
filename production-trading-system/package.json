@@ -1,0 +1,43 @@
+{
+  "name": "production-trading-system",
+  "version": "1.0.0",
+  "description": "Professional crypto trading system with 4 microservices",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run start:market-data\" \"npm run start:strategy\" \"npm run start:execution\" \"npm run start:dashboard\"",
+    "start:prod": "pm2 start ecosystem.config.js",
+    "start:market-data": "node services/market-data/index.js",
+    "start:strategy": "node services/strategy/index.js",
+    "start:execution": "node services/execution/index.js",
+    "start:dashboard": "node services/dashboard/index.js",
+    "backtest": "node scripts/run-backtest.js",
+    "test": "jest",
+    "test:integration": "jest --config=jest.integration.config.js",
+    "test:load": "k6 run tests/load.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.14.2",
+    "axios": "^1.5.0",
+    "redis": "^4.6.7",
+    "pg": "^8.11.3",
+    "dotenv": "^16.3.1",
+    "ccxt": "^4.0.0",
+    "ta": "^0.10.1",
+    "mathjs": "^11.11.0",
+    "winston": "^3.10.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.0.0",
+    "rate-limiter-flexible": "^2.4.2",
+    "joi": "^17.10.1"
+  },
+  "devDependencies": {
+    "jest": "^29.6.4",
+    "concurrently": "^8.2.1",
+    "nodemon": "^3.0.1",
+    "eslint": "^8.48.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
