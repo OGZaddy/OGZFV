@@ -1675,7 +1675,7 @@ class QuantumSingularityLauncher {
       const symbol = data.symbol || 'BTC-USD';
       
       // Run quantum analysis with dynamic threshold
-      const threshold = 110400; // More realistic threshold
+      const threshold = price * 0.999; // 0.1% below current price
       const decision = {
         action: price > threshold ? 'SELL' : 'BUY',
         confidence: Math.floor(75 + Math.random() * 25), // 75-100% confidence
