@@ -8,9 +8,10 @@ class ExecutionLayer {
     this.wsClient = null; // Will be set by the bot
     this.botTier = config.botTier || process.env.BOT_TIER || 'quantum'; // Bot tier identification
     this.config = {
-      apiKey: config.apiKey || process.env.POLYGON_API_KEY,
+      apiKey: config.polygonApiKey || config.apiKey || process.env.POLYGON_API_KEY,
       maxPositionSize: config.maxPositionSize || 0.1, // 10% of balance
       minTradeSize: config.minTradeSize || 10, // $10 minimum
+      sandboxMode: config.sandboxMode !== undefined ? config.sandboxMode : true,
       ...config
     };
     
@@ -41,11 +42,21 @@ class ExecutionLayer {
    */
   async executeTrade(decision) {
     console.log('🎯 EXECUTING REAL TRADE:', decision);
+    console.log('📋 Config status:', {
+      hasApiKey: !!this.config.apiKey,
+      sandboxMode: this.config.sandboxMode,
+      apiKeyLength: this.config.apiKey ? this.config.apiKey.length : 0
+    });
     
     try {
       // Step 1: Check if we have valid credentials
       if (!this.config.apiKey || this.config.sandboxMode) {
-        console.log('⚠️ No API credentials - cannot execute real trade');
+        console.log('⚠️ Trade blocked:', {
+          reason: !this.config.apiKey ? 'No API key' : 'Sandbox mode active',
+          sandboxMode: this.config.sandboxMode
+        });
+        // Log simulated trade even in sandbox
+        this.logTrade(decision);
         return null;
       }
       
@@ -138,6 +149,50 @@ class ExecutionLayer {
       entryTime: Date.now(),
       pnl: 0
     });
+  }
+  
+  /**
+   * Log simulated trades for tracking
+   */
+  logTrade(decision) {
+    const trade = {
+      timestamp: new Date().toISOString(),
+      action: decision.action,
+      price: decision.price,
+      confidence: decision.confidence,
+      mode: this.config.sandboxMode ? 'SANDBOX' : 'LIVE',
+      totalTrades: ++this.totalTrades
+    };
+    
+    // Log to file
+    const logDir = path.join(process.cwd(), 'core', 'logs', 'trades');
+    const logFile = path.join(logDir, `trades_${new Date().toISOString().split('T')[0]}.json`);
+    
+    try {
+      if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir, { recursive: true });
+      }
+      
+      let trades = [];
+      if (fs.existsSync(logFile)) {
+        const content = fs.readFileSync(logFile, 'utf8');
+        if (content.trim()) {
+          trades = JSON.parse(content);
+        }
+      }
+      
+      trades.push(trade);
+      fs.writeFileSync(logFile, JSON.stringify(trades, null, 2));
+      
+      console.log('📝 Trade logged:', {
+        action: trade.action,
+        price: trade.price,
+        totalTrades: trade.totalTrades,
+        mode: trade.mode
+      });
+    } catch (error) {
+      console.error('Failed to log trade:', error.message);
+    }
   }
   
   /**

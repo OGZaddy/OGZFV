@@ -49,6 +49,7 @@
     "express-rate-limit": "^8.0.1",
     "express-validator": "^7.2.1",
     "helmet": "^8.1.0",
+    "howler": "^2.2.4",
     "node-fetch": "^3.0.0",
     "paypal-rest-sdk": "^1.8.1",
     "require-in-the-middle": "^7.5.2",

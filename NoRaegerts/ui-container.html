@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoRaegerts Mode - YOLO Simulator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a0a;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+        
+        #noraegerts-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        /* Container for the lost-hopes-ui */
+        #lost-hopes-ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Loading screen */
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1000;
+        }
+        
+        #loading h1 {
+            font-size: 48px;
+            color: #ff0066;
+            text-shadow: 0 0 20px rgba(255, 0, 102, 0.8);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Info panel */
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ff0066;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 300px;
+            z-index: 100;
+        }
+        
+        #info-panel h2 {
+            color: #ff0066;
+            margin-top: 0;
+        }
+        
+        #info-panel .warning {
+            color: #ffcc00;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        /* Control buttons */
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+        
+        .control-btn {
+            background: #ff0066;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 0 10px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .control-btn:hover {
+            background: #ff3388;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 0, 102, 0.5);
+        }
+        
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Leaderboard button */
+        #leaderboard-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div id="noraegerts-container">
+        <!-- Loading screen -->
+        <div id="loading">
+            <h1>💀 NORAEGERTS MODE 💀</h1>
+            <p>Initializing YOLO Engine...</p>
+        </div>
+        
+        <!-- Info panel -->
+        <div id="info-panel" style="display: none;">
+            <h2>⚠️ WARNING ⚠️</h2>
+            <p class="warning">This is a $10,000 FAKE account!</p>
+            <p>Blow it up however you want. No real money at risk.</p>
+            <p>Current Session:</p>
+            <div id="session-stats">
+                <p>Trades: <span id="trade-count">0</span></p>
+                <p>Degeneracy: <span id="degeneracy-level">0%</span></p>
+                <p>Time: <span id="session-time">00:00</span></p>
+            </div>
+        </div>
+        
+        <!-- Leaderboard button -->
+        <button id="leaderboard-btn" class="control-btn" style="display: none;">
+            🏆 Leaderboard
+        </button>
+        
+        <!-- Main UI container for lost-hopes-ui -->
+        <div id="lost-hopes-ui"></div>
+        
+        <!-- Control buttons -->
+        <div id="controls" style="display: none;">
+            <button id="start-btn" class="control-btn">START DEGENERACY</button>
+            <button id="stop-btn" class="control-btn" style="display: none;">RAGE QUIT</button>
+        </div>
+    </div>
+    
+    <script>
+        // Basic initialization script
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('💀 NoRaegerts UI Container Ready');
+            
+            // Hide loading after 2 seconds
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('info-panel').style.display = 'block';
+                document.getElementById('controls').style.display = 'block';
+                document.getElementById('leaderboard-btn').style.display = 'block';
+            }, 2000);
+            
+            // Button handlers
+            document.getElementById('start-btn').addEventListener('click', () => {
+                console.log('🚀 Starting NoRaegerts Mode!');
+                document.getElementById('start-btn').style.display = 'none';
+                document.getElementById('stop-btn').style.display = 'inline-block';
+                
+                // Emit event for the engine to catch
+                if (window.regertsEngine) {
+                    window.regertsEngine.activate();
+                }
+            });
+            
+            document.getElementById('stop-btn').addEventListener('click', () => {
+                console.log('💀 Rage quitting NoRaegerts Mode!');
+                document.getElementById('stop-btn').style.display = 'none';
+                document.getElementById('start-btn').style.display = 'inline-block';
+                
+                // Emit event for the engine to catch
+                if (window.regertsEngine) {
+                    window.regertsEngine.deactivate();
+                }
+            });
+            
+            document.getElementById('leaderboard-btn').addEventListener('click', () => {
+                console.log('🏆 Showing leaderboard');
+                if (window.regertsEngine) {
+                    window.regertsEngine.getLeaderboard();
+                }
+            });
+            
+            // Update timer
+            let seconds = 0;
+            setInterval(() => {
+                if (document.getElementById('stop-btn').style.display !== 'none') {
+                    seconds++;
+                    const mins = Math.floor(seconds / 60);
+                    const secs = seconds % 60;
+                    document.getElementById('session-time').textContent = 
+                        `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        });
+        
+        // Hook for the engine to update stats
+        window.updateNoRaegertsStats = (stats) => {
+            if (stats.trades !== undefined) {
+                document.getElementById('trade-count').textContent = stats.trades;
+            }
+            if (stats.degeneracy !== undefined) {
+                document.getElementById('degeneracy-level').textContent = stats.degeneracy.toFixed(1) + '%';
+            }
+        };
+    </script>
+</body>
+</html>

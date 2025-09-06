@@ -31,7 +31,8 @@ class OGZSentimentAnalyzer {
             'outperform', 'beat', 'exceed', 'upgrade', 'buy', 'target', 'momentum',
             'breakthrough', 'acquisition', 'merger', 'expansion', 'revenue', 'earnings',
             'dividend', 'buyback', 'innovation', 'partnership', 'contract', 'deal',
-            'record', 'high', 'peak', 'soar', 'climb', 'rise', 'increase', 'boost'
+            'record', 'high', 'peak', 'soar', 'climb', 'rise', 'increase', 'boost',
+            'moon', 'lambo', 'rocket', 'breakout', 'pump', 'accumulation', 'support'
         ];
 
         // Financial negative sentiment words
@@ -40,7 +41,8 @@ class OGZSentimentAnalyzer {
             'underperform', 'miss', 'downgrade', 'warning', 'concern', 'risk', 'volatility',
             'recession', 'inflation', 'debt', 'bankruptcy', 'lawsuit', 'investigation',
             'scandal', 'fraud', 'layoffs', 'closure', 'suspension', 'delay', 'cancel',
-            'low', 'drop', 'fall', 'decrease', 'cut', 'reduce', 'struggle', 'challenge'
+            'low', 'drop', 'fall', 'decrease', 'cut', 'reduce', 'struggle', 'challenge',
+            'dump', 'rekt', 'liquidation', 'resistance', 'breakdown', 'correction', 'fear'
         ];
 
         bullishTerms.forEach(term => this.positiveWords.add(term.toLowerCase()));
@@ -87,13 +89,15 @@ class OGZSentimentAnalyzer {
         // Word-level sentiment analysis
         words.forEach(word => {
             const lowerWord = word.toLowerCase();
+            // Also check base form (remove common endings)
+            const baseWord = lowerWord.replace(/(?:s|es|ed|ing)$/, '');
             
-            if (this.positiveWords.has(lowerWord)) {
+            if (this.positiveWords.has(lowerWord) || this.positiveWords.has(baseWord)) {
                 positiveScore += 1;
                 signals.push({ type: 'positive', word: lowerWord, weight: 1 });
             }
             
-            if (this.negativeWords.has(lowerWord)) {
+            if (this.negativeWords.has(lowerWord) || this.negativeWords.has(baseWord)) {
                 negativeScore += 1;
                 signals.push({ type: 'negative', word: lowerWord, weight: 1 });
             }

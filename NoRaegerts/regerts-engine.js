@@ -1,8 +1,9 @@
 // RegertsEngine.js - Master controller for No Raegerts Mode
 const EventEmitter = require('events');
-const LostHopesUI = require('./lostHopesUI');
-const VoiceManager = require('./VoiceManager');
-const RegertsFinalDescent = require('./regertsFinalDescent');
+const LostHopesUI = require('./lost-hopes-ui');
+const VoiceManager = require('./voice-manager');
+const RegertsFinalDescent = require('./regerts-final-descent');
+const NoRaegertsLeaderboard = require('./leaderboard');
 
 class RegertsEngine extends EventEmitter {
   constructor(tradingBrain) {
@@ -23,6 +24,7 @@ class RegertsEngine extends EventEmitter {
     this.ui = new LostHopesUI();
     this.voiceManager = new VoiceManager();
     this.finalDescent = new RegertsFinalDescent(tradingBrain, this.voiceManager);
+    this.leaderboard = new NoRaegertsLeaderboard(); // 🏆 HOOKUP: Leaderboard for prizes!
     
     // Configuration
     this.config = {
@@ -133,6 +135,27 @@ class RegertsEngine extends EventEmitter {
     // Calculate session stats
     this.sessionStats.timeInMode = Date.now() - this.sessionStats.startTime;
     
+    // 🏆 HOOKUP: Submit run to leaderboard!
+    const runData = {
+      timeToZero: Math.floor(this.sessionStats.timeInMode / 1000), // Convert to seconds
+      maxDegeneracy: this.sessionStats.highestDegeneracy,
+      biggestLoss: Math.abs(Math.min(0, this.sessionStats.profitLoss)), // Track biggest loss
+      totalTrades: this.sessionStats.tradesExecuted,
+      timeTo999: this.sessionStats.timeTo999 || Infinity,
+      voiceLinesTriggered: this.voiceManager.getTriggeredCount ? this.voiceManager.getTriggeredCount() : 0,
+      finalMessage: this.ui.getFinalMessage ? this.ui.getFinalMessage() : "No ragrets"
+    };
+    
+    const username = this.config.username || 'Anonymous_Degen';
+    const result = this.leaderboard.submitRun(username, runData);
+    
+    console.log(`\n🏆 LEADERBOARD SUBMISSION:`);
+    console.log(`   Rank: #${result.rank}`);
+    console.log(`   Score: ${result.entry.score}`);
+    if (result.beaten.length > 0) {
+      console.log(`   🔥 ACHIEVEMENTS: ${result.beaten.join(', ')}`);
+    }
+    
     // Deactivate UI
     this.ui.deactivate();
     
@@ -214,6 +237,12 @@ class RegertsEngine extends EventEmitter {
     this.sessionStats.totalDegeneracy += state.degeneracyLevel;
     this.sessionStats.lowestLogic = Math.min(this.sessionStats.lowestLogic, state.logicLevel);
     this.sessionStats.highestDegeneracy = Math.max(this.sessionStats.highestDegeneracy, state.degeneracyLevel);
+    
+    // 💀 HOOKUP: Track time to 99.9% for leaderboard
+    if (state.degeneracyLevel >= 99.9 && !this.sessionStats.timeTo999) {
+      this.sessionStats.timeTo999 = Math.floor((Date.now() - this.sessionStats.startTime) / 1000);
+      console.log(`💀 HIT 99.9% DEGENERACY IN ${this.sessionStats.timeTo999} SECONDS!`);
+    }
     
     // Check if we should trigger special events
     if (state.degeneracyLevel >= 99.9 && !this.finalDescentTriggered) {
@@ -335,6 +364,27 @@ class RegertsEngine extends EventEmitter {
       sessionStats: { ...this.sessionStats },
       config: { ...this.config }
     };
+  }
+  
+  // 🏆 HOOKUP: Get leaderboard data
+  getLeaderboard() {
+    const weekly = this.leaderboard.getWeeklyLeaderboard();
+    console.log('\n🏆 NORAEGERTS WEEKLY LEADERBOARD 🏆');
+    console.log('=====================================');
+    console.log('TOP DEGENS (Overall Score):');
+    weekly.overall.slice(0, 5).forEach((entry, i) => {
+      console.log(`  ${i+1}. ${entry.username} - Score: ${entry.score}`);
+    });
+    console.log('\nFASTEST BLOWUPS:');
+    weekly.speedrun.slice(0, 3).forEach((entry, i) => {
+      console.log(`  ${i+1}. ${entry.username} - ${entry.timeToZero}s`);
+    });
+    console.log('\nMAX DEGENERACY:');
+    weekly.degeneracy.slice(0, 3).forEach((entry, i) => {
+      console.log(`  ${i+1}. ${entry.username} - ${entry.maxDegeneracy.toFixed(1)}%`);
+    });
+    console.log('=====================================\n');
+    return weekly;
   }
 
   // Configure the engine

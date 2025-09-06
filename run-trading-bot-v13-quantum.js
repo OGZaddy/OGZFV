@@ -199,11 +199,92 @@ class QuantumSingularityLauncher {
     this.profitMaximizer = new ProfitMaximizer();
     this.turboBoostOptimizer = new TurboBoostOptimizer();
     
+    // Use module auto loader for all core modules
+    const modules = moduleLoader.loadAll();
+    // Create instances of the classes with config
+    this.advancedStrategies = new modules.core.AdvancedTradingStrategies(this.config);
+    this.patternDetector = new modules.core.ComprehensivePatternDetector(this.config);
+    this.performanceValidator = modules.core.PerformanceValidator ? new modules.core.PerformanceValidator(this.config) : null;
+    this.riskManager = modules.core.RiskManager ? new modules.core.RiskManager(this.config) : null;
+    this.profilePatternManager = modules.core.ProfilePatternManager;
+    
+    // 🔍 HOOKUP: Enhanced Pattern Recognition via module loader
+    this.enhancedPatterns = modules.core.EnhancedPatternRecognition;
+    if (this.enhancedPatterns) {
+      console.log('🎯 Enhanced Pattern Recognition loaded via module auto loader');
+    }
+    
+    // 🔍 HOOKUP: NLP Sentiment Analyzer
+    this.sentimentAnalyzer = new (modules.core.nlp_sentiment_analyzer || require('./core/nlp_sentiment_analyzer'))();
+    console.log('📰 NLP Sentiment Analyzer loaded');
+    
+    // 🐋 HOOKUP: Whale Watcher via module loader
+    this.whaleWatcher = modules.core.WhaleWatcher ? new modules.core.WhaleWatcher() : null;
+    if (this.whaleWatcher) {
+      console.log('🐋 Whale Watcher loaded - Tracking Buffett, Cathie Wood, Pelosi');
+    }
+    
+    // 📊 HOOKUP: Market Regime Detector via module loader
+    this.marketRegime = modules.core.MarketRegimeDetector || null;
+    if (this.marketRegime) {
+      console.log('📊 Market Regime Detector loaded');
+    }
+    
+    // 🔗 HOOKUP: Correlation Analyzer via module loader
+    this.correlationAnalyzer = modules.core.CorrelationAnalyzer || null;
+    if (this.correlationAnalyzer) {
+      console.log('🔗 Correlation Analyzer loaded');
+    }
+    
+    // 🚀 TEST SCALPER MODE - Check if method exists first
+    if (this.advancedStrategies && typeof this.advancedStrategies.activateScalperMode === 'function') {
+      const scalperActive = this.advancedStrategies.activateScalperMode();
+      console.log(`🔍 SCALPER MODE TEST: ${scalperActive ? 'ACTIVE' : 'FAILED'}`);
+    }
+    
+    // 💀 HOOKUP: NoRaegerts Mode - MANDATORY FIRST EXPERIENCE
+    // "Welcome to trading psychology 101"
+    try {
+      const RegertsEngine = require('./NoRaegerts/regerts-engine');
+      this.noRaegerts = new RegertsEngine(this);
+      
+      // AUTO-START FOR NEW USERS
+      console.log('\n💀💀💀 WELCOME TO NORAEGERTS MODE 💀💀💀');
+      console.log('🎮 MANDATORY WARMUP - LET\'S SEE WHAT YOU\'RE MADE OF');
+      console.log('⚠️  THIS ISN\'T YOUR ACCOUNT BRO, CHILL');
+      console.log('⚠️  It\'s $10k FAKE money - blow it however you want');
+      console.log('📢 "Show me how you trade when nobody\'s watching"');
+      console.log('💀 Degeneracy Level: 0% (but not for long...)');
+      console.log('🏆 Compete for weekly prizes on the leaderboard!\n');
+      
+      // Hook up leaderboard command
+      this.commands = this.commands || {};
+      this.commands.leaderboard = () => {
+        if (this.noRaegerts) {
+          this.noRaegerts.getLeaderboard();
+        }
+      };
+      
+      // Auto-activate on first login
+      setTimeout(() => {
+        if (this.noRaegerts && !this.hasCompletedWarmup) {
+          console.log('💀 Starting mandatory psychological evaluation...');
+          console.log('💀 To view UI: Open NoRaegerts/ui-container.html in browser');
+          this.activateNoRaegerts();
+        }
+      }, 5000); // Give them 5 seconds to read the warnings
+      
+    } catch (error) {
+      console.log('💀 NoRaegerts not loaded:', error.message);
+    }
+    
     console.log('✅ YOUR OPTIMIZATION MODULES LOADED:');
     console.log('  ✓ QuantumSignalClassifier - Loop prevention active');
     console.log('  ✓ QuantumOptimizer - 10x speed boost ready');
     console.log('  ✓ ProfitMaximizer - 6 strategies loaded');
     console.log('  ✓ TurboBoostOptimizer - Aggression scaling ready');
+    console.log('  ✓ AdvancedTradingStrategies - 10 strategies with pattern confirmation');
+    console.log('  ✓ ComprehensivePatternDetector - 50+ candlestick patterns');
     
     // Express and WebSocket servers
     this.app = null;
@@ -238,6 +319,13 @@ class QuantumSingularityLauncher {
       // Phase 3: Initialize enhanced trading infrastructure
       console.log('🔧🚀 PHASE 3: ENHANCED TRADING INFRASTRUCTURE...');
       await this.initializeEnhancedTradingSystems();
+      
+      // Initialize ProfilePatternManager
+      if (this.profilePatternManager && typeof this.profilePatternManager.initialize === 'function') {
+        await this.profilePatternManager.initialize('btc_scalper_quantum');
+      } else if (this.profilePatternManager) {
+        console.log('⚠️ ProfilePatternManager loaded but no initialize method');
+      }
       
       // Phase 4: Initialize quantum network services
       console.log('🌐⚛️ PHASE 4: QUANTUM NETWORK SERVICES...');
@@ -420,6 +508,14 @@ class QuantumSingularityLauncher {
             console.log('💰💰💰 TRADE EXECUTED!!! 💰💰💰');
             console.log('🎉 THE BOT IS FINALLY TRADING!!!');
             
+            // Store pattern for learning
+            if (this.profilePatternManager && this.profilePatternManager.isInitialized()) {
+              await this.profilePatternManager.storePattern(
+                [rsi/100, macd.histogram, trend, volatility, volume/1000000, momentum, 0, 0, action === 'BUY' ? 1 : -1],
+                { action, price: this.currentPrice, success: false, confidence: confidence/100 }
+              );
+            }
+            
             // REAL P&L CALCULATION - COPIED FROM ELITE BOT
             if (this.divineModules && finalDecision.divine) {
               if (!this.entryPrice || !this.currentPrice) return;
@@ -552,10 +648,10 @@ class QuantumSingularityLauncher {
     console.log('🔧🚀 Initializing Enhanced Trading Infrastructure...');
     
     // DISABLED - Was learning from failures
-    // this.learningSystem = new LogLearningSystem({
-    //   enableQuantumLearning: this.config.enableNeuromorphicLearning,
-    //   neuromorphicProcessing: this.config.enableNeuromorphicProcessing
-    // });
+    this.learningSystem = new LogLearningSystem({
+      enableQuantumLearning: this.config.enableNeuromorphicLearning,
+      neuromorphicProcessing: this.config.enableNeuromorphicProcessing
+    });
 
     // DISABLED - Was learning from failures
     // this.mlProcessor = new MLLogProcessor({
@@ -701,11 +797,66 @@ class QuantumSingularityLauncher {
             const pattern = this.detectPattern(this.priceHistory);
             const bollinger = this.calculateBollinger(this.priceHistory);
             
+            // Build full indicator object for advanced strategies
+            const fullIndicators = {
+              rsi: rsi,
+              stochK: indicators.stochK || 50,
+              stochD: indicators.stochD || 50,
+              ma9: indicators.sma9 || this.currentPrice,
+              ma21: indicators.sma21 || this.currentPrice,
+              ma50: indicators.sma50 || this.currentPrice,
+              ma9Previous: this.priceHistory[this.priceHistory.length - 10] || this.currentPrice,
+              ma21Previous: this.priceHistory[this.priceHistory.length - 22] || this.currentPrice,
+              bbUpper: bollinger.upper,
+              bbLower: bollinger.lower,
+              bbMiddle: bollinger.middle
+            };
+            
+            // Build candles for pattern detection
+            const candles = this.priceHistory.slice(-50).map((p, i) => ({
+              open: i > 0 ? this.priceHistory[this.priceHistory.length - 51 + i - 1] : p,
+              high: p * 1.005,
+              low: p * 0.995,
+              close: p,
+              volume: 1000000
+            }));
+            
+            // 🎯 USE ADVANCED TRADING STRATEGIES WITH PATTERN CONFIRMATION
+            const advancedSignal = await this.advancedStrategies.executeStrategies(
+              { price: this.currentPrice },
+              fullIndicators,
+              candles
+            );
+            
+            // 📰 NLP Sentiment Analysis
+            let sentimentBoost = 0;
+            if (this.sentimentAnalyzer) {
+              // Real sentiment analysis would fetch actual news here
+              // For now using placeholder until news API is connected
+              sentimentBoost = 0.05; // Default 5% boost, will be dynamic with real news
+            }
+            
+            // 🐋 Check whale watcher
+            if (this.whaleWatcher) {
+              // Check for recent whale trades
+              // This will be connected to 13F filings and Congressional disclosures
+            }
+            
+            // 📊 Market regime detector
+            if (this.marketRegime) {
+              // Detect current market regime (bull/bear/sideways)
+            }
+            
+            // 🎯 Enhanced patterns
+            if (this.enhancedPatterns) {
+              // Pattern recognition running
+            }
+            
             // 💰 USE PROFIT MAXIMIZER FOR ADVANCED STRATEGIES
             const profitSignal = await this.profitMaximizer.executeMasterStrategy(
               { 
                 currentPrice: this.currentPrice,
-                candles: this.priceHistory.slice(-50).map(p => ({ close: p, volume: 1000000 }))
+                candles: candles
               },
               null, // orderBook
               { binance: this.currentPrice, coinbase: this.currentPrice * 1.001 } // Mock exchange prices
@@ -716,8 +867,53 @@ class QuantumSingularityLauncher {
             let reason = '';
             let confidence = 50;
             
+            // 🔍 HOOKUP: Test NLP Sentiment Analysis 
+            // TODO: Eventually this will come from Trai (AI clone) via WebSocket
+            // Trai will read news and send sentiment scores to port 3010
+            if (this.sentimentAnalyzer) {
+              // TEST DATA - Will be replaced by Trai's analysis
+              const testNews = [
+                "Bitcoin surges to new high as institutional investors pile in",
+                "Crypto market shows strong momentum with record trading volume",
+                "Major bank announces Bitcoin adoption for customers"
+              ];
+              
+              // Analyze sentiment - this will output scores
+              const sentiment = this.sentimentAnalyzer.analyzeSentiment(testNews.join(' '), 'BTC');
+              
+              console.log('📰 NLP SENTIMENT ANALYSIS:');
+              console.log(`   Score: ${sentiment.sentiment ? sentiment.sentiment.toFixed(2) : '0.00'} (confidence: ${sentiment.confidence || 0})`);
+              console.log(`   Signals: ${sentiment.signals ? sentiment.signals.length : 0}`);
+              
+              // Apply sentiment to confidence
+              if (sentiment.sentiment > 0.6) {
+                confidence *= 1.1; // 10% boost for positive sentiment
+                console.log('   ✅ Positive sentiment boost applied!');
+              } else if (sentiment.sentiment < -0.6) {
+                confidence *= 0.9; // 10% reduction for negative sentiment
+                console.log('   ⚠️ Negative sentiment reducing confidence');
+              }
+            }
+            
+            // Log the signal first for debugging
+            if (advancedSignal && advancedSignal.action !== 'HOLD') {
+              console.log(`🎯 ADVANCED STRATEGY SIGNAL: ${advancedSignal.action} with ${advancedSignal.buySignals} buy / ${advancedSignal.sellSignals} sell signals`);
+              console.log(`   Strategies: ${advancedSignal.strategies.map(s => s.name).join(', ')}`);
+              console.log(`   Confidence: ${advancedSignal.confidence} (threshold: 0.7)`);
+              if (advancedSignal.stopLoss && advancedSignal.takeProfit) {
+                console.log(`   Stop: $${advancedSignal.stopLoss.toFixed(2)} | Target: $${advancedSignal.takeProfit.toFixed(2)}`);
+              }
+            }
+            
+            // 🎯 PRIORITIZE ADVANCED STRATEGIES WITH PATTERN CONFIRMATION
+            if (advancedSignal && advancedSignal.action !== 'HOLD' && advancedSignal.confidence > 0.7) {
+              action = advancedSignal.action;
+              reason = advancedSignal.primaryReason;
+              confidence = advancedSignal.confidence * 100;
+              console.log('   ✅ SIGNAL ACCEPTED - Confidence above threshold!');
+            }
             // 🔥 USE YOUR OPTIMIZER CHAIN WITH SIGNAL CLASSIFIER
-            if (profitSignal && profitSignal.primary) {
+            else if (profitSignal && profitSignal.primary) {
               // Use QuantumSignalClassifier for loop prevention
               const classifiedSignal = await this.quantumSignalClassifier.classifyQuantumSignal(
                 {
@@ -739,8 +935,10 @@ class QuantumSingularityLauncher {
               }
             }
             
-            // Execute trade if confidence is high enough
-            if (action && confidence >= 75 && Date.now() - this.lastTradeTime > 15000) {
+            // Execute trade if confidence is high enough (70% matches advanced strategy threshold)
+            console.log(`📊 Trade check: action=${action}, confidence=${confidence}, timeSinceLastTrade=${Date.now() - this.lastTradeTime}ms`);
+            if (action && confidence >= 70 && Date.now() - this.lastTradeTime > 15000) {
+              console.log('🚀 TRADE CONDITIONS MET - EXECUTING!');
               // Apply turbo boost optimization 
               if (this.turboBoostOptimizer) {
                 const turboSignal = {
@@ -921,7 +1119,9 @@ class QuantumSingularityLauncher {
                 this.performanceTracker.trackEverything(tradeData, this.balance, 
                   ['EliteLogic', 'RSI', 'MACD', 'BollingerBands', pattern || 'NoPattern']);
                 
-                this.executionLayer.executeTrade(decision);
+                // Execute the trade with the actual trade data
+                console.log('💰 EXECUTING TRADE:', {action, price: this.currentPrice, confidence});
+                this.executionLayer.executeTrade(tradeData);
                 this.lastTradeTime = Date.now();
               }
             }
@@ -1881,18 +2081,50 @@ class QuantumSingularityLauncher {
           }
         });
       }
-      return;
-      
-      // Execute trade if confidence is high enough
-      if (decision.confidence > 80) {
-        console.log('🎯 QUANTUM DECISION:', decision);
-        if (this.executionLayer) {
-          await this.executionLayer.executeTrade(decision);
-        }
-      }
     } catch (error) {
       console.error('❌ Market data processing error:', error.message);
     }
+  }
+
+  /**
+   * 💀 ACTIVATE NORAEGERTS MODE
+   * For when you need to "get it out of your system"
+   */
+  async activateNoRaegerts() {
+    if (!this.noRaegerts) {
+      console.log('💀 NoRaegerts not available - module not loaded');
+      return;
+    }
+    
+    console.log('💀💀💀 NORAEGERTS MODE ACTIVATING 💀💀💀');
+    console.log('🎮 "Alright bro, let\'s get it out of your system"');
+    console.log('⚠️  WARMUP MODE - No real trades, just FOMO release');
+    
+    // Create a fake container div for the UI (would be real in browser)
+    const fakeContainer = { id: 'noraegerts-ui' };
+    
+    // Initialize the chaos
+    await this.noRaegerts.initialize(fakeContainer);
+    
+    // Start with some degeneracy
+    this.noRaegerts.activate();
+    
+    console.log('💀 NoRaegerts active - Degeneracy level rising...');
+    console.log('💀 Stop losses: DISABLED');
+    console.log('💀 Position size: 3X NORMAL');
+    console.log('💀 Logic level: DECREASING');
+    
+    // Simulate degeneracy increase for testing
+    let degeneracy = 0;
+    const interval = setInterval(() => {
+      degeneracy += 10;
+      console.log(`💀 Degeneracy: ${degeneracy}%`);
+      
+      if (degeneracy >= 99.9) {
+        console.log('💀💀💀 99.9% DEGENERACY - FINAL DESCENT 💀💀💀');
+        clearInterval(interval);
+      }
+    }, 2000);
   }
 
   /**
