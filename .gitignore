@@ -18,3 +18,14 @@ data/
 .DS_Store
 Thumbs.db
 OGZFV/
+
+# Ignore completion folders
+intake&integrate/completed/
+
+# Ignore backup files
+*.backup.js
+*_old.js
+*_backup_*
+
+# Ignore test integrations
+test-integration/
