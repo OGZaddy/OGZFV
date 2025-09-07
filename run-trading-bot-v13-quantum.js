@@ -136,7 +136,7 @@ class QuantumSingularityLauncher {
     this.pnl = 0;
     this.currentPrice = null;
     this.priceHistory = [];
-    this.entryPrice = null;
+    this.entryPrice = null; // Start with no position for testing
     this.positionSize = 0;
     this.lastTradeTime = 0;
     this.lastMACDHistogram = 0;
@@ -154,6 +154,12 @@ class QuantumSingularityLauncher {
     console.log('⚡ Performance optimizers initialized');
     console.log('💰 Advanced trading strategies loaded');
 
+    // FORCE CLEAR ANY OLD POSITION
+    this.entryPrice = null;
+    this.positionSize = 0;
+    this.positionTier = 0;
+    console.log('💀 POSITION RESET - STARTING FRESH');
+    
     // Initialize quantum singularity state
     this.singularityState = {
       active: false,
@@ -236,10 +242,13 @@ class QuantumSingularityLauncher {
       console.log('🔗 Correlation Analyzer loaded');
     }
     
-    // 🚀 TEST SCALPER MODE - Check if method exists first
+    // 🚀 ACTIVATE SCALPER MODE FOR FAST TRADING
+    this.scalperMode = true; // Enable at bot level
     if (this.advancedStrategies && typeof this.advancedStrategies.activateScalperMode === 'function') {
       const scalperActive = this.advancedStrategies.activateScalperMode();
-      console.log(`🔍 SCALPER MODE TEST: ${scalperActive ? 'ACTIVE' : 'FAILED'}`);
+      console.log(`⚡ SCALPER MODE: ${scalperActive ? 'ACTIVATED - NO COOLDOWNS!' : 'FAILED'}`);
+    } else {
+      console.log('⚡ SCALPER MODE: ACTIVATED AT BOT LEVEL - NO COOLDOWNS!');
     }
     
     // 💀 HOOKUP: NoRaegerts Mode - MANDATORY FIRST EXPERIENCE
@@ -420,6 +429,12 @@ class QuantumSingularityLauncher {
       console.log('⚠️ Could not apply runtime patches, using core fixes:', error.message);
     }
 
+    // FORCE CLEAR POSITION BEFORE EXECUTION LAYER
+    this.entryPrice = null;
+    this.positionSize = 0;
+    this.positionTier = 0;
+    console.log('🔥 POSITION FORCEFULLY CLEARED BEFORE EXECUTION LAYER!');
+    
     // 💰💰💰 INITIALIZE EXECUTION LAYER - REAL POLYGON DATA ONLY! 💰💰💰
     console.log('💰 INITIALIZING EXECUTION LAYER - REAL POLYGON TRADING!');
     this.executionLayer = new ExecutionLayer({
@@ -497,6 +512,15 @@ class QuantumSingularityLauncher {
           } catch (error) {
             console.error('⚠️ Divine module error, using quantum decision:', error.message);
           }
+        }
+        
+        // PHANTOM POSITION KILLER - AGGRESSIVE MODE
+        if (this.entryPrice && Math.abs(this.entryPrice - this.currentPrice) > this.currentPrice * 0.01) {
+          console.log('🔥 PHANTOM POSITION DETECTED - CLEARING!');
+          console.log(`Old entry: ${this.entryPrice}, Current: ${this.currentPrice}`);
+          this.entryPrice = null;
+          this.positionSize = 0;
+          this.positionTier = 0;
         }
         
         // ACTUALLY EXECUTE THE TRADE!
@@ -862,10 +886,55 @@ class QuantumSingularityLauncher {
               { binance: this.currentPrice, coinbase: this.currentPrice * 1.001 } // Mock exchange prices
             );
             
-            // 🚀 USE YOUR OPTIMIZERS INSTEAD OF OLD LOGIC
+            // Initialize variables first
             let action = null;
             let reason = '';
             let confidence = 50;
+            
+            // Position tracking will be handled after trade execution
+            
+            // 🚀 CHECK FOR EXITS FIRST (TIERED WITH BREAKEVEN)
+            if (this.entryPrice && this.positionSize > 0) {
+              const unrealizedPnL = ((this.currentPrice - this.entryPrice) / this.entryPrice) * 100;
+              
+              // Move stop to breakeven after any profit (fees already frontloaded)
+              if (unrealizedPnL >= 0.1 && !this.stopMovedToBreakeven) {
+                this.stopLoss = this.entryPrice; // Breakeven = entry since fees frontloaded
+                this.stopMovedToBreakeven = true;
+                console.log(`🛡️ STOP MOVED TO BREAKEVEN at $${this.stopLoss.toFixed(2)}`);
+              }
+              
+              // TESTING: Lower TP1 to 0.1% for quick exit test
+              if (this.positionTier === 3 && this.currentPrice >= this.entryPrice * 1.001) { // Was takeProfit1
+                action = 'SELL';
+                reason = 'TP1 Hit - Closing 33% position';
+                confidence = 100;
+                this.positionTier = 2;
+                this.positionSize = this.positionSize * 0.67;
+                console.log(`🎯 TP1 HIT! Took 33% profit at $${this.currentPrice.toFixed(2)}`);
+              } else if (this.positionTier === 2 && this.currentPrice >= this.takeProfit2) {
+                action = 'SELL';
+                reason = 'TP2 Hit - Closing 50% of remaining';
+                confidence = 100;
+                this.positionTier = 1;
+                this.positionSize = this.positionSize * 0.5;
+                console.log(`🎯 TP2 HIT! Took 50% profit at $${this.currentPrice.toFixed(2)}`);
+              } else if (this.positionTier === 1 && this.currentPrice >= this.takeProfit3) {
+                action = 'SELL';
+                reason = 'TP3 Hit - Closing final position';
+                confidence = 100;
+                this.positionTier = 0;
+                console.log(`🎯 TP3 HIT! Final exit at $${this.currentPrice.toFixed(2)}`);
+              }
+              
+              // Check stop loss
+              else if (this.currentPrice <= this.stopLoss) {
+                action = 'SELL';
+                reason = this.stopMovedToBreakeven ? 'Breakeven stop hit' : 'Stop loss hit';
+                confidence = 100;
+                console.log(`🛑 STOP HIT at $${this.currentPrice.toFixed(2)}`);
+              }
+            }
             
             // 🔍 HOOKUP: Test NLP Sentiment Analysis 
             // TODO: Eventually this will come from Trai (AI clone) via WebSocket
@@ -906,7 +975,8 @@ class QuantumSingularityLauncher {
             }
             
             // 🎯 PRIORITIZE ADVANCED STRATEGIES WITH PATTERN CONFIRMATION
-            if (advancedSignal && advancedSignal.action !== 'HOLD' && advancedSignal.confidence > 0.7) {
+            // TESTING: Lowered to 0.5 to force trades
+            if (advancedSignal && advancedSignal.action !== 'HOLD' && advancedSignal.confidence > 0.5) {
               action = advancedSignal.action;
               reason = advancedSignal.primaryReason;
               confidence = advancedSignal.confidence * 100;
@@ -937,10 +1007,30 @@ class QuantumSingularityLauncher {
             
             // Execute trade if confidence is high enough (70% matches advanced strategy threshold)
             console.log(`📊 Trade check: action=${action}, confidence=${confidence}, timeSinceLastTrade=${Date.now() - this.lastTradeTime}ms`);
-            if (action && confidence >= 70 && Date.now() - this.lastTradeTime > 15000) {
+            
+            // AGGRESSIVE PHANTOM POSITION KILLER - Clear if price moved 1%
+            if (this.entryPrice && Math.abs(this.entryPrice - this.currentPrice) > this.currentPrice * 0.01) {
+              console.log('🔥🔥🔥 PHANTOM POSITION DETECTED AND KILLED!');
+              console.log(`   Old phantom: ${this.entryPrice}, Current: ${this.currentPrice}`);
+              this.entryPrice = null;
+              this.positionSize = 0;
+              this.positionTier = 0;
+            }
+            
+            // SCALPER MODE - Trade as fast as signals come! But respect position logic
+            const minCooldown = this.scalperMode ? 0 : 15000; // No cooldown in scalper mode
+            const canBuy = action === 'BUY' && !this.entryPrice; // Only buy if no position
+            const canSell = action === 'SELL' && this.entryPrice; // Only sell if have position
+            if (action) {
+              console.log(`🔍 Position check: entryPrice=${this.entryPrice}, canBuy=${canBuy}, canSell=${canSell}`);
+            }
+            // TESTING MODE - Lower threshold to 50% to force trades
+            const confidenceThreshold = 50; // Was 70, lowered for testing
+            if ((canBuy || canSell) && confidence >= confidenceThreshold && Date.now() - this.lastTradeTime > minCooldown) {
+              console.log(`✅ TRADE APPROVED: ${action} at ${confidence}% confidence (threshold: ${confidenceThreshold}%)`);
               console.log('🚀 TRADE CONDITIONS MET - EXECUTING!');
               // Apply turbo boost optimization 
-              if (this.turboBoostOptimizer) {
+              if (false && this.turboBoostOptimizer) { // DISABLED FOR TESTING
                 const turboSignal = {
                   action: action,
                   confidence: confidence / 100,
@@ -1103,7 +1193,7 @@ class QuantumSingularityLauncher {
                   this.stopMovedToBreakeven = false;
                 } else if (action === 'BUY') {
                   this.trades++;
-                  this.entryPrice = this.currentPrice;
+                  // REMOVED CONFEDERATE CODE - entryPrice set properly below with fees
                   this.stopMovedToBreakeven = false;
                 }
                 
@@ -1121,7 +1211,43 @@ class QuantumSingularityLauncher {
                 
                 // Execute the trade with the actual trade data
                 console.log('💰 EXECUTING TRADE:', {action, price: this.currentPrice, confidence});
-                this.executionLayer.executeTrade(tradeData);
+                
+                // Execute the trade FIRST
+                const tradeResult = this.executionLayer.executeTrade(tradeData);
+                
+                // Only track position AFTER successful execution
+                if (tradeResult) {
+                  // Track position for exit management with tiered exits
+                  if (action === 'BUY' && !this.entryPrice) {
+                    this.entryPrice = this.currentPrice * 1.014; // Entry price AFTER ALL 1.4% fees frontloaded
+                    this.positionSize = 500; // $500 position
+                    this.stopLoss = this.currentPrice * 0.97; // 3% stop loss
+                    this.breakeven = this.entryPrice; // Breakeven is just entry since fees are frontloaded
+                    // Since fees are frontloaded, any profit is net profit
+                    this.takeProfit1 = this.entryPrice * 1.01; // 1% net profit (33% position)
+                    this.takeProfit2 = this.entryPrice * 1.02; // 2% net profit (33% position)  
+                    this.takeProfit3 = this.entryPrice * 1.03; // 3% net profit (34% position)
+                    this.positionTier = 3; // Start with 3 tiers
+                    this.stopMovedToBreakeven = false;
+                    console.log(`📍 POSITION OPENED: Entry $${this.entryPrice.toFixed(2)}`);
+                    console.log(`   🛑 Stop: $${this.stopLoss.toFixed(2)} | Breakeven: $${this.breakeven.toFixed(2)}`);
+                    console.log(`   🎯 TP1: $${this.takeProfit1.toFixed(2)} | TP2: $${this.takeProfit2.toFixed(2)} | TP3: $${this.takeProfit3.toFixed(2)}`);
+                  } else if (action === 'SELL' && this.entryPrice) {
+                    // Fees already frontloaded in entry price, so this is NET PnL
+                    const netPnl = (this.currentPrice - this.entryPrice) * (this.positionSize / this.entryPrice);
+                    const percentGain = ((this.currentPrice - this.entryPrice) / this.entryPrice) * 100;
+                    console.log(`💵 POSITION CLOSED:`);
+                    console.log(`   Exit: $${this.currentPrice.toFixed(2)}`);
+                    console.log(`   Entry (w/ fees): $${this.entryPrice.toFixed(2)}`);
+                    console.log(`   Net PnL: $${netPnl.toFixed(2)} (${percentGain.toFixed(2)}%) ${netPnl >= 0 ? '✅' : '❌'}`);
+                    this.entryPrice = null;
+                    this.positionSize = 0;
+                    this.positionTier = 0;
+                    this.stopMovedToBreakeven = false;
+                  }
+                } else {
+                  console.log('⚠️ Trade execution failed - position not updated');
+                }
                 this.lastTradeTime = Date.now();
               }
             }
