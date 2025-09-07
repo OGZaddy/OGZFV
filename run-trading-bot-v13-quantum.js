@@ -1017,6 +1017,16 @@ class QuantumSingularityLauncher {
               this.positionTier = 0;
             }
             
+            // SAFETY CHECK: Only allow valid position transitions
+            // Can't sell without a position, can't buy with a position
+            if (action === 'SELL' && !this.entryPrice) {
+              console.log('⚠️ Invalid: SELL signal but no position - ignoring');
+              action = null;
+            } else if (action === 'BUY' && this.entryPrice) {
+              console.log('⚠️ Invalid: BUY signal but already have position - ignoring');
+              action = null;
+            }
+            
             // SCALPER MODE - Trade as fast as signals come! But respect position logic
             const minCooldown = this.scalperMode ? 0 : 15000; // No cooldown in scalper mode
             const canBuy = action === 'BUY' && !this.entryPrice; // Only buy if no position

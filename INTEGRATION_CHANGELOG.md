@@ -1,5 +1,12 @@
 # INTEGRATION CHANGELOG - MODULE BY MODULE
 
+## TESTING THRESHOLD CHANGES (TEMPORARY - Restore for Production)
+- **Advanced Strategy Confidence**: 0.7 → 0.5 (line 956)
+- **Trade Execution Confidence**: 70% → 50% (line 991)
+- **Trade Cooldown**: 15s → 0s in scalper mode (line 987)
+- **Fees**: Frontloaded 1.4% on entry (line 1175)
+- **Position Management**: Only BUY if no position, only SELL if have position
+
 ## GOAL
 Take CLEAN modules (AdvancedTradingStrategies, ComprehensivePatternDetector) and add ONLY performance optimizations from old modules. NO paper trading, NO fake data, NO mock anything.
 

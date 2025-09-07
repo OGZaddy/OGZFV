@@ -423,13 +423,67 @@ class UltimateQuantumTradingSystem extends EventEmitter {
    * 🌀⚛️ QUANTUM SIGNAL CLASSIFICATION WITH LOOP PREVENTION
    */
   async classifyQuantumSignal(features, historicalData = []) {
-    // CRITICAL FIX: Delegate to the new classifier that prevents infinite hold loops
-    return await this.signalClassifier.classifyQuantumSignal(
-      features,
-      historicalData,
-      this.quantumCore
-    );
+  console.log('🌀⚛️ QUANTUM SIGNAL CLASSIFICATION WITH LOOP PREVENTION');
+  
+  // Initialize hold counter if not exists
+  if (!this.holdCount) this.holdCount = 0;
+  
+  try {
+    // Get the quantum signal
+    let signal;
+    
+    if (this.signalClassifier && this.signalClassifier.classifyQuantumSignal) {
+      signal = await this.signalClassifier.classifyQuantumSignal(
+        features,
+        historicalData,
+        this.quantumCore
+      );
+    } else {
+      // Fallback if classifier missing
+      signal = { action: 'HOLD', confidence: 0.3, mode: 'FALLBACK' };
+    }
+    
+    // LOOP PREVENTION LOGIC
+    if (signal.action === 'HOLD') {
+      this.holdCount++;
+      console.log(`⚠️ Hold #${this.holdCount}/5`);
+      
+      if (this.holdCount >= 5) {
+        console.log('�� BREAKING HOLD LOOP - FORCING ACTION!');
+        this.holdCount = 0;
+        
+        // Force alternating actions
+        const forcedAction = (this.lastForcedAction === 'BUY') ? 'SELL' : 'BUY';
+        this.lastForcedAction = forcedAction;
+        
+        return {
+          action: forcedAction,
+          confidence: 0.4,
+          mode: 'LOOP_BREAK',
+          holdCount: 0,
+          forced: true
+        };
+      }
+    } else {
+      // Reset on any non-HOLD action
+      this.holdCount = 0;
+    }
+    
+    return signal;
+    
+  } catch (error) {
+    console.error('❌ Quantum signal error:', error);
+    this.holdCount = 0;
+    
+    // Return BUY on error (not HOLD!)
+    return {
+      action: 'BUY',
+      confidence: 0.3,
+      mode: 'ERROR_RECOVERY',
+      error: error.message
+    };
   }
+}
   
   /**
    * 🧠⚡ NEUROMORPHIC EVENT PROCESSING
@@ -440,7 +494,7 @@ class UltimateQuantumTradingSystem extends EventEmitter {
     try {
       const neuromorphicResult = await this.quantumCore.neuromorphicSpikingProcess(
         marketEvent,
-        priceStream
+       priceStream
       );
       
       if (neuromorphicResult.latencyNs < 1000) { // Under 1 microsecond

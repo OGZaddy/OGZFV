@@ -88,6 +88,18 @@ class AdvancedTradingStrategies {
   async executeStrategies(marketData, indicators, candles) {
     const strategies = [];
     
+    // DEBUG: Log indicators to find the SELL-only issue
+    console.log('📊 STRATEGY DEBUG:', {
+      rsi: indicators.rsi,
+      macd: indicators.macd,
+      stochK: indicators.stochK,
+      stochD: indicators.stochD,
+      price: marketData.price,
+      scalperMode: this.scalperMode,
+      rsiOversold: this.rsiOversold,
+      rsiOverbought: this.rsiOverbought
+    });
+    
     // 🚀 SCALPER MODE CHECK - Use faster calculations if active
     if (this.scalperMode) {
       console.log('⚡ Using SCALPER MODE optimizations');
@@ -761,6 +773,14 @@ class AdvancedTradingStrategies {
     // Count buy/sell signals
     const buySignals = strategies.filter(s => s.signal === 'BUY');
     const sellSignals = strategies.filter(s => s.signal === 'SELL' || s.signal === 'SHORT');
+    
+    // DEBUG: Log what strategies are firing
+    console.log('📊 AGGREGATION DEBUG:', {
+      totalStrategies: strategies.length,
+      buySignals: buySignals.length,
+      sellSignals: sellSignals.length,
+      strategies: strategies.map(s => ({ signal: s.signal, strategy: s.strategy, confidence: s.confidence }))
+    });
     
     // Calculate weighted confidence
     const buyConfidence = buySignals.reduce((sum, s) => sum + s.confidence, 0) / Math.max(1, buySignals.length);

@@ -29,3 +29,4 @@ intake&integrate/completed/
 
 # Ignore test integrations
 test-integration/
+reports/quantum/*.json
