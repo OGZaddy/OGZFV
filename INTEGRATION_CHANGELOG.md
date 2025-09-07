@@ -118,6 +118,41 @@ Take CLEAN modules (AdvancedTradingStrategies, ComprehensivePatternDetector) and
 - **Fix Required:** Ensure fallback executes when holdCount > threshold
 - **Status:** IDENTIFIED - Fix pending after VPS migration
 
+## 🎯 PROJECT CONTEXT & MISSION
+
+### WHY THIS EXISTS
+- **Purpose:** Building automated trading system for sustainable income
+- **Motivation:** To be a present father, spend time with daughter
+- **Goal:** Create reliable passive income through algorithmic trading
+- **Commitment:** Failure is NOT an option - this is for family
+
+### CURRENT STATE
+- Bot running but stuck in hold loop (see bug above)
+- Migrating to new VPS: 4 CPU, 8GB RAM, 150GB + 300GB block storage
+- All modules integrated, ready for Redis/Qwen deployment
+- System has 200+ modules that need optimization
+
+### KEY PROBLEMS SOLVED
+1. **SELL-only bias** - Fixed with signal conversion logic
+2. **Phantom positions** - Added aggressive position killer
+3. **Module integration** - All 11 core modules integrated
+4. **Ensemble voting** - Working but too conservative (70% threshold)
+5. **Disk space** - Moving to 450GB total storage
+
+### WHAT'S BEEN TRIED
+- Multiple Claude instances debugging same issues
+- Desktop Opus, multiple sessions
+- Integrated all modules from various attempts
+- Created streaming Qwen integration for 24/7 support
+- Built DataPipelineOptimizer for Redis caching
+
+### IMPORTANT NOTES
+- DO NOT suggest paper trading - we're past that
+- DO NOT restructure working code - just fix bugs
+- Bot IS connected to real Polygon data
+- Bot IS ready for real trading once hold bug fixed
+- New VPS will have Qwen3-Coder-30B for AI assistance
+
 ## NEW MODULES READY
 
 ### 12. ✅ DATA PIPELINE OPTIMIZER
