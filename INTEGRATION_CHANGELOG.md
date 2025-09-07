@@ -103,3 +103,39 @@ Take CLEAN modules (AdvancedTradingStrategies, ComprehensivePatternDetector) and
 - Real indicators
 - Real patterns
 - Real execution (when ready)
+
+## 🚨 CRITICAL BUG DISCOVERED (2025-09-07)
+
+### HOLD LOOP BUG - Bot Stuck in Analysis Paralysis
+- **Issue:** Bot trapped in infinite Hold #1→#6 cycle, never trades
+- **Location:** QuantumSignalClassifier.js hold counter logic
+- **Symptoms:** 
+  - "Ensemble disagreement (Hold #X/5)" repeating forever
+  - Counter goes 1→2→3→4→5→6→1 (repeat)
+  - Should break at #6 and force fallback trade, but resets instead
+- **Impact:** Bot NEVER executes trades in scalper mode
+- **Root Cause:** Hold counter resets without triggering fallback strategy
+- **Fix Required:** Ensure fallback executes when holdCount > threshold
+- **Status:** IDENTIFIED - Fix pending after VPS migration
+
+## NEW MODULES READY
+
+### 12. ✅ DATA PIPELINE OPTIMIZER
+- **Created:** DataPipelineOptimizer.js
+- **Purpose:** Handle 200+ module data flow with Redis caching
+- **Features:** 
+  - Redis pub/sub for real-time data
+  - Message batching for performance
+  - Automatic fallback to in-memory if Redis unavailable
+  - Priority message handling
+- **Status:** READY - Deploy on new VPS with 300GB storage
+
+### 13. ✅ TRAI QWEN STREAMING
+- **Created:** trai-qwen-streaming.js
+- **Purpose:** 24/7 AI support via Qwen3-Coder-30B
+- **Features:**
+  - WebSocket streaming on port 3010
+  - Handles chat, code, trading, monitoring, sales, content
+  - Auto-restart for crashed bots
+  - Integration with Ollama
+- **Status:** READY - Deploy when Qwen model loaded
