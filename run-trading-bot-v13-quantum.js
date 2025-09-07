@@ -230,6 +230,16 @@ class QuantumSingularityLauncher {
       console.log('🐋 Whale Watcher loaded - Tracking Buffett, Cathie Wood, Pelosi');
     }
     
+    // 🗳️ HOOKUP: Ensemble Voting System for decision consensus
+    const EnsembleVotingSystem = modules.core.EnsembleVotingSystem || require('./core/EnsembleVotingSystem');
+    this.ensembleVoting = new EnsembleVotingSystem(this.config);
+    console.log('🗳️ Ensemble Voting System loaded - combining multiple strategy votes');
+    
+    // 📚 HOOKUP: Self-Consuming Log Module for learning
+    const SelfConsumingLogModule = modules.core.SelfConsumingLogModule || require('./core/SelfConsumingLogModule');
+    this.selfConsumingLogs = new SelfConsumingLogModule(this.config);
+    console.log('📚 Self-Consuming Log Module loaded - cannibal learning activated');
+    
     // 📊 HOOKUP: Market Regime Detector via module loader
     this.marketRegime = modules.core.MarketRegimeDetector || null;
     if (this.marketRegime) {
@@ -476,9 +486,37 @@ class QuantumSingularityLauncher {
         // Get the decision from quantum core
         const quantumDecision = await originalDecision.call(this, marketData, riskProfile);
         
-        // 🌟 GET DIVINE MODULE CONSENSUS 🌟
+        // 🗳️ ENSEMBLE VOTING - Combine multiple strategy votes
         let finalDecision = quantumDecision;
         
+        if (this.ensembleVoting && marketData.price) {
+          try {
+            // Update ensemble with latest market data
+            this.ensembleVoting.updateMarketData(marketData);
+            
+            // Get ensemble votes
+            const ensembleVotes = this.ensembleVoting.generateVotes();
+            if (ensembleVotes) {
+              console.log('🗳️ Ensemble Voting Results:', ensembleVotes);
+              
+              // If ensemble has strong consensus, use it
+              if (ensembleVotes.consensus > 0.7) {
+                finalDecision = {
+                  ...finalDecision,
+                  action: ensembleVotes.decision,
+                  confidence: ensembleVotes.consensus,
+                  ensemble: true,
+                  votes: ensembleVotes.votes
+                };
+                console.log('✅ Using ensemble consensus:', ensembleVotes.decision);
+              }
+            }
+          } catch (error) {
+            console.error('⚠️ Ensemble voting error:', error.message);
+          }
+        }
+        
+        // 🌟 GET DIVINE MODULE CONSENSUS 🌟
         if (this.divineModules && this.divineModules.isInitialized) {
           try {
             console.log('🔮 Consulting Divine Modules...');
@@ -533,11 +571,37 @@ class QuantumSingularityLauncher {
             console.log('🎉 THE BOT IS FINALLY TRADING!!!');
             
             // Store pattern for learning
-            if (this.profilePatternManager && this.profilePatternManager.isInitialized()) {
+            if (this.profilePatternManager && typeof this.profilePatternManager.isInitialized === 'function' && this.profilePatternManager.isInitialized()) {
               await this.profilePatternManager.storePattern(
                 [rsi/100, macd.histogram, trend, volatility, volume/1000000, momentum, 0, 0, action === 'BUY' ? 1 : -1],
                 { action, price: this.currentPrice, success: false, confidence: confidence/100 }
               );
+            }
+            
+            // 📚 SELF-CONSUMING LOG - Learn from this trade
+            if (this.selfConsumingLogs) {
+              try {
+                const tradeData = {
+                  action: finalDecision.action,
+                  price: this.currentPrice,
+                  confidence: finalDecision.confidence,
+                  timestamp: Date.now(),
+                  indicators: { rsi, macd, volatility, momentum },
+                  ensemble: finalDecision.ensemble || false,
+                  divine: finalDecision.divine || false
+                };
+                
+                // Log the trade for learning
+                this.selfConsumingLogs.logTrade(tradeData);
+                
+                // Get insights from past trades
+                const insights = this.selfConsumingLogs.analyzePatterns();
+                if (insights && insights.length > 0) {
+                  console.log('📚 Self-Consuming Insights:', insights[0]);
+                }
+              } catch (error) {
+                console.error('⚠️ Self-consuming log error:', error.message);
+              }
             }
             
             // REAL P&L CALCULATION - COPIED FROM ELITE BOT
