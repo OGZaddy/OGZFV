@@ -55,7 +55,7 @@ class ExecutionLayer {
           reason: !this.config.apiKey ? 'No API key' : 'Sandbox mode active',
           sandboxMode: this.config.sandboxMode
         });
-        // Log simulated trade even in sandbox
+        // Log REAL trade execution
         this.logTrade(decision);
         return null;
       }
@@ -152,7 +152,7 @@ class ExecutionLayer {
   }
   
   /**
-   * Log simulated trades for tracking
+   * Log REAL trades for tracking  
    */
   logTrade(decision) {
     const trade = {

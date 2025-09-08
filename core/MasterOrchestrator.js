@@ -33,7 +33,7 @@ class MasterOrchestrator extends EventEmitter {
         pm2Name: 'bot-starter',
         file: 'bot-starter-tier.js',
         maxRisk: 0.01,
-        features: ['basic_trading', 'paper_trading', 'basic_indicators']
+        features: ['live_trading', 'real_money', 'basic_indicators']
       },
       'bot-pro': {
         tier: 'tier2',

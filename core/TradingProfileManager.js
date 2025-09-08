@@ -55,6 +55,9 @@ class TradingProfileManager extends EventEmitter {
           quickExits: true,
           tightStops: true
         },
+        stopLossPercent: 0.015,  // 1.5% tight stop for scalping
+        takeProfitPercent: 0.01,  // 1% quick profits
+        trailingStopPercent: 0.01, // 1% trailing
         neuralMode: 'aggressive',
         quantumEnabled: true,
         optimizations: {
@@ -85,6 +88,9 @@ class TradingProfileManager extends EventEmitter {
           standardExits: true,
           dynamicStops: true
         },
+        stopLossPercent: 0.025,  // 2.5% moderate stop for day trading
+        takeProfitPercent: 0.03,  // 3% profit target
+        trailingStopPercent: 0.02, // 2% trailing
         neuralMode: 'balanced',
         quantumEnabled: true
       },
@@ -108,6 +114,9 @@ class TradingProfileManager extends EventEmitter {
           patientExits: true,
           wideStops: true
         },
+        stopLossPercent: 0.05,  // 5% wider stop for swing trading
+        takeProfitPercent: 0.08,  // 8% profit target
+        trailingStopPercent: 0.04, // 4% trailing
         neuralMode: 'conservative',
         quantumEnabled: true
       },

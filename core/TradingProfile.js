@@ -42,7 +42,7 @@ class TradingProfile {
     const flags = {
       // Tier 1 - Basic (Everyone gets these)
       'basic_trading': this.tiers.includes('tier1'),
-      'paper_trading': this.tiers.includes('tier1'),
+      'live_trading_only': true,  // NO PAPER BULLSHIT
       'basic_indicators': this.tiers.includes('tier1'),
       'basic_backtest': this.tiers.includes('tier1'),
       

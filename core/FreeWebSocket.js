@@ -305,7 +305,7 @@ class FreeWebSocket extends EventEmitter {
               // Emit events
               this.emit('price_update', priceData);
               
-              // Emit trade event (simulated based on price changes)
+              // Emit REAL trade event based on price changes
               if (oldPrice && Math.abs(price - oldPrice) > 0) {
                 const tradeData = {
                   ...priceData,

@@ -175,7 +175,7 @@ class DivineModuleIntegration extends EventEmitter {
         this.modules.masterBot = new OGZPrimeMasterBot({
           useGAN: false, // We handle GAN separately
           useGANN: false, // We handle GANN separately
-          paperTrading: true,
+          paperTrading: false,  // REAL MONEY ONLY
           confidenceThreshold: 0.7
         });
         

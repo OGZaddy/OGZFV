@@ -443,45 +443,18 @@ class UltimateQuantumTradingSystem extends EventEmitter {
       signal = { action: 'HOLD', confidence: 0.3, mode: 'FALLBACK' };
     }
     
-    // LOOP PREVENTION LOGIC
+    // If signal is HOLD, return null instead (no action)
     if (signal.action === 'HOLD') {
-      this.holdCount++;
-      console.log(`⚠️ Hold #${this.holdCount}/5`);
-      
-      if (this.holdCount >= 5) {
-        console.log('�� BREAKING HOLD LOOP - FORCING ACTION!');
-        this.holdCount = 0;
-        
-        // Force alternating actions
-        const forcedAction = (this.lastForcedAction === 'BUY') ? 'SELL' : 'BUY';
-        this.lastForcedAction = forcedAction;
-        
-        return {
-          action: forcedAction,
-          confidence: 0.4,
-          mode: 'LOOP_BREAK',
-          holdCount: 0,
-          forced: true
-        };
-      }
-    } else {
-      // Reset on any non-HOLD action
-      this.holdCount = 0;
+      return null; // Don't log, don't count, just skip
     }
     
     return signal;
     
   } catch (error) {
     console.error('❌ Quantum signal error:', error);
-    this.holdCount = 0;
     
-    // Return BUY on error (not HOLD!)
-    return {
-      action: 'BUY',
-      confidence: 0.3,
-      mode: 'ERROR_RECOVERY',
-      error: error.message
-    };
+    // Return null on error (no action)
+    return null;
   }
 }
   
