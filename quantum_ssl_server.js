@@ -543,9 +543,28 @@ if (!POLYGON_API_KEY) {
   process.exit(1);
 }
 
-const polygonSocket = new WebSocket(POLYGON_CRYPTO_SOCKET);
+// SINGLETON POLYGON CONNECTION - Only one instance allowed
+let polygonSocket = null;
+let isPolygonConnecting = false;
 
-polygonSocket.on('open', () => {
+function connectToPolygon() {
+  if (polygonSocket && polygonSocket.readyState === WebSocket.OPEN) {
+    console.log('✅ Polygon already connected');
+    return;
+  }
+  
+  if (isPolygonConnecting) {
+    console.log('⏳ Polygon connection already in progress');
+    return;
+  }
+  
+  isPolygonConnecting = true;
+  console.log('🔌 Connecting to Polygon...');
+  
+  polygonSocket = new WebSocket(POLYGON_CRYPTO_SOCKET);
+  
+  polygonSocket.on('open', () => {
+    isPolygonConnecting = false;
   console.log('⚛️🔌 Connected to Polygon.io crypto feed (QUANTUM)');
   polygonSocket.send(JSON.stringify({
     action: 'auth',
@@ -650,28 +669,38 @@ polygonSocket.on('message', (data) => {
   }
 });
 
-polygonSocket.on('close', () => {
-  console.warn('⚠️ Polygon WebSocket disconnected');
-  
-  // Simple status broadcast
-  const statusMessage = JSON.stringify({
-    type: 'data_feed_status',
-    status: 'disconnected',
-    message: 'Polygon data feed disconnected',
-    timestamp: Date.now()
-  });
+  polygonSocket.on('close', () => {
+    console.warn('⚠️ Polygon WebSocket disconnected, reconnecting in 5s...');
+    polygonSocket = null;
+    isPolygonConnecting = false;
+    
+    // Simple status broadcast
+    const statusMessage = JSON.stringify({
+      type: 'data_feed_status',
+      status: 'disconnected',
+      message: 'Polygon data feed disconnected',
+      timestamp: Date.now()
+    });
   
   // Broadcast to all connections
   [...connectedBots.values(), ...connectedDashboards.values()].forEach(conn => {
     if (conn.ws.readyState === WebSocket.OPEN) {
       conn.ws.send(statusMessage);
     }
+    });
+    
+    // Reconnect after 5 seconds
+    setTimeout(() => connectToPolygon(), 5000);
   });
-});
 
-polygonSocket.on('error', (err) => {
-  console.error('🚨 Polygon WebSocket error:', err.message);
-});
+  polygonSocket.on('error', (err) => {
+    console.error('🚨 Polygon WebSocket error:', err.message);
+    isPolygonConnecting = false;
+  });
+}
+
+// Start Polygon connection
+connectToPolygon();
 
 // SIMPLE STATUS MONITORING
 setInterval(() => {

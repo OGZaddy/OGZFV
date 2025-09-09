@@ -29,7 +29,7 @@ class TradingBot extends EventEmitter {
     
     // SSL WebSocket server connection
     this.sslServer = {
-      url: `ws://${process.env.SSL_SERVER_HOST}:${process.env.SSL_SERVER_PORT}`,
+      url: `ws://${process.env.SSL_SERVER_HOST}:${process.env.SSL_SERVER_PORT}/ws`,
       connection: null,
       connected: false
     };
@@ -97,6 +97,8 @@ class TradingBot extends EventEmitter {
         // Send bot identification
         this.sendToSSLServer({
           type: 'identify',
+          source: 'trading_bot',
+          botTier: 'elite',
           name: 'TRADING_BOT',
           role: 'LIVE_TRADING'
         });
