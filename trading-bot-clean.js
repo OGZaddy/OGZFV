@@ -164,27 +164,46 @@ class TradingBot extends EventEmitter {
   }
   
   generateTradingSignal(price) {
-    // Simple momentum strategy
-    // TODO: Replace with your proven strategies
+    // REAL TRADING LOGIC - NO FAKE SHIT
     
     const signal = {
       action: 'HOLD',
       price: price,
       confidence: 0,
-      reason: 'No signal'
+      reason: 'Analyzing'
     };
     
-    // Dummy logic - replace with real strategy
-    const random = Math.random();
+    // Store price history for real analysis
+    if (!this.priceHistory) {
+      this.priceHistory = [];
+    }
+    this.priceHistory.push(price);
     
-    if (random > 0.8 && !this.position) {
+    // Keep last 20 prices for moving average
+    if (this.priceHistory.length > 20) {
+      this.priceHistory.shift();
+    }
+    
+    // Need at least 10 prices for analysis
+    if (this.priceHistory.length < 10) {
+      return signal;
+    }
+    
+    // Calculate real moving averages
+    const ma5 = this.priceHistory.slice(-5).reduce((a, b) => a + b, 0) / 5;
+    const ma10 = this.priceHistory.slice(-10).reduce((a, b) => a + b, 0) / 10;
+    
+    // REAL CROSSOVER STRATEGY
+    if (ma5 > ma10 * 1.002 && !this.position) {
+      // 5 MA crossed above 10 MA with 0.2% threshold
       signal.action = 'BUY';
-      signal.confidence = 0.7;
-      signal.reason = 'Momentum up';
-    } else if (random < 0.2 && this.position) {
+      signal.confidence = 0.75;
+      signal.reason = `MA crossover: 5MA=${ma5.toFixed(2)} > 10MA=${ma10.toFixed(2)}`;
+    } else if (ma5 < ma10 * 0.998 && this.position) {
+      // 5 MA crossed below 10 MA with 0.2% threshold
       signal.action = 'SELL';
-      signal.confidence = 0.7;
-      signal.reason = 'Take profit';
+      signal.confidence = 0.75;
+      signal.reason = `MA crossover: 5MA=${ma5.toFixed(2)} < 10MA=${ma10.toFixed(2)}`;
     }
     
     return signal;
