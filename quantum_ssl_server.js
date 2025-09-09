@@ -308,8 +308,31 @@ wss.on('connection', (ws, req) => {
   const connectionId = `conn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   ws.connectionId = connectionId;
   ws.connectionType = 'unknown';
+  ws.isAlive = true;
   
   console.log(`✅ New WebSocket connection: ${connectionId}`);
+  
+  // HEARTBEAT MECHANISM - PREVENT CONNECTION DROPS
+  ws.on('pong', () => {
+    ws.isAlive = true;
+  });
+  
+  // Send ping every 30 seconds to keep connection alive
+  const heartbeat = setInterval(() => {
+    if (ws.isAlive === false) {
+      console.log(`💀 Connection ${connectionId} failed heartbeat - terminating`);
+      clearInterval(heartbeat);
+      return ws.terminate();
+    }
+    ws.isAlive = false;
+    ws.ping();
+  }, 30000);
+  
+  // Clean up heartbeat on close
+  ws.on('close', () => {
+    console.log(`🔌 Connection ${connectionId} closed - clearing heartbeat`);
+    clearInterval(heartbeat);
+  });
   
   // Handle incoming messages
   ws.on('message', async (message) => {
