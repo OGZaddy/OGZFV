@@ -73,7 +73,7 @@ const PerformanceVisualizer = require('./core/PerformanceVisualizer');
 const AdvancedWebSocketBroadcastSystem = require('./core/AdvancedWebSocketBroadcastSystem');
 
 // 🚀 V13.5 AND V14 QUANTUM ENHANCEMENTS
-const RealQuantumEnhancement = require('./core/RealQuantumEnhancement');
+// const RealQuantumEnhancement = require('./core/RealQuantumEnhancement'); // Duplicate - already imported as quantum-enhancement-layer
 const OGZPrimeV14_QuantumDeFi = require('./core/OGZPrimeV14_QuantumDeFi');
 const MultiDirectionalTrader = require('./core/MultiDirectionalTrader');
 
@@ -1278,7 +1278,50 @@ class OGZPrimeV13Simplified {
           console.log(`🧠 Reasoning: ${mdtDecision.reasoning}`);
           
           if (mdtDecision.action === 'open' && mdtDecision.size > 0.001) {
-            // Execute multi-directional trade
+            // 🛡️ SAFETY NET CHECK FIRST
+            if (this.safetyNet) {
+              const safetyCheck = this.safetyNet.validateTrade({
+                symbol: this.config.primaryAsset,
+                direction: mdtDecision.direction === 'long' ? 'BUY' : 'SELL',
+                size: mdtDecision.size,
+                price: marketData.price,
+                confidence: mdtDecision.confidence
+              }, marketData);
+              
+              if (!safetyCheck.approved) {
+                console.log(`🚫 SAFETY NET BLOCKED TRADE: ${safetyCheck.reason}`);
+                return;
+              }
+            }
+            
+            // 🎯 RISK MANAGER ASSESSMENT
+            if (this.riskManager) {
+              const riskAssessment = this.riskManager.assessTradeRisk({
+                direction: mdtDecision.direction === 'long' ? 'BUY' : 'SELL',
+                entryPrice: marketData.price,
+                confidence: mdtDecision.confidence,
+                marketData: marketData,
+                patterns: patterns
+              });
+              
+              if (!riskAssessment.approved) {
+                console.log(`🚫 RISK MANAGER BLOCKED TRADE: ${riskAssessment.reason}`);
+                return;
+              }
+              
+              // Adjust position size based on risk manager
+              const riskAdjustedSize = this.riskManager.calculatePositionSize(
+                this.systemState.currentBalance,
+                marketData.price,
+                marketData
+              );
+              
+              // Use the smaller of MDT suggested and risk-adjusted size
+              mdtDecision.size = Math.min(mdtDecision.size, riskAdjustedSize / this.systemState.currentBalance);
+              console.log(`⚠️ RISK ADJUSTED SIZE: ${(mdtDecision.size * 100).toFixed(2)}%`);
+            }
+            
+            // Execute multi-directional trade (NOW WITH DEFENSES)
             const tradeParams = {
               symbol: this.config.primaryAsset,
               direction: mdtDecision.direction === 'long' ? 'BUY' : 'SELL',
@@ -1765,50 +1808,104 @@ class OGZPrimeV13Simplified {
    * 🧮 Calculate trading confidence with OPTIMIZED logic - FIXED FOR ACTUAL TRADING
    */
   calculateTradingConfidence(marketData, patterns) {
-    let confidence = 0.65; // FIXED: Start with 65% base confidence (was 30%)
+    // Use REAL confidence calculation instead of hardcoded 65%
+    return this.calculateRealConfidence(marketData, patterns);
+  }
+
+  /**
+   * Calculate REAL trading confidence based on actual indicators
+   * THIS REPLACES THE FAKE 65% HARDCODED VALUE!
+   */
+  calculateRealConfidence(marketData, patterns = []) {
+    let confidence = 0;
     
-    try {
-      // Pattern strength bonus - MUCH MORE AGGRESSIVE
-      const patternBonus = patterns.reduce((sum, pattern) => {
-        return sum + (pattern.strength * pattern.confidence);
-      }, 0);
-      
-      confidence += patternBonus * 0.8; // FIXED: Max 80% from patterns (was 40%)
-      
-      // Market conditions bonus
-      if (marketData.volume > 500000) {
-        confidence += 0.1; // High volume bonus
+    // RSI signals (0-30 oversold, 70-100 overbought)
+    if (marketData.rsi) {
+      if (marketData.rsi < 30) {
+        confidence += 0.15; // Oversold = potential buy
+      } else if (marketData.rsi > 70) {
+        confidence += 0.15; // Overbought = potential sell
+      } else if (marketData.rsi >= 45 && marketData.rsi <= 55) {
+        confidence += 0.05; // Neutral zone
       }
-      
-      if (marketData.volatility > 0.02 && marketData.volatility < 0.04) {
-        confidence += 0.1; // Optimal volatility bonus
+    }
+    
+    // MACD signals
+    if (marketData.macd) {
+      if (marketData.macd > 0 && marketData.macdSignal > 0) {
+        confidence += 0.15; // Bullish
+      } else if (marketData.macd < 0 && marketData.macdSignal < 0) {
+        confidence += 0.10; // Bearish confirmation
       }
-      
-      // RSI confirmation bonus - WIDENED THRESHOLDS
-      if ((marketData.rsi < 45 && patterns.some(p => p.direction === 'buy')) ||
-          (marketData.rsi > 55 && patterns.some(p => p.direction === 'sell'))) {
-        confidence += 0.15; // RSI confirmation bonus
+    }
+    
+    // Trend alignment
+    if (marketData.trend) {
+      if (marketData.trend === 'strong_uptrend') {
+        confidence += 0.20;
+      } else if (marketData.trend === 'uptrend') {
+        confidence += 0.10;
+      } else if (marketData.trend === 'downtrend') {
+        confidence += 0.05;
       }
-      
-      // MACD confirmation bonus
-      if ((marketData.macd > 0 && patterns.some(p => p.direction === 'buy')) ||
-          (marketData.macd < 0 && patterns.some(p => p.direction === 'sell'))) {
-        confidence += 0.1; // MACD confirmation bonus
+    }
+    
+    // Volume confirmation
+    if (marketData.volume && marketData.avgVolume) {
+      if (marketData.volume > marketData.avgVolume * 1.5) {
+        confidence += 0.10; // High volume = stronger signal
       }
-      
-      // ALWAYS ADD VOLATILITY PATTERN TO GUARANTEE PATTERNS
-      if (patterns.length === 0) {
-        // Create artificial volatility pattern to ensure trading
-        confidence += 0.2; // Volatility trading bonus
-        console.log('⚡ Added volatility trading bonus: +20%');
+    }
+    
+    // Pattern bonus (if patterns detected)
+    if (patterns && patterns.length > 0) {
+      // Each pattern adds confidence based on its strength
+      patterns.forEach(pattern => {
+        if (pattern.strength && pattern.confidence) {
+          confidence += (pattern.strength * pattern.confidence * 0.05);
+        }
+      });
+      // Cap pattern bonus at 0.25
+      const patternBonus = Math.min(0.25, patterns.length * 0.05);
+      confidence = Math.min(confidence, confidence + patternBonus);
+    }
+    
+    // Support/Resistance proximity
+    if (marketData.nearSupport) {
+      confidence += 0.10; // Near support = potential bounce
+    } else if (marketData.nearResistance) {
+      confidence += 0.05; // Near resistance = caution
+    }
+    
+    // Multi-timeframe alignment
+    if (marketData.multiTimeframeAligned) {
+      confidence += 0.15;
+    }
+    
+    // Volatility adjustment (lower confidence in extreme volatility)
+    if (marketData.volatility) {
+      if (marketData.volatility > 0.05) {
+        confidence *= 0.8; // High volatility = reduce confidence
+      } else if (marketData.volatility < 0.01) {
+        confidence *= 0.9; // Too low volatility = reduce confidence slightly
       }
-      
-      // Cap confidence at 95%
-      confidence = Math.min(confidence, 0.95);
-      
-    } catch (error) {
-      console.error('❌ Confidence calculation error:', error);
-      confidence = 0.6; // FIXED: Higher safe fallback (was 0.2)
+    }
+    
+    // EMA alignment bonus
+    if (marketData.ema20 && marketData.ema50 && marketData.price) {
+      if (marketData.price > marketData.ema20 && marketData.ema20 > marketData.ema50) {
+        confidence += 0.10; // Bullish EMA alignment
+      } else if (marketData.price < marketData.ema20 && marketData.ema20 < marketData.ema50) {
+        confidence += 0.10; // Bearish EMA alignment
+      }
+    }
+    
+    // Cap confidence between 0 and 0.95
+    confidence = Math.max(0, Math.min(0.95, confidence));
+    
+    // Log the calculation for debugging (only for significant confidence)
+    if (confidence > 0.30) {
+      console.log(`📊 Real Confidence: ${(confidence * 100).toFixed(1)}% (RSI: ${marketData.rsi?.toFixed(0)}, MACD: ${marketData.macd?.toFixed(2)}, Patterns: ${patterns?.length || 0})`);
     }
     
     return confidence;

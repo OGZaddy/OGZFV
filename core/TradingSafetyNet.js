@@ -44,6 +44,7 @@ class TradingSafetyNet {
       dailyPnL: 0,
       weeklyPnL: 0,
       totalPnL: 0,
+      currentBalance: config.initialBalance || 10000,  // Track actual balance
       peakBalance: 0,
       currentDrawdown: 0,
       
@@ -65,8 +66,8 @@ class TradingSafetyNet {
       lastViolationTime: null
     };
     
-    // Set initial peak balance
-    this.state.peakBalance = config.initialBalance || 10000;
+    // Set initial peak balance to current balance
+    this.state.peakBalance = this.state.currentBalance;
     
     console.log('🛡️ TradingSafetyNet initialized with emergency protections');
   }
@@ -155,17 +156,18 @@ class TradingSafetyNet {
     const pnl = tradeResult.pnl || 0;
     const currentTime = Date.now();
     
-    // Update PnL tracking
+    // Update PnL tracking and balance
     this.state.totalPnL += pnl;
     this.state.dailyPnL += pnl;
     this.state.weeklyPnL += pnl;
+    this.state.currentBalance += pnl;  // Update actual balance
     
-    // Update peak and drawdown
-    if (this.state.totalPnL > this.state.peakBalance) {
-      this.state.peakBalance = this.state.totalPnL;
+    // Update peak and drawdown using actual balance
+    if (this.state.currentBalance > this.state.peakBalance) {
+      this.state.peakBalance = this.state.currentBalance;
       this.state.currentDrawdown = 0;
     } else {
-      this.state.currentDrawdown = (this.state.peakBalance - this.state.totalPnL) / this.state.peakBalance;
+      this.state.currentDrawdown = (this.state.peakBalance - this.state.currentBalance) / this.state.peakBalance;
     }
     
     // Update consecutive losses
@@ -193,9 +195,11 @@ class TradingSafetyNet {
    */
   checkEmergencyConditions() {
     // Auto emergency stop on severe conditions
+    const dailyLossPercent = Math.abs(this.state.dailyPnL / this.state.currentBalance);
+    
     if (this.state.currentDrawdown >= this.config.maxDrawdown ||
         this.state.consecutiveLosses >= this.config.maxConsecutiveLosses ||
-        this.state.dailyPnL <= -this.config.maxDailyLoss) {
+        dailyLossPercent >= this.config.maxDailyLoss) {
       
       this.triggerEmergencyStop(`Critical safety threshold breached`);
     }
