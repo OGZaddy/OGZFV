@@ -18,3 +18,8 @@ data/
 .DS_Store
 Thumbs.db
 OGZFV/
+
+# Large training data files
+trai/conversations.json
+trai/training-data-clean/
+*.json.bak

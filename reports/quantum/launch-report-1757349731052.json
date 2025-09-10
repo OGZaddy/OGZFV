@@ -1,0 +1,55 @@
+{
+  "tier": "QUANTUM",
+  "runtime": "4.87 hours",
+  "totalTrades": 12850,
+  "totalProfit": 0,
+  "winRate": "0.0%",
+  "profitPerHour": 0,
+  "tradesPerHour": 2638.3687831581956,
+  "largestWin": 0,
+  "largestLoss": 0,
+  "metrics": {
+    "startBalance": 10000,
+    "currentBalance": 10000,
+    "totalTrades": 12850,
+    "winningTrades": 0,
+    "losingTrades": 12850,
+    "profitFactor": 0,
+    "sharpeRatio": 0,
+    "maxDrawdown": 0,
+    "averageWin": 0,
+    "averageLoss": 0,
+    "winRate": 0
+  },
+  "bestModules": [
+    "RSI",
+    "MACD"
+  ],
+  "worstModules": [],
+  "recommendations": [
+    "Continue current strategy"
+  ],
+  "modulesUsage": [
+    [
+      "EliteLogic",
+      12850
+    ],
+    [
+      "RSI",
+      12850
+    ],
+    [
+      "MACD",
+      12850
+    ],
+    [
+      "BollingerBands",
+      12850
+    ],
+    [
+      "NoPattern",
+      5947
+    ]
+  ],
+  "timestamp": "2025-09-08T16:42:11.052Z"
+}

@@ -558,5 +558,5 @@ class OptimizedIndicators {
   }
 }
 
-// Export singleton instance
-module.exports = new OptimizedIndicators();
+// Export the class, NOT a singleton - we need multiple instances for parallel backtesting
+module.exports = OptimizedIndicators;

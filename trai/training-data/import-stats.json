@@ -1,0 +1,18 @@
+{
+  "total_conversations": 254,
+  "total_messages": 9930,
+  "empty_conversations": 25,
+  "categorized_messages": 7731,
+  "uncategorized_messages": 2199,
+  "timestamp": "2025-09-09T21:13:46.501Z",
+  "categories": {
+    "architecture": 1956,
+    "brainstorming": 99,
+    "casual_chat": 2465,
+    "development": 1699,
+    "emotions": 47,
+    "problem_solving": 361,
+    "rants": 196,
+    "training": 908
+  }
+}

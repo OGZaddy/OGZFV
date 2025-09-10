@@ -1,0 +1,194 @@
+{
+  "timestamp": "2025-09-10T07:18:02.780Z",
+  "defensive": {
+    "riskManager": {
+      "imported": true,
+      "instantiated": true,
+      "used": false
+    },
+    "safetyNet": {
+      "imported": true,
+      "instantiated": true,
+      "used": false
+    }
+  },
+  "offensive": {
+    "RealQuantumEnhancement": {
+      "module": "RealQuantumEnhancement",
+      "imported": true,
+      "instantiated": true,
+      "used": false,
+      "usageCount": 0
+    },
+    "PerformanceDashboardIntegration": {
+      "module": "PerformanceDashboardIntegration",
+      "imported": true,
+      "instantiated": true,
+      "used": false,
+      "usageCount": 0
+    },
+    "RiskManager": {
+      "module": "RiskManager",
+      "imported": true,
+      "instantiated": true,
+      "used": true,
+      "usageCount": 10
+    },
+    "MaxProfitManager": {
+      "module": "MaxProfitManager",
+      "imported": true,
+      "instantiated": true,
+      "used": false,
+      "usageCount": 0
+    },
+    "TradingSafetyNet": {
+      "module": "TradingSafetyNet",
+      "imported": true,
+      "instantiated": true,
+      "used": false,
+      "usageCount": 0
+    },
+    "PerformanceAnalyzer": {
+      "module": "PerformanceAnalyzer",
+      "imported": true,
+      "instantiated": true,
+      "used": true,
+      "usageCount": 6
+    },
+    "QuantumPositionSizer": {
+      "module": "QuantumPositionSizer",
+      "imported": true,
+      "instantiated": true,
+      "used": false,
+      "usageCount": 0
+    },
+    "PerformanceValidator": {
+      "module": "PerformanceValidator",
+      "imported": true,
+      "instantiated": true,
+      "used": true,
+      "usageCount": 2
+    },
+    "PerformanceVisualizer": {
+      "module": "PerformanceVisualizer",
+      "imported": true,
+      "instantiated": true,
+      "used": true,
+      "usageCount": 4
+    },
+    "AdvancedWebSocketBroadcastSystem": {
+      "module": "AdvancedWebSocketBroadcastSystem",
+      "imported": true,
+      "instantiated": false,
+      "used": false,
+      "usageCount": 0
+    },
+    "OGZPrimeV14_QuantumDeFi": {
+      "module": "OGZPrimeV14_QuantumDeFi",
+      "imported": true,
+      "instantiated": false,
+      "used": false,
+      "usageCount": 0
+    },
+    "MultiDirectionalTrader": {
+      "module": "MultiDirectionalTrader",
+      "imported": true,
+      "instantiated": true,
+      "used": true,
+      "usageCount": 4
+    },
+    "UltimateTradingSystem": {
+      "module": "UltimateTradingSystem",
+      "imported": true,
+      "instantiated": true,
+      "used": false,
+      "usageCount": 0
+    },
+    "CorrelationAnalyzer": {
+      "module": "CorrelationAnalyzer",
+      "imported": true,
+      "instantiated": true,
+      "used": false,
+      "usageCount": 0
+    },
+    "LogLearningSystem": {
+      "module": "LogLearningSystem",
+      "imported": true,
+      "instantiated": true,
+      "used": false,
+      "usageCount": 0
+    },
+    "MLLogProcessor": {
+      "module": "MLLogProcessor",
+      "imported": true,
+      "instantiated": true,
+      "used": false,
+      "usageCount": 0
+    },
+    "PolygonWebSocket": {
+      "module": "PolygonWebSocket",
+      "imported": true,
+      "instantiated": true,
+      "used": false,
+      "usageCount": 0
+    },
+    "TimeFrameManager": {
+      "module": "TimeFrameManager",
+      "imported": true,
+      "instantiated": true,
+      "used": false,
+      "usageCount": 0
+    }
+  },
+  "connections": {
+    "correctlyWired": [
+      "RiskManager",
+      "PerformanceAnalyzer",
+      "PerformanceValidator",
+      "PerformanceVisualizer",
+      "MultiDirectionalTrader"
+    ],
+    "partiallyWired": [
+      "RealQuantumEnhancement",
+      "PerformanceDashboardIntegration",
+      "MaxProfitManager",
+      "TradingSafetyNet",
+      "QuantumPositionSizer",
+      "UltimateTradingSystem",
+      "CorrelationAnalyzer",
+      "LogLearningSystem",
+      "MLLogProcessor",
+      "PolygonWebSocket",
+      "TimeFrameManager"
+    ],
+    "notWired": [
+      "AdvancedWebSocketBroadcastSystem",
+      "OGZPrimeV14_QuantumDeFi"
+    ],
+    "shouldBeWired": []
+  },
+  "critical": {
+    "issues": [],
+    "warnings": [
+      {
+        "line": 1073,
+        "type": "RANDOM_TRADING",
+        "severity": "HIGH",
+        "content": "ws.connectionId = `ws_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;"
+      },
+      {
+        "line": 2130,
+        "type": "RANDOM_TRADING",
+        "severity": "HIGH",
+        "content": "const tradeId = `trade_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;"
+      },
+      {
+        "line": 2959,
+        "type": "RANDOM_TRADING",
+        "severity": "HIGH",
+        "content": "return thoughts[Math.floor(Math.random() * thoughts.length)];"
+      }
+    ],
+    "recommendations": []
+  }
+}

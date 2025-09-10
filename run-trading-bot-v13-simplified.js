@@ -90,6 +90,17 @@ const PolygonWebSocket = require('./core/PolygonWebSocket');
 const TimeFrameManager = require('./core/TimeFrameManager');
 const { EnhancedPatternChecker, PatternFeatureExtractor } = require('./core/EnhancedPatternRecognition');
 
+// TIER-BASED FEATURE FLAGS - Control what features each subscription gets
+const TierFeatureFlags = require('./core/TierFeatureFlags');
+
+// OFFENSIVE MODULES - Signal generation and market analysis
+const MarketRegimeDetector = require('./core/MarketRegimeDetector');
+const FibonacciDetector = require('./core/FibonacciDetector');
+const SupportResistanceDetector = require('./core/SupportResistanceDetector');
+const OptimizedIndicators = require('./core/OptimizedIndicators');
+// REMOVED DynamicEntryAnalysis - expects bot instance, hooks into methods
+// REMOVED AggressiveTradingMode - too dangerous (has random trading!)
+
 class OGZPrimeV13Simplified {
   constructor() {
     console.log('\n🚀💰 OGZ PRIME V13 SIMPLIFIED - PRODUCTION TRADING ENGINE 💰🚀');
@@ -99,6 +110,19 @@ class OGZPrimeV13Simplified {
     console.log('⚡ FASTER EXECUTION = BETTER MARKET TIMING');
     console.log('🛡️ PRODUCTION SAFETY = REAL MONEY PROTECTION');
     console.log('═══════════════════════════════════════════════════════════════════\n');
+
+    // INITIALIZE TIER-BASED FEATURE FLAGS
+    const tier = process.env.SUBSCRIPTION_TIER || 'starter'; // Can be 'starter', 'pro', or 'elite'
+    this.tierFlags = new TierFeatureFlags(tier);
+    
+    // Display tier information
+    const tierSummary = this.tierFlags.getTierSummary();
+    console.log(`\n🎭 SUBSCRIPTION TIER: ${tier.toUpperCase()}`);
+    console.log(`   📊 Patterns: ${tierSummary.patterns}`);
+    console.log(`   💼 Max Positions: ${tierSummary.maxPositions}`);
+    console.log(`   🔄 Multi-Directional: ${tierSummary.multiDirectional ? 'YES' : 'NO'}`);
+    console.log(`   ⚛️ Quantum Features: ${tierSummary.quantum ? 'ENABLED' : 'DISABLED'}`);
+    console.log(`   📈 Max Leverage: ${tierSummary.leverage}x\n`);
 
     this.config = {
       // OPTIMIZED FOR ACTUAL TRADING
@@ -189,6 +213,12 @@ class OGZPrimeV13Simplified {
     this.polygonWS = null;
     this.timeFrameManager = null;
     this.patternRecognition = null;
+    
+    // Offensive modules - signal generation
+    this.marketRegimeDetector = null;
+    this.fibonacciDetector = null;
+    this.supportResistanceDetector = null;
+    this.optimizedIndicators = null;
     
     // Express and WebSocket servers
     this.app = null;
@@ -289,33 +319,45 @@ class OGZPrimeV13Simplified {
       }
     });
     
-    // 🔮 INITIALIZE QUANTUM POSITION SIZER - ADVANCED QUANTUM ALGORITHMS
-    this.quantumSizer = new QuantumPositionSizer({
-      baseSize: this.config.maxPositionSize,
-      kellyMultiplier: 0.25,              // Conservative Kelly (25% of full Kelly)
-      minSize: 0.001,                     // 0.1% minimum
-      maxSize: 0.08,                      // 8% maximum
-      
-      quantumFactors: {
-        confidence: 0.3,                  // 30% weight to confidence
-        volatility: 0.2,                  // 20% weight to volatility
-        correlation: 0.2,                 // 20% weight to correlation
-        momentum: 0.15,                   // 15% weight to momentum
-        volume: 0.15                      // 15% weight to volume
-      }
-    });
+    // 🔮 INITIALIZE QUANTUM POSITION SIZER - ONLY FOR ELITE TIER
+    if (this.tierFlags.isEnabled('quantum.positionSizer')) {
+      this.quantumSizer = new QuantumPositionSizer({
+        baseSize: this.config.maxPositionSize,
+        kellyMultiplier: 0.25,              // Conservative Kelly (25% of full Kelly)
+        minSize: 0.001,                     // 0.1% minimum
+        maxSize: 0.08,                      // 8% maximum
+        
+        quantumFactors: {
+          confidence: 0.3,                  // 30% weight to confidence
+          volatility: 0.2,                  // 20% weight to volatility
+          correlation: 0.2,                 // 20% weight to correlation
+          momentum: 0.15,                   // 15% weight to momentum
+          volume: 0.15                      // 15% weight to volume
+        }
+      });
+      console.log('✅ Quantum Position Sizer enabled (ELITE tier)');
+    } else {
+      this.quantumSizer = null;
+      console.log('⚠️ Quantum Position Sizer disabled (upgrade to ELITE tier for quantum features)');
+    }
     
     // 🎯 MULTI-DIRECTIONAL TRADER: The Market Assassin - Long AND Short positions!
-    console.log('🎯 Initializing MultiDirectionalTrader...');
-    this.multiDirectionalTrader = new MultiDirectionalTrader({
-      enableShorts: true,
-      enableHedging: false,  // Keep simple for now
-      arbitrage: false,      // Can enable later
-      maxLongExposure: 0.6,  // 60% max long
-      maxShortExposure: 0.4, // 40% max short
-      longShortRatio: 0.7,   // 70% long bias
-      regimeAdaptive: true
-    });
+    if (this.tierFlags.isEnabled('trading.multiDirectional')) {
+      console.log('🎯 Initializing MultiDirectionalTrader (PRO/ELITE tier)...');
+      this.multiDirectionalTrader = new MultiDirectionalTrader({
+        enableShorts: true,
+        enableHedging: false,  // Keep simple for now
+        arbitrage: false,      // Can enable later
+        maxLongExposure: 0.6,  // 60% max long
+        maxShortExposure: 0.4, // 40% max short
+        longShortRatio: 0.7,   // 70% long bias
+        regimeAdaptive: true,
+        maxPositions: this.tierFlags.getFeatureValue('trading.maxPositions') || 1
+      });
+    } else {
+      console.log('⚠️ MultiDirectionalTrader disabled (STARTER tier - long only)');
+      this.multiDirectionalTrader = null;
+    }
     
     // 📊 PERFORMANCE VISUALIZER: Marketing & Houston Fund Progress Tracking!
     console.log('📊 Initializing PerformanceVisualizer...');
@@ -894,19 +936,82 @@ class OGZPrimeV13Simplified {
       enableMultiTimeframeAnalysis: true
     });
 
-    // Enhanced pattern recognition with LOWERED THRESHOLDS
-    this.patternRecognition = new EnhancedPatternChecker({
-      // CRITICAL: LOWER THRESHOLDS FOR MORE TRADING
-      similarityThreshold: 0.65,        // LOWERED from 0.8 to 0.65
-      minTradeHistory: 2,              // LOWERED from 3 to 2
-      confidenceThreshold: this.config.patternConfidence, // Use our optimized threshold
+    // Enhanced pattern recognition - USE TIER-BASED PATTERN DETECTOR
+    if (this.tierFlags.isEnabled('patterns.enabled')) {
+      // Get the appropriate pattern detector based on tier
+      const detector = this.tierFlags.getPatternDetector();
       
-      // ENABLE AGGRESSIVE PATTERN DETECTION
-      enableAggressivePatterns: true,
-      patternMemorySize: 1000,
-      recentPatternBonus: true
-    });
+      if (detector) {
+        // If it's EnhancedPatternChecker, configure it
+        if (detector.constructor.name === 'EnhancedPatternRecognition') {
+          this.patternRecognition = new EnhancedPatternChecker({
+            // CRITICAL: LOWER THRESHOLDS FOR MORE TRADING
+            similarityThreshold: 0.65,        // LOWERED from 0.8 to 0.65
+            minTradeHistory: 2,              // LOWERED from 3 to 2
+            confidenceThreshold: this.config.patternConfidence, // Use our optimized threshold
+            
+            // ENABLE AGGRESSIVE PATTERN DETECTION
+            enableAggressivePatterns: true,
+            patternMemorySize: 1000,
+            recentPatternBonus: true,
+            
+            // Use tier-specific pattern detector
+            patternDetector: detector
+          });
+        } else {
+          // Elite tier gets ComprehensivePatternDetector directly
+          this.patternRecognition = detector;
+        }
+        
+        console.log(`✅ Pattern Recognition initialized for ${tier.toUpperCase()} tier with ${this.tierFlags.getFeatureValue('patterns.maxPatterns')} patterns`);
+      } else {
+        console.log('❌ Pattern recognition disabled for this tier');
+        this.patternRecognition = null;
+      }
+    } else {
+      console.log('❌ Pattern recognition disabled for this tier');
+      this.patternRecognition = null;
+    }
 
+    // Initialize OFFENSIVE MODULES
+    console.log('\n⚔️ Initializing Offensive Trading Modules...');
+    
+    // Market Regime Detector - Identifies trending vs ranging markets
+    this.marketRegimeDetector = new MarketRegimeDetector({
+      lookbackPeriod: 100,
+      volatilityThreshold: 0.02,
+      trendStrengthThreshold: 0.6
+    });
+    
+    // Fibonacci Detector - Finds key retracement levels
+    this.fibonacciDetector = new FibonacciDetector({
+      levels: [0.236, 0.382, 0.5, 0.618, 0.786],
+      minSwingSize: 0.02,
+      lookbackCandles: 50
+    });
+    
+    // Support/Resistance Detector - Identifies key price levels
+    this.supportResistanceDetector = new SupportResistanceDetector({
+      minTouches: 2,
+      proximityThreshold: 0.005,
+      lookbackPeriod: 200
+    });
+    
+    // Optimized Indicators - Fast technical indicator calculations
+    this.optimizedIndicators = new OptimizedIndicators({
+      rsiPeriod: 14,
+      macdFast: 12,
+      macdSlow: 26,
+      macdSignal: 9,
+      emaPeriods: [9, 21, 50, 200],
+      bbPeriod: 20,
+      bbStdDev: 2
+    });
+    
+    // REMOVED DynamicEntryAnalysis - expects bot instance
+    // REMOVED Aggressive Trading Mode - too dangerous (random trades!)
+    
+    console.log('✅ Offensive Modules initialized successfully!');
     console.log('✅ Enhanced Systems initialized successfully!');
   }
 
@@ -1199,10 +1304,10 @@ class OGZPrimeV13Simplified {
         await this.updateTrailingStops(marketData.price);
       }
 
-      // Only look for new trades if we have capacity
-      const maxSimultaneousPositions = 3; // Limit concurrent positions
+      // Only look for new trades if we have capacity - TIER-BASED LIMITS
+      const maxSimultaneousPositions = this.tierFlags.getFeatureValue('trading.maxPositions') || 1;
       if (this.activePositions.size >= maxSimultaneousPositions) {
-        console.log(`⚠️ Maximum positions reached (${this.activePositions.size}/${maxSimultaneousPositions})`);
+        console.log(`⚠️ Maximum positions reached (${this.activePositions.size}/${maxSimultaneousPositions}) for ${this.tierFlags.tier.toUpperCase()} tier`);
         return;
       }
 
@@ -1819,14 +1924,94 @@ class OGZPrimeV13Simplified {
   calculateRealConfidence(marketData, patterns = []) {
     let confidence = 0;
     
-    // RSI signals (0-30 oversold, 70-100 overbought)
-    if (marketData.rsi) {
-      if (marketData.rsi < 30) {
-        confidence += 0.15; // Oversold = potential buy
-      } else if (marketData.rsi > 70) {
-        confidence += 0.15; // Overbought = potential sell
-      } else if (marketData.rsi >= 45 && marketData.rsi <= 55) {
-        confidence += 0.05; // Neutral zone
+    // OFFENSIVE MODULE: Market Regime Detection
+    if (this.marketRegimeDetector && this.priceData && this.priceData.length > 100) {
+      const regimeAnalysis = this.marketRegimeDetector.analyzeMarket(this.priceData);
+      if (regimeAnalysis) {
+        if (regimeAnalysis.regime === 'trending_up' && regimeAnalysis.confidence > 0.7) {
+          confidence += 0.20;
+        } else if (regimeAnalysis.regime === 'trending_down' && regimeAnalysis.confidence > 0.7) {
+          confidence += 0.15;
+        } else if (regimeAnalysis.regime === 'ranging') {
+          confidence += 0.05;
+        }
+        marketData.marketRegime = regimeAnalysis;
+      }
+    }
+    
+    // VISUALIZATION MODULE: Fibonacci Levels (for chart display on trade entry)
+    // NOTE: Only uses level proximity, ignores hardcoded confidence values
+    if (this.fibonacciDetector && this.priceData && this.priceData.length > 50) {
+      const fibLevels = this.fibonacciDetector.update(this.priceData);
+      if (fibLevels) {
+        const price = marketData.price || (this.priceData[this.priceData.length - 1]?.close || 0);
+        const nearestLevel = this.fibonacciDetector.getNearestLevel(price);
+        if (nearestLevel && nearestLevel.distance < 0.5) {
+          confidence += 0.10;
+        }
+        marketData.fibLevels = fibLevels;
+      }
+    }
+    
+    // VISUALIZATION MODULE: Support/Resistance (for chart display on trade entry)
+    // NOTE: Only uses level proximity and strength, ignores hardcoded confidence
+    if (this.supportResistanceDetector && this.priceData && this.priceData.length > 50) {
+      const levels = this.supportResistanceDetector.update(this.priceData);
+      if (levels && levels.length > 0) {
+        const price = marketData.price || (this.priceData[this.priceData.length - 1]?.close || 0);
+        const nearestLevel = this.supportResistanceDetector.getNearestLevel(price);
+        if (nearestLevel) {
+          if (nearestLevel.type === 'support' && nearestLevel.distance < 0.3) {
+            confidence += 0.15;
+          } else if (nearestLevel.type === 'resistance' && nearestLevel.distance < 0.3) {
+            confidence += 0.08;
+          }
+        }
+        marketData.srLevels = levels;
+      }
+    }
+    
+    // OFFENSIVE MODULE: Optimized Indicators
+    if (this.optimizedIndicators && this.priceData && this.priceData.length > 30) {
+      try {
+        const rsi = this.optimizedIndicators.calculateRSI(this.priceData);
+        const macd = this.optimizedIndicators.calculateMACD(this.priceData);
+        const bb = this.optimizedIndicators.calculateBollingerBands(this.priceData);
+        
+        if (rsi) {
+          if (rsi < 30) {
+            confidence += 0.15;
+          } else if (rsi > 70) {
+            confidence += 0.15;
+          }
+          marketData.rsi = rsi;
+        }
+        
+        if (macd && macd.macd > 0 && macd.signal > 0) {
+          confidence += 0.15;
+          marketData.macd = macd.macd;
+          marketData.macdSignal = macd.signal;
+          marketData.macdHistogram = macd.histogram;
+        }
+        
+        if (bb) {
+          marketData.bbUpper = bb.upper;
+          marketData.bbMiddle = bb.middle;
+          marketData.bbLower = bb.lower;
+        }
+      } catch (error) {
+        console.error('Error calculating optimized indicators:', error.message);
+      }
+    } else {
+      // Fallback to basic RSI if no optimized indicators
+      if (marketData.rsi) {
+        if (marketData.rsi < 30) {
+          confidence += 0.15; // Oversold = potential buy
+        } else if (marketData.rsi > 70) {
+          confidence += 0.15; // Overbought = potential sell
+        } else if (marketData.rsi >= 45 && marketData.rsi <= 55) {
+          confidence += 0.05; // Neutral zone
+        }
       }
     }
     
@@ -1899,6 +2084,8 @@ class OGZPrimeV13Simplified {
         confidence += 0.10; // Bearish EMA alignment
       }
     }
+    
+    // REMOVED DynamicEntryAnalysis and AggressiveTradingMode - too dangerous
     
     // Cap confidence between 0 and 0.95
     confidence = Math.max(0, Math.min(0.95, confidence));
@@ -2049,29 +2236,48 @@ class OGZPrimeV13Simplified {
    * 🧮 Calculate position size based on confidence, volatility, and market conditions
    */
   calculatePositionSize(confidence, marketData) {
-    // 💎 QUANTUM POSITION SIZER: Use quantum sizing instead of basic calculation
-    const quantumSize = this.quantumSizer.calculateOptimalPosition(
-      marketData.price,
-      marketData.volatility || 0.02,
-      confidence,
-      this.systemState.currentBalance,
-      {
-        winRate: this.systemState.winRate || 0.5,
-        avgWin: 2.5,  // Default average win
-        avgLoss: 1.5,  // Default average loss
-        volume: marketData.volume,
-        correlation: marketData.correlation || 0,
-        momentum: marketData.momentum || 0,
-        currentDrawdown: this.systemState.currentDrawdown
-      }
-    );
-    
-    console.log(`💎 Quantum Size: ${(quantumSize * 100).toFixed(3)}% (was ${(this.config.maxPositionSize * 100).toFixed(1)}%)`);
-    console.log(`   📊 Confidence: ${(confidence * 100).toFixed(1)}%`);
-    console.log(`   📈 Win Rate: ${((this.systemState.winRate || 0.5) * 100).toFixed(1)}%`);
-    console.log(`   📊 Volatility: ${((marketData.volatility || 0.02) * 100).toFixed(1)}%`);
-    
-    return quantumSize;
+    // 💎 QUANTUM POSITION SIZER: Use quantum sizing for ELITE tier
+    if (this.quantumSizer) {
+      const quantumSize = this.quantumSizer.calculateOptimalPosition(
+        marketData.price,
+        marketData.volatility || 0.02,
+        confidence,
+        this.systemState.currentBalance,
+        {
+          winRate: this.systemState.winRate || 0.5,
+          avgWin: 2.5,  // Default average win
+          avgLoss: 1.5,  // Default average loss
+          volume: marketData.volume,
+          correlation: marketData.correlation || 0,
+          momentum: marketData.momentum || 0,
+          currentDrawdown: this.systemState.currentDrawdown
+        }
+      );
+      
+      console.log(`💎 Quantum Size: ${(quantumSize * 100).toFixed(3)}% (was ${(this.config.maxPositionSize * 100).toFixed(1)}%)`);
+      console.log(`   📊 Confidence: ${(confidence * 100).toFixed(1)}%`);
+      console.log(`   📈 Win Rate: ${((this.systemState.winRate || 0.5) * 100).toFixed(1)}%`);
+      console.log(`   📊 Volatility: ${((marketData.volatility || 0.02) * 100).toFixed(1)}%`);
+      
+      return quantumSize;
+    } else {
+      // BASIC POSITION SIZING for STARTER/PRO tiers
+      const baseSize = this.config.maxPositionSize;
+      const volatilityAdjustment = marketData.volatility > 0.03 ? 0.7 : 1.0;
+      const confidenceMultiplier = 0.5 + (confidence * 0.5);
+      
+      // Apply leverage limits based on tier
+      const maxLeverage = this.tierFlags.getFeatureValue('trading.maxLeverage') || 1;
+      const leverageMultiplier = Math.min(maxLeverage, 1 + (confidence - 0.5) * 2);
+      
+      const size = baseSize * volatilityAdjustment * confidenceMultiplier * leverageMultiplier;
+      
+      console.log(`📊 Basic Size: ${(size * 100).toFixed(2)}%`);
+      console.log(`   📊 Confidence: ${(confidence * 100).toFixed(1)}%`);
+      console.log(`   📈 Leverage: ${leverageMultiplier.toFixed(1)}x (max ${maxLeverage}x for ${this.tierFlags.tier.toUpperCase()} tier)`);
+      
+      return Math.min(size, this.config.maxPositionSize * maxLeverage);
+    }
   }
   
   /**
@@ -2080,14 +2286,33 @@ class OGZPrimeV13Simplified {
   verifyModuleIntegration() {
     console.log('\n🔍 MODULE INTEGRATION STATUS:');
     console.log('═══════════════════════════════');
-    console.log(`✅ RiskManager: ${this.riskManager ? 'CONNECTED' : '❌ MISSING'}`);
-    console.log(`✅ TradingBrain: ${this.tradingBrain ? 'CONNECTED' : '❌ MISSING'}`);
-    console.log(`✅ MaxProfitManager: ${this.profitManager ? 'CONNECTED' : '❌ MISSING'}`);
-    console.log(`✅ TradingSafetyNet: ${this.safetyNet ? 'CONNECTED' : '❌ MISSING'}`);
-    console.log(`✅ PerformanceAnalyzer: ${this.performanceAnalyzer ? 'CONNECTED' : '❌ MISSING'}`);
-    console.log(`✅ QuantumPositionSizer: ${this.quantumSizer ? 'CONNECTED' : '❌ MISSING'}`);
-    console.log(`✅ MultiDirectionalTrader: ${this.multiDirectionalTrader ? 'CONNECTED' : '❌ MISSING'}`);
-    console.log(`✅ PerformanceVisualizer: ${this.performanceVisualizer ? 'CONNECTED' : '❌ MISSING'}`);
+    
+    // DEFENSIVE MODULES
+    console.log('🛡️ DEFENSIVE MODULES:');
+    console.log(`  ✅ RiskManager: ${this.riskManager ? 'CONNECTED' : '❌ MISSING'}`);
+    console.log(`  ✅ TradingSafetyNet: ${this.safetyNet ? 'CONNECTED' : '❌ MISSING'}`);
+    console.log(`  ✅ MaxProfitManager: ${this.profitManager ? 'CONNECTED' : '❌ MISSING'}`);
+    
+    // OFFENSIVE MODULES
+    console.log('\n⚔️ OFFENSIVE MODULES:');
+    console.log(`  ✅ PatternRecognition: ${this.patternRecognition ? 'CONNECTED' : '❌ MISSING'}`);
+    console.log(`  ✅ MarketRegimeDetector: ${this.marketRegimeDetector ? 'CONNECTED' : '❌ MISSING'}`);
+    console.log(`  ✅ FibonacciDetector: ${this.fibonacciDetector ? 'CONNECTED' : '❌ MISSING'}`);
+    console.log(`  ✅ SupportResistanceDetector: ${this.supportResistanceDetector ? 'CONNECTED' : '❌ MISSING'}`);
+    console.log(`  ✅ OptimizedIndicators: ${this.optimizedIndicators ? 'CONNECTED' : '❌ MISSING'}`);
+    
+    // EXECUTION MODULES
+    console.log('\n🎯 EXECUTION MODULES:');
+    console.log(`  ✅ TradingBrain: ${this.tradingBrain ? 'CONNECTED' : '❌ MISSING'}`);
+    console.log(`  ✅ MultiDirectionalTrader: ${this.multiDirectionalTrader ? 'CONNECTED' : '❌ MISSING'}`);
+    console.log(`  ✅ QuantumPositionSizer: ${this.quantumSizer ? 'CONNECTED' : '❌ MISSING'}`);
+    
+    // ANALYTICS MODULES
+    console.log('\n📊 ANALYTICS MODULES:');
+    console.log(`  ✅ PerformanceAnalyzer: ${this.performanceAnalyzer ? 'CONNECTED' : '❌ MISSING'}`);
+    console.log(`  ✅ PerformanceVisualizer: ${this.performanceVisualizer ? 'CONNECTED' : '❌ MISSING'}`);
+    console.log(`  ✅ CorrelationAnalyzer: ${this.correlationAnalyzer ? 'CONNECTED' : '❌ MISSING'}`);
+    
     console.log('═══════════════════════════════\n');
   }
 
@@ -2099,12 +2324,19 @@ class OGZPrimeV13Simplified {
       console.log(`🎯 EXECUTING TRADE: ${direction.toUpperCase()}`);
       console.log(`💰 Position Size: ${(positionSize * 100).toFixed(2)}%`);
       console.log(`📊 Confidence: ${(confidence * 100).toFixed(1)}%`);
-      console.log(`💵 Price: $${marketData.price.toFixed(2)}`);
+      console.log(`💵 Market Price: $${marketData.price.toFixed(2)}`);
+      
+      // Front-load 1% to the buy price to ensure fills
+      const entryPrice = direction === 'long' 
+        ? marketData.price * 1.01  // Add 1% for buys
+        : marketData.price * 0.99; // Subtract 1% for sells (to ensure short fills)
+      
+      console.log(`📈 Entry Price (1% front-loaded): $${entryPrice.toFixed(2)}`);
       
       // 🛡️ RISK MANAGER: Pre-trade risk assessment
       const riskAssessment = this.riskManager.assessTradeRisk({
         direction,
-        entryPrice: marketData.price,
+        entryPrice: entryPrice, // Use front-loaded price
         confidence,
         marketData,
         patterns
@@ -2121,7 +2353,7 @@ class OGZPrimeV13Simplified {
       );
       
       const enhancedStopLoss = this.tradingBrain.calculateBreakevenStopLoss(
-        marketData.price, direction, this.tradingBrain.feeConfig.totalRoundTrip
+        entryPrice, direction, this.tradingBrain.feeConfig.totalRoundTrip // Use front-loaded price for stop loss calc
       );
       
       console.log(`🔥 RISK-ADJUSTED SIZE: ${(optimizedPositionSize * 100).toFixed(2)}% (was ${(positionSize * 100).toFixed(2)}%)`);
@@ -2133,7 +2365,7 @@ class OGZPrimeV13Simplified {
       const position = {
         id: tradeId,
         direction,
-        entryPrice: marketData.price,
+        entryPrice: entryPrice, // Use front-loaded price
         positionSize: optimizedPositionSize, // Use risk-adjusted size
         originalPositionSize: positionSize,   // Track original for analysis
         confidence,
@@ -2254,13 +2486,26 @@ class OGZPrimeV13Simplified {
       // Save trade to logs
       await this.logTrade(tradeRecord);
       
-      // Broadcast to WebSocket clients
+      // Broadcast to WebSocket clients with visualization data
       this.broadcastToClients({
         type: 'trade_opened',
         trade: tradeRecord,
         systemState: this.systemState,
         activePositions: this.activePositions.size,
-        tradingMode: this.config.simulate ? 'PAPER' : 'LIVE'
+        tradingMode: this.config.simulate ? 'PAPER' : 'LIVE',
+        // Include visualization data for chart display
+        chartLevels: {
+          fibonacci: marketData.fibLevels || [],
+          support: marketData.srLevels?.support || [],
+          resistance: marketData.srLevels?.resistance || [],
+          bollinger: {
+            upper: marketData.bbUpper,
+            middle: marketData.bbMiddle,
+            lower: marketData.bbLower
+          },
+          trend: marketData.trend,
+          regime: marketData.marketRegime
+        }
       });
       
       console.log(`📈 Position opened: ${tradeId}`);
@@ -3212,16 +3457,20 @@ async function main() {
     // Initialize and start the bot
     await bot.initialize();
     
-    // 🚀 ADD V13.5 QUANTUM ENHANCEMENT LAYER
-    console.log('\n⚡ Activating V13.5 Quantum Enhancement Layer...');
-    try {
-      const quantumEnhancement = new RealQuantumEnhancement(bot);
-      bot.quantumEnhancement = quantumEnhancement;
-      console.log('✅ Quantum Enhancement Layer ACTIVATED!');
-      console.log('🧠 Trading decisions will be enhanced with quantum algorithms');
-    } catch (error) {
-      console.log('⚠️ Quantum Enhancement failed to load:', error.message);
-      console.log('📊 Continuing with standard v13 mode...');
+    // 🚀 ADD V13.5 QUANTUM ENHANCEMENT LAYER - ELITE TIER ONLY
+    if (bot.tierFlags && bot.tierFlags.isEnabled('quantum.enhancement')) {
+      console.log('\n⚡ Activating V13.5 Quantum Enhancement Layer (ELITE tier)...');
+      try {
+        const quantumEnhancement = new RealQuantumEnhancement(bot);
+        bot.quantumEnhancement = quantumEnhancement;
+        console.log('✅ Quantum Enhancement Layer ACTIVATED!');
+        console.log('🧠 Trading decisions will be enhanced with quantum algorithms');
+      } catch (error) {
+        console.log('⚠️ Quantum Enhancement failed to load:', error.message);
+        console.log('📊 Continuing with standard v13 mode...');
+      }
+    } else {
+      console.log('⚠️ Quantum Enhancement disabled (upgrade to ELITE tier for quantum features)');
     }
     
     console.log('\n🎯 OGZ PRIME V13 SIMPLIFIED IS LIVE!');
