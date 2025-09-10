@@ -1,0 +1,123 @@
+{
+  "timestamp": "2025-09-09T23:03:41.797Z",
+  "modules": {
+    "imported": [
+      "SingletonLock",
+      "WebSocketConfig",
+      "quantum-enhancement-layer",
+      "PerformanceDashboardIntegration",
+      "RiskManager",
+      "OptimizedTradingBrain",
+      "MaxProfitManager",
+      "TradingSafetyNet",
+      "PerformanceAnalyzer",
+      "QuantumPositionSizer",
+      "PerformanceValidator",
+      "PerformanceVisualizer",
+      "AdvancedWebSocketBroadcastSystem",
+      "RealQuantumEnhancement",
+      "OGZPrimeV14_QuantumDeFi",
+      "MultiDirectionalTrader",
+      "UltimateTradingSystem",
+      "CorrelationAnalyzer",
+      "LogLearningSystem",
+      "MLLogProcessor",
+      "PolygonWebSocket",
+      "TimeFrameManager",
+      "EnhancedPatternRecognition"
+    ],
+    "initialized": [
+      "Map",
+      "PerformanceDashboardIntegration",
+      "RiskManager",
+      "OptimizedTradingBrain",
+      "MaxProfitManager",
+      "TradingSafetyNet",
+      "PerformanceAnalyzer",
+      "QuantumPositionSizer",
+      "MultiDirectionalTrader",
+      "PerformanceVisualizer",
+      "PerformanceValidator",
+      "WebSocket",
+      "UltimateTradingSystem",
+      "CorrelationAnalyzer",
+      "LogLearningSystem",
+      "MLLogProcessor",
+      "PolygonWebSocket",
+      "TimeFrameManager",
+      "EnhancedPatternChecker",
+      "OGZSingletonLock",
+      "net",
+      "Date",
+      "OGZPrimeV13Simplified",
+      "RealQuantumEnhancement"
+    ],
+    "used": [],
+    "unused": [
+      "SingletonLock",
+      "WebSocketConfig",
+      "quantum-enhancement-layer",
+      "PerformanceDashboardIntegration",
+      "RiskManager",
+      "OptimizedTradingBrain",
+      "MaxProfitManager",
+      "TradingSafetyNet",
+      "PerformanceAnalyzer",
+      "QuantumPositionSizer",
+      "PerformanceValidator",
+      "PerformanceVisualizer",
+      "AdvancedWebSocketBroadcastSystem",
+      "RealQuantumEnhancement",
+      "OGZPrimeV14_QuantumDeFi",
+      "MultiDirectionalTrader",
+      "UltimateTradingSystem",
+      "CorrelationAnalyzer",
+      "LogLearningSystem",
+      "MLLogProcessor",
+      "PolygonWebSocket",
+      "TimeFrameManager",
+      "EnhancedPatternRecognition"
+    ]
+  },
+  "connections": {
+    "tradingBrain": [],
+    "riskManager": [],
+    "patternRecognition": [],
+    "indicators": [],
+    "profitManager": [],
+    "safetyNet": [],
+    "performanceAnalyzer": [],
+    "quantumSizer": [],
+    "multiDirectional": [],
+    "other": []
+  },
+  "tradingFlow": {
+    "dataSource": "Polygon",
+    "indicatorCalculation": [
+      "RSI",
+      "MACD",
+      "EMA"
+    ],
+    "patternDetection": [
+      "EnhancedPatternRecognition",
+      "PatternAnalysis"
+    ],
+    "confidenceCalculation": [],
+    "riskAssessment": [
+      "RiskManager",
+      "TradingSafetyNet"
+    ],
+    "positionSizing": [
+      "QuantumPositionSizer",
+      "Basic calculation"
+    ],
+    "entryLogic": [
+      "MultiDirectional"
+    ],
+    "exitLogic": [
+      "TrailingStops",
+      "MaxProfitManager"
+    ],
+    "profitManagement": []
+  }
+}
