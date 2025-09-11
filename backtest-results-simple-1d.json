@@ -1,61 +1,54 @@
 {
-  "finalBalance": 10637.494999999999,
-  "totalReturn": 6.37494999999999,
-  "winRate": 85.71428571428571,
-  "totalTrades": 7,
-  "wins": 6,
-  "losses": 1,
-  "avgWin": 116.19354166666653,
-  "avgLoss": 59.66625000000022,
-  "profitFactor": 11.684348354387893,
+  "finalBalance": 10874.7161155,
+  "totalReturn": 8.747161154999993,
+  "winRate": 50,
+  "totalTrades": 6,
+  "wins": 3,
+  "losses": 3,
+  "avgWin": 425.0095093333339,
+  "avgLoss": 133.43747083333486,
+  "profitFactor": 3.18508367011974,
   "trades": [
     {
-      "entry": 39647.22,
-      "exit": 40839.88,
-      "pnl": 149.08249999999953,
-      "pnlPercent": 3.0081806492359267,
+      "entry": 39738.45,
+      "exit": 41729.23,
+      "pnl": 398.15600000000126,
+      "pnlPercent": 5.009707223105094,
       "reason": "take_profit"
     },
     {
-      "entry": 39691.04,
-      "exit": 40894.53,
-      "pnl": 150.43624999999975,
-      "pnlPercent": 3.032145290221667,
+      "entry": 39742.49,
+      "exit": 41733.87,
+      "pnl": 398.276000000001,
+      "pnlPercent": 5.010707683388748,
       "reason": "take_profit"
     },
     {
-      "entry": 39682.43,
-      "exit": 40894.53,
-      "pnl": 151.51249999999982,
-      "pnlPercent": 3.0545004426392195,
+      "entry": 39864.4778,
+      "exit": 41858.63,
+      "pnl": 478.59652799999924,
+      "pnlPercent": 5.002328664643882,
       "reason": "take_profit"
     },
     {
-      "entry": 40774.04,
-      "exit": 42028.23,
-      "pnl": 156.7737500000003,
-      "pnlPercent": 3.0759522480480284,
-      "reason": "take_profit"
-    },
-    {
-      "entry": 41194.27,
+      "entry": 41763.1364,
       "exit": 41514.56,
-      "pnl": 40.03625000000011,
-      "pnlPercent": 0.7775110470461083,
+      "pnl": -55.9296900000012,
+      "pnlPercent": -0.5952052968895444,
       "reason": "backtest_end"
     },
     {
-      "entry": 41120,
+      "entry": 42213.364100000006,
       "exit": 41514.56,
-      "pnl": 49.31999999999971,
-      "pnlPercent": 0.9595330739299555,
+      "pnl": -157.2309225000019,
+      "pnlPercent": -1.6554096431277043,
       "reason": "backtest_end"
     },
     {
-      "entry": 41991.89,
+      "entry": 42263.1672,
       "exit": 41514.56,
-      "pnl": -59.66625000000022,
-      "pnlPercent": -1.1367194951215622,
+      "pnl": -187.15180000000146,
+      "pnlPercent": -1.7712993360327376,
       "reason": "backtest_end"
     }
   ]

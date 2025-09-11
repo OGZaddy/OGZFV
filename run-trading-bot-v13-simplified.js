@@ -1919,42 +1919,42 @@ class OGZPrimeV13Simplified {
 
   /**
    * Calculate REAL trading confidence based on actual indicators
-   * THIS REPLACES THE FAKE 65% HARDCODED VALUE!
+   * BOOSTED VERSION - Enables 60-80% confidence on good setups
    */
   calculateRealConfidence(marketData, patterns = []) {
     let confidence = 0;
     
-    // OFFENSIVE MODULE: Market Regime Detection
+    // OFFENSIVE MODULE: Market Regime Detection (BOOSTED: 15-25%)
     if (this.marketRegimeDetector && this.priceData && this.priceData.length > 100) {
       const regimeAnalysis = this.marketRegimeDetector.analyzeMarket(this.priceData);
       if (regimeAnalysis) {
         if (regimeAnalysis.regime === 'trending_up' && regimeAnalysis.confidence > 0.7) {
-          confidence += 0.20;
+          confidence += 0.25; // BOOSTED from 0.20
         } else if (regimeAnalysis.regime === 'trending_down' && regimeAnalysis.confidence > 0.7) {
-          confidence += 0.15;
+          confidence += 0.20; // BOOSTED from 0.15
         } else if (regimeAnalysis.regime === 'ranging') {
-          confidence += 0.05;
+          confidence += 0.15; // BOOSTED from 0.05
         }
         marketData.marketRegime = regimeAnalysis;
       }
     }
     
-    // VISUALIZATION MODULE: Fibonacci Levels (for chart display on trade entry)
-    // NOTE: Only uses level proximity, ignores hardcoded confidence values
+    // VISUALIZATION MODULE: Fibonacci Levels (10-15%)
     if (this.fibonacciDetector && this.priceData && this.priceData.length > 50) {
       const fibLevels = this.fibonacciDetector.update(this.priceData);
       if (fibLevels) {
         const price = marketData.price || (this.priceData[this.priceData.length - 1]?.close || 0);
         const nearestLevel = this.fibonacciDetector.getNearestLevel(price);
         if (nearestLevel && nearestLevel.distance < 0.5) {
-          confidence += 0.10;
+          confidence += 0.15; // BOOSTED from 0.10
+        } else if (nearestLevel && nearestLevel.distance < 1.0) {
+          confidence += 0.10; // Additional tier
         }
         marketData.fibLevels = fibLevels;
       }
     }
     
-    // VISUALIZATION MODULE: Support/Resistance (for chart display on trade entry)
-    // NOTE: Only uses level proximity and strength, ignores hardcoded confidence
+    // VISUALIZATION MODULE: Support/Resistance (15-20%)
     if (this.supportResistanceDetector && this.priceData && this.priceData.length > 50) {
       const levels = this.supportResistanceDetector.update(this.priceData);
       if (levels && levels.length > 0) {
@@ -1962,9 +1962,11 @@ class OGZPrimeV13Simplified {
         const nearestLevel = this.supportResistanceDetector.getNearestLevel(price);
         if (nearestLevel) {
           if (nearestLevel.type === 'support' && nearestLevel.distance < 0.3) {
-            confidence += 0.15;
+            confidence += 0.20; // BOOSTED from 0.15
           } else if (nearestLevel.type === 'resistance' && nearestLevel.distance < 0.3) {
-            confidence += 0.08;
+            confidence += 0.15; // BOOSTED from 0.08
+          } else if (nearestLevel.distance < 0.5) {
+            confidence += 0.10; // Additional tier for nearby levels
           }
         }
         marketData.srLevels = levels;
@@ -1978,23 +1980,45 @@ class OGZPrimeV13Simplified {
         const macd = this.optimizedIndicators.calculateMACD(this.priceData);
         const bb = this.optimizedIndicators.calculateBollingerBands(this.priceData);
         
+        // RSI Signals (20-25% for strong signals)
         if (rsi) {
-          if (rsi < 30) {
-            confidence += 0.15;
+          if (rsi < 25) {
+            confidence += 0.25; // STRONG oversold - BOOSTED
+          } else if (rsi < 30) {
+            confidence += 0.20; // Oversold - BOOSTED from 0.15
+          } else if (rsi > 75) {
+            confidence += 0.25; // STRONG overbought - BOOSTED
           } else if (rsi > 70) {
-            confidence += 0.15;
+            confidence += 0.20; // Overbought - BOOSTED from 0.15
+          } else if (rsi >= 45 && rsi <= 55) {
+            confidence += 0.08; // Neutral zone - slight boost
           }
           marketData.rsi = rsi;
         }
         
-        if (macd && macd.macd > 0 && macd.signal > 0) {
-          confidence += 0.15;
+        // MACD Signals (15-20% for strong signals)
+        if (macd) {
+          if (macd.macd > 0 && macd.signal > 0 && macd.histogram > 0) {
+            confidence += 0.20; // Strong bullish - BOOSTED from 0.15
+          } else if (macd.macd > 0 && macd.signal > 0) {
+            confidence += 0.15; // Bullish
+          } else if (macd.macd < 0 && macd.signal < 0 && macd.histogram < 0) {
+            confidence += 0.18; // Strong bearish - BOOSTED
+          } else if (macd.macd < 0 && macd.signal < 0) {
+            confidence += 0.12; // Bearish - BOOSTED from 0.10
+          }
           marketData.macd = macd.macd;
           marketData.macdSignal = macd.signal;
           marketData.macdHistogram = macd.histogram;
         }
         
-        if (bb) {
+        // Bollinger Bands (additional 10% for band touches)
+        if (bb && marketData.price) {
+          if (marketData.price <= bb.lower) {
+            confidence += 0.10; // Price at lower band
+          } else if (marketData.price >= bb.upper) {
+            confidence += 0.10; // Price at upper band
+          }
           marketData.bbUpper = bb.upper;
           marketData.bbMiddle = bb.middle;
           marketData.bbLower = bb.lower;
@@ -2003,96 +2027,141 @@ class OGZPrimeV13Simplified {
         console.error('Error calculating optimized indicators:', error.message);
       }
     } else {
-      // Fallback to basic RSI if no optimized indicators
+      // Fallback to basic indicators if no optimized module
       if (marketData.rsi) {
-        if (marketData.rsi < 30) {
-          confidence += 0.15; // Oversold = potential buy
+        if (marketData.rsi < 25) {
+          confidence += 0.25; // STRONG oversold - BOOSTED
+        } else if (marketData.rsi < 30) {
+          confidence += 0.20; // Oversold - BOOSTED
+        } else if (marketData.rsi > 75) {
+          confidence += 0.25; // STRONG overbought - BOOSTED  
         } else if (marketData.rsi > 70) {
-          confidence += 0.15; // Overbought = potential sell
+          confidence += 0.20; // Overbought - BOOSTED
         } else if (marketData.rsi >= 45 && marketData.rsi <= 55) {
-          confidence += 0.05; // Neutral zone
+          confidence += 0.08; // Neutral zone
+        }
+      }
+      
+      // Basic MACD
+      if (marketData.macd) {
+        if (marketData.macd > 0 && marketData.macdSignal > 0) {
+          confidence += 0.20; // Bullish - BOOSTED
+        } else if (marketData.macd < 0 && marketData.macdSignal < 0) {
+          confidence += 0.15; // Bearish - BOOSTED
         }
       }
     }
     
-    // MACD signals
-    if (marketData.macd) {
-      if (marketData.macd > 0 && marketData.macdSignal > 0) {
-        confidence += 0.15; // Bullish
-      } else if (marketData.macd < 0 && marketData.macdSignal < 0) {
-        confidence += 0.10; // Bearish confirmation
-      }
-    }
-    
-    // Trend alignment
+    // Trend alignment (10-25% based on strength)
     if (marketData.trend) {
       if (marketData.trend === 'strong_uptrend') {
-        confidence += 0.20;
+        confidence += 0.25; // BOOSTED from 0.20
       } else if (marketData.trend === 'uptrend') {
-        confidence += 0.10;
+        confidence += 0.15; // BOOSTED from 0.10
+      } else if (marketData.trend === 'strong_downtrend') {
+        confidence += 0.20; // NEW - strong downtrend
       } else if (marketData.trend === 'downtrend') {
-        confidence += 0.05;
+        confidence += 0.10; // BOOSTED from 0.05
       }
     }
     
-    // Volume confirmation
+    // Volume confirmation (15-20% for high volume)
     if (marketData.volume && marketData.avgVolume) {
-      if (marketData.volume > marketData.avgVolume * 1.5) {
-        confidence += 0.10; // High volume = stronger signal
+      if (marketData.volume > marketData.avgVolume * 2.0) {
+        confidence += 0.20; // Very high volume - NEW
+      } else if (marketData.volume > marketData.avgVolume * 1.5) {
+        confidence += 0.15; // High volume - BOOSTED from 0.10
+      } else if (marketData.volume > marketData.avgVolume * 1.2) {
+        confidence += 0.08; // Above average volume - NEW
       }
     }
     
-    // Pattern bonus (if patterns detected)
+    // Pattern bonus (up to 35% for strong patterns)
     if (patterns && patterns.length > 0) {
-      // Each pattern adds confidence based on its strength
+      // Base pattern bonus
+      const basePatternBonus = Math.min(0.25, patterns.length * 0.08); // BOOSTED from 0.05
+      confidence += basePatternBonus;
+      
+      // Additional bonus for high-confidence patterns
       patterns.forEach(pattern => {
         if (pattern.strength && pattern.confidence) {
-          confidence += (pattern.strength * pattern.confidence * 0.05);
+          if (pattern.confidence > 0.8 && pattern.strength > 0.8) {
+            confidence += 0.10; // High quality pattern - NEW
+          } else if (pattern.confidence > 0.7 && pattern.strength > 0.7) {
+            confidence += 0.05; // Good pattern
+          }
         }
       });
-      // Cap pattern bonus at 0.25
-      const patternBonus = Math.min(0.25, patterns.length * 0.05);
-      confidence = Math.min(confidence, confidence + patternBonus);
     }
     
-    // Support/Resistance proximity
+    // Support/Resistance proximity (10-15%)
     if (marketData.nearSupport) {
-      confidence += 0.10; // Near support = potential bounce
+      confidence += 0.15; // Near support - BOOSTED from 0.10
     } else if (marketData.nearResistance) {
-      confidence += 0.05; // Near resistance = caution
+      confidence += 0.10; // Near resistance - BOOSTED from 0.05
     }
     
-    // Multi-timeframe alignment
+    // Multi-timeframe alignment (20% for full alignment)
     if (marketData.multiTimeframeAligned) {
-      confidence += 0.15;
+      confidence += 0.20; // BOOSTED from 0.15
     }
     
-    // Volatility adjustment (lower confidence in extreme volatility)
-    if (marketData.volatility) {
-      if (marketData.volatility > 0.05) {
-        confidence *= 0.8; // High volatility = reduce confidence
-      } else if (marketData.volatility < 0.01) {
-        confidence *= 0.9; // Too low volatility = reduce confidence slightly
-      }
-    }
-    
-    // EMA alignment bonus
+    // EMA alignment bonus (10-15%)
     if (marketData.ema20 && marketData.ema50 && marketData.price) {
       if (marketData.price > marketData.ema20 && marketData.ema20 > marketData.ema50) {
-        confidence += 0.10; // Bullish EMA alignment
+        confidence += 0.15; // Bullish EMA alignment - BOOSTED from 0.10
       } else if (marketData.price < marketData.ema20 && marketData.ema20 < marketData.ema50) {
-        confidence += 0.10; // Bearish EMA alignment
+        confidence += 0.15; // Bearish EMA alignment - BOOSTED from 0.10
       }
     }
     
-    // REMOVED DynamicEntryAnalysis and AggressiveTradingMode - too dangerous
+    // Volatility adjustment (less aggressive reduction)
+    if (marketData.volatility) {
+      if (marketData.volatility > 0.08) {
+        confidence *= 0.85; // Very high volatility - less reduction
+      } else if (marketData.volatility > 0.05) {
+        confidence *= 0.90; // High volatility - ADJUSTED from 0.8
+      } else if (marketData.volatility < 0.005) {
+        confidence *= 0.95; // Too low volatility - ADJUSTED from 0.9
+      }
+      // Normal volatility (0.005-0.05) = no adjustment
+    }
+    
+    // Momentum bonus (NEW - 5-10% for strong momentum)
+    if (marketData.momentum) {
+      if (Math.abs(marketData.momentum) > 2.0) {
+        confidence += 0.10; // Strong momentum
+      } else if (Math.abs(marketData.momentum) > 1.0) {
+        confidence += 0.05; // Moderate momentum
+      }
+    }
     
     // Cap confidence between 0 and 0.95
     confidence = Math.max(0, Math.min(0.95, confidence));
     
-    // Log the calculation for debugging (only for significant confidence)
+    // Log significant confidence calculations
     if (confidence > 0.30) {
-      console.log(`📊 Real Confidence: ${(confidence * 100).toFixed(1)}% (RSI: ${marketData.rsi?.toFixed(0)}, MACD: ${marketData.macd?.toFixed(2)}, Patterns: ${patterns?.length || 0})`);
+      console.log(`🔥 BOOSTED Confidence: ${(confidence * 100).toFixed(1)}%`);
+      console.log(`   📊 RSI: ${marketData.rsi?.toFixed(0)} | MACD: ${marketData.macd?.toFixed(2)}`);
+      console.log(`   📈 Patterns: ${patterns?.length || 0} | Trend: ${marketData.trend || 'neutral'}`);
+      console.log(`   🎯 Regime: ${marketData.marketRegime?.regime || 'unknown'}`);
+      
+      // Show breakdown if confidence is high
+      if (confidence > 0.50) {
+        console.log(`   ✅ HIGH CONFIDENCE BREAKDOWN:`);
+        if (marketData.rsi && (marketData.rsi < 30 || marketData.rsi > 70)) {
+          console.log(`      • RSI Signal: ${marketData.rsi < 30 ? 'OVERSOLD' : 'OVERBOUGHT'}`);
+        }
+        if (marketData.marketRegime?.regime?.includes('trending')) {
+          console.log(`      • Market Regime: ${marketData.marketRegime.regime.toUpperCase()}`);
+        }
+        if (patterns?.length > 0) {
+          console.log(`      • Patterns Detected: ${patterns.length}`);
+        }
+        if (marketData.nearSupport || marketData.nearResistance) {
+          console.log(`      • Near Key Level: ${marketData.nearSupport ? 'SUPPORT' : 'RESISTANCE'}`);
+        }
+      }
     }
     
     return confidence;

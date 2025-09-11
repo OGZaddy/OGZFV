@@ -1,33 +1,33 @@
 {
-  "finalBalance": 9941.466249999998,
-  "totalReturn": -0.5853375000000233,
+  "finalBalance": 9624.676634999996,
+  "totalReturn": -3.753233650000038,
   "winRate": 0,
   "totalTrades": 3,
   "wins": 0,
   "losses": 3,
   "avgWin": 0,
-  "avgLoss": 19.511250000000473,
+  "avgLoss": 125.1077883333345,
   "profitFactor": 0,
   "trades": [
     {
-      "entry": 41716.58,
+      "entry": 41954.874800000005,
       "exit": 41514.56,
-      "pnl": -25.25250000000051,
-      "pnlPercent": -0.4842678858142352,
+      "pnl": -88.06296000000148,
+      "pnlPercent": -1.0494961600982,
       "reason": "backtest_end"
     },
     {
-      "entry": 41689.44,
+      "entry": 42133.745800000004,
       "exit": 41514.56,
-      "pnl": -21.860000000000582,
-      "pnlPercent": -0.4194827275204576,
+      "pnl": -139.31680500000147,
+      "pnlPercent": -1.469572164172516,
       "reason": "backtest_end"
     },
     {
-      "entry": 41605.93,
+      "entry": 42106.3344,
       "exit": 41514.56,
-      "pnl": -11.421250000000327,
-      "pnlPercent": -0.21960811836198016,
+      "pnl": -147.94360000000052,
+      "pnlPercent": -1.4054284430895558,
       "reason": "backtest_end"
     }
   ]

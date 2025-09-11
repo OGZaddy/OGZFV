@@ -148,103 +148,139 @@ class SimpleProductionBacktest {
   }
   
   /**
-   * Calculate trading confidence using all offensive modules
+   * Calculate trading confidence using BOOSTED weights - enables 60-80% confidence
    */
   calculateConfidence(marketData) {
     let confidence = 0;
     const price = marketData.price || this.priceData[this.priceData.length - 1].close;
     
-    // Market Regime (20% weight)
+    // Market Regime (BOOSTED: 15-25%)
     if (this.marketRegimeDetector && this.priceData.length > 100) {
       const regimeAnalysis = this.marketRegimeDetector.analyzeMarket(this.priceData);
       if (regimeAnalysis) {
         if (regimeAnalysis.regime === 'trending_up' && regimeAnalysis.confidence > 0.7) {
-          confidence += 0.20;
+          confidence += 0.25; // BOOSTED from 0.20
         } else if (regimeAnalysis.regime === 'trending_down' && regimeAnalysis.confidence > 0.7) {
-          confidence += 0.15;
+          confidence += 0.20; // BOOSTED from 0.15
         } else if (regimeAnalysis.regime === 'ranging') {
-          confidence += 0.05;
+          confidence += 0.15; // BOOSTED from 0.05
         }
         marketData.marketRegime = regimeAnalysis;
       }
     }
     
-    // Fibonacci Levels (10% weight - for visualization)
+    // Fibonacci Levels (10-15%)
     if (this.fibonacciDetector && this.priceData.length > 50) {
       const fibLevels = this.fibonacciDetector.update(this.priceData);
       if (fibLevels) {
         const nearestLevel = this.fibonacciDetector.getNearestLevel(price);
         if (nearestLevel && nearestLevel.distance < 0.5) {
-          confidence += 0.10;
+          confidence += 0.15; // BOOSTED from 0.10
+        } else if (nearestLevel && nearestLevel.distance < 1.0) {
+          confidence += 0.10; // Additional tier
         }
         marketData.fibLevels = fibLevels;
       }
     }
     
-    // Support/Resistance (15% weight)
+    // Support/Resistance (15-20%)
     if (this.supportResistanceDetector && this.priceData.length > 50) {
       const levels = this.supportResistanceDetector.update(this.priceData);
       if (levels && levels.length > 0) {
         const nearestLevel = this.supportResistanceDetector.getNearestLevel(price);
         if (nearestLevel) {
           if (nearestLevel.type === 'support' && nearestLevel.distance < 0.3) {
-            confidence += 0.15;
+            confidence += 0.20; // BOOSTED from 0.15
           } else if (nearestLevel.type === 'resistance' && nearestLevel.distance < 0.3) {
-            confidence += 0.08;
+            confidence += 0.15; // BOOSTED from 0.08
+          } else if (nearestLevel.distance < 0.5) {
+            confidence += 0.10; // Additional tier
           }
         }
         marketData.srLevels = levels;
       }
     }
     
-    // Technical Indicators (30% weight)
+    // Technical Indicators (RSI/MACD with BOOSTED weights)
     if (this.optimizedIndicators && this.priceData.length > 30) {
       const rsi = this.optimizedIndicators.calculateRSI(this.priceData);
       const macd = this.optimizedIndicators.calculateMACD(this.priceData);
       const bb = this.optimizedIndicators.calculateBollingerBands(this.priceData);
       
+      // RSI Signals (20-25% for strong signals)
       if (rsi) {
-        if (rsi < 30) {
-          confidence += 0.15; // Oversold
+        if (rsi < 25) {
+          confidence += 0.25; // STRONG oversold - BOOSTED
+        } else if (rsi < 30) {
+          confidence += 0.20; // Oversold - BOOSTED from 0.15
+        } else if (rsi > 75) {
+          confidence += 0.25; // STRONG overbought - BOOSTED
         } else if (rsi > 70) {
-          confidence += 0.15; // Overbought (for shorts)
+          confidence += 0.20; // Overbought - BOOSTED from 0.15
+        } else if (rsi >= 45 && rsi <= 55) {
+          confidence += 0.08; // Neutral zone - slight boost
         }
         marketData.rsi = rsi;
       }
       
-      if (macd && macd.macd > 0 && macd.signal > 0) {
-        confidence += 0.15;
+      // MACD Signals (15-20% for strong signals)  
+      if (macd) {
+        if (macd.macd > 0 && macd.signal > 0 && macd.histogram > 0) {
+          confidence += 0.20; // Strong bullish - BOOSTED
+        } else if (macd.macd > 0 && macd.signal > 0) {
+          confidence += 0.15; // Bullish
+        } else if (macd.macd < 0 && macd.signal < 0 && macd.histogram < 0) {
+          confidence += 0.18; // Strong bearish - BOOSTED
+        } else if (macd.macd < 0 && macd.signal < 0) {
+          confidence += 0.12; // Bearish
+        }
         marketData.macd = macd.macd;
         marketData.macdSignal = macd.signal;
         marketData.macdHistogram = macd.histogram;
       }
       
-      if (bb) {
+      // Bollinger Bands (10% for band touches)
+      if (bb && price) {
+        if (price <= bb.lower) {
+          confidence += 0.10; // Price at lower band
+        } else if (price >= bb.upper) {
+          confidence += 0.10; // Price at upper band
+        }
         marketData.bbUpper = bb.upper;
         marketData.bbMiddle = bb.middle;
         marketData.bbLower = bb.lower;
       }
     }
     
-    // Patterns (25% weight if enabled)
+    // Patterns (BOOSTED: up to 35% for strong patterns)
     if (this.patternDetector && this.config.enablePatterns && this.priceData.length > 50) {
       const patterns = this.patternDetector.detectPatterns(this.priceData);
       if (patterns && patterns.length > 0) {
-        // Add confidence based on pattern strength
+        // Base pattern bonus
+        const basePatternBonus = Math.min(0.25, patterns.length * 0.08); // BOOSTED from 0.05
+        confidence += basePatternBonus;
+        
+        // Additional confidence for high-quality patterns
         patterns.forEach(pattern => {
           if (pattern.reliability === 'high') {
-            confidence += 0.10;
+            confidence += 0.15; // BOOSTED from 0.10
           } else if (pattern.reliability === 'medium') {
-            confidence += 0.05;
+            confidence += 0.08; // BOOSTED from 0.05
           }
         });
-        // Cap pattern confidence contribution
-        confidence = Math.min(confidence, confidence - 0.25 + 0.25); // Max 25% from patterns
         marketData.patterns = patterns;
       }
     }
     
-    return Math.min(confidence, 1.0); // Cap at 100%
+    // Log significant confidence
+    if (confidence > 0.30) {
+      console.log(`🔥 BOOSTED Confidence: ${(confidence * 100).toFixed(1)}%`);
+      if (confidence > 0.50) {
+        console.log(`   ✅ HIGH CONFIDENCE - RSI: ${marketData.rsi?.toFixed(0)}, MACD: ${marketData.macd?.toFixed(2)}`);
+      }
+    }
+    
+    return Math.min(confidence, 0.95); // Cap at 95%
   }
   
   /**
@@ -485,7 +521,7 @@ function generateTestData(days) {
 // Main function
 async function main() {
   const args = process.argv.slice(2);
-  const days = parseInt(args.find(arg => arg.startsWith('--days='))?.split('=')[1]) || 7;
+  const days = parseInt(args.find(arg => arg.startsWith('--days='))?.split('=')[1]) || 30;
   
   console.log(`\n🚀 Starting Simple Production Backtest...`);
   
@@ -496,7 +532,7 @@ async function main() {
     console.log(`📊 Loaded ${polygonData.length} candles from Polygon (1 year of BTC data)`);
     
     // Use specified days or all data
-    const candlesPerDay = 60; // Use hourly for faster backtesting
+    const candlesPerDay = 1440; // Use all 1-minute candles for full accuracy
     const maxCandles = days * candlesPerDay;
     historicalData = polygonData.slice(-Math.min(maxCandles, polygonData.length));
     console.log(`📅 Using ${historicalData.length} candles (${(historicalData.length/1440).toFixed(1)} days)\n`);
@@ -508,7 +544,7 @@ async function main() {
   // Create backtester
   const backtester = new SimpleProductionBacktest({
     initialBalance: 10000,
-    minTradeConfidence: 0.25, // Lower threshold for testing
+    minTradeConfidence: 0.40, // Require 40% confidence minimum (achievable now)
     enablePatterns: false // Disable patterns for speed
   });
   

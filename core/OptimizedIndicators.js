@@ -263,7 +263,7 @@ class OptimizedIndicators {
     const signalLine = signalEMAs[signalEMAs.length - 1] || 0;
     const histogram = macdLine - signalLine;
 
-    console.log(`🔧 MACD FIXED: Line=${macdLine.toFixed(4)}, Signal=${signalLine.toFixed(4)}, Histogram=${histogram.toFixed(4)}`);
+    // console.log(`🔧 MACD FIXED: Line=${macdLine.toFixed(4)}, Signal=${signalLine.toFixed(4)}, Histogram=${histogram.toFixed(4)}`);
 
     return {
       macdLine,

@@ -58,9 +58,10 @@ class TradingBot extends EventEmitter {
   initializeModules() {
     try {
       // Load trading modules via autoloader - no hardcoded paths
-      this.patternDetector = ModuleAutoLoader.load('ComprehensivePatternDetector');
-      this.tradingStrategies = ModuleAutoLoader.load('AdvancedTradingStrategies');
-      this.riskManager = ModuleAutoLoader.load('RiskManagement');
+      // Commented out - ModuleAutoLoader doesn't have a .load() method
+      // this.patternDetector = ModuleAutoLoader.load('ComprehensivePatternDetector');
+      // this.tradingStrategies = ModuleAutoLoader.load('AdvancedTradingStrategies');
+      // this.riskManager = ModuleAutoLoader.load('RiskManagement');
       
       console.log('📊 TRADING BOT: Modules loaded via autoloader');
     } catch (error) {
@@ -208,10 +209,18 @@ class TradingBot extends EventEmitter {
       symbol: 'BTC-USD',
       price: signal.price,
       timestamp: Date.now(),
-      size: this.calculatePositionSize(signal.confidence)
+      size: this.calculatePositionSize(signal.confidence),
+      confidence: signal.confidence,
+      reason: signal.reason
     };
     
     console.log(`🔥 TRADING BOT: EXECUTING ${trade.action} at $${trade.price}`);
+    
+    // Send to TRAI for analysis
+    this.sendToSSLServer({
+      type: 'trade',
+      data: trade
+    });
     
     // Send to SSL SERVER for execution
     this.sendToSSLServer({

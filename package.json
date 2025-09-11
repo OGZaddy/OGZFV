@@ -10,7 +10,35 @@
     "backtest": "node tools/optimized-backtester.js",
     "launch": "node launch-turbo-train.bat",
     "safety": "node CRITICAL_SAFETY.js",
-    "debug": "node enhanced-safety-diagnostics.js"
+    "debug": "node enhanced-safety-diagnostics.js",
+    
+    "backtest:btc": "node quick-backtest.js",
+    "backtest:simple": "node backtest-production-simple.js",
+    
+    "paper:start": "node paper-trading-controller.js",
+    "paper:24h": "PAPER_BALANCE=10000 MAX_DAILY_LOSS=100 node paper-trading-controller.js",
+    "paper:test": "PAPER_BALANCE=1000 MAX_DAILY_LOSS=50 node paper-trading-controller.js",
+    
+    "live:100": "LIVE_MODE=true INITIAL_BALANCE=100 MAX_RISK=0.02 node run-trading-bot-v13-simplified.js",
+    "live:start": "LIVE_MODE=true node run-trading-bot-v13-simplified.js",
+    "live:halt": "echo '{\"type\":\"halt\"}' | curl -X POST http://localhost:9999",
+    "live:resume": "echo '{\"type\":\"resume\"}' | curl -X POST http://localhost:9999",
+    
+    "gp:enrich": "node live_vs_backtest.js",
+    "gp:metrics": "node metrics_rollup.js",
+    "gp:watch": "watch -n 10 'node metrics_rollup.js'",
+    "live:track": "node live_vs_backtest.js && node metrics_rollup.js",
+    
+    "stats:verify": "node -e \"require('./trai-stats-integration').verifyBrainConnection().then(console.log)\"",
+    "stats:history": "tail -n 10 stats-history.jsonl",
+    
+    "kill:all": "pkill -SIGUSR1 -f 'node.*trading'",
+    "kill:emergency": "pkill -9 -f 'node.*trading' && echo 'EMERGENCY KILL EXECUTED'",
+    
+    "test:before-live": "npm run backtest:simple && npm run paper:test",
+    "report:stats": "cat TRADING_BOT_STATS.md",
+    "report:paper": "tail -f paper-trades.jsonl",
+    "report:live": "tail -f live-trades.jsonl"
   },
   "keywords": [
     "trading",
