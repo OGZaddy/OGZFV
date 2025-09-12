@@ -22,7 +22,7 @@ class TraiSingleton extends EventEmitter {
     // Configuration
     this.config = {
       sslServerUrl: 'ws://127.0.0.1:3010/ws',
-      ollamaUrl: process.env.OLLAMA_URL || 'https://0f17f3bb3aaa1e.lhr.life',
+      ollamaUrl: process.env.OLLAMA_URL || 'http://127.0.0.1:11434',
       model: 'qwen3-coder:30b',
       memoryPath: '/home/trey/OGZFV-valhalla/trai/conversations.json',
       persistentMemoryPath: '/home/trey/OGZFV-valhalla/trai/trai-memory.json'
@@ -63,6 +63,11 @@ class TraiSingleton extends EventEmitter {
       
       // Step 3: Load memory
       await this.loadMemory();
+      
+      // Step 4: Periodically re-check Ollama/tunnel health
+      this._ollamaHealthTimer = setInterval(() => {
+        this.testOllama().catch(() => {});
+      }, 30000);
       
       console.log('✅ [TRAI] Initialization complete!');
       console.log(`   📡 Connected to SSL: ${this.connected}`);
@@ -168,6 +173,20 @@ class TraiSingleton extends EventEmitter {
         await this.answerQuestion(msg.data);
         break;
         
+      case 'trai_question':
+        // Handle questions forwarded from SSL server
+        const answer = await this.answerQuestion({ question: msg.question });
+        // Send answer back through WebSocket
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+          this.ws.send(JSON.stringify({
+            type: 'trai_answer',
+            to: msg.from,
+            answer: answer,
+            timestamp: Date.now()
+          }));
+        }
+        break;
+        
       case 'market_data':
         await this.analyzeMarket(msg.data);
         break;
@@ -217,7 +236,9 @@ ${JSON.stringify(tradeData, null, 2)}
 Provide: risk assessment, optimization suggestions, and pattern identification.`;
     
     try {
-      const analysis = await this.queryQwen(prompt);
+      const analysis = this.ollamaReady
+        ? await this.queryQwen(prompt)
+        : this.localTradeAnalysis(tradeData);
       
       // LEARN from this trade
       if (!this.persistentMemory.trades) {
@@ -347,7 +368,9 @@ Provide: risk assessment, optimization suggestions, and pattern identification.`
 ${JSON.stringify(marketData, null, 2)}`;
     
     try {
-      const analysis = await this.queryQwen(prompt);
+      const analysis = this.ollamaReady
+        ? await this.queryQwen(prompt)
+        : this.localMarketAnalysis(marketData);
       
       if (this.connected) {
         this.ws.send(JSON.stringify({
@@ -363,6 +386,74 @@ ${JSON.stringify(marketData, null, 2)}`;
       return analysis;
     } catch (error) {
       console.error('[TRAI] Market analysis failed:', error.message);
+    }
+  }
+
+  // ================================
+  // Local fallback analysis (no LLM)
+  // ================================
+  localTradeAnalysis(trade) {
+    try {
+      const side = (trade.action || trade.side || '').toUpperCase();
+      const price = Number(trade.price || trade.entryPrice || 0);
+      const qty = Number(trade.quantity || trade.size || 0);
+      const stop = Number(trade.stop || trade.stopLoss || 0);
+      const take = Number(trade.take || trade.takeProfit || 0);
+      const riskPerUnit = stop && price ? Math.max(0, (side === 'BUY' ? price - stop : stop - price)) : 0;
+      const riskNotional = riskPerUnit * qty;
+      const rrPerUnit = (take && price) ? Math.max(0, (side === 'BUY' ? take - price : price - take)) : 0;
+      const rr = riskPerUnit > 0 ? (rrPerUnit / riskPerUnit).toFixed(2) : 'N/A';
+      const ts = new Date().toISOString();
+
+      // Heuristic flags
+      const flags = [];
+      if (!stop) flags.push('No stop specified');
+      if (!take) flags.push('No take-profit specified');
+      if (riskNotional > 0 && riskNotional > 0.02 * (trade.balance || 10000)) flags.push('Risk > 2% of balance');
+
+      return [
+        `Local Trade Analysis @ ${ts}`,
+        `- Side: ${side} Qty: ${qty} Entry: ${price}`,
+        `- Stop: ${stop || 'n/a'} Take: ${take || 'n/a'}`,
+        `- Risk/unit: ${riskPerUnit.toFixed ? riskPerUnit.toFixed(2) : riskPerUnit}`,
+        `- R:R: ${rr}`,
+        flags.length ? `- Flags: ${flags.join('; ')}` : '- Flags: none'
+      ].join('\n');
+    } catch (e) {
+      return 'Local trade analysis unavailable (parse error)';
+    }
+  }
+
+  localMarketAnalysis(market) {
+    try {
+      const ts = new Date().toISOString();
+      const asset = market.asset || market.symbol || 'UNKNOWN';
+      const prices = [];
+      if (Array.isArray(market.ticks)) {
+        market.ticks.slice(-10).forEach(t => {
+          if (t && typeof t.price === 'number') prices.push(t.price);
+        });
+      } else if (typeof market.price === 'number') {
+        prices.push(market.price);
+      }
+
+      let momentum = 'flat';
+      if (prices.length >= 3) {
+        const p0 = prices[prices.length - 3];
+        const p1 = prices[prices.length - 2];
+        const p2 = prices[prices.length - 1];
+        momentum = p2 > p1 && p1 > p0 ? 'up' : (p2 < p1 && p1 < p0 ? 'down' : 'mixed');
+      }
+
+      return [
+        `Local Market Analysis @ ${ts}`,
+        `- Asset: ${asset}`,
+        `- Momentum (last 3): ${momentum}`,
+        prices.length ? `- Last price: ${prices[prices.length - 1]}` : `- Price: n/a`,
+        `- Note: Running in offline mode (tunnel down)`
+      ].join('\n');
+    } catch (e) {
+      return 'Local market analysis unavailable (parse error)';
     }
   }
   

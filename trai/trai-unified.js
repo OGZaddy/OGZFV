@@ -623,7 +623,7 @@ class TraiClient {
   constructor() {
     // Connect TO SSL server (not create server) - use IPv4
     this.sslServerUrl = 'ws://127.0.0.1:3010/ws';
-    this.ollamaUrl = 'http://localhost:11434';
+    this.ollamaUrl = 'http://127.0.0.1:11434';
     this.model = 'qwen3-coder:30b';
     
     // Trai's memory and learning

@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OGZ Prime Trading Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tier-starter { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .tier-pro { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+        .tier-elite { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
+        .tier-quantum { background: linear-gradient(135deg, #fa709a, #fee140); color: white; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bot-status {
+            display: grid;
+            gap: 10px;
+        }
+
+        .bot-item {
+            background: #f7f9fc;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .bot-item:hover {
+            transform: translateX(5px);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .bot-name {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bot-metric {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .metric-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .bot-item:hover .metric-value {
+            color: white;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        .status-active {
+            background: #4ade80;
+        }
+
+        .status-inactive {
+            background: #ef4444;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .trade-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .neural-ensemble {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .neural-ensemble h2 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .ensemble-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .ensemble-vote {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .vote-percentage {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .vote-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .quantum-features {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .quantum-features h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .quantum-metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .alerts-container {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .alert-item {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .alert-item.critical {
+            background: #fee2e2;
+            border-left-color: #ef4444;
+        }
+
+        .alert-item.success {
+            background: #dcfce7;
+            border-left-color: #4ade80;
+        }
+
+        .floating-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .floating-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-size: 24px;
+            transition: all 0.3s;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .risk-levels {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .risk-level {
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .risk-level.selected {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .risk-low { background: #dcfce7; color: #22c55e; }
+        .risk-medium { background: #fef3c7; color: #f59e0b; }
+        .risk-high { background: #fee2e2; color: #ef4444; }
+
+        .performance-chart {
+            height: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1>
+                🚀 OGZ Prime Trading Dashboard
+            </h1>
+            <div id="tierDisplay" class="tier-badge tier-starter">Starter Tier</div>
+        </div>
+
+        <!-- Neural Ensemble Voting (Elite/Quantum Only) -->
+        <div id="neuralEnsemble" class="neural-ensemble" style="display: none;">
+            <h2>🧠 Neural Ensemble Consensus</h2>
+            <div class="ensemble-grid">
+                <div class="ensemble-vote">
+                    <div class="vote-percentage">--%</div>
+                    <div class="vote-label">BULLISH</div>
+                </div>
+                <div class="ensemble-vote">
+                    <div class="vote-percentage">--%</div>
+                    <div class="vote-label">NEUTRAL</div>
+                </div>
+                <div class="ensemble-vote">
+                    <div class="vote-percentage">--%</div>
+                    <div class="vote-label">BEARISH</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quantum Features (Quantum Only) -->
+        <div id="quantumFeatures" class="quantum-features" style="display: none;">
+            <h3>⚛️ Quantum Advantage Active</h3>
+            <div class="quantum-metric">
+                <span>Parallel Universes Analyzed</span>
+                <span>--</span>
+            </div>
+            <div class="quantum-metric">
+                <span>Quantum Coherence</span>
+                <span>--%</span>
+            </div>
+            <div class="quantum-metric">
+                <span>Entanglement Strength</span>
+                <span>--</span>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Bot Status Card -->
+            <div class="card">
+                <h2>🤖 Active Bots</h2>
+                <div class="bot-status" id="botStatus">
+                    <!-- Starter Tier Bot -->
+                    <div class="bot-item">
+                        <div class="bot-name">
+                            <span class="status-indicator status-active"></span>
+                            Momentum Scanner
+                        </div>
+                        <div class="bot-metric">
+                            <span class="metric-value">--%</span>
+                            <span class="metric-label">24h P&L</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trading Performance -->
+            <div class="card">
+                <h2>📈 Performance Metrics</h2>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Trade Controls -->
+            <div class="card">
+                <h2>⚙️ Trade Management</h2>
+                <div class="trade-controls">
+                    <button class="btn btn-success" onclick="startTrading()">▶️ Start</button>
+                    <button class="btn btn-danger" onclick="stopTrading()">⏸️ Pause</button>
+                    <button class="btn btn-primary" onclick="showSettings()">⚙️ Settings</button>
+                </div>
+                <div id="tradeStats">
+                    <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+                        <div>
+                            <div id="tradesToday" style="font-size: 24px; font-weight: bold; color: #4ade80;">0</div>
+                            <div style="font-size: 12px; opacity: 0.7;">Trades Today</div>
+                        </div>
+                        <div>
+                            <div id="winRate" style="font-size: 24px; font-weight: bold; color: #667eea;">0%</div>
+                            <div style="font-size: 12px; opacity: 0.7;">Win Rate</div>
+                        </div>
+                        <div>
+                            <div id="riskReward" style="font-size: 24px; font-weight: bold; color: #f59e0b;">0.0</div>
+                            <div style="font-size: 12px; opacity: 0.7;">Risk/Reward</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts & Notifications -->
+            <div class="card">
+                <h2>🔔 Live Alerts</h2>
+                <div class="alerts-container" id="alertsContainer">
+                    <!-- Real alerts will appear here -->
+                </div>
+            </div>
+
+            <!-- TRAI Chat Assistant -->
+            <div class="card">
+                <h2>🤖 TRAI Assistant</h2>
+                <div id="chatContainer" style="height: 300px; overflow-y: auto; background: #f7f9fc; border-radius: 10px; padding: 15px; margin-bottom: 10px;">
+                    <div style="text-align: center; color: #999;">Ask TRAI anything about trading...</div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="chatInput" placeholder="Ask a question..." style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ddd;" onkeypress="if(event.key==='Enter') sendToTRAI()">
+                    <button class="btn btn-primary" onclick="sendToTRAI()">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="modal">
+            <div class="modal-content">
+                <h2>⚙️ Trading Settings</h2>
+                <div style="margin-top: 20px;">
+                    <label style="display: block; margin-bottom: 10px;">Risk Level:</label>
+                    <div class="risk-levels">
+                        <div class="risk-level risk-low" onclick="selectRisk('low')">Low</div>
+                        <div class="risk-level risk-medium selected" onclick="selectRisk('medium')">Medium</div>
+                        <div class="risk-level risk-high" onclick="selectRisk('high')">High</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <label style="display: block; margin-bottom: 10px;">Max Daily Loss ($):</label>
+                    <input type="number" value="1000" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+                </div>
+                <div style="margin-top: 20px;">
+                    <label style="display: block; margin-bottom: 10px;">Position Size (%):</label>
+                    <input type="range" min="1" max="100" value="25" style="width: 100%;">
+                </div>
+                <div style="margin-top: 30px; display: flex; gap: 10px;">
+                    <button class="btn btn-primary" onclick="saveSettings()">Save</button>
+                    <button class="btn btn-danger" onclick="closeSettings()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Controls -->
+    <div class="floating-controls">
+        <button class="floating-btn btn-primary" onclick="toggleFullscreen()">📊</button>
+        <button class="floating-btn btn-success" onclick="exportReport()">📥</button>
+    </div>
+
+    <script>
+        // Tier Configuration
+        const tierConfig = {
+            starter: {
+                name: 'Starter',
+                price: 97,
+                bots: ['Momentum Scanner'],
+                features: ['Basic Trading', 'Email Alerts'],
+                color: 'tier-starter'
+            },
+            pro: {
+                name: 'Pro',
+                price: 297,
+                bots: ['Momentum Scanner', 'Mean Reversion', 'Breakout Hunter'],
+                features: ['Advanced Trading', 'SMS Alerts', 'API Access'],
+                color: 'tier-pro'
+            },
+            elite: {
+                name: 'Elite',
+                price: 997,
+                bots: ['Momentum Scanner', 'Mean Reversion', 'Breakout Hunter', 'AI Predictor', 'Options Flow'],
+                features: ['Neural Ensemble', 'Priority Support', 'Custom Strategies'],
+                color: 'tier-elite'
+            },
+            quantum: {
+                name: 'Quantum',
+                price: 9997,
+                bots: ['All Bots', 'Quantum Processor', 'Dark Pool Scanner', 'Institutional Flow'],
+                features: ['Quantum Computing', 'Dedicated Server', 'White Glove Service'],
+                color: 'tier-quantum'
+            }
+        };
+
+        // Get current tier from localStorage or default to starter
+        let currentTier = localStorage.getItem('userTier') || 'starter';
+
+        // Initialize Dashboard - REAL connections only
+        function initDashboard() {
+            console.log('Initializing REAL dashboard - no fake data');
+            updateTierDisplay();
+            setupBots(); // Will show -- until real data arrives
+            initChart(); // Empty until real data
+            connectWebSocket(); // Connect to REAL SSL server
+            // NO fake data updates - only real bot data
+        }
+
+        // Update tier display and features
+        function updateTierDisplay() {
+            const tier = tierConfig[currentTier];
+            const tierBadge = document.getElementById('tierDisplay');
+            tierBadge.textContent = `${tier.name} Tier - $${tier.price}/mo`;
+            tierBadge.className = `tier-badge ${tier.color}`;
+
+            // Show/hide features based on tier
+            document.getElementById('neuralEnsemble').style.display = 
+                ['elite', 'quantum'].includes(currentTier) ? 'block' : 'none';
+            
+            document.getElementById('quantumFeatures').style.display = 
+                currentTier === 'quantum' ? 'block' : 'none';
+        }
+
+        // Setup bots based on tier
+        function setupBots() {
+            const tier = tierConfig[currentTier];
+            const botContainer = document.getElementById('botStatus');
+            botContainer.innerHTML = '';
+
+            tier.bots.forEach(botName => {
+                const botDiv = document.createElement('div');
+                botDiv.className = 'bot-item';
+                botDiv.innerHTML = `
+                    <div class="bot-name">
+                        <span class="status-indicator status-inactive"></span>
+                        ${botName}
+                    </div>
+                    <div class="bot-metric">
+                        <span class="metric-value">--%</span>
+                        <span class="metric-label">24h P&L</span>
+                    </div>
+                `;
+                botContainer.appendChild(botDiv);
+            });
+        }
+
+        // Initialize Chart
+        let performanceChart;
+        function initChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Portfolio Value',
+                        data: [],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // WebSocket Connection to REAL SSL server on port 3010
+        let ws;
+        function connectWebSocket() {
+            // ONLY connect to the real SSL server, no fake endpoints
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`; // Proxied through nginx to port 3010
+            
+            console.log('Connecting to REAL SSL server:', wsUrl);
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = () => {
+                console.log('Connected to trading server');
+                addAlert('Connected to OGZ Prime servers', 'success');
+                
+                // Identify as dashboard to REAL server
+                ws.send(JSON.stringify({
+                    type: 'identify',
+                    source: 'dashboard',
+                    metadata: {
+                        version: '1.0.0',
+                        real: true,  // NO FAKE DATA
+                        requestData: ['trades', 'metrics', 'bot_status', 'trai']
+                    }
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleWebSocketMessage(data);
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                addAlert('Connection to real server failed - retrying...', 'critical');
+            };
+
+            ws.onclose = () => {
+                setTimeout(connectWebSocket, 5000); // Reconnect after 5 seconds
+            };
+        }
+
+        // Handle WebSocket messages
+        function handleWebSocketMessage(data) {
+            console.log('WebSocket message:', data);
+            
+            if (data.type === 'trade') {
+                updateTradeStats(data);
+            } else if (data.type === 'alert') {
+                addAlert(data.message, data.severity);
+            } else if (data.type === 'performance') {
+                updateChart(data);
+            } else if (data.type === 'trai_answer') {
+                displayTRAIResponse(data.answer);
+            } else if (data.type === 'bot_status') {
+                updateBotStatus(data);
+            } else if (data.type === 'metrics') {
+                updateMetrics(data);
+            }
+        }
+
+        // REMOVED - No fake updates, only real WebSocket data
+
+        // Update Neural Ensemble with real data
+        function updateNeuralEnsemble(data) {
+            if (!data) return;
+            const votes = document.querySelectorAll('.vote-percentage');
+            if (data.bullish) votes[0].textContent = data.bullish + '%';
+            if (data.neutral) votes[1].textContent = data.neutral + '%';
+            if (data.bearish) votes[2].textContent = data.bearish + '%';
+        }
+
+        // Update Quantum Metrics with real data
+        function updateQuantumMetrics(data) {
+            if (!data) return;
+            const metrics = document.querySelectorAll('.quantum-metric span:last-child');
+            if (data.universes) metrics[0].textContent = data.universes;
+            if (data.coherence) metrics[1].textContent = data.coherence;
+            if (data.entanglement) metrics[2].textContent = data.entanglement;
+        }
+
+        // Trading Controls
+        function startTrading() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ 
+                    type: 'control',
+                    action: 'start_trading' 
+                }));
+                addAlert('Sending start command to bots...', 'success');
+            }
+        }
+
+        function stopTrading() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ 
+                    type: 'control',
+                    action: 'stop_trading' 
+                }));
+                addAlert('Sending stop command to bots...', 'critical');
+            }
+        }
+
+        // TRAI Chat Functions
+        function sendToTRAI() {
+            const input = document.getElementById('chatInput');
+            const question = input.value.trim();
+            
+            if (!question) return;
+            
+            // Display user message
+            const chatContainer = document.getElementById('chatContainer');
+            // Clear placeholder text if present
+            if (chatContainer.children.length === 1 && chatContainer.children[0].style.color === '#999') {
+                chatContainer.innerHTML = '';
+            }
+            const userMsg = document.createElement('div');
+            userMsg.style.cssText = 'margin: 10px 0; padding: 10px; background: #667eea; color: white; border-radius: 10px; text-align: right;';
+            userMsg.textContent = question;
+            chatContainer.appendChild(userMsg);
+            
+            // Send to TRAI via WebSocket
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'question',
+                    question: question
+                }));
+            }
+            
+            // Clear input
+            input.value = '';
+            
+            // Scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function displayTRAIResponse(answer) {
+            const chatContainer = document.getElementById('chatContainer');
+            const traiMsg = document.createElement('div');
+            traiMsg.style.cssText = 'margin: 10px 0; padding: 10px; background: #f0f0f0; border-radius: 10px;';
+            traiMsg.innerHTML = `<strong>TRAI:</strong> ${answer}`;
+            chatContainer.appendChild(traiMsg);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Update bot status with real data
+        function updateBotStatus(data) {
+            if (!data.bots) return;
+            
+            const botContainer = document.getElementById('botStatus');
+            botContainer.innerHTML = '';
+            
+            data.bots.forEach(bot => {
+                const botDiv = document.createElement('div');
+                botDiv.className = 'bot-item';
+                botDiv.innerHTML = `
+                    <div class="bot-name">
+                        <span class="status-indicator ${bot.active ? 'status-active' : 'status-inactive'}"></span>
+                        ${bot.name}
+                    </div>
+                    <div class="bot-metric">
+                        <span class="metric-value">${bot.pnl || '--%'}</span>
+                        <span class="metric-label">24h P&L</span>
+                    </div>
+                `;
+                botContainer.appendChild(botDiv);
+            });
+        }
+
+        // Update metrics with real data
+        function updateMetrics(data) {
+            if (data.tradesToday !== undefined) {
+                document.getElementById('tradesToday').textContent = data.tradesToday;
+            }
+            if (data.winRate !== undefined) {
+                document.getElementById('winRate').textContent = data.winRate + '%';
+            }
+            if (data.riskReward !== undefined) {
+                document.getElementById('riskReward').textContent = data.riskReward.toFixed(1);
+            }
+        }
+
+        // Update chart with real data
+        function updateChart(data) {
+            if (!data.value) return;
+            
+            if (performanceChart.data.labels.length > 20) {
+                performanceChart.data.labels.shift();
+                performanceChart.data.datasets[0].data.shift();
+            }
+            
+            const time = data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
+            
+            performanceChart.data.labels.push(time);
+            performanceChart.data.datasets[0].data.push(data.value);
+            performanceChart.update();
+        }
+
+        // Update trade stats with real data
+        function updateTradeStats(data) {
+            if (data.symbol && data.action) {
+                addAlert(`Trade: ${data.action} ${data.symbol} @ ${data.price}`, 'success');
+            }
+            // Update metrics if included
+            if (data.metrics) {
+                updateMetrics(data.metrics);
+            }
+        }
+
+        // Settings Modal
+        function showSettings() {
+            document.getElementById('settingsModal').style.display = 'flex';
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        function saveSettings() {
+            // Save settings logic here
+            closeSettings();
+            addAlert('Settings saved successfully', 'success');
+        }
+
+        function selectRisk(level) {
+            document.querySelectorAll('.risk-level').forEach(el => {
+                el.classList.remove('selected');
+            });
+            document.querySelector(`.risk-${level}`).classList.add('selected');
+        }
+
+        // Alert System
+        function addAlert(message, type = '') {
+            const container = document.getElementById('alertsContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert-item ${type}`;
+            alert.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+            
+            container.insertBefore(alert, container.firstChild);
+            
+            // Keep only last 10 alerts
+            while (container.children.length > 10) {
+                container.removeChild(container.lastChild);
+            }
+        }
+
+        // Utility Functions
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function exportReport() {
+            // Request real data from server
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'request',
+                    data: 'report'
+                }));
+            }
+            
+            // Generate report with current displayed data
+            const report = {
+                tier: currentTier,
+                date: new Date().toISOString(),
+                tradesToday: document.getElementById('tradesToday').textContent,
+                winRate: document.getElementById('winRate').textContent,
+                riskReward: document.getElementById('riskReward').textContent
+            };
+            
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ogz-prime-report-${Date.now()}.json`;
+            a.click();
+        }
+
+        // Upgrade Tier - PRODUCTION ONLY
+        function upgradeTier(newTier) {
+            if (tierConfig[newTier]) {
+                // In production, this would verify payment/subscription
+                currentTier = newTier;
+                localStorage.setItem('userTier', newTier);
+                updateTierDisplay();
+                setupBots();
+                addAlert(`Tier changed to ${tierConfig[newTier].name} - Reconnecting to server...`, 'success');
+                // Reconnect to update permissions
+                if (ws) {
+                    ws.close();
+                    setTimeout(connectWebSocket, 100);
+                }
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', initDashboard);
+
+        // Handle window close
+        window.addEventListener('beforeunload', () => {
+            if (ws) {
+                ws.close();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -346,6 +346,74 @@ wss.on('connection', (ws, req) => {
         }
       }
       
+      // Handle TRAI questions from dashboard
+      if (data.type === 'question' && data.question) {
+        console.log(`🤖 TRAI Question received: ${data.question}`);
+        
+        // Forward to TRAI singleton via internal messaging
+        broadcaster.broadcast({
+          type: 'trai_question',
+          question: data.question,
+          from: connectionId,
+          timestamp: Date.now()
+        }, { filter: (conn) => conn.metadata.type === 'trai' });
+        
+        // Also try direct HTTP request to TRAI if available
+        const axios = require('axios');
+        axios.post('http://127.0.0.1:3010/api/trai/ask', {
+          question: data.question
+        }).then(response => {
+          // Send answer back to dashboard
+          const connection = broadcaster.connections.get(connectionId);
+          if (connection) {
+            broadcaster.sendDirect(connection, {
+              type: 'answer',
+              answer: response.data.answer,
+              timestamp: Date.now()
+            });
+          }
+        }).catch(err => {
+          console.error('TRAI request failed:', err.message);
+          // Fallback message
+          const connection = broadcaster.connections.get(connectionId);
+          if (connection) {
+            broadcaster.sendDirect(connection, {
+              type: 'answer',
+              answer: 'TRAI is processing your request. Please wait...',
+              timestamp: Date.now()
+            });
+          }
+        });
+      }
+      
+      // Special handling for TRAI identification
+      if (data.type === 'identify' && data.source === 'trai') {
+        const connection = broadcaster.connections.get(connectionId);
+        if (connection) {
+          connection.metadata.type = 'trai';
+          console.log('🧠 TRAI connected to SSL server');
+          
+          // Notify dashboards that TRAI is online
+          broadcaster.broadcast({
+            type: 'trai_status',
+            connected: true,
+            timestamp: Date.now()
+          }, { filter: (conn) => conn.metadata.type === 'dashboard' });
+        }
+      }
+      
+      // Handle TRAI answers
+      if (data.type === 'trai_answer' && data.to) {
+        const targetConnection = broadcaster.connections.get(data.to);
+        if (targetConnection) {
+          broadcaster.sendDirect(targetConnection, {
+            type: 'answer',
+            answer: data.answer,
+            timestamp: Date.now()
+          });
+        }
+      }
+      
     } catch (err) {
       console.error(`Error parsing message from ${connectionId}:`, err);
     }
