@@ -1,0 +1,25 @@
+# TRAI Singleton Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copy TRAI application
+COPY trai-singleton.js ./
+COPY trai/ ./trai/
+
+# Create necessary directories
+RUN mkdir -p logs
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "console.log('TRAI health check')"
+
+# Run as non-root user
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
+USER nodejs
+
+CMD ["node", "trai-singleton.js"]

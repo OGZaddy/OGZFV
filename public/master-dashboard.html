@@ -152,6 +152,10 @@
             100% { opacity: 1; }
         }
 
+        /* Status bar in header */
+        .status-bar { display: flex; align-items: center; gap: 12px; }
+        .status-chip { background: #f7f9fc; border-radius: 9999px; padding: 6px 12px; display: flex; align-items: center; gap: 8px; }
+
         .trade-controls {
             display: flex;
             gap: 10px;
@@ -383,10 +387,13 @@
     <div class="container">
         <!-- Header Section -->
         <div class="header">
-            <h1>
-                🚀 OGZ Prime Trading Dashboard
-            </h1>
-            <div id="tierDisplay" class="tier-badge tier-starter">Starter Tier</div>
+            <h1>🚀 OGZ Prime Trading Dashboard</h1>
+            <div class="status-bar">
+                <div class="status-chip"><span class="status-indicator status-inactive" id="wsDot"></span> WS</div>
+                <div class="status-chip"><span class="status-indicator status-inactive" id="brainDot"></span> Brain</div>
+                <div class="status-chip"><span class="status-indicator status-inactive" id="feedDot"></span> Feed</div>
+                <div id="tierDisplay" class="tier-badge tier-starter">Starter Tier</div>
+            </div>
         </div>
 
         <!-- Neural Ensemble Voting (Elite/Quantum Only) -->
@@ -448,6 +455,22 @@
             <!-- Trading Performance -->
             <div class="card">
                 <h2>📈 Performance Metrics</h2>
+                <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
+                    <label>Asset:</label>
+                    <select id="assetSelect" onchange="setAsset(this.value)">
+                        <option>BTC-USD</option>
+                        <option>ETH-USD</option>
+                        <option>SOL-USD</option>
+                        <option>ADA-USD</option>
+                        <option>LINK-USD</option>
+                    </select>
+                    <label>Timeframe:</label>
+                    <select id="timeframeSelect" onchange="setTimeframe(this.value)">
+                        <option value="1m">1m</option>
+                        <option value="5m" selected>5m</option>
+                        <option value="15m">15m</option>
+                    </select>
+                </div>
                 <div class="chart-container">
                     <canvas id="performanceChart"></canvas>
                 </div>
@@ -485,6 +508,24 @@
                 <div class="alerts-container" id="alertsContainer">
                     <!-- Real alerts will appear here -->
                 </div>
+            </div>
+
+            <!-- Current Position -->
+            <div class="card">
+                <h2>📌 Current Position</h2>
+                <div id="currentPosition">No active position</div>
+            </div>
+
+            <!-- Trade History -->
+            <div class="card">
+                <h2>📜 Trade History</h2>
+                <div id="tradeHistory" style="max-height:220px; overflow:auto;"></div>
+            </div>
+
+            <!-- Indicators & Patterns -->
+            <div class="card">
+                <h2>📊 Indicators</h2>
+                <div id="indicatorPanel">Awaiting data…</div>
             </div>
 
             <!-- TRAI Chat Assistant -->
@@ -577,6 +618,7 @@
             setupBots(); // Will show -- until real data arrives
             initChart(); // Empty until real data
             connectWebSocket(); // Connect to REAL SSL server
+            refreshStatus(); // Pull initial API status (brain)
             // NO fake data updates - only real bot data
         }
 
@@ -616,6 +658,21 @@
                 `;
                 botContainer.appendChild(botDiv);
             });
+        }
+
+        // Asset/timeframe selection
+        let selectedAsset = 'BTC-USD';
+        let maxPoints = 60; // default for 5m view
+
+        function setAsset(asset) {
+            selectedAsset = asset;
+            addAlert(`Asset set to ${asset}`, '');
+        }
+
+        function setTimeframe(tf) {
+            const map = { '1m': 120, '5m': 60, '15m': 40 };
+            maxPoints = map[tf] || 60;
+            addAlert(`Timeframe set to ${tf}`, '');
         }
 
         // Initialize Chart
@@ -664,6 +721,7 @@
             ws.onopen = () => {
                 console.log('Connected to trading server');
                 addAlert('Connected to OGZ Prime servers', 'success');
+                updateDot('wsDot', true);
                 
                 // Identify as dashboard to REAL server
                 ws.send(JSON.stringify({
@@ -685,9 +743,11 @@
             ws.onerror = (error) => {
                 console.error('WebSocket error:', error);
                 addAlert('Connection to real server failed - retrying...', 'critical');
+                updateDot('wsDot', false);
             };
 
             ws.onclose = () => {
+                updateDot('wsDot', false);
                 setTimeout(connectWebSocket, 5000); // Reconnect after 5 seconds
             };
         }
@@ -702,13 +762,46 @@
                 addAlert(data.message, data.severity);
             } else if (data.type === 'performance') {
                 updateChart(data);
-            } else if (data.type === 'trai_answer') {
+            } else if (data.type === 'trai_answer' || data.type === 'answer') {
                 displayTRAIResponse(data.answer);
             } else if (data.type === 'bot_status') {
                 updateBotStatus(data);
             } else if (data.type === 'metrics') {
                 updateMetrics(data);
+            } else if (data.type === 'bot_analysis') {
+                updateIndicators(data);
+            } else if (data.type === 'position_update') {
+                updatePosition(data);
+            } else if (data.type === 'trade_execution') {
+                addTradeHistory(data);
+            } else if (data.type === 'price' && data.data) {
+                updateChart(data.data);
+            } else if (data.type === 'brain_status') {
+                updateDot('brainDot', data.status === 'available');
+            } else if (data.type === 'data_feed_status') {
+                updateDot('feedDot', data.status === 'connected');
             }
+        }
+
+        function updateDot(id, on) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (on) {
+                el.classList.add('status-active');
+                el.classList.remove('status-inactive');
+            } else {
+                el.classList.remove('status-active');
+                el.classList.add('status-inactive');
+            }
+        }
+
+        async function refreshStatus() {
+            try {
+                const resp = await fetch('/api/live-status');
+                if (!resp.ok) return;
+                const data = await resp.json();
+                if (data && data.brain) updateDot('brainDot', !!data.brain.available);
+            } catch {}
         }
 
         // REMOVED - No fake updates, only real WebSocket data
@@ -833,9 +926,15 @@
 
         // Update chart with real data
         function updateChart(data) {
-            if (!data.value) return;
+            // Filter by selected asset if a price payload is provided
+            if (data.asset && data.asset !== selectedAsset) return;
+            const val = (typeof data.value === 'number') ? data.value
+                       : (typeof data.price === 'number') ? data.price
+                       : (typeof data.close === 'number') ? data.close
+                       : null;
+            if (val === null) return;
             
-            if (performanceChart.data.labels.length > 20) {
+            if (performanceChart.data.labels.length > maxPoints) {
                 performanceChart.data.labels.shift();
                 performanceChart.data.datasets[0].data.shift();
             }
@@ -843,8 +942,44 @@
             const time = data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
             
             performanceChart.data.labels.push(time);
-            performanceChart.data.datasets[0].data.push(data.value);
+            performanceChart.data.datasets[0].data.push(val);
             performanceChart.update();
+        }
+
+        function updatePosition(data) {
+            const el = document.getElementById('currentPosition');
+            const p = data.position || data.data || {};
+            if (!p || !p.symbol) { el.textContent = 'No active position'; return; }
+            el.innerHTML = `Symbol: <strong>${p.symbol}</strong> | Side: <strong>${p.side || p.direction || '-'}</strong> | Entry: <strong>${p.entryPrice || p.price || '-'}</strong> | PnL: <strong>${p.pnl ?? '-'}</strong>`;
+        }
+
+        function addTradeHistory(data) {
+            const box = document.getElementById('tradeHistory');
+            const d = data.data || data;
+            const row = document.createElement('div');
+            row.style.padding = '6px 8px';
+            row.style.borderBottom = '1px solid #eee';
+            row.textContent = `${new Date().toLocaleTimeString()} - ${d.action || d.type} ${d.symbol || ''} @ ${d.price || d.entryPrice || ''}`;
+            box.prepend(row);
+            while (box.children.length > 50) box.removeChild(box.lastChild);
+        }
+
+        function updateIndicators(msg) {
+            const panel = document.getElementById('indicatorPanel');
+            const ind = msg.indicators || (msg.data && msg.data.indicators) || {};
+            const patterns = msg.patterns || (msg.data && msg.data.patterns) || [];
+            const html = [];
+            if (Object.keys(ind).length) {
+                html.push('<div><strong>Indicators</strong></div>');
+                for (const [k,v] of Object.entries(ind)) {
+                    html.push(`<div>${k}: <strong>${typeof v === 'object' ? JSON.stringify(v) : v}</strong></div>`);
+                }
+            }
+            if (patterns.length) {
+                html.push('<div style="margin-top:8px;"><strong>Patterns</strong></div>');
+                patterns.slice(0,10).forEach(p => html.push(`<div>${typeof p === 'object' ? (p.name || JSON.stringify(p)) : p}</div>`));
+            }
+            panel.innerHTML = html.length ? html.join('') : 'No indicator data yet';
         }
 
         // Update trade stats with real data

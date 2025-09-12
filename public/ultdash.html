@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OGZPrime Unified Trading System - Live Dashboard</title>
+    
+    <!-- JetBrains Mono Font -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+    
+    <!-- Valhalla Style -->
+    <link rel="stylesheet" href="valhalla-style.css">
+    
+    <style>
+        /* Additional styles specific to ultdash */
+        :root {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-panel: rgba(20, 20, 20, 0.9);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            
+            /* Tier colors */
+            --starter-color: #00ccff;
+            --pro-color: #ff6600;
+            --elite-color: #ffd700;
+            --quantum-color: #00ffff;
+            
+            --profit-color: #00ff88;
+            --loss-color: #ff3366;
+            --neutral-color: #8b8b8b;
+        }
+        
+        body {
+            font-family: 'JetBrains Mono', monospace !important;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* TRAI Chat Section - PRIORITY STYLING */
+        .trai-chat-section {
+            background: linear-gradient(135deg, rgba(157, 113, 199, 0.1), rgba(0, 255, 255, 0.05));
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid var(--quantum-color);
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+            position: relative;
+            z-index: 100;
+        }
+        
+        .trai-chat-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .trai-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--quantum-color), var(--profit-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        .trai-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+        
+        .trai-status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ff0040;
+            animation: statusPulse 2s infinite;
+        }
+        
+        .trai-status-dot.connected {
+            background: var(--profit-color);
+        }
+        
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        
+        .trai-chat-container {
+            height: 300px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        
+        .trai-message {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .trai-message.user {
+            background: linear-gradient(135deg, rgba(0, 204, 255, 0.1), rgba(0, 204, 255, 0.05));
+            text-align: right;
+            border-left: 3px solid var(--starter-color);
+        }
+        
+        .trai-message.trai {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 255, 136, 0.05));
+            border-left: 3px solid var(--quantum-color);
+        }
+        
+        .trai-message.system {
+            background: rgba(255, 215, 0, 0.05);
+            border-left: 3px solid var(--elite-color);
+            font-style: italic;
+        }
+        
+        .message-time {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .message-content {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-primary);
+        }
+        
+        .trai-input-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .trai-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--quantum-color);
+            color: white;
+            padding: 14px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .trai-input:focus {
+            outline: none;
+            border-color: var(--profit-color);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+            background: rgba(0, 255, 136, 0.05);
+        }
+        
+        .trai-input::placeholder {
+            color: rgba(0, 255, 255, 0.5);
+        }
+        
+        .trai-send-btn {
+            background: linear-gradient(135deg, var(--quantum-color), var(--profit-color));
+            color: black;
+            border: none;
+            padding: 14px 35px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Orbitron', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .trai-send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+        
+        .trai-send-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1e 100%);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--profit-color);
+            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #c0c0c0 0%, #808080 50%, #c0c0c0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 30px rgba(192, 192, 192, 0.5);
+        }
+        
+        .tagline {
+            color: #666666;
+            font-size: 14px;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* Tier Selector */
+        .tier-selector-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 15;
+        }
+        
+        .tier-label {
+            color: var(--quantum-color);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .tier-selector {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--quantum-color);
+            color: var(--quantum-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'Orbitron', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            min-width: 250px;
+        }
+        
+        .tier-selector:hover {
+            background: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .tier-selector option {
+            background: #000;
+            color: #fff;
+            padding: 5px;
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff0040;
+            animation: statusPulse 2s infinite;
+        }
+        
+        .status-dot.connected {
+            background: var(--profit-color);
+        }
+        
+        /* Main Container */
+        .main-container {
+            padding: 20px;
+            position: relative;
+            z-index: 5;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        /* Chart Section */
+        .unified-chart-section {
+            background: var(--bg-panel);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .chart-container {
+            position: relative;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            height: 500px;
+            width: 100%;
+        }
+        
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        /* Trading Panel */
+        .trading-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .panel-section {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(20, 20, 20, 0.9) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+        }
+        
+        .panel-title {
+            color: #ffd700;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* Trade Controls */
+        .trade-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .trade-btn {
+            flex: 1;
+            padding: 12px;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .buy-btn {
+            background: linear-gradient(135deg, #00ff41, #00cc33);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+        
+        .sell-btn {
+            background: linear-gradient(135deg, #ff4444, #cc1111);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
+        }
+        
+        .kill-btn {
+            background: linear-gradient(135deg, #ff6600, #cc4400);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 102, 0, 0.3);
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffd700;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .positive { color: var(--profit-color) !important; }
+        .negative { color: var(--loss-color) !important; }
+        
+        /* Decision Log */
+        .decision-log {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .decision-entry {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(26, 0, 0, 0.8);
+            border-radius: 8px;
+            font-size: 12px;
+            border-left: 3px solid #ff0040;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .decision-entry.profit {
+            border-left-color: var(--profit-color);
+        }
+        
+        .decision-time {
+            color: #666666;
+            font-size: 10px;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1a0000;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #ff0040;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #dc143c;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">OGZPrime</div>
+        <div class="tagline">AI-Powered Trading System • Real-Time Market Analysis</div>
+        <div class="tier-selector-container">
+            <span class="tier-label">=A SELECT YOUR TIER:</span>
+            <select id="tierSelector" class="tier-selector" onchange="switchTier(this.value)">
+                <option value="elite">ELITE ($997/mo)</option>
+                <option value="pro">PRO ($297/mo)</option>
+                <option value="starter">STARTER ($97/mo)</option>
+            </select>
+            <div class="connection-status">
+                <span class="status-dot" id="connectionStatus"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+            <div class="connection-status" style="margin-left: 12px;">
+                <span class="status-dot" id="brainStatus"></span>
+                <span id="brainStatusText">Brain Unknown</span>
+            </div>
+            <div class="connection-status" style="margin-left: 12px;">
+                <span class="status-dot" id="feedStatus"></span>
+                <span id="feedStatusText">Feed Unknown</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <!-- TRAI Chat Section - FIRST PRIORITY -->
+        <div class="trai-chat-section">
+            <div class="trai-chat-header">
+                <h2 class="trai-title">>� TRAI - Trading AI Assistant</h2>
+                <div class="trai-status">
+                    <span class="trai-status-dot" id="traiStatus"></span>
+                    <span id="traiStatusText">TRAI Connecting...</span>
+                </div>
+            </div>
+            
+            <div class="trai-chat-container" id="traiChatContainer">
+                <!-- Messages will appear here -->
+            </div>
+            
+            <div class="trai-input-container">
+                <input type="text" class="trai-input" id="traiInput" 
+                       placeholder="Ask TRAI about trading strategies, market analysis, or system status..." 
+                       onkeypress="if(event.key==='Enter') sendToTRAI()">
+                <button class="trai-send-btn" onclick="sendToTRAI()">Ask TRAI</button>
+            </div>
+        </div>
+        
+        <!-- Unified Chart Section -->
+        <div class="unified-chart-section tier-quantum" id="unifiedChart">
+            <div class="chart-header">
+                <div class="chart-title-container">
+                    <h2 class="chart-title" id="chartTitle" style="font-family: 'Orbitron', monospace;">QUANTUM TIER</h2>
+                    <span class="tier-price" id="tierPrice">$9,997/mo</span>
+                </div>
+                <div class="chart-controls">
+                    <select id="assetSelector">
+                        <option value="BTC-USD" selected>Bitcoin (BTC)</option>
+                        <option value="ETH-USD">Ethereum (ETH)</option>
+                        <option value="SOL-USD">Solana (SOL)</option>
+                    </select>
+                    <select id="timeframeSelector">
+                        <option value="1m">1 Minute</option>
+                        <option value="5m" selected>5 Minutes</option>
+                        <option value="15m">15 Minutes</option>
+                        <option value="1h">1 Hour</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="mainChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Trading Panel -->
+        <div class="trading-panel">
+            <!-- Controls Section -->
+            <div class="panel-section">
+                <div class="panel-title">Trading Controls</div>
+                <div class="trade-controls">
+                    <button class="trade-btn buy-btn" onclick="executeTrade('buy')">BUY</button>
+                    <button class="trade-btn sell-btn" onclick="executeTrade('sell')">SELL</button>
+                    <button class="trade-btn kill-btn" onclick="executeTrade('kill')">KILL</button>
+                </div>
+            </div>
+            
+            <!-- Stats Section -->
+            <div class="panel-section">
+                <div class="panel-title">Performance Stats</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Total P&L</div>
+                        <div class="stat-value" id="totalPnl">$0.00</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Win Rate</div>
+                        <div class="stat-value" id="winRate">0%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Active Bots</div>
+                        <div class="stat-value" id="activeBots">1</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Confidence</div>
+                        <div class="stat-value" id="confidence">0%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Decision Log Section -->
+            <div class="panel-section">
+                <div class="panel-title">Trading Decision Log</div>
+                <div class="decision-log" id="decisionLog">
+                    <!-- Entries will be added dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // WebSocket connection to SSL server and TRAI
+        let ws = null;
+        let chart = null;
+        let currentTier = 'elite';
+        let traiConnected = false;
+        
+        // Initialize Chart with Chart.js
+        function initChart() {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Price',
+                        data: [],
+                        borderColor: '#00ff88',
+                        backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        pointRadius: 0,
+                        pointHoverRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#00ff88',
+                            bodyColor: '#ffffff',
+                            borderColor: '#00ff88',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return '$' + context.parsed.y.toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#666',
+                                font: {
+                                    family: 'JetBrains Mono',
+                                    size: 10
+                                }
+                            }
+                        },
+                        y: {
+                            display: true,
+                            position: 'right',
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#666',
+                                font: {
+                                    family: 'JetBrains Mono',
+                                    size: 10
+                                },
+                                callback: function(value) {
+                                    return '$' + value.toFixed(0);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Connect to WebSocket - SSL server on port 3010
+        function connectWebSocket() {
+            // Use secure WebSocket for production
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = () => {
+                console.log(' Connected to OGZPrime SSL Server');
+                document.getElementById('connectionStatus').classList.add('connected');
+                document.getElementById('statusText').textContent = 'Connected';
+                
+                // Identify as dashboard
+                ws.send(JSON.stringify({
+                    type: 'identify',
+                    source: 'dashboard',
+                    tier: currentTier,
+                    version: '2.0.0'
+                }));
+                
+                // Check TRAI status and initial backend status
+                checkTRAIConnection();
+                refreshLiveStatus();
+            };
+            
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleWebSocketMessage(data);
+                } catch (error) {
+                    console.error('Failed to parse message:', error);
+                }
+            };
+            
+            ws.onclose = () => {
+                document.getElementById('connectionStatus').classList.remove('connected');
+                document.getElementById('statusText').textContent = 'Reconnecting...';
+                traiConnected = false;
+                updateTRAIStatus(false);
+                setTimeout(connectWebSocket, 5000);
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        }
+        
+        // TRAI specific functions - PRIORITY
+        function checkTRAIConnection() {
+            // Check if TRAI is connected via the SSL server
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                // TRAI-SINGLETON is connected on the server, we can communicate
+                updateTRAIStatus(true);
+            }
+        }
+        
+        function updateTRAIStatus(connected) {
+            traiConnected = connected;
+            const statusDot = document.getElementById('traiStatus');
+            const statusText = document.getElementById('traiStatusText');
+            
+            if (connected) {
+                statusDot.classList.add('connected');
+                statusText.textContent = 'TRAI Online';
+                statusText.style.color = '#00ff88';
+                addTRAIMessage('system', ' TRAI connected and ready to assist! I have access to 254 conversations and am learning from every trade.');
+            } else {
+                statusDot.classList.remove('connected');
+                statusText.textContent = 'TRAI Offline';
+                statusText.style.color = '#ff3366';
+            }
+        }
+        
+        function sendToTRAI() {
+            const input = document.getElementById('traiInput');
+            const question = input.value.trim();
+            
+            if (!question) return;
+            
+            // Add user message to chat
+            addTRAIMessage('user', question);
+            
+            // Send to TRAI via WebSocket through SSL server
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'question',
+                    data: question,
+                    source: 'dashboard'
+                }));
+                
+                // Show thinking indicator
+                addTRAIMessage('system', '> TRAI is thinking...');
+            } else {
+                addTRAIMessage('system', '� Connection lost. Reconnecting...');
+            }
+            
+            // Clear input
+            input.value = '';
+            input.focus();
+        }
+        
+        function addTRAIMessage(sender, content) {
+            const container = document.getElementById('traiChatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `trai-message ${sender}`;
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = new Date().toLocaleTimeString();
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = content;
+            
+            // Remove thinking indicator if this is TRAI's response
+            if (sender === 'trai') {
+                const thinkingMessages = container.querySelectorAll('.trai-message.system');
+                thinkingMessages.forEach(msg => {
+                    if (msg.textContent.includes('thinking')) {
+                        msg.remove();
+                    }
+                });
+            }
+            
+            messageDiv.appendChild(timeDiv);
+            messageDiv.appendChild(contentDiv);
+            container.appendChild(messageDiv);
+            
+            // Scroll to bottom smoothly
+            container.scrollTo({
+                top: container.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+        
+        // Handle messages from server
+        function handleWebSocketMessage(data) {
+            console.log('📨 Message type:', data.type);
+            
+            // Handle TRAI responses - PRIORITY
+            if (data.type === 'answer') {
+                const answer = data.data?.answer || data.answer || 'TRAI is processing...';
+                addTRAIMessage('trai', answer);
+            }
+            // Handle TRAI status
+            else if (data.type === 'trai_status') {
+                updateTRAIStatus(data.connected);
+            }
+            // Handle brain status (Ollama/Qwen availability)
+            else if (data.type === 'brain_status') {
+                updateBrainStatus(data.status === 'available');
+            }
+            // Handle data feed status from server
+            else if (data.type === 'data_feed_status') {
+                updateFeedStatus(data.status === 'connected');
+            }
+            // Handle trade analysis from TRAI
+            else if (data.type === 'trade_analysis') {
+                const analysis = data.data?.analysis || data.analysis;
+                if (analysis) {
+                    addTRAIMessage('trai', `📊 Trade Analysis: ${analysis}`);
+                }
+            }
+            // Handle price updates
+            else if (data.type === 'price' && data.data) {
+                updateChart(data.data);
+            }
+            // Handle bot analysis with patterns and indicators
+            else if (data.type === 'bot_analysis' && data.data) {
+                const analysisData = data.data;
+                
+                // Update current pattern display
+                if (analysisData.patterns && analysisData.patterns.length > 0) {
+                    updatePatternDisplay(analysisData.patterns);
+                }
+                
+                // Update indicators
+                if (analysisData.indicators) {
+                    updateIndicatorDisplay(analysisData.indicators);
+                }
+                
+                // Update support/resistance levels
+                if (analysisData.levels) {
+                    drawSupportResistanceLevels(analysisData.levels);
+                }
+                
+                // Log the decision
+                logDecision(analysisData);
+                updateStats(analysisData);
+            }
+            // Handle trade execution
+            else if (data.type === 'trade_execution') {
+                handleTradeExecution(data);
+            }
+            // Handle live trade updates
+            else if (data.type === 'position_update') {
+                updateLiveTradeTicker(data);
+            }
+            // Handle trade messages
+            else if (data.type === 'trade') {
+                logDecision(data);
+                updateStats(data);
+                addToTradeHistory(data);
+            }
+            // Handle status updates
+            else if (data.type === 'status_update' || data.type === 'bot_status') {
+                updateStats(data);
+                if (data.indicators) {
+                    updateIndicatorDisplay(data.indicators);
+                }
+            }
+        }
+
+        // Update brain (LLM) status
+        function updateBrainStatus(available) {
+            const dot = document.getElementById('brainStatus');
+            const text = document.getElementById('brainStatusText');
+            if (available) {
+                dot.classList.add('connected');
+                text.textContent = 'Brain Online';
+                text.style.color = '#00ff88';
+            } else {
+                dot.classList.remove('connected');
+                text.textContent = 'Brain Offline';
+                text.style.color = '#ff3366';
+            }
+        }
+
+        // Update market data feed status
+        function updateFeedStatus(connected) {
+            const dot = document.getElementById('feedStatus');
+            const text = document.getElementById('feedStatusText');
+            if (connected) {
+                dot.classList.add('connected');
+                text.textContent = 'Feed Connected';
+                text.style.color = '#00ff88';
+            } else {
+                dot.classList.remove('connected');
+                text.textContent = 'Feed Disconnected';
+                text.style.color = '#ff3366';
+            }
+        }
+
+        // Pull initial live status from backend (brain, metrics)
+        async function refreshLiveStatus() {
+            try {
+                const resp = await fetch('/api/live-status');
+                if (!resp.ok) return;
+                const data = await resp.json();
+                if (data && data.brain) {
+                    updateBrainStatus(!!data.brain.available);
+                }
+                // If server shares data feed status later, wire here as well
+            } catch (e) {
+                // ignore fetch errors
+            }
+        }
+        
+        // Switch tier
+        function switchTier(tier) {
+            currentTier = tier;
+            const chartSection = document.getElementById('unifiedChart');
+            
+            // Remove all tier classes
+            chartSection.classList.remove('tier-starter', 'tier-pro', 'tier-elite', 'tier-quantum');
+            // Add new tier class
+            chartSection.classList.add(`tier-${tier}`);
+            
+            // Update title and price
+            const tierConfigs = {
+                starter: { title: 'STARTER TIER', price: '$97/mo' },
+                pro: { title: 'PRO TIER', price: '$297/mo' },
+                elite: { title: 'ELITE TIER', price: '$997/mo' },
+                quantum: { title: 'QUANTUM TIER', price: '$9,997/mo' }
+            };
+            
+            document.getElementById('chartTitle').textContent = tierConfigs[tier].title;
+            document.getElementById('tierPrice').textContent = tierConfigs[tier].price;
+            
+            // Update active bots count
+            let activeBots = 1;
+            if (tier === 'pro') activeBots = 2;
+            else if (tier === 'elite') activeBots = 3;
+            else if (tier === 'quantum') activeBots = 4;
+            document.getElementById('activeBots').textContent = activeBots;
+            
+            // Send tier change to WebSocket
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'tier_change',
+                    tier: tier
+                }));
+            }
+        }
+        
+        // Update chart with new price data
+        function updateChart(data) {
+            if (!chart) return;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const price = data.price || data.close || 0;
+            
+            chart.data.labels.push(timestamp);
+            chart.data.datasets[0].data.push(price);
+            
+            // Keep only last 100 points for performance
+            if (chart.data.labels.length > 100) {
+                chart.data.labels.shift();
+                chart.data.datasets[0].data.shift();
+            }
+            
+            chart.update('none'); // Update without animation for performance
+        }
+        
+        // Log trading decision
+        function logDecision(data) {
+            const log = document.getElementById('decisionLog');
+            const entry = document.createElement('div');
+            entry.className = `decision-entry ${data.pnl > 0 ? 'profit' : ''}`;
+            
+            const action = data.action || data.decision || 'TRADE';
+            const reason = data.reason || '';
+            const pnl = data.pnl || 0;
+            
+            entry.innerHTML = `
+                <div>
+                    <span class="decision-time">${new Date().toLocaleTimeString()}</span>
+                    <span style="color: ${action === 'BUY' ? '#00ff88' : action === 'SELL' ? '#ff3366' : '#ffd700'}">${action}</span>
+                    <span style="color: #666; font-size: 11px;">${reason}</span>
+                </div>
+                <div>
+                    <span class="pnl ${pnl > 0 ? 'positive' : 'negative'}">
+                        ${pnl > 0 ? '+' : ''}$${Math.abs(pnl).toFixed(2)}
+                    </span>
+                </div>
+            `;
+            
+            log.insertBefore(entry, log.firstChild);
+            
+            // Keep only last 20 entries
+            while (log.children.length > 20) {
+                log.removeChild(log.lastChild);
+            }
+        }
+        
+        // Update stats
+        function updateStats(data) {
+            if (data.totalPnl !== undefined || data.pnl !== undefined) {
+                const pnl = data.totalPnl || data.pnl || 0;
+                const pnlElement = document.getElementById('totalPnl');
+                pnlElement.textContent = `$${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}`;
+                pnlElement.className = `stat-value ${pnl >= 0 ? 'positive' : 'negative'}`;
+            }
+            
+            if (data.winRate !== undefined) {
+                document.getElementById('winRate').textContent = `${data.winRate.toFixed(1)}%`;
+            }
+            
+            if (data.confidence !== undefined) {
+                const conf = data.confidence;
+                const confElement = document.getElementById('confidence');
+                confElement.textContent = `${conf.toFixed(1)}%`;
+                confElement.style.color = conf > 70 ? '#00ff88' : conf > 50 ? '#ffd700' : '#ff3366';
+            }
+        }
+        
+        // Execute trade
+        function executeTrade(action) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: `manual_${action}`,
+                    tier: currentTier,
+                    timestamp: Date.now()
+                }));
+                
+                // Log the manual action
+                logDecision({
+                    action: action.toUpperCase(),
+                    reason: 'Manual trade',
+                    pnl: 0
+                });
+                
+                // Notify TRAI
+                addTRAIMessage('system', `📊 Manual ${action.toUpperCase()} executed`);
+            }
+        }
+        
+        // Update pattern display with visual indicators
+        function updatePatternDisplay(patterns) {
+            const patternContainer = document.getElementById('patternDisplay') || createPatternContainer();
+            if (!patternContainer) return;
+            
+            const currentPattern = patterns[0]; // Most confident pattern
+            patternContainer.innerHTML = `
+                <div class="current-pattern">
+                    <div class="pattern-icon">${getPatternIcon(currentPattern.name)}</div>
+                    <div class="pattern-name">${currentPattern.name}</div>
+                    <div class="pattern-confidence">${(currentPattern.confidence * 100).toFixed(1)}%</div>
+                </div>
+                <div class="pattern-list">
+                    ${patterns.slice(1, 3).map(p => `
+                        <div class="pattern-secondary">
+                            ${getPatternIcon(p.name)} ${p.name} (${(p.confidence * 100).toFixed(0)}%)
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        // Get pattern icon/emoji
+        function getPatternIcon(patternName) {
+            const icons = {
+                'BULLISH_ENGULFING': '🟢',
+                'BEARISH_ENGULFING': '🔴',
+                'HEAD_AND_SHOULDERS': '👤',
+                'DOUBLE_TOP': '⛰️',
+                'DOUBLE_BOTTOM': '🏔️',
+                'TRIANGLE': '📐',
+                'FLAG': '🚩',
+                'WEDGE': '🔺',
+                'CHANNEL': '📊',
+                'BREAKOUT': '💥'
+            };
+            return icons[patternName] || '📈';
+        }
+        
+        // Update indicator display
+        function updateIndicatorDisplay(indicators) {
+            const indicatorPanel = document.getElementById('indicatorPanel') || createIndicatorPanel();
+            if (!indicatorPanel) return;
+            
+            indicatorPanel.innerHTML = `
+                <div class="indicator-grid">
+                    ${indicators.rsi ? `<div class="indicator-item">RSI: <span class="${getRSIClass(indicators.rsi)}">${indicators.rsi.toFixed(1)}</span></div>` : ''}
+                    ${indicators.macd ? `<div class="indicator-item">MACD: <span class="${indicators.macd > 0 ? 'positive' : 'negative'}">${indicators.macd.toFixed(2)}</span></div>` : ''}
+                    ${indicators.sma20 ? `<div class="indicator-item">SMA20: $${indicators.sma20.toFixed(2)}</div>` : ''}
+                    ${indicators.ema ? `<div class="indicator-item">EMA: $${indicators.ema.toFixed(2)}</div>` : ''}
+                    ${indicators.stochastic ? `<div class="indicator-item">Stoch: ${indicators.stochastic.toFixed(1)}</div>` : ''}
+                    ${indicators.bollinger ? `<div class="indicator-item">BB: ${indicators.bollinger.position}</div>` : ''}
+                </div>
+            `;
+        }
+        
+        function getRSIClass(rsi) {
+            if (rsi > 70) return 'overbought';
+            if (rsi < 30) return 'oversold';
+            return 'neutral';
+        }
+        
+        // Draw support/resistance and Fibonacci levels
+        function drawSupportResistanceLevels(levels) {
+            if (!chart || !levels) return;
+            
+            // Add horizontal lines for support/resistance
+            const annotations = [];
+            
+            if (levels.support) {
+                annotations.push({
+                    type: 'line',
+                    yMin: levels.support,
+                    yMax: levels.support,
+                    borderColor: 'rgb(0, 255, 0)',
+                    borderWidth: 2,
+                    label: {
+                        content: `Support: $${levels.support.toFixed(2)}`,
+                        enabled: true
+                    }
+                });
+            }
+            
+            if (levels.resistance) {
+                annotations.push({
+                    type: 'line',
+                    yMin: levels.resistance,
+                    yMax: levels.resistance,
+                    borderColor: 'rgb(255, 0, 0)',
+                    borderWidth: 2,
+                    label: {
+                        content: `Resistance: $${levels.resistance.toFixed(2)}`,
+                        enabled: true
+                    }
+                });
+            }
+            
+            // Add Fibonacci levels
+            if (levels.fibonacci) {
+                const fibLevels = [0.236, 0.382, 0.5, 0.618, 0.786];
+                fibLevels.forEach(level => {
+                    if (levels.fibonacci[level]) {
+                        annotations.push({
+                            type: 'line',
+                            yMin: levels.fibonacci[level],
+                            yMax: levels.fibonacci[level],
+                            borderColor: 'rgba(255, 215, 0, 0.5)',
+                            borderWidth: 1,
+                            borderDash: [5, 5],
+                            label: {
+                                content: `Fib ${level}: $${levels.fibonacci[level].toFixed(2)}`,
+                                enabled: false
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // Update chart with annotations
+            if (chart.options.plugins.annotation) {
+                chart.options.plugins.annotation.annotations = annotations;
+                chart.update();
+            }
+        }
+        
+        // Handle trade execution
+        function handleTradeExecution(data) {
+            // Add to live trade ticker
+            updateLiveTradeTicker({
+                entryPrice: data.price,
+                entryTime: Date.now(),
+                direction: data.direction,
+                size: data.size,
+                status: 'ACTIVE'
+            });
+            
+            // Log the execution
+            logDecision(data);
+            
+            // Notify via TRAI
+            addTRAIMessage('system', `🎯 Trade Executed: ${data.direction} at $${data.price}`);
+        }
+        
+        // Update live trade ticker
+        function updateLiveTradeTicker(data) {
+            const ticker = document.getElementById('liveTradeTicker') || createLiveTradeTicker();
+            if (!ticker) return;
+            
+            const currentPrice = chart?.data?.datasets[0]?.data?.slice(-1)[0] || 0;
+            const pnl = data.entryPrice ? ((currentPrice - data.entryPrice) * (data.direction === 'BUY' ? 1 : -1)) : 0;
+            const duration = data.entryTime ? ((Date.now() - data.entryTime) / 1000) : 0;
+            
+            ticker.innerHTML = `
+                <div class="live-trade-status ${data.status}">
+                    <div class="trade-direction">${data.direction}</div>
+                    <div class="trade-entry">Entry: $${data.entryPrice?.toFixed(2) || 'N/A'}</div>
+                    <div class="trade-current">Current: $${currentPrice.toFixed(2)}</div>
+                    <div class="trade-pnl ${pnl >= 0 ? 'profit' : 'loss'}">
+                        P&L: ${pnl >= 0 ? '+' : ''}$${Math.abs(pnl).toFixed(2)}
+                    </div>
+                    <div class="trade-duration">Duration: ${formatDuration(duration)}</div>
+                    ${data.breakeven ? '<div class="trade-breakeven">✅ Breakeven</div>' : ''}
+                </div>
+            `;
+        }
+        
+        // Add to trade history
+        function addToTradeHistory(trade) {
+            const history = document.getElementById('tradeHistory') || createTradeHistory();
+            if (!history) return;
+            
+            const tradeElement = document.createElement('div');
+            tradeElement.className = 'history-trade';
+            tradeElement.innerHTML = `
+                <div class="trade-time">${new Date(trade.timestamp).toLocaleTimeString()}</div>
+                <div class="trade-action ${trade.direction}">${trade.direction}</div>
+                <div class="trade-price">$${trade.price.toFixed(2)}</div>
+                <div class="trade-pnl ${trade.pnl >= 0 ? 'profit' : 'loss'}">
+                    ${trade.pnl >= 0 ? '+' : ''}$${Math.abs(trade.pnl).toFixed(2)}
+                </div>
+                <div class="trade-duration">${formatDuration(trade.duration)}</div>
+            `;
+            
+            history.insertBefore(tradeElement, history.firstChild);
+            
+            // Keep only last 50 trades
+            while (history.children.length > 50) {
+                history.removeChild(history.lastChild);
+            }
+        }
+        
+        // Helper function to format duration
+        function formatDuration(seconds) {
+            if (seconds < 60) return `${Math.floor(seconds)}s`;
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+            return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
+        }
+        
+        // Create missing containers
+        function createPatternContainer() {
+            const container = document.createElement('div');
+            container.id = 'patternDisplay';
+            container.className = 'pattern-display-container';
+            document.querySelector('.panel-section')?.appendChild(container);
+            return container;
+        }
+        
+        function createIndicatorPanel() {
+            const panel = document.createElement('div');
+            panel.id = 'indicatorPanel';
+            panel.className = 'indicator-panel';
+            document.querySelector('.panel-section')?.appendChild(panel);
+            return panel;
+        }
+        
+        function createLiveTradeTicker() {
+            const ticker = document.createElement('div');
+            ticker.id = 'liveTradeTicker';
+            ticker.className = 'live-trade-ticker';
+            document.querySelector('.trading-panel')?.appendChild(ticker);
+            return ticker;
+        }
+        
+        function createTradeHistory() {
+            const history = document.createElement('div');
+            history.id = 'tradeHistory';
+            history.className = 'trade-history';
+            document.querySelector('.trading-panel')?.appendChild(history);
+            return history;
+        }
+        
+        // Initialize on load
+        window.onload = () => {
+            console.log('=� Initializing OGZPrime Unified Dashboard');
+            
+            // Initialize chart
+            initChart();
+            
+            // Connect to WebSocket
+            connectWebSocket();
+            
+            // Start with quantum tier to show all features
+            switchTier('elite');
+            
+            // Add welcome message from TRAI after a short delay
+            setTimeout(() => {
+                addTRAIMessage('trai', 'Welcome to OGZPrime Unified Dashboard! I\'m TRAI, your AI trading assistant with access to 254 conversations and real-time market analysis. Ask me anything about trading strategies, market conditions, or system performance.');
+            }, 2000);
+            
+            // Focus on TRAI input for immediate interaction
+            document.getElementById('traiInput').focus();
+        };
+        
+        // Add keyboard shortcut for TRAI
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+T or Cmd+T to focus TRAI input
+            if ((e.ctrlKey || e.metaKey) && e.key === 't') {
+                e.preventDefault();
+                document.getElementById('traiInput').focus();
+            }
+        });
+    </script>
+</body>
+</html>

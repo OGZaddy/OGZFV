@@ -14,6 +14,7 @@ const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const axios = require('axios');
 // const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Disabled - not needed for core functionality
 
 // 🔥 IMPORT THE ADVANCED WEBSOCKET SYSTEM
@@ -48,6 +49,51 @@ const broadcaster = new AdvancedWebSocketBroadcastSystem({
   metricsInterval: 30000,
   performanceAlertThreshold: 100
 });
+
+// ==========================================
+// Brain (Ollama/Qwen) availability broadcasting
+// ==========================================
+const OLLAMA_URL = process.env.OLLAMA_URL || 'http://127.0.0.1:11434';
+let brainAvailable = false;
+let lastBrainLog = 0;
+
+async function checkOllamaAvailability() {
+  try {
+    const res = await axios.get(`${OLLAMA_URL}/api/tags`, { timeout: 2000 });
+    const ok = res && res.status === 200;
+    if (ok !== brainAvailable) {
+      brainAvailable = ok;
+      const now = Date.now();
+      if (now - lastBrainLog > 1500) {
+        console.log(`🧠 Brain (Ollama/Qwen): ${brainAvailable ? 'AVAILABLE' : 'UNAVAILABLE'} @ ${new Date().toLocaleTimeString()}`);
+        lastBrainLog = now;
+      }
+      broadcaster.broadcast({
+        type: 'brain_status',
+        status: brainAvailable ? 'available' : 'unavailable',
+        timestamp: now
+      }, { priority: 'high', requiresAck: false });
+    }
+  } catch (_) {
+    if (brainAvailable) {
+      brainAvailable = false;
+      const now = Date.now();
+      if (now - lastBrainLog > 1500) {
+        console.log(`🧠 Brain (Ollama/Qwen): UNAVAILABLE @ ${new Date().toLocaleTimeString()}`);
+        lastBrainLog = now;
+      }
+      broadcaster.broadcast({
+        type: 'brain_status',
+        status: 'unavailable',
+        timestamp: now
+      }, { priority: 'high', requiresAck: false });
+    }
+  }
+}
+
+// Initial check + periodic monitoring
+checkOllamaAvailability().catch(() => {});
+setInterval(checkOllamaAvailability, 15000);
 
 // Special handling for bot connections
 broadcaster.on('bot_disconnected', (connection) => {
@@ -99,6 +145,10 @@ app.get('/api/live-status', (req, res) => {
     trades: 0,
     decisionsToday: 0,
     currentPrice: lastKnownPrice,
+    brain: {
+      available: typeof brainAvailable !== 'undefined' ? brainAvailable : false,
+      url: OLLAMA_URL
+    },
     
     // ADVANCED METRICS
     websocketStats: {

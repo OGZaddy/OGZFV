@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(sqlite3:*)",
+      "Bash(pm2 list:*)",
+      "Bash(sudo:*)",
+      "Bash(chmod:*)",
+      "Read(//etc/nginx/sites-enabled/**)",
+      "Bash(curl:*)",
+      "Bash(git commit:*)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []

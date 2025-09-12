@@ -813,6 +813,14 @@
                 <span class="status-dot" id="connectionStatus"></span>
                 <span id="statusText">Connecting...</span>
             </div>
+            <div class="connection-status" style="margin-left: 10px;">
+                <span class="status-dot" id="brainStatus"></span>
+                <span id="brainStatusText">Brain</span>
+            </div>
+            <div class="connection-status" style="margin-left: 10px;">
+                <span class="status-dot" id="feedStatus"></span>
+                <span id="feedStatusText">Feed</span>
+            </div>
         </div>
     </div>
     
@@ -837,10 +845,21 @@
                         <option value="1h">1 Hour</option>
                     </select>
                 </div>
+                <div class="chart-controls" style="margin-top:8px; flex-wrap: wrap;">
+                    <label><input type="checkbox" id="indSMA" checked> <span style="color:#66c2ff">SMA20</span></label>
+                    <label><input type="checkbox" id="indEMA"> <span style="color:#ff66cc">EMA50</span></label>
+                    <label><input type="checkbox" id="indBB"> <span style="color:#00cc66">Bollinger</span></label>
+                    <label><input type="checkbox" id="indRSI"> RSI</label>
+                    <label><input type="checkbox" id="indMACD"> MACD</label>
+                </div>
             </div>
             
             <div class="chart-container">
                 <canvas id="mainChart"></canvas>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                  <canvas id="rsiChart" style="height:120px; display:none;"></canvas>
+                  <canvas id="macdChart" style="height:120px; display:none;"></canvas>
+                </div>
                 
                 <!-- Bot Status Indicators -->
                 <div class="bot-status-row">
@@ -858,11 +877,11 @@
                     <div class="indicators-panel starter-indicators">
                         <div class="indicator-item">
                             <span class="indicator-label">RSI (14):</span>
-                            <span class="indicator-value" id="rsi">50</span>
+                            <span class="indicator-value ind-rsi">50</span>
                         </div>
                         <div class="indicator-item">
                             <span class="indicator-label">MACD (12/26):</span>
-                            <span class="indicator-value" id="macd">0.00</span>
+                            <span class="indicator-value ind-macd">0.00</span>
                         </div>
                         <div class="feature-notice starter-locked">
                             🔒 Upgrade to PRO for Pattern Recognition
@@ -873,23 +892,23 @@
                     <div class="indicators-panel pro-indicators">
                         <div class="indicator-item">
                             <span class="indicator-label">RSI (14):</span>
-                            <span class="indicator-value" id="rsi">50</span>
+                            <span class="indicator-value ind-rsi">50</span>
                         </div>
                         <div class="indicator-item">
                             <span class="indicator-label">MACD (12/26):</span>
-                            <span class="indicator-value" id="macd">0.00</span>
+                            <span class="indicator-value ind-macd">0.00</span>
                         </div>
                         <div class="indicator-item">
                             <span class="indicator-label">BB Width:</span>
-                            <span class="indicator-value" id="bbWidth">0.00</span>
+                            <span class="indicator-value ind-bbWidth">0.00</span>
                         </div>
                         <div class="indicator-item">
                             <span class="indicator-label">VWAP:</span>
-                            <span class="indicator-value" id="vwap">0.00</span>
+                            <span class="indicator-value ind-vwap">0.00</span>
                         </div>
                         <div class="indicator-item">
                             <span class="indicator-label">Pattern:</span>
-                            <span class="indicator-value" id="pattern">None</span>
+                            <span class="indicator-value ind-pattern">None</span>
                         </div>
                         <div class="feature-notice pro-locked">
                             🔒 Upgrade to ELITE for Neural Ensemble
@@ -900,31 +919,31 @@
                     <div class="indicators-panel elite-indicators">
                         <div class="indicator-item">
                             <span class="indicator-label">RSI (14):</span>
-                            <span class="indicator-value" id="rsi">50</span>
+                            <span class="indicator-value ind-rsi">50</span>
                         </div>
                         <div class="indicator-item">
                             <span class="indicator-label">MACD (12/26):</span>
-                            <span class="indicator-value" id="macd">0.00</span>
+                            <span class="indicator-value ind-macd">0.00</span>
                         </div>
                         <div class="indicator-item">
                             <span class="indicator-label">BB Width:</span>
-                            <span class="indicator-value" id="bbWidth">0.00</span>
+                            <span class="indicator-value ind-bbWidth">0.00</span>
                         </div>
                         <div class="indicator-item">
                             <span class="indicator-label">VWAP:</span>
-                            <span class="indicator-value" id="vwap">0.00</span>
+                            <span class="indicator-value ind-vwap">0.00</span>
                         </div>
                         <div class="indicator-item">
                             <span class="indicator-label">Pattern:</span>
-                            <span class="indicator-value" id="pattern">None</span>
+                            <span class="indicator-value ind-pattern">None</span>
                         </div>
                         <div class="indicator-item">
                             <span class="indicator-label">Fib Level:</span>
-                            <span class="indicator-value" id="fibLevel">0.618</span>
+                            <span class="indicator-value ind-fibLevel">0.618</span>
                         </div>
                         <div class="indicator-item">
                             <span class="indicator-label">Ichimoku:</span>
-                            <span class="indicator-value" id="ichimoku">Neutral</span>
+                            <span class="indicator-value ind-ichimoku">Neutral</span>
                         </div>
                         <div class="feature-notice elite-locked">
                             🔒 Upgrade to QUANTUM for Reality Bending
@@ -935,11 +954,11 @@
                     <div class="indicators-panel quantum-indicators">
                         <div class="indicator-item">
                             <span class="indicator-label">RSI (14):</span>
-                            <span class="indicator-value" id="rsi">50</span>
+                            <span class="indicator-value ind-rsi">50</span>
                         </div>
                         <div class="indicator-item">
                             <span class="indicator-label">MACD (12/26):</span>
-                            <span class="indicator-value" id="macd">0.00</span>
+                            <span class="indicator-value ind-macd">0.00</span>
                         </div>
                         <div class="indicator-item">
                             <span class="indicator-label">Coherence:</span>
@@ -983,7 +1002,7 @@
                     <div class="pattern-name" id="currentPattern">Quantum Pattern Analysis Active</div>
                 </div>
             </div>
-            
+
             <!-- Stats Section -->
             <div class="panel-section">
                 <div class="panel-title">Performance Stats</div>
@@ -1058,6 +1077,18 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Current Position -->
+            <div class="panel-section">
+                <div class="panel-title">Current Position</div>
+                <div id="currentPosition">No active position</div>
+            </div>
+
+            <!-- Trade History -->
+            <div class="panel-section">
+                <div class="panel-title">Trade History</div>
+                <div id="tradeHistory" style="max-height:220px; overflow:auto;"></div>
+            </div>
         </div>
     </div>
     
@@ -1067,9 +1098,14 @@
     </div>
     
     <script>
-        // WebSocket connection to quantum_ssl_server.js on port 3010
+        // Feature flags
+        const ALLOW_MANUAL = false; // Demo site: disable manual overrides
+
+        // WebSocket connection to server
         let ws = null;
         let chart = null;
+        let rsiChart = null;
+        let macdChart = null;
         let currentTier = 'quantum'; // Start with quantum to show all features
         let priceData = [];
         let tradeHistory = [];
@@ -1137,6 +1173,10 @@
             }
         };
         
+        // Selected instrument/timeframe
+        let selectedAsset = 'BTC-USD';
+        let maxPoints = 50; // window size for chart based on timeframe
+
         // Initialize Chart
         function initChart() {
             const ctx = document.getElementById('mainChart').getContext('2d');
@@ -1151,7 +1191,13 @@
                         backgroundColor: 'rgba(0, 255, 136, 0.1)',
                         borderWidth: 2,
                         tension: 0.1
-                    }]
+                    },
+                    // Indicator overlays
+                    { label: 'SMA20', data: [], borderColor: '#66c2ff', pointRadius: 0, borderWidth: 1, tension: 0.1, hidden: !document.getElementById('indSMA')?.checked },
+                    { label: 'EMA50', data: [], borderColor: '#ff66cc', pointRadius: 0, borderWidth: 1, tension: 0.1, hidden: !document.getElementById('indEMA')?.checked },
+                    { label: 'BB Upper', data: [], borderColor: '#00cc66', borderDash: [4,2], pointRadius: 0, borderWidth: 1, tension: 0.1, hidden: !document.getElementById('indBB')?.checked },
+                    { label: 'BB Lower', data: [], borderColor: '#00cc66', borderDash: [4,2], pointRadius: 0, borderWidth: 1, tension: 0.1, hidden: !document.getElementById('indBB')?.checked }
+                    ]
                 },
                 options: {
                     responsive: true,
@@ -1177,8 +1223,42 @@
                     }
                 }
             });
+
+            // Mini RSI chart
+            const rsiEl = document.getElementById('rsiChart');
+            const macdEl = document.getElementById('macdChart');
+            rsiChart = new Chart(rsiEl.getContext('2d'), {
+              type: 'line', data: { labels: [], datasets: [{ label:'RSI(14)', data: [], borderColor:'#ffaa00', pointRadius:0, borderWidth:1 }]},
+              options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false }}, scales:{ y:{ min:0,max:100 } } }
+            });
+            macdChart = new Chart(macdEl.getContext('2d'), {
+              type: 'line', data: { labels: [], datasets: [{ label:'MACD', data: [], borderColor:'#ff00aa', pointRadius:0, borderWidth:1 }]},
+              options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false }}}
+            });
+            // toggle display per checkbox
+            document.getElementById('indRSI').addEventListener('change', (e)=>{ rsiEl.style.display = e.target.checked ? 'block':'none'; });
+            document.getElementById('indMACD').addEventListener('change', (e)=>{ macdEl.style.display = e.target.checked ? 'block':'none'; });
+            document.getElementById('indSMA').addEventListener('change', (e)=>{ chart.data.datasets[1].hidden = !e.target.checked; chart.update(); });
+            document.getElementById('indEMA').addEventListener('change', (e)=>{ chart.data.datasets[2].hidden = !e.target.checked; chart.update(); });
+            document.getElementById('indBB').addEventListener('change', (e)=>{ chart.data.datasets[3].hidden = !e.target.checked; chart.data.datasets[4].hidden = !e.target.checked; chart.update(); });
         }
         
+        function updateDot(id, on) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (on) el.classList.add('connected');
+            else el.classList.remove('connected');
+        }
+
+        async function refreshStatus() {
+            try {
+                const resp = await fetch('/api/live-status');
+                if (!resp.ok) return;
+                const data = await resp.json();
+                if (data && data.brain) updateDot('brainStatus', !!data.brain.available);
+            } catch {}
+        }
+
         // Connect to WebSocket - Use proper protocol based on page protocol
         function connectWebSocket() {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -1190,6 +1270,8 @@
                 console.log('Connected to OGZPrime WebSocket Server');
                 document.getElementById('connectionStatus').classList.add('connected');
                 document.getElementById('statusText').textContent = 'Connected';
+                updateDot('brainStatus', false);
+                refreshStatus();
                 
                 // Identify as dashboard
                 ws.send(JSON.stringify({
@@ -1216,7 +1298,7 @@
             };
         }
         
-        // Handle messages from unified-bot.js instances
+        // Handle messages from server
         function handleWebSocketMessage(data) {
             // Handle price updates
             if (data.type === 'price' && data.data) {
@@ -1247,6 +1329,16 @@
             // Handle indicator updates
             else if (data.type === 'indicators') {
                 updateIndicatorValues(data);
+            }
+            // Brain/feed status
+            else if (data.type === 'brain_status') {
+                updateDot('brainStatus', data.status === 'available');
+            } else if (data.type === 'data_feed_status') {
+                updateDot('feedStatus', data.status === 'connected');
+            }
+            // Assistant answers (optional)
+            else if (data.type === 'answer' || data.type === 'trai_answer') {
+                console.log('TRAI answer:', data.answer);
             }
         }
         
@@ -1332,23 +1424,127 @@
             document.getElementById('activeBots').textContent = activeBots;
         }
         
-        // Update chart with new price data
+        // Update chart with new price data (respect selected asset and timeframe)
+        // Utility calculators
+        function calcSMA(src, period) {
+          if (src.length < period) return null;
+          let sum = 0;
+          for (let i = src.length - period; i < src.length; i++) sum += src[i];
+          return sum / period;
+        }
+        let prevEMA50 = null;
+        function calcEMA(src, period) {
+          const k = 2 / (period + 1);
+          const price = src[src.length - 1];
+          if (prevEMA50 === null) {
+            // seed with SMA
+            const seed = calcSMA(src, period);
+            prevEMA50 = seed !== null ? seed : price;
+          }
+          prevEMA50 = price * k + prevEMA50 * (1 - k);
+          return prevEMA50;
+        }
+        function calcBB(src, period, mult) {
+          if (src.length < period) return null;
+          const sma = calcSMA(src, period);
+          let variance = 0;
+          for (let i = src.length - period; i < src.length; i++) variance += Math.pow(src[i] - sma, 2);
+          const std = Math.sqrt(variance / period);
+          return { upper: sma + mult * std, lower: sma - mult * std };
+        }
+        function calcRSI(src, period) {
+          if (src.length < period + 1) return null;
+          let gains = 0, losses = 0;
+          for (let i = src.length - period; i < src.length; i++) {
+            const diff = src[i] - src[i-1];
+            if (diff >= 0) gains += diff; else losses -= diff;
+          }
+          const rs = losses === 0 ? 100 : gains / (losses || 1e-9);
+          const rsi = 100 - 100 / (1 + rs);
+          return rsi;
+        }
+        function calcMACD(src) {
+          // Lightweight: difference between EMA12 and EMA26 using last values only
+          // For demo purposes; for accuracy, compute series
+          if (src.length < 26) return null;
+          const ema = (arr, p) => {
+            const k = 2/(p+1); let e = arr[arr.length-p];
+            for (let i = arr.length-p+1; i < arr.length; i++) e = arr[i]*k + e*(1-k);
+            return e;
+          };
+          const ema12 = ema(src,12), ema26 = ema(src,26);
+          return ema12 - ema26;
+        }
+
         function updateChart(data) {
             if (!chart) return;
+            if (data.asset && data.asset !== selectedAsset) return;
             
             const timestamp = new Date().toLocaleTimeString();
             const price = data.price || data.close || 0;
             
             chart.data.labels.push(timestamp);
             chart.data.datasets[0].data.push(price);
+            priceData.push(price);
             
-            // Keep only last 50 points
-            if (chart.data.labels.length > 50) {
+            // Keep only last N points
+            if (chart.data.labels.length > maxPoints) {
                 chart.data.labels.shift();
                 chart.data.datasets[0].data.shift();
+                priceData.shift();
             }
             
+            // Overlays
+            const sma = calcSMA(priceData, 20);
+            const ema = calcEMA(priceData, 50);
+            const bb = calcBB(priceData, 20, 2);
+            chart.data.datasets[1].data.push(sma ?? null);
+            chart.data.datasets[2].data.push(ema ?? null);
+            chart.data.datasets[3].data.push(bb ? bb.upper : null);
+            chart.data.datasets[4].data.push(bb ? bb.lower : null);
+            if (chart.data.datasets[1].data.length > maxPoints) {
+              [1,2,3,4].forEach(idx => chart.data.datasets[idx].data.shift());
+            }
+
+            // RSI/MACD mini charts
+            if (document.getElementById('indRSI').checked) {
+              const rsi = calcRSI(priceData, 14);
+              if (rsiChart) {
+                rsiChart.data.labels.push(timestamp);
+                rsiChart.data.datasets[0].data.push(rsi ?? null);
+                if (rsiChart.data.labels.length > maxPoints) { rsiChart.data.labels.shift(); rsiChart.data.datasets[0].data.shift(); }
+                rsiChart.update('none');
+              }
+            }
+            if (document.getElementById('indMACD').checked) {
+              const macd = calcMACD(priceData);
+              if (macdChart) {
+                macdChart.data.labels.push(timestamp);
+                macdChart.data.datasets[0].data.push(macd ?? null);
+                if (macdChart.data.labels.length > maxPoints) { macdChart.data.labels.shift(); macdChart.data.datasets[0].data.shift(); }
+                macdChart.update('none');
+              }
+            }
+
             chart.update();
+        }
+
+        // Position and trade history
+        function updatePosition(data) {
+            const el = document.getElementById('currentPosition');
+            const p = data.position || data.data || {};
+            if (!p || !p.symbol) { el.textContent = 'No active position'; return; }
+            const pnl = (p.pnl !== undefined) ? (p.pnl >=0 ? '+' : '') + p.pnl : '-';
+            el.innerHTML = `Symbol: <strong>${p.symbol}</strong> | Side: <strong>${p.side || p.direction || '-'}</strong> | Entry: <strong>${p.entryPrice || p.price || '-'}</strong> | Est. PnL: <strong>${pnl}</strong>`;
+        }
+        function addTradeHistory(data) {
+            const box = document.getElementById('tradeHistory');
+            const d = data.data || data;
+            const row = document.createElement('div');
+            row.style.padding = '6px 8px'; row.style.borderBottom = '1px solid #222';
+            row.textContent = `${new Date().toLocaleTimeString()} - ${d.action || d.type} ${d.symbol || ''} @ ${d.price || d.entryPrice || ''} (${d.pnl !== undefined ? d.pnl : '-'})`;
+            box.prepend(row);
+            while (box.children.length > 50) box.removeChild(box.lastChild);
         }
         
         // Update indicator values
@@ -1357,25 +1553,25 @@
             
             // Update common indicators
             if (indicators.rsi !== undefined) {
-                document.querySelectorAll('#rsi').forEach(el => {
+                document.querySelectorAll('.ind-rsi').forEach(el => {
                     el.textContent = indicators.rsi.toFixed(1);
                 });
             }
             
             if (indicators.macd !== undefined) {
-                document.querySelectorAll('#macd').forEach(el => {
+                document.querySelectorAll('.ind-macd').forEach(el => {
                     el.textContent = indicators.macd.toFixed(2);
                 });
             }
             
             // Update tier-specific indicators
             if (indicators.bbWidth !== undefined) {
-                const el = document.getElementById('bbWidth');
+                const el = document.querySelector('.ind-bbWidth');
                 if (el) el.textContent = indicators.bbWidth.toFixed(2);
             }
             
             if (indicators.pattern) {
-                const el = document.getElementById('pattern');
+                const el = document.querySelector('.ind-pattern');
                 if (el) el.textContent = indicators.pattern;
                 
                 const patternEl = document.getElementById('currentPattern');
@@ -1512,6 +1708,7 @@
         // Execute trade
         function executeTrade(action) {
             if (ws && ws.readyState === WebSocket.OPEN) {
+                if (!ALLOW_MANUAL) { alert('Demo mode: manual controls are disabled.'); return; }
                 // Send to the appropriate bot based on current tier view
                 ws.send(JSON.stringify({
                     type: `manual_${action}`,
@@ -1532,14 +1729,17 @@
             connectWebSocket();
             // Start with quantum tier to showcase all features
             switchTier('quantum');
+            // Hook selectors for asset/timeframe
+            const assetSel = document.getElementById('assetSelector');
+            const tfSel = document.getElementById('timeframeSelector');
+            if (assetSel) assetSel.addEventListener('change', (e) => { selectedAsset = e.target.value; });
+            if (tfSel) tfSel.addEventListener('change', (e) => {
+                const map = { '1m': 120, '5m': 60, '15m': 40, '1h': 30 };
+                maxPoints = map[e.target.value] || 60;
+            });
+            refreshStatus();
             
-            // Simulate initial bot connections after 2 seconds
-            setTimeout(() => {
-                ['starter', 'pro', 'elite', 'quantum'].forEach(tier => {
-                    botStates[tier].connected = true;
-                });
-                updateBotStatusIndicators();
-            }, 2000);
+            // No simulated connections in production demo. Real bots will update status.
         };
     </script>
 </body>

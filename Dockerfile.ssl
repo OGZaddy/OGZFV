@@ -1,0 +1,27 @@
+# SSL Server Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copy application code
+COPY ogzprime_ssl_server_advanced.js ./
+COPY core/ ./core/
+
+# Create necessary directories
+RUN mkdir -p logs reports
+
+# Health check endpoint
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3010/api/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"
+
+# Run as non-root user
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
+USER nodejs
+
+EXPOSE 3010
+
+CMD ["node", "ogzprime_ssl_server_advanced.js"]
