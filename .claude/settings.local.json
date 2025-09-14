@@ -9,7 +9,22 @@
       "Read(//etc/nginx/sites-enabled/**)",
       "Bash(curl:*)",
       "Bash(git commit:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(git push:*)",
+      "Bash(POLYGON_API_KEY=RlsCgSaDNVNtGipX05xmcAHou_h7yhqZ OLLAMA_URL=http://127.0.0.1:11434 pm2 restart ssl --update-env)",
+      "Bash(POLYGON_API_KEY=RlsCgSaDNVNtGipX05xmcAHou_h7yhqZ OLLAMA_ENABLED=false pm2 restart ssl --update-env)",
+      "Bash(OLLAMA_ENABLED=false pm2 restart TRAI-SINGLETON --update-env)",
+      "Bash(pm2 logs:*)",
+      "Bash(pm2 delete:*)",
+      "Bash(OLLAMA_ENABLED=false pm2 start trai-singleton.js --name TRAI-SINGLETON)",
+      "Bash(node:*)",
+      "Bash(npm run backtest:trai:*)",
+      "Bash(POLYGON_API_KEY=RlsCgSaDNVNtGipX05xmcAHou_h7yhqZ node tools/download-polygon-range.js --symbol=X:BTCUSD --span=minute --mult=5 --from=2024-09-01 --to=2024-09-14 --out=data/btc-5m-sept2024.json)",
+      "Bash(npm run backtest:quick:*)",
+      "Bash(pm2 restart:*)",
+      "Bash(python3:*)",
+      "Bash(grep:*)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": []

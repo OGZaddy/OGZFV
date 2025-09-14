@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap');
         
         * {
             margin: 0;
@@ -23,6 +24,16 @@
             --border-color: rgba(255, 255, 255, 0.1);
             --text-primary: #ffffff;
             --text-secondary: #a0a0a0;
+            --glow-red: rgba(255, 0, 64, 0.45);
+            --glow-red-soft: rgba(255, 0, 64, 0.25);
+            --frame-margin: 16px; /* dialed-in default outer padding */
+            /* Customization variables */
+            --accent-rgb: 255, 0, 64; /* default red accent (r,g,b) */
+            --side-rgb: 255, 0, 64;   /* side-glow color (r,g,b) */
+            --side-glow-alpha: 0.22;  /* side glow opacity */
+            --glow-intensity: 0.25;   /* panel/chart glow intensity 0-0.6 */
+            --font-scale: 1;          /* base font scale multiplier */
+            --ui-font: 'JetBrains Mono';
             
             /* Tier-specific colors matching your bot configurations */
             --starter-color: #00ccff;
@@ -41,8 +52,9 @@
             --quantum-gradient: linear-gradient(135deg, #00ffff 0%, #4dffff 50%, #00ffff 100%);
         }
         
+        html { font-size: calc(16px * var(--font-scale)); }
         body {
-            font-family: 'JetBrains Mono', monospace;
+            font-family: var(--ui-font), monospace;
             background: var(--bg-primary);
             color: var(--text-primary);
             overflow-x: hidden;
@@ -65,10 +77,22 @@
             z-index: 0;
         }
         
+        /* Subtle red side glow to contrast the black */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+              linear-gradient(to right, rgba(var(--side-rgb), var(--side-glow-alpha)), rgba(var(--side-rgb), 0)) left/12px 100% no-repeat,
+              linear-gradient(to left,  rgba(var(--side-rgb), var(--side-glow-alpha)), rgba(var(--side-rgb), 0)) right/12px 100% no-repeat;
+            z-index: 1;
+        }
+
         /* Header */
         .header {
             background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1e 100%);
-            padding: 20px;
+            padding: 16px;
             text-align: center;
             border-bottom: 2px solid var(--profit-color);
             box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
@@ -105,6 +129,10 @@
             align-items: center;
             gap: 15px;
             z-index: 15;
+            /* anchor tooltips */
+            /* it's absolutely positioned in header already */
+            /* inner absolute children will position relative to this */
+            position: absolute;
         }
         
         .tier-label {
@@ -148,6 +176,39 @@
             color: #fff;
             padding: 5px;
         }
+
+        /* Readable mode toggle */
+        .readable-toggle {
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border: 1px solid rgb(var(--accent-rgb));
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            line-height: 1;
+        }
+        .readable-toggle:hover { background: rgb(var(--accent-rgb)); box-shadow: 0 0 12px rgba(var(--accent-rgb),0.6); }
+        body.readable-mode .readable-toggle { background: rgb(var(--accent-rgb)); box-shadow: 0 0 12px rgba(var(--accent-rgb),0.8); }
+
+        /* Theme button (opens color/theme modal) */
+        .theme-btn {
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border: 1px solid #888;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            line-height: 1;
+        }
+        .theme-btn:hover { background: #222; box-shadow: 0 0 12px rgba(255,255,255,0.15); }
         
         /* Dynamic border color based on selected tier */
         .tier-starter .tier-selector { border-color: var(--starter-color); color: var(--starter-color); }
@@ -181,10 +242,10 @@
         
         /* Main Container */
         .main-container {
-            padding: 20px;
+            padding: var(--frame-margin);
             position: relative;
             z-index: 5;
-            max-width: 1600px;
+            max-width: 100%;
             margin: 0 auto;
         }
         
@@ -195,7 +256,9 @@
             padding: 20px;
             border: 2px solid var(--border-color);
             backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+            box-shadow:
+              0 0 22px rgba(var(--accent-rgb), var(--glow-intensity)),
+              0 8px 32px rgba(0, 0, 0, 0.7);
             margin-bottom: 20px;
             transition: all 0.3s ease;
         }
@@ -230,14 +293,7 @@
             transition: all 0.3s ease;
         }
         
-        .tier-price {
-            font-size: 16px;
-            font-weight: 700;
-            padding: 5px 15px;
-            border-radius: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid currentColor;
-        }
+        /* removed tier-price badge */
         
         /* Dynamic tier coloring */
         .tier-starter .chart-title, .tier-starter .tier-price {
@@ -276,7 +332,7 @@
         select, button {
             background: rgba(26, 0, 0, 0.8);
             color: #fff;
-            border: 1px solid #ff0040;
+            border: 1px solid rgb(var(--accent-rgb));
             padding: 8px 15px;
             border-radius: 5px;
             cursor: pointer;
@@ -287,8 +343,8 @@
         }
         
         select:hover, button:hover {
-            background: #ff0040;
-            box-shadow: 0 0 15px rgba(255, 0, 64, 0.6);
+            background: rgb(var(--accent-rgb));
+            box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.6);
             transform: translateY(-2px);
         }
         
@@ -300,8 +356,11 @@
             padding: 20px;
             margin-bottom: 20px;
             border: 1px solid var(--border-color);
-            height: 600px;
+            /* Fill most of the viewport height below the header/controls */
+            height: calc(100svh - 420px); /* ~1-1.5in reduction for above-the-fold boxes */
+            min-height: 320px;
             width: 100%;
+            box-shadow: 0 0 20px rgba(var(--accent-rgb), var(--glow-intensity));
         }
         
         canvas {
@@ -406,14 +465,14 @@
         
         /* Feature Unlock Notice */
         .feature-notice {
-            background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(255, 0, 0, 0.05) 100%);
-            border: 1px solid rgba(255, 0, 0, 0.3);
+            background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.1) 0%, rgba(var(--accent-rgb), 0.05) 100%);
+            border: 1px solid rgba(var(--accent-rgb), 0.3);
             border-radius: 8px;
             padding: 10px;
             margin: 10px 0;
             text-align: center;
             font-size: 12px;
-            color: #ff6666;
+            color: rgb(var(--accent-rgb));
             display: none;
         }
         
@@ -437,7 +496,9 @@
             border-radius: 15px;
             padding: 20px;
             backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+            box-shadow:
+              0 0 18px rgba(var(--accent-rgb), var(--glow-intensity)),
+              0 8px 32px rgba(255, 215, 0, 0.2);
         }
         
         .panel-title {
@@ -456,7 +517,7 @@
         .trade-controls {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         
         .trade-btn {
@@ -541,7 +602,7 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         
         .stat-item {
@@ -582,6 +643,162 @@
             overflow-y: auto;
             margin-top: 15px;
         }
+
+        /* Readable Mode: larger, brighter, higher-contrast */
+        body.readable-mode {
+            font-family: 'Atkinson Hyperlegible', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --text-secondary: #d0d0d0;
+        }
+        body.readable-mode .logo { font-size: 50px; letter-spacing: 4px; text-shadow: none; }
+        body.readable-mode .tagline { color: #bcbcbc; font-size: 15px; }
+        body.readable-mode .chart-title { font-size: 32px; text-shadow: none; }
+        body.readable-mode .panel-title { font-size: 16px; }
+        body.readable-mode .stat-label { font-size: 12px; color: #e0e0e0; }
+        body.readable-mode .stat-value { font-size: 18px; }
+        body.readable-mode .indicator-label { color: #eeeeee; }
+        body.readable-mode .indicator-value { font-size: 13px; }
+        body.readable-mode .decision-entry { font-size: 14px; }
+        body.readable-mode select,
+        body.readable-mode button,
+        body.readable-mode .tier-selector { font-size: 16px; padding: 10px 18px; }
+        body.readable-mode .trade-btn { font-size: 14px; padding: 14px; }
+        
+        /* Keep layout balanced when text grows */
+        @media (min-width: 1025px) {
+          body.readable-mode .chart-container { height: calc(100svh - 440px); }
+        }
+
+        /* One-time callout tooltip next to controls */
+        .readable-tip {
+            position: absolute;
+            top: 56px;
+            right: 0;
+            background: linear-gradient(180deg, #111, #1b1b1b);
+            border: 1px solid rgb(var(--accent-rgb));
+            color: #fff;
+            padding: 10px 12px;
+            border-radius: 10px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.45), 0 0 16px rgba(var(--accent-rgb),0.25);
+            max-width: 280px;
+            z-index: 20;
+            font-size: 12px;
+        }
+        .readable-tip:after {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 22px;
+            border-width: 0 8px 8px 8px;
+            border-style: solid;
+            border-color: transparent transparent rgb(var(--accent-rgb)) transparent;
+        }
+        .readable-tip .tip-actions { display: flex; gap: 8px; margin-top: 8px; }
+        .readable-tip .tip-btn {
+            background: rgb(var(--accent-rgb));
+            color: #fff;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .readable-tip .tip-link { color: #ff9fba; text-decoration: underline; cursor: pointer; }
+
+        /* High contrast option */
+        body.high-contrast { --text-secondary: #f2f2f2; }
+        body.high-contrast .unified-chart-section,
+        body.high-contrast .panel-section,
+        body.high-contrast .chart-container { box-shadow: none; }
+        body.high-contrast .indicator-label { color: #fafafa; }
+
+        /* Theme modal */
+        .theme-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .theme-content {
+            background: #0e0e0e;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 18px;
+            width: 92%;
+            max-width: 520px;
+            box-shadow: 0 35px 80px rgba(0,0,0,0.65);
+        }
+        .theme-title { font-family: 'Orbitron', monospace; font-weight: 700; margin-bottom: 12px; letter-spacing: 1px; }
+        .theme-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .theme-swatch { border-radius: 10px; padding: 10px; border: 1px solid #444; cursor: pointer; text-align: center; font-size: 12px; }
+        .theme-swatch:hover { border-color: #888; }
+        .theme-actions { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+        .theme-close { background: #222; color: #eee; border: 1px solid #555; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+        .theme-advanced { margin-top: 14px; border-top: 1px solid #222; padding-top: 12px; }
+        .theme-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+        .theme-row label { font-size: 12px; color: #ccc; display: block; margin-bottom: 6px; }
+        .theme-row input[type="color"], .theme-row select, .theme-row input[type="range"] { width: 100%; }
+        .theme-btn-small { background: #222; color: #eee; border: 1px solid #555; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+        .theme-btn-small:hover { background: #333; }
+
+        /* Theme overrides */
+        body.theme-blue::after {
+            background:
+              linear-gradient(to right, rgba(0,179,255,0.22), rgba(0,179,255,0.0)) left/12px 100% no-repeat,
+              linear-gradient(to left,  rgba(0,179,255,0.22), rgba(0,179,255,0.0)) right/12px 100% no-repeat;
+        }
+        body.theme-green::after {
+            background:
+              linear-gradient(to right, rgba(0,255,136,0.22), rgba(0,255,136,0.0)) left/12px 100% no-repeat,
+              linear-gradient(to left,  rgba(0,255,136,0.22), rgba(0,255,136,0.0)) right/12px 100% no-repeat;
+        }
+        body.theme-purple::after {
+            background:
+              linear-gradient(to right, rgba(165, 105, 255, 0.22), rgba(165, 105, 255, 0.0)) left/12px 100% no-repeat,
+              linear-gradient(to left,  rgba(165, 105, 255, 0.22), rgba(165, 105, 255, 0.0)) right/12px 100% no-repeat;
+        }
+        .theme-blue select, .theme-blue button { border-color: #00b3ff; }
+        .theme-blue select:hover, .theme-blue button:hover { background: #00b3ff; box-shadow: 0 0 15px rgba(0,179,255,0.6); }
+        .theme-blue .decision-entry { background: rgba(0, 20, 40, 0.8); border-left-color: #00b3ff; }
+        .theme-blue .unified-chart-section, .theme-blue .panel-section { box-shadow: 0 0 22px rgba(0,179,255,0.25), 0 8px 32px rgba(0,0,0,0.7); }
+
+        .theme-green select, .theme-green button { border-color: #00ff88; }
+        .theme-green select:hover, .theme-green button:hover { background: #00ff88; color: #000; box-shadow: 0 0 15px rgba(0,255,136,0.6); }
+        .theme-green .decision-entry { background: rgba(0, 32, 16, 0.85); border-left-color: #00ff88; }
+        .theme-green .unified-chart-section, .theme-green .panel-section { box-shadow: 0 0 22px rgba(0,255,136,0.22), 0 8px 32px rgba(0,0,0,0.7); }
+
+        .theme-purple select, .theme-purple button { border-color: #a569ff; }
+        .theme-purple select:hover, .theme-purple button:hover { background: #a569ff; box-shadow: 0 0 15px rgba(165,105,255,0.6); }
+        .theme-purple .decision-entry { background: rgba(26, 0, 40, 0.8); border-left-color: #a569ff; }
+        .theme-purple .unified-chart-section, .theme-purple .panel-section { box-shadow: 0 0 22px rgba(165,105,255,0.25), 0 8px 32px rgba(0,0,0,0.7); }
+
+        /* Responsive adjustments to ensure bot + boxes are visible on load */
+        @media (max-width: 1280px) {
+            :root { --frame-margin: 14px; }
+            .chart-container { height: calc(100svh - 460px); }
+        }
+        @media (max-width: 1024px) {
+            :root { --frame-margin: 12px; }
+            .header { padding: 12px; }
+            .logo { font-size: 34px; }
+            .chart-container { height: 55svh; }
+            .unified-chart-section { padding: 16px; }
+        }
+        @media (max-width: 768px) {
+            :root { --frame-margin: 10px; }
+            .logo { font-size: 28px; letter-spacing: 3px; }
+            .tier-selector-container { top: 10px; right: 10px; }
+            .chart-container { height: 50svh; padding: 14px; }
+            .trading-panel { gap: 14px; }
+        }
+        @media (max-width: 480px) {
+            :root { --frame-margin: 8px; }
+            .chart-container { height: 48svh; padding: 12px; }
+            .panel-section { padding: 14px; }
+            .trade-btn { padding: 10px; }
+        }
         
         .decision-entry {
             padding: 10px;
@@ -589,7 +806,7 @@
             background: rgba(26, 0, 0, 0.8);
             border-radius: 8px;
             font-size: 12px;
-            border-left: 3px solid #ff0040;
+            border-left: 3px solid rgb(var(--accent-rgb));
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -788,7 +1005,7 @@
         }
         
         ::-webkit-scrollbar-thumb {
-            background: #ff0040;
+            background: rgb(var(--accent-rgb));
             border-radius: 4px;
         }
         
@@ -799,16 +1016,17 @@
 </head>
 <body>
     <div class="header">
-        <div class="logo">OGZPrime</div>
-        <div class="tagline">Quantum Trading System • Real-Time Polygon Data</div>
+        <div class="logo" id="brandLogo">OGZPrime</div>
+        <div class="tagline" id="brandTagline">Quantum Trading System • Real-Time Polygon Data</div>
         <div class="tier-selector-container">
             <span class="tier-label">👁️ SELECT YOUR TIER:</span>
             <select id="tierSelector" class="tier-selector" onchange="switchTier(this.value)">
-                <option value="quantum">⚛️ QUANTUM ($9,997/mo) - ALL FEATURES</option>
-                <option value="elite">👑 ELITE ($997/mo)</option>
-                <option value="pro">🔶 PRO ($297/mo)</option>
-                <option value="starter">🔷 STARTER ($97/mo)</option>
+                <option value="elite">👑 ELITE</option>
+                <option value="pro">🔶 PRO</option>
+                <option value="starter">🔷 STARTER</option>
             </select>
+            <button class="readable-toggle" id="readableToggle" onclick="toggleReadableMode()" title="Readable mode">Aa</button>
+            <button class="theme-btn" id="themeBtn" onclick="openThemeModal()" title="Customize theme">🎨</button>
             <div class="connection-status">
                 <span class="status-dot" id="connectionStatus"></span>
                 <span id="statusText">Connecting...</span>
@@ -829,8 +1047,7 @@
         <div class="unified-chart-section tier-quantum" id="unifiedChart">
             <div class="chart-header">
                 <div class="chart-title-container">
-                    <h2 class="chart-title" id="chartTitle">QUANTUM TIER</h2>
-                    <span class="tier-price" id="tierPrice">$9,997/mo</span>
+                    <h2 class="chart-title" id="chartTitle">ELITE TIER</h2>
                 </div>
                 <div class="chart-controls">
                     <select id="assetSelector">
@@ -851,6 +1068,8 @@
                     <label><input type="checkbox" id="indBB"> <span style="color:#00cc66">Bollinger</span></label>
                     <label><input type="checkbox" id="indRSI"> RSI</label>
                     <label><input type="checkbox" id="indMACD"> MACD</label>
+                    <label><input type="checkbox" id="indFIB"> Fib</label>
+                    <label><input type="checkbox" id="indSR"> S/R</label>
                 </div>
             </div>
             
@@ -861,17 +1080,11 @@
                   <canvas id="macdChart" style="height:120px; display:none;"></canvas>
                 </div>
                 
-                <!-- Bot Status Indicators -->
-                <div class="bot-status-row">
-                    <div class="bot-status-indicator starter" id="starterStatus">STARTER</div>
-                    <div class="bot-status-indicator pro" id="proStatus">PRO</div>
-                    <div class="bot-status-indicator elite" id="eliteStatus">ELITE</div>
-                    <div class="bot-status-indicator quantum active" id="quantumStatus">QUANTUM</div>
-                </div>
+                <!-- Bot Status Indicators removed -->
                 
                 <!-- Dynamic Indicator Overlay -->
                 <div class="indicator-overlay" id="indicatorOverlay">
-                    <h4>📊 <span id="tierIndicatorTitle">Quantum</span> Indicators</h4>
+                    <h4>📊 Indicators</h4>
                     
                     <!-- Starter Indicators (RSI, MACD only) -->
                     <div class="indicators-panel starter-indicators">
@@ -915,7 +1128,7 @@
                         </div>
                     </div>
                     
-                    <!-- Elite Indicators (+ Fibonacci, Ichimoku, Neural) -->
+                    <!-- Elite Indicators (+ Fibonacci, Ichimoku) -->
                     <div class="indicators-panel elite-indicators">
                         <div class="indicator-item">
                             <span class="indicator-label">RSI (14):</span>
@@ -945,65 +1158,42 @@
                             <span class="indicator-label">Ichimoku:</span>
                             <span class="indicator-value ind-ichimoku">Neutral</span>
                         </div>
-                        <div class="feature-notice elite-locked">
-                            🔒 Upgrade to QUANTUM for Reality Bending
-                        </div>
+                        <!-- quantum upsell removed -->
                     </div>
                     
-                    <!-- Quantum Indicators (Everything + Quantum-specific) -->
-                    <div class="indicators-panel quantum-indicators">
-                        <div class="indicator-item">
-                            <span class="indicator-label">RSI (14):</span>
-                            <span class="indicator-value ind-rsi">50</span>
-                        </div>
-                        <div class="indicator-item">
-                            <span class="indicator-label">MACD (12/26):</span>
-                            <span class="indicator-value ind-macd">0.00</span>
-                        </div>
-                        <div class="indicator-item">
-                            <span class="indicator-label">Coherence:</span>
-                            <span class="indicator-value" id="coherence">98%</span>
-                        </div>
-                        <div class="indicator-item">
-                            <span class="indicator-label">Entanglement:</span>
-                            <span class="indicator-value" id="entanglement">Active</span>
-                        </div>
-                        <div class="indicator-item">
-                            <span class="indicator-label">Supremacy:</span>
-                            <span class="indicator-value" id="supremacy">Achieved</span>
-                        </div>
-                        <div class="indicator-item">
-                            <span class="indicator-label">Reality:</span>
-                            <span class="indicator-value" id="reality">Bending</span>
-                        </div>
-                    </div>
+                    <!-- Quantum-specific indicators removed -->
                 </div>
             </div>
         </div>
         
         <!-- Trading Panel -->
         <div class="trading-panel">
-            <!-- Controls Section -->
+            <!-- Analysis & Decisions -->
             <div class="panel-section">
-                <div class="panel-title">Trading Controls</div>
-                <div class="trade-controls">
-                    <button class="trade-btn buy-btn" onclick="executeTrade('buy')">BUY</button>
-                    <button class="trade-btn sell-btn" onclick="executeTrade('sell')">SELL</button>
-                    <button class="trade-btn kill-btn" onclick="executeTrade('kill')">KILL</button>
+                <div class="panel-title">Analysis & Decisions</div>
+                <div class="pattern-panel" style="display:block;">
+                    <div class="pattern-name" id="currentPattern">Pattern Analysis Active</div>
                 </div>
-                <div class="trade-controls advanced-controls">
-                    <button class="trade-btn long-btn" onclick="executeTrade('long')">LONG</button>
-                    <button class="trade-btn short-btn" onclick="executeTrade('short')">SHORT</button>
-                    <button class="trade-btn hedge-btn" onclick="executeTrade('hedge')">HEDGE</button>
-                </div>
-                
-                <!-- Pattern Recognition Panel -->
-                <div class="pattern-panel">
-                    <div class="pattern-name" id="currentPattern">Quantum Pattern Analysis Active</div>
-                </div>
+                <div class="decision-log" id="decisionLog"></div>
             </div>
 
-            <!-- Stats Section -->
+            <!-- Stats Section moved to the end below -->
+            
+            <!-- Decision Log moved to Analysis & Decisions; Neural Ensemble removed -->
+
+            <!-- Current Position -->
+            <div class="panel-section">
+                <div class="panel-title">Current Position</div>
+                <div id="currentPosition">No active position</div>
+            </div>
+
+            <!-- Trade History -->
+            <div class="panel-section">
+                <div class="panel-title">Trade History</div>
+                <div id="tradeHistory" style="max-height:400px; overflow:auto;"></div>
+            </div>
+
+            <!-- Performance Stats (last in row) -->
             <div class="panel-section">
                 <div class="panel-title">Performance Stats</div>
                 <div class="stats-grid">
@@ -1017,77 +1207,116 @@
                     </div>
                     <div class="stat-item">
                         <div class="stat-label">Active Bots</div>
-                        <div class="stat-value" id="activeBots">4</div>
+                        <div class="stat-value" id="activeBots">0</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-label">Confidence</div>
                         <div class="stat-value" id="confidence">0%</div>
                     </div>
                 </div>
-                
-                <!-- Quantum Features -->
-                <div class="quantum-features">
-                    <div class="panel-title">⚛️ Quantum Analysis</div>
-                    <div class="quantum-stat">
-                        <span class="quantum-label">Reality Bend:</span>
-                        <span class="quantum-value" id="realityBend">Stable</span>
-                    </div>
-                    <div class="quantum-stat">
-                        <span class="quantum-label">Divine Integration:</span>
-                        <span class="quantum-value" id="divineInt">Active</span>
-                    </div>
-                    <div class="quantum-stat">
-                        <span class="quantum-label">HFT Status:</span>
-                        <span class="quantum-value" id="hftStatus">Ready</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Decision Log Section -->
-            <div class="panel-section">
-                <div class="panel-title">Multi-Bot Decision Log</div>
-                <div class="decision-log" id="decisionLog">
-                    <!-- Entries will be added dynamically from all bot tiers -->
-                </div>
-                
-                <!-- Neural Ensemble (Elite & Quantum) -->
-                <div class="neural-ensemble">
-                    <div class="panel-title">Neural Ensemble Voting</div>
-                    <div class="ensemble-grid">
-                        <div class="brain-module">
-                            <div class="brain-name">Pattern</div>
-                            <div class="brain-vote vote-hold" id="patternVote">HOLD</div>
-                        </div>
-                        <div class="brain-module">
-                            <div class="brain-name">Momentum</div>
-                            <div class="brain-vote vote-hold" id="momentumVote">HOLD</div>
-                        </div>
-                        <div class="brain-module">
-                            <div class="brain-name">Sentiment</div>
-                            <div class="brain-vote vote-hold" id="sentimentVote">HOLD</div>
-                        </div>
-                        <div class="brain-module">
-                            <div class="brain-name">Risk</div>
-                            <div class="brain-vote vote-hold" id="riskVote">HOLD</div>
-                        </div>
-                        <div class="brain-module">
-                            <div class="brain-name">Quantum</div>
-                            <div class="brain-vote vote-hold" id="quantumVote">HOLD</div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
-            <!-- Current Position -->
+            <!-- TRAI Assistant -->
             <div class="panel-section">
-                <div class="panel-title">Current Position</div>
-                <div id="currentPosition">No active position</div>
+                <div class="panel-title">TRAI Assistant</div>
+                <div id="traiChat" style="max-height:220px; overflow:auto; background: rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px;"></div>
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <input id="traiInput" placeholder="Ask TRAI anything..." style="flex:1; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:#0a0a0a; color:#fff;" onkeypress="if(event.key==='Enter'){ sendToTRAI(); }">
+                    <button class="trade-btn long-btn" style="flex:0 0 auto; padding:10px 14px;" onclick="sendToTRAI()">Send</button>
+                </div>
             </div>
+        </div>
+    </div>
 
-            <!-- Trade History -->
-            <div class="panel-section">
-                <div class="panel-title">Trade History</div>
-                <div id="tradeHistory" style="max-height:220px; overflow:auto;"></div>
+    <!-- One-time tip -->
+    <div class="readable-tip" id="readableTip" style="display:none;">
+        👋 Can’t see everything clearly? Try Readable mode for bigger, brighter text, or customize your theme colors.
+        <div class="tip-actions">
+            <button class="tip-btn" onclick="toggleReadableMode(); hideReadableTip(true);">Readable</button>
+            <button class="tip-btn" onclick="openThemeModal(); hideReadableTip(true);">Theme</button>
+            <span class="tip-link" onclick="hideReadableTip(true)">Dismiss</span>
+        </div>
+    </div>
+
+    <!-- Theme Modal -->
+    <div class="theme-modal" id="themeModal">
+        <div class="theme-content">
+            <div class="theme-title">🎨 Theme & Visibility</div>
+            <div class="theme-grid">
+                <div class="theme-swatch" style="background: linear-gradient(180deg,#1a0008,#0b0000); color:#fff;" onclick="applyTheme('red')">Red (Default)</div>
+                <div class="theme-swatch" style="background: linear-gradient(180deg,#00121c,#00080d); color:#cfefff;" onclick="applyTheme('blue')">Blue</div>
+                <div class="theme-swatch" style="background: linear-gradient(180deg,#00180f,#000c08); color:#dcffe8;" onclick="applyTheme('green')">Green</div>
+                <div class="theme-swatch" style="background: linear-gradient(180deg,#110018,#08000f); color:#f1e5ff;" onclick="applyTheme('purple')">Purple</div>
+            </div>
+            <div class="theme-advanced">
+                <div class="theme-row">
+                    <div>
+                        <label for="accentColor">Accent color</label>
+                        <input type="color" id="accentColor" value="#ff0040">
+                    </div>
+                    <div>
+                        <label for="sideGlowColor">Side glow color</label>
+                        <input type="color" id="sideGlowColor" value="#ff0040">
+                    </div>
+                </div>
+                <div class="theme-row">
+                    <div>
+                        <label for="glowIntensity">Glow intensity</label>
+                        <input type="range" id="glowIntensity" min="0" max="0.6" step="0.02" value="0.25">
+                    </div>
+                    <div>
+                        <label for="fontScale">Font scale</label>
+                        <input type="range" id="fontScale" min="0.9" max="1.6" step="0.05" value="1">
+                    </div>
+                </div>
+                <div class="theme-row">
+                    <div>
+                        <label for="fontFamily">Font family</label>
+                        <select id="fontFamily">
+                            <option value="'Atkinson Hyperlegible'">Atkinson Hyperlegible</option>
+                            <option value="'JetBrains Mono'" selected>JetBrains Mono</option>
+                            <option value="'Inter'">Inter</option>
+                            <option value="system-ui">System Sans</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; align-items:flex-end; gap:10px;">
+                        <label style="display:flex; align-items:center; gap:8px;">
+                            <input type="checkbox" id="highContrast"> High contrast
+                        </label>
+                    </div>
+                </div>
+                <div class="theme-row">
+                    <div>
+                        <label>Chart colors</label>
+                        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px;">
+                            <div><small>Price</small><input type="color" id="colPrice" value="#00ff88"/></div>
+                            <div><small>SMA</small><input type="color" id="colSMA" value="#66c2ff"/></div>
+                            <div><small>EMA</small><input type="color" id="colEMA" value="#ff66cc"/></div>
+                            <div><small>Boll</small><input type="color" id="colBB" value="#00cc66"/></div>
+                            <div><small>RSI</small><input type="color" id="colRSI" value="#ffaa00"/></div>
+                            <div><small>MACD</small><input type="color" id="colMACD" value="#ff00aa"/></div>
+                            <div><small>Grid</small><input type="color" id="colGrid" value="#333333"/></div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="presetSelect">Presets</label>
+                        <select id="presetSelect"></select>
+                        <input id="presetName" placeholder="e.g., MyBrand" style="margin-top:6px; width:100%;"/>
+                    </div>
+                </div>
+                <div class="theme-actions">
+                    <div style="display:flex; gap:8px;">
+                        <button class="theme-btn-small" onclick="applyCustomTheme()">Apply</button>
+                        <button class="theme-btn-small" onclick="exportTheme()">Export</button>
+                        <button class="theme-btn-small" onclick="importTheme()">Import</button>
+                        <input type="file" id="themeImportFile" accept="application/json" style="display:none;"/>
+                        <button class="theme-btn-small" onclick="resetTheme()">Reset</button>
+                        <button class="theme-btn-small" onclick="savePreset()">Save Preset</button>
+                        <button class="theme-btn-small" onclick="loadPreset()">Load</button>
+                        <button class="theme-btn-small" onclick="deletePreset()">Delete</button>
+                    </div>
+                    <button class="theme-close" onclick="closeThemeModal()">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1106,7 +1335,7 @@
         let chart = null;
         let rsiChart = null;
         let macdChart = null;
-        let currentTier = 'quantum'; // Start with quantum to show all features
+        let currentTier = 'elite'; // Start with elite by default
         let priceData = [];
         let tradeHistory = [];
         let botStates = {
@@ -1177,9 +1406,299 @@
         let selectedAsset = 'BTC-USD';
         let maxPoints = 50; // window size for chart based on timeframe
 
+        // Readable mode persistence + toggle
+        function applyReadableFromStorage() {
+            try {
+                const on = localStorage.getItem('readableMode') === '1';
+                document.body.classList.toggle('readable-mode', on);
+            } catch (e) {}
+        }
+        function toggleReadableMode() {
+            const nowOn = !document.body.classList.contains('readable-mode');
+            document.body.classList.toggle('readable-mode', nowOn);
+            try { localStorage.setItem('readableMode', nowOn ? '1' : '0'); } catch (e) {}
+        }
+
+        // Apply preference on load
+        document.addEventListener('DOMContentLoaded', applyReadableFromStorage);
+
+        // Tip popup shown once
+        function showReadableTipOnce() {
+            try {
+                if (localStorage.getItem('seenReadableTip') === '1') return;
+                const tip = document.getElementById('readableTip');
+                if (tip) tip.style.display = 'block';
+            } catch (e) {
+                const tip = document.getElementById('readableTip');
+                if (tip) tip.style.display = 'block';
+            }
+        }
+        function hideReadableTip(persist = false) {
+            const tip = document.getElementById('readableTip');
+            if (tip) tip.style.display = 'none';
+            if (persist) { try { localStorage.setItem('seenReadableTip', '1'); } catch (e) {} }
+        }
+        document.addEventListener('DOMContentLoaded', () => setTimeout(showReadableTipOnce, 800));
+
+        // Theme switching
+        function setCssVar(name, value) {
+            document.documentElement.style.setProperty(name, value);
+        }
+        function hexToRgb(hex) {
+            const h = hex.replace('#','');
+            if (h.length === 3) {
+              const r = parseInt(h[0]+h[0],16), g = parseInt(h[1]+h[1],16), b = parseInt(h[2]+h[2],16);
+              return [r,g,b];
+            } else {
+              const r = parseInt(h.slice(0,2),16), g = parseInt(h.slice(2,4),16), b = parseInt(h.slice(4,6),16);
+              return [r,g,b];
+            }
+        }
+        function applyTheme(theme) {
+            document.body.classList.remove('theme-blue','theme-green','theme-purple');
+            if (theme === 'blue') document.body.classList.add('theme-blue');
+            else if (theme === 'green') document.body.classList.add('theme-green');
+            else if (theme === 'purple') document.body.classList.add('theme-purple');
+            try { localStorage.setItem('theme', theme); } catch (e) {}
+            closeThemeModal();
+        }
+        function applyThemeFromStorage() {
+            try {
+                const t = localStorage.getItem('theme') || 'red';
+                applyTheme(t);
+            } catch (e) {}
+        }
+        function applyCustomTheme() {
+            const ac = document.getElementById('accentColor').value || '#ff0040';
+            const sc = document.getElementById('sideGlowColor').value || '#ff0040';
+            const gi = parseFloat(document.getElementById('glowIntensity').value || '0.25');
+            const fs = parseFloat(document.getElementById('fontScale').value || '1');
+            const ff = document.getElementById('fontFamily').value || "'JetBrains Mono'";
+            const hc = document.getElementById('highContrast').checked;
+            const palette = {
+              price: document.getElementById('colPrice')?.value || '#00ff88',
+              sma: document.getElementById('colSMA')?.value || '#66c2ff',
+              ema: document.getElementById('colEMA')?.value || '#ff66cc',
+              bb: document.getElementById('colBB')?.value || '#00cc66',
+              rsi: document.getElementById('colRSI')?.value || '#ffaa00',
+              macd: document.getElementById('colMACD')?.value || '#ff00aa',
+              grid: document.getElementById('colGrid')?.value || '#333333'
+            };
+            const [ar,ag,ab] = hexToRgb(ac);
+            const [sr,sg,sb] = hexToRgb(sc);
+            setCssVar('--accent-rgb', `${ar}, ${ag}, ${ab}`);
+            setCssVar('--side-rgb', `${sr}, ${sg}, ${sb}`);
+            setCssVar('--glow-intensity', gi);
+            setCssVar('--font-scale', fs);
+            setCssVar('--ui-font', ff);
+            document.body.classList.toggle('high-contrast', !!hc);
+            const themeCustom = { accent: ac, side: sc, glowIntensity: gi, fontScale: fs, fontFamily: ff, highContrast: hc, chartPalette: palette };
+            try { localStorage.setItem('themeCustom', JSON.stringify(themeCustom)); localStorage.setItem('theme','custom'); } catch (e) {}
+            applyPaletteToCharts(palette);
+        }
+        function loadCustomThemeFromStorage() {
+            try {
+                const raw = localStorage.getItem('themeCustom');
+                if (!raw) return;
+                const cfg = JSON.parse(raw);
+                if (cfg.accent) document.getElementById('accentColor').value = cfg.accent;
+                if (cfg.side) document.getElementById('sideGlowColor').value = cfg.side;
+                if (cfg.glowIntensity != null) document.getElementById('glowIntensity').value = cfg.glowIntensity;
+                if (cfg.fontScale != null) document.getElementById('fontScale').value = cfg.fontScale;
+                if (cfg.fontFamily) document.getElementById('fontFamily').value = cfg.fontFamily;
+                document.getElementById('highContrast').checked = !!cfg.highContrast;
+                if (cfg.chartPalette) {
+                    const p = cfg.chartPalette;
+                    if (p.price) document.getElementById('colPrice').value = p.price;
+                    if (p.sma) document.getElementById('colSMA').value = p.sma;
+                    if (p.ema) document.getElementById('colEMA').value = p.ema;
+                    if (p.bb) document.getElementById('colBB').value = p.bb;
+                    if (p.rsi) document.getElementById('colRSI').value = p.rsi;
+                    if (p.macd) document.getElementById('colMACD').value = p.macd;
+                    if (p.grid) document.getElementById('colGrid').value = p.grid;
+                    applyPaletteToCharts(p);
+                }
+                // Apply to CSS
+                const [ar,ag,ab] = hexToRgb(cfg.accent || '#ff0040');
+                const [sr,sg,sb] = hexToRgb(cfg.side || '#ff0040');
+                setCssVar('--accent-rgb', `${ar}, ${ag}, ${ab}`);
+                setCssVar('--side-rgb', `${sr}, ${sg}, ${sb}`);
+                setCssVar('--glow-intensity', cfg.glowIntensity != null ? cfg.glowIntensity : 0.25);
+                setCssVar('--font-scale', cfg.fontScale != null ? cfg.fontScale : 1);
+                setCssVar('--ui-font', cfg.fontFamily || "'JetBrains Mono'");
+                document.body.classList.toggle('high-contrast', !!cfg.highContrast);
+            } catch (e) {}
+        }
+        function applyPaletteToCharts(palette) {
+            try {
+                if (chart) {
+                    chart.data.datasets[0].borderColor = palette.price;
+                    chart.data.datasets[0].backgroundColor = palette.price + '33';
+                    chart.data.datasets[1].borderColor = palette.sma;
+                    chart.data.datasets[2].borderColor = palette.ema;
+                    chart.data.datasets[3].borderColor = palette.bb;
+                    chart.data.datasets[4].borderColor = palette.bb;
+                    chart.options.scales.x.grid.color = palette.grid + '55';
+                    chart.options.scales.y.grid.color = palette.grid + '55';
+                    chart.update('none');
+                }
+                if (rsiChart) { rsiChart.data.datasets[0].borderColor = palette.rsi; rsiChart.update('none'); }
+                if (macdChart) { macdChart.data.datasets[0].borderColor = palette.macd; macdChart.update('none'); }
+            } catch (e) {}
+        }
+
+        // Presets
+        function refreshPresetSelect() {
+            const sel = document.getElementById('presetSelect');
+            if (!sel) return;
+            const raw = localStorage.getItem('ogzThemePresets') || '{}';
+            const presets = JSON.parse(raw);
+            sel.innerHTML = '';
+            Object.keys(presets).forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name; opt.textContent = name; sel.appendChild(opt);
+            });
+        }
+        function savePreset() {
+            try {
+                const name = (document.getElementById('presetName').value || '').trim();
+                if (!name) return;
+                const raw = localStorage.getItem('ogzThemePresets') || '{}';
+                const presets = JSON.parse(raw);
+                const cfg = JSON.parse(localStorage.getItem('themeCustom') || '{}');
+                presets[name] = cfg;
+                localStorage.setItem('ogzThemePresets', JSON.stringify(presets));
+                refreshPresetSelect();
+            } catch (e) {}
+        }
+        function loadPreset() {
+            try {
+                const sel = document.getElementById('presetSelect');
+                const name = sel.value;
+                const raw = localStorage.getItem('ogzThemePresets') || '{}';
+                const presets = JSON.parse(raw);
+                if (!presets[name]) return;
+                localStorage.setItem('themeCustom', JSON.stringify(presets[name]));
+                localStorage.setItem('theme','custom');
+                loadCustomThemeFromStorage();
+                applyCustomTheme();
+            } catch (e) {}
+        }
+        function deletePreset() {
+            try {
+                const sel = document.getElementById('presetSelect');
+                const name = sel.value;
+                const raw = localStorage.getItem('ogzThemePresets') || '{}';
+                const presets = JSON.parse(raw);
+                delete presets[name];
+                localStorage.setItem('ogzThemePresets', JSON.stringify(presets));
+                refreshPresetSelect();
+            } catch (e) {}
+        }
+        function exportTheme() {
+            try {
+                const data = localStorage.getItem('themeCustom') || JSON.stringify({});
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = 'ogz-theme.json'; a.click();
+                URL.revokeObjectURL(url);
+            } catch (e) {}
+        }
+        function importTheme() {
+            const input = document.getElementById('themeImportFile');
+            if (!input) return;
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const text = await file.text();
+                try { localStorage.setItem('themeCustom', text); localStorage.setItem('theme','custom'); } catch (err) {}
+                loadCustomThemeFromStorage();
+                applyCustomTheme();
+            };
+            input.click();
+        }
+        function resetTheme() {
+            try { localStorage.removeItem('themeCustom'); localStorage.setItem('theme','red'); } catch (e) {}
+            // reset vars
+            setCssVar('--accent-rgb', '255, 0, 64');
+            setCssVar('--side-rgb', '255, 0, 64');
+            setCssVar('--glow-intensity', 0.25);
+            setCssVar('--font-scale', 1);
+            setCssVar('--ui-font', "'JetBrains Mono'");
+            document.body.classList.remove('high-contrast');
+            // reset controls
+            document.getElementById('accentColor').value = '#ff0040';
+            document.getElementById('sideGlowColor').value = '#ff0040';
+            document.getElementById('glowIntensity').value = 0.25;
+            document.getElementById('fontScale').value = 1;
+            document.getElementById('fontFamily').value = "'JetBrains Mono'";
+            document.getElementById('highContrast').checked = false;
+        }
+        // Allow Docker default via meta (if no localStorage override)
+        function applyThemeFromMeta() {
+            const get = (name) => (document.querySelector(`meta[name="${name}"]`)||{}).content;
+            try {
+                if (localStorage.getItem('themeCustom')) return; // user's choice wins
+                const accent = get('ogz-accent');
+                const side = get('ogz-side');
+                const font = get('ogz-font');
+                const fs = parseFloat(get('ogz-font-scale'));
+                const hc = get('ogz-high-contrast') === '1';
+                if (accent || side || font || fs || hc) {
+                    const cfg = {
+                        accent: accent || '#ff0040',
+                        side: side || accent || '#ff0040',
+                        glowIntensity: isNaN(fs) ? 0.25 : 0.25, // keep default
+                        fontScale: isNaN(fs) ? 1 : fs,
+                        fontFamily: font || "'JetBrains Mono'",
+                        highContrast: hc
+                    };
+                    localStorage.setItem('themeCustom', JSON.stringify(cfg));
+                    localStorage.setItem('theme', 'custom');
+                }
+            } catch (e) {}
+        }
+        // Branding from meta (for white-glove enterprise)
+        function applyBrandFromMeta() {
+            const get = (name) => (document.querySelector(`meta[name="${name}"]`)||{}).content;
+            const brand = get('ogz-brand-name');
+            const logoUrl = get('ogz-logo-url');
+            const tagline = get('ogz-tagline');
+            const logoEl = document.getElementById('brandLogo');
+            const tagEl = document.getElementById('brandTagline');
+            if (logoEl) {
+                if (logoUrl) {
+                    logoEl.innerHTML = `<img src="${logoUrl}" alt="${brand || 'Brand'}" style="max-height:48px; object-fit:contain;">`;
+                } else if (brand) {
+                    logoEl.textContent = brand;
+                }
+            }
+            if (tagEl && tagline) tagEl.textContent = tagline;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            applyThemeFromMeta();
+            applyThemeFromStorage();
+            if ((localStorage.getItem('theme') || 'red') === 'custom') {
+                loadCustomThemeFromStorage();
+            }
+            refreshPresetSelect();
+            applyBrandFromMeta();
+        });
+        function openThemeModal() {
+            const m = document.getElementById('themeModal');
+            if (m) m.style.display = 'flex';
+        }
+        function closeThemeModal() {
+            const m = document.getElementById('themeModal');
+            if (m) m.style.display = 'none';
+        }
+
         // Initialize Chart
         function initChart() {
             const ctx = document.getElementById('mainChart').getContext('2d');
+            try { if (window['chartjs-plugin-annotation']) { Chart.register(window['chartjs-plugin-annotation']); } } catch (e) {}
             chart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -1196,7 +1715,9 @@
                     { label: 'SMA20', data: [], borderColor: '#66c2ff', pointRadius: 0, borderWidth: 1, tension: 0.1, hidden: !document.getElementById('indSMA')?.checked },
                     { label: 'EMA50', data: [], borderColor: '#ff66cc', pointRadius: 0, borderWidth: 1, tension: 0.1, hidden: !document.getElementById('indEMA')?.checked },
                     { label: 'BB Upper', data: [], borderColor: '#00cc66', borderDash: [4,2], pointRadius: 0, borderWidth: 1, tension: 0.1, hidden: !document.getElementById('indBB')?.checked },
-                    { label: 'BB Lower', data: [], borderColor: '#00cc66', borderDash: [4,2], pointRadius: 0, borderWidth: 1, tension: 0.1, hidden: !document.getElementById('indBB')?.checked }
+                    { label: 'BB Lower', data: [], borderColor: '#00cc66', borderDash: [4,2], pointRadius: 0, borderWidth: 1, tension: 0.1, hidden: !document.getElementById('indBB')?.checked },
+                    { type:'scatter', label: 'Buys', data: [], borderColor:'#00ff41', backgroundColor:'#00ff41', pointRadius:5, showLine:false, pointStyle:'triangle' },
+                    { type:'scatter', label: 'Sells', data: [], borderColor:'#ff4444', backgroundColor:'#ff4444', pointRadius:5, showLine:false, pointStyle:'rectRot' }
                     ]
                 },
                 options: {
@@ -1205,7 +1726,8 @@
                     plugins: {
                         legend: {
                             display: false
-                        }
+                        },
+                        annotation: { annotations: {} }
                     },
                     scales: {
                         x: {
@@ -1241,6 +1763,8 @@
             document.getElementById('indSMA').addEventListener('change', (e)=>{ chart.data.datasets[1].hidden = !e.target.checked; chart.update(); });
             document.getElementById('indEMA').addEventListener('change', (e)=>{ chart.data.datasets[2].hidden = !e.target.checked; chart.update(); });
             document.getElementById('indBB').addEventListener('change', (e)=>{ chart.data.datasets[3].hidden = !e.target.checked; chart.data.datasets[4].hidden = !e.target.checked; chart.update(); });
+            document.getElementById('indFIB').addEventListener('change', ()=> updateAnnotations());
+            document.getElementById('indSR').addEventListener('change', ()=> updateAnnotations());
         }
         
         function updateDot(id, on) {
@@ -1302,6 +1826,23 @@
         function handleWebSocketMessage(data) {
             // Handle price updates
             if (data.type === 'price' && data.data) {
+                // Populate asset selector dynamically from allPrices if present
+                if (data.data.allPrices) {
+                    try {
+                        const assetSel = document.getElementById('assetSelector');
+                        if (assetSel && assetSel.children.length < Object.keys(data.data.allPrices).length) {
+                            const seen = new Set();
+                            Array.from(assetSel.options).forEach(o => seen.add(o.value));
+                            Object.keys(data.data.allPrices).forEach(sym => {
+                                if (!seen.has(sym)) {
+                                    const opt = document.createElement('option');
+                                    opt.value = sym; opt.textContent = sym;
+                                    assetSel.appendChild(opt);
+                                }
+                            });
+                        }
+                    } catch (_) {}
+                }
                 updateChart(data.data);
                 updateIndicators(data);
             }
@@ -1312,6 +1853,21 @@
                 logDecision(data, botTier);
                 updateBotStatus(botTier, data);
                 updateStats(data);
+                addTradeHistory(data);
+                plotTradeMarker({
+                    price: data.price || data.entryPrice || data.fillPrice,
+                    timestamp: data.timestamp || Date.now(),
+                    type: (data.type || data.action || '').toUpperCase(),
+                    side: data.side
+                });
+            }
+            // Handle closed trades and position updates
+            else if (data.type === 'trade_result') {
+                addTradeHistory(data);
+                if (data.position) updatePosition({ position: data.position });
+            }
+            else if (data.type === 'position') {
+                updatePosition(data);
             }
             
             // Handle bot status updates
@@ -1354,9 +1910,7 @@
             
             // Update title and price
             document.getElementById('chartTitle').textContent = tierConfigs[tier].title;
-            document.getElementById('tierPrice').textContent = tierConfigs[tier].price;
-            document.getElementById('tierIndicatorTitle').textContent = 
-                tier.charAt(0).toUpperCase() + tier.slice(1);
+            // Indicator title element removed
             
             // Update bot status indicators
             updateBotStatusIndicators();
@@ -1480,24 +2034,44 @@
             if (!chart) return;
             if (data.asset && data.asset !== selectedAsset) return;
             
-            const timestamp = new Date().toLocaleTimeString();
+            const ts = (typeof data.timestamp === 'number') ? data.timestamp : Date.now();
             const price = data.price || data.close || 0;
+            const tfMs = timeframe === '1m' ? 60000 : timeframe === '5m' ? 300000 : timeframe === '15m' ? 900000 : timeframe === '1h' ? 3600000 : 300000;
+            let seriesRef;
             
-            chart.data.labels.push(timestamp);
-            chart.data.datasets[0].data.push(price);
-            priceData.push(price);
-            
-            // Keep only last N points
-            if (chart.data.labels.length > maxPoints) {
-                chart.data.labels.shift();
-                chart.data.datasets[0].data.shift();
-                priceData.shift();
+            if (timeframe === '1m') {
+                const label = new Date(ts).toLocaleTimeString();
+                chart.data.labels.push(label);
+                chart.data.datasets[0].data.push(price);
+                priceData.push(price);
+                if (chart.data.labels.length > maxPoints) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                    priceData.shift();
+                }
+                seriesRef = priceData;
+            } else {
+                const bStart = Math.floor(ts / tfMs) * tfMs;
+                if (currentBucketStart === null || bStart > currentBucketStart) {
+                    currentBucketStart = bStart;
+                    const label = new Date(bStart).toLocaleTimeString();
+                    bucketLabels.push(label);
+                    bucketValues.push(price);
+                    chart.data.labels.push(label);
+                    chart.data.datasets[0].data.push(price);
+                } else {
+                    bucketValues[bucketValues.length - 1] = price;
+                    chart.data.datasets[0].data[chart.data.datasets[0].data.length - 1] = price;
+                }
+                while (bucketLabels.length > maxPoints) { bucketLabels.shift(); bucketValues.shift(); }
+                while (chart.data.labels.length > maxPoints) { chart.data.labels.shift(); chart.data.datasets[0].data.shift(); }
+                seriesRef = bucketValues;
             }
             
-            // Overlays
-            const sma = calcSMA(priceData, 20);
-            const ema = calcEMA(priceData, 50);
-            const bb = calcBB(priceData, 20, 2);
+            // Overlays from selected series
+            const sma = calcSMA(seriesRef, 20);
+            const ema = calcEMA(seriesRef, 50);
+            const bb = calcBB(seriesRef, 20, 2);
             chart.data.datasets[1].data.push(sma ?? null);
             chart.data.datasets[2].data.push(ema ?? null);
             chart.data.datasets[3].data.push(bb ? bb.upper : null);
@@ -1508,18 +2082,18 @@
 
             // RSI/MACD mini charts
             if (document.getElementById('indRSI').checked) {
-              const rsi = calcRSI(priceData, 14);
+              const rsi = calcRSI(seriesRef, 14);
               if (rsiChart) {
-                rsiChart.data.labels.push(timestamp);
+                rsiChart.data.labels.push(new Date(ts).toLocaleTimeString());
                 rsiChart.data.datasets[0].data.push(rsi ?? null);
                 if (rsiChart.data.labels.length > maxPoints) { rsiChart.data.labels.shift(); rsiChart.data.datasets[0].data.shift(); }
                 rsiChart.update('none');
               }
             }
             if (document.getElementById('indMACD').checked) {
-              const macd = calcMACD(priceData);
+              const macd = calcMACD(seriesRef);
               if (macdChart) {
-                macdChart.data.labels.push(timestamp);
+                macdChart.data.labels.push(new Date(ts).toLocaleTimeString());
                 macdChart.data.datasets[0].data.push(macd ?? null);
                 if (macdChart.data.labels.length > maxPoints) { macdChart.data.labels.shift(); macdChart.data.datasets[0].data.shift(); }
                 macdChart.update('none');
@@ -1527,6 +2101,82 @@
             }
 
             chart.update();
+            // Update annotations after price/overlays update
+            updateAnnotations(seriesRef);
+        }
+
+        // Trade markers
+        function plotTradeMarker(trade) {
+            if (!chart) return;
+            const label = new Date(trade.timestamp || Date.now()).toLocaleTimeString();
+            if (!chart.data.labels.includes(label)) {
+                chart.data.labels.push(label);
+                if (chart.data.labels.length > maxPoints) { chart.data.labels.shift(); chart.data.datasets.forEach((ds,idx)=>{ if(idx<=4) ds.data.shift(); }); }
+            }
+            const point = { x: label, y: trade.price };
+            const buyIdx = 5, sellIdx = 6;
+            if ((trade.type || trade.action) === 'BUY' || (trade.side||'').toUpperCase()==='BUY') chart.data.datasets[buyIdx].data.push(point);
+            else chart.data.datasets[sellIdx].data.push(point);
+            // cap points
+            [buyIdx, sellIdx].forEach(i=>{ if (chart.data.datasets[i].data.length > maxPoints) chart.data.datasets[i].data.shift(); });
+            chart.update('none');
+        }
+
+        // Annotations (Fib + Support/Resistance)
+        function updateAnnotations(seriesRef) {
+            if (!chart || !chart.options.plugins || !chart.options.plugins.annotation) return;
+            const annotations = {};
+            const useFib = document.getElementById('indFIB').checked;
+            const useSR = document.getElementById('indSR').checked;
+            const series = seriesRef || (chart.data.datasets[0].data || []);
+            const values = series.filter(v=>typeof v === 'number');
+            if (values.length < 10) { chart.options.plugins.annotation.annotations = {}; chart.update('none'); return; }
+            const min = Math.min(...values), max = Math.max(...values);
+            const range = max - min || 1;
+            const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb') || '255, 0, 64';
+            if (useFib) {
+                // choose last swing high/low within window
+                const windowSize = Math.min(values.length, 60);
+                const slice = values.slice(values.length - windowSize);
+                const hi = Math.max(...slice), lo = Math.min(...slice);
+                const levels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
+                levels.forEach((lvl, idx)=>{
+                    const y = lo + (hi - lo) * (1 - lvl);
+                    annotations[`fib_${idx}`] = {
+                        type: 'line',
+                        yMin: y, yMax: y,
+                        borderColor: `rgba(${accent}, ${lvl===0.618?0.9:0.35})`,
+                        borderWidth: lvl===0.618 ? 2 : 1,
+                        label: { enabled: true, content: `${(lvl*100).toFixed(1)}%`, position: 'start', backgroundColor: 'rgba(0,0,0,0.6)', color:'#fff' }
+                    };
+                });
+            }
+            if (useSR) {
+                const windowSize = Math.min(values.length, 120);
+                const arr = values.slice(values.length - windowSize);
+                const peaks = [], troughs = [];
+                for (let i=1;i<arr.length-1;i++) {
+                    if (arr[i] > arr[i-1] && arr[i] > arr[i+1]) peaks.push(arr[i]);
+                    if (arr[i] < arr[i-1] && arr[i] < arr[i+1]) troughs.push(arr[i]);
+                }
+                const uniq = (list, pick='desc') => {
+                    const sorted = [...list].sort((a,b)=> pick==='desc' ? b-a : a-b);
+                    const res = [];
+                    const tol = range * 0.01; // 1% spacing
+                    sorted.forEach(v => { if (!res.some(x=> Math.abs(x-v) < tol)) res.push(v); });
+                    return res.slice(0,3);
+                };
+                const rs = uniq(peaks, 'desc');
+                const ss = uniq(troughs, 'asc');
+                rs.forEach((y, i)=>{
+                    annotations[`r_${i+1}`] = { type:'line', yMin:y,yMax:y, borderColor:'rgba(255,0,64,0.6)', borderDash:[6,3], label:{ enabled:true, content:`R${i+1}`, position:'end', backgroundColor:'rgba(0,0,0,0.6)', color:'#fff' } };
+                });
+                ss.forEach((y, i)=>{
+                    annotations[`s_${i+1}`] = { type:'line', yMin:y,yMax:y, borderColor:'rgba(0,255,136,0.6)', borderDash:[6,3], label:{ enabled:true, content:`S${i+1}`, position:'end', backgroundColor:'rgba(0,0,0,0.6)', color:'#fff' } };
+                });
+            }
+            chart.options.plugins.annotation.annotations = annotations;
+            chart.update('none');
         }
 
         // Position and trade history
@@ -1580,18 +2230,7 @@
                 }
             }
             
-            // Quantum-specific indicators
-            if (currentTier === 'quantum') {
-                if (indicators.coherence !== undefined) {
-                    const el = document.getElementById('coherence');
-                    if (el) el.textContent = `${indicators.coherence}%`;
-                }
-                
-                if (indicators.entanglement) {
-                    const el = document.getElementById('entanglement');
-                    if (el) el.textContent = indicators.entanglement;
-                }
-            }
+            // Quantum-specific indicators removed
         }
         
         // Update indicators based on tier
@@ -1599,6 +2238,29 @@
             if (data.indicators) {
                 updateIndicatorValues(data.indicators);
             }
+        }
+
+        // TRAI chat helpers
+        function appendChat(sender, text) {
+            const box = document.getElementById('traiChat');
+            if (!box) return;
+            const row = document.createElement('div');
+            row.style.margin = '6px 0';
+            row.innerHTML = `<strong style="color:${sender==='TRAI'?'#00ff88':'#66c2ff'}">${sender}:</strong> <span>${(text||'').toString().replace(/</g,'&lt;')}</span>`;
+            box.appendChild(row);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function sendToTRAI() {
+            const inp = document.getElementById('traiInput');
+            if (!inp || !inp.value.trim()) return;
+            const q = inp.value.trim();
+            appendChat('You', q);
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type:'question', question:q }));
+            }
+            inp.value = '';
+            inp.focus();
         }
         
         // Update neural votes
@@ -1727,8 +2389,8 @@
         window.onload = () => {
             initChart();
             connectWebSocket();
-            // Start with quantum tier to showcase all features
-            switchTier('quantum');
+            // Start with elite tier to showcase main features
+            switchTier('elite');
             // Hook selectors for asset/timeframe
             const assetSel = document.getElementById('assetSelector');
             const tfSel = document.getElementById('timeframeSelector');

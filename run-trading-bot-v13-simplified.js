@@ -53,8 +53,6 @@ const net = require('net');
 // [2025-01-04] Fixed confidence calculation bugs and optimized trading thresholds - compile + runtime check passed
 // [2025-01-04] Integrated PerformanceDashboardIntegration for real-time metrics exposure - verified + compiled
 
-// Enhanced WebSocket Client Integration
-const { getWebSocketUrl } = require('./core/WebSocketConfig');
 
 // 🚀 V13.5 QUANTUM ENHANCEMENT LAYER
 const RealQuantumEnhancement = require('./core/quantum-enhancement-layer');
@@ -70,7 +68,7 @@ const PerformanceAnalyzer = require('./core/PerformanceAnalyzer');
 const QuantumPositionSizer = require('./core/QuantumPositionSizer');
 const PerformanceValidator = require('./core/PerformanceValidator');
 const PerformanceVisualizer = require('./core/PerformanceVisualizer');
-const AdvancedWebSocketBroadcastSystem = require('./core/AdvancedWebSocketBroadcastSystem');
+// Note: AdvancedWebSocketBroadcastSystem is deprecated/removed
 
 // 🚀 V13.5 AND V14 QUANTUM ENHANCEMENTS
 // const RealQuantumEnhancement = require('./core/RealQuantumEnhancement'); // Duplicate - already imported as quantum-enhancement-layer

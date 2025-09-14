@@ -50,7 +50,7 @@ class V13BacktestWithTRAI extends V13ProductionBacktest {
       recommendations: []
     };
   }
-  
+
   async initialize() {
     console.log('🔌 Connecting to TRAI via SSL server...');
     
@@ -105,6 +105,48 @@ class V13BacktestWithTRAI extends V13ProductionBacktest {
         }
       }, 5000);
     });
+  }
+
+  /**
+   * Load historical data from file or fallback
+   */
+  loadHistoricalDataFromFile(filePath) {
+    try {
+      const resolved = path.resolve(filePath);
+      if (!fs.existsSync(resolved)) return null;
+      const raw = fs.readFileSync(resolved, 'utf8');
+      const data = JSON.parse(raw);
+      if (Array.isArray(data) && data.length > 0) {
+        console.log(`📥 Loaded ${data.length} candles from ${resolved}`);
+        return data;
+      }
+      return null;
+    } catch (e) {
+      console.error('Failed to load historical file:', e.message);
+      return null;
+    }
+  }
+
+  static parseArgs() {
+    const args = process.argv.slice(2);
+    const get = (k, d) => {
+      const a = args.find(x => x.startsWith(`--${k}=`));
+      return a ? a.split('=')[1] : d;
+    };
+    return {
+      file: get('file', null),
+      limit: parseInt(get('limit', '5000')) || 5000,
+      symbol: get('symbol', null),
+      span: get('span', 'minute'),
+      mult: parseInt(get('mult', '1')) || 1,
+      from: get('from', null),
+      to: get('to', null),
+      quick: args.includes('--quick'),
+      safety: get('safety', null),
+      tier: get('tier', null),
+      minConf: get('min-confidence', null),
+      patternConf: get('pattern-confidence', null)
+    };
   }
   
   handleTRAIMessage(msg) {
@@ -334,27 +376,65 @@ class V13BacktestWithTRAI extends V13ProductionBacktest {
 // Main execution
 async function runBacktestWithTRAI() {
   try {
-    // Load historical data from Polygon
-    const dataPath = path.join(__dirname, 'polygon-btc-1y.json');
-    
-    if (!fs.existsSync(dataPath)) {
-      console.error('❌ Historical data not found at:', dataPath);
-      console.log('Please ensure polygon-btc-1y.json exists');
+    const argv = V13BacktestWithTRAI.parseArgs();
+
+    // If symbol + range provided, auto-download to a temp file
+    let targetFile = argv.file;
+    if (!targetFile && argv.symbol && argv.from && argv.to) {
+      const safeSym = argv.symbol.replace(/[^A-Z0-9:]/gi, '_');
+      targetFile = path.join(__dirname, 'data', `${safeSym}-${argv.mult}${argv.span}-${argv.from}-${argv.to}.json`);
+      console.log(`🔽 Preparing real data: ${argv.symbol} ${argv.mult}${argv.span} ${argv.from}→${argv.to}`);
+      const { spawnSync } = require('child_process');
+      const res = spawnSync(process.execPath, [path.join(__dirname, 'tools', 'download-polygon-range.js'),
+        `--symbol=${argv.symbol}`, `--span=${argv.span}`, `--mult=${argv.mult}`, `--from=${argv.from}`, `--to=${argv.to}`, `--out=${targetFile}`
+      ], { stdio: 'inherit', env: process.env });
+      if (res.status !== 0) {
+        console.warn('⚠️ Download failed, will fall back to local/synthetic data');
+      }
+    }
+
+    const defaultFile = path.join(__dirname, 'data', 'polygon-btc-1y.json');
+    const loader = new V13BacktestWithTRAI({});
+    let allData = loader.loadHistoricalDataFromFile(targetFile || defaultFile);
+
+    if (!allData) {
+      console.error('❌ NO REAL DATA FILE FOUND!');
+      console.error('This bot ONLY works with REAL market data. NO FAKE DATA ALLOWED!');
+      console.error('\nDownload real data:');
+      console.error('POLYGON_API_KEY=your_key node tools/download-polygon-range.js --symbol=X:BTCUSD --span=minute --mult=5 --from=2024-01-01 --to=2024-12-31 --out=data/real-btc.json');
+      console.error('\nThen run:');
+      console.error('npm run backtest:trai -- --file=data/real-btc.json');
       process.exit(1);
     }
-    
-    const allData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-    // Use last 5000 candles for meaningful backtest
-    const historicalData = allData.slice(-5000);
-    console.log(`📊 Loaded ${historicalData.length} data points`);
-    
+
+    // Configure “just works” quick mode
+    const quickCfg = {};
+    if (argv.quick) {
+      quickCfg.safetyMode = 'off';
+      quickCfg.tier = argv.tier || 'pro';
+      quickCfg.minTradeConfidence = argv.minConf ? parseFloat(argv.minConf) : 0;
+      quickCfg.patternConfidence = argv.patternConf ? parseFloat(argv.patternConf) : 0.2;
+      console.log('⚡ Quick mode: safety=off, tier=pro, low thresholds');
+    }
+
+    if (argv.safety) {
+      quickCfg.safetyMode = argv.safety; // normal|relaxed|off
+    }
+
+    const limit = Math.max(500, argv.limit || 5000);
+    const historicalData = allData.slice(-limit);
+    console.log(`📊 Using ${historicalData.length} candles for backtest`);
+
     // Create backtest instance with TRAI
     const backtest = new V13BacktestWithTRAI({
-      tier: 'elite',
+      tier: quickCfg.tier || 'elite',
+      safetyMode: quickCfg.safetyMode || process.env.BACKTEST_SAFETY || 'normal',
       initialBalance: 10000,
       maxPositionSize: 0.05,
       stopLossPercent: 5.0,
-      takeProfitPercent: 12.0
+      takeProfitPercent: 12.0,
+      minTradeConfidence: quickCfg.minTradeConfidence ?? undefined,
+      patternConfidence: quickCfg.patternConfidence ?? undefined
     });
     
     // Initialize TRAI connection
@@ -366,8 +446,10 @@ async function runBacktestWithTRAI() {
     
     // Print final results
     console.log('\n🏁 Backtest completed!');
-    console.log(`Final balance: $${results.finalBalance.toFixed(2)}`);
-    console.log(`Total return: ${results.totalReturn.toFixed(2)}%`);
+    if (results && results.finalBalance !== undefined) {
+      console.log(`Final balance: $${results.finalBalance.toFixed(2)}`);
+      console.log(`Total return: ${results.totalReturn.toFixed(2)}%`);
+    }
     
   } catch (error) {
     console.error('❌ Backtest failed:', error);

@@ -57,6 +57,8 @@ class V13ProductionBacktest {
       maxDailyLoss: config.maxDailyLoss || 10.0, // 10% max daily loss
       fee: config.fee || 0.001, // 0.1% trading fee
       slippage: config.slippage || 0.0005, // 0.05% slippage
+      // Backtest safety mode: 'normal' | 'relaxed' | 'off'
+      safetyMode: config.safetyMode || process.env.BACKTEST_SAFETY || 'normal',
       ...config
     };
 
@@ -346,15 +348,30 @@ class V13ProductionBacktest {
       }
     }
     
-    // Pattern bonus
+    // Pattern bonus (supports different detector outputs)
     if (patterns && patterns.length > 0) {
-      patterns.forEach(pattern => {
-        if (pattern.strength && pattern.confidence) {
-          confidence += (pattern.strength * pattern.confidence * 0.05);
-        }
+      patterns.forEach(p => {
+        const strength = typeof p.strength === 'number' ? p.strength : (typeof p.quality === 'number' ? p.quality : (typeof p.reliability === 'number' ? p.reliability : 0.6));
+        const pconf = typeof p.confidence === 'number' ? p.confidence : 0.5;
+        confidence += (Math.max(0, Math.min(1, strength)) * Math.max(0, Math.min(1, pconf)) * 0.05);
       });
-      const patternBonus = Math.min(0.25, patterns.length * 0.05);
-      confidence = Math.min(confidence, confidence + patternBonus);
+      const patternBonus = Math.min(0.25, Math.min(patterns.length, 5) * 0.05);
+      confidence = Math.min(1, confidence + patternBonus);
+    } else if (this.priceData.length > 30) {
+      // FALLBACK: Boost confidence from indicators when no patterns
+      // This ensures we can still trade based on strong technical signals
+      if (marketData.rsi) {
+        if (marketData.rsi < 30 || marketData.rsi > 70) {
+          confidence += 0.25; // Strong oversold/overbought
+        } else if (marketData.rsi < 40 || marketData.rsi > 60) {
+          confidence += 0.15; // Moderate signal
+        }
+      }
+      if (marketData.macd && Math.abs(marketData.macd) > 0) {
+        confidence += 0.10; // MACD momentum
+      }
+      // Base technical confidence
+      confidence += 0.05;
     }
     
     // Volatility adjustment
@@ -463,15 +480,31 @@ class V13ProductionBacktest {
       return;
     }
     
-    // Pattern detection - DISABLED FOR TESTING
+    // Pattern detection (supports both EnhancedPatternChecker and ComprehensivePatternDetector)
     let patterns = [];
-    // if (this.patternRecognition) {
-    //   patterns = this.patternRecognition.analyzePatterns({
-    //     candles: this.priceData,
-    //     currentPrice: marketData.price,
-    //     volume: marketData.volume
-    //   });
-    // }
+    if (this.patternRecognition) {
+      try {
+        if (typeof this.patternRecognition.analyzePatterns === 'function') {
+          // EnhancedPatternChecker style
+          patterns = this.patternRecognition.analyzePatterns({
+            candles: this.priceData,
+            currentPrice: marketData.price,
+            volume: marketData.volume
+          }) || [];
+        } else if (typeof this.patternRecognition.scanAllPatterns === 'function') {
+          // ComprehensivePatternDetector style
+          const detected = this.patternRecognition.scanAllPatterns(this.priceData, { minTier: 1, maxTier: 3, minReliability: 0 });
+          patterns = (detected || []).map(p => ({
+            name: p.pattern,
+            confidence: p.confidence || p.reliability || 0.6,
+            direction: p.direction,
+            quality: p.reliability || 0.6
+          }));
+        }
+      } catch (err) {
+        patterns = [];
+      }
+    }
     
     // Calculate confidence
     const confidence = this.calculateRealConfidence(marketData, patterns);
@@ -487,12 +520,51 @@ class V13ProductionBacktest {
       return;
     }
     
+    // Enrich market data for MDT (trend/volatility objects expected)
+    const regime = marketData.marketRegime;
+    const mdtMarketData = { ...marketData };
+    if (regime && regime.metrics) {
+      mdtMarketData.trend = {
+        direction: regime.metrics.trendDirection > 0 ? 'up' : regime.metrics.trendDirection < 0 ? 'down' : 'neutral',
+        strength: regime.metrics.trendStrength || 0
+      };
+      const currentVol = regime.metrics.volatility || (marketData.volatility || 0);
+      this._volatilityAvg = this._volatilityAvg ? (this._volatilityAvg * 0.9 + currentVol * 0.1) : currentVol;
+      mdtMarketData.volatility = {
+        current: currentVol,
+        average: this._volatilityAvg,
+        level: currentVol > (this.marketRegimeDetector?.config?.highVolThreshold || 2) ? 'high' : currentVol < (this.marketRegimeDetector?.config?.lowVolThreshold || 0.5) ? 'low' : 'normal'
+      };
+      mdtMarketData.volume = { ratio: regime.metrics.volumeRatio || 1 };
+      mdtMarketData.momentum = { rsi: marketData.rsi || 50 };
+    }
+
     // Multi-directional trading decision
     let tradeDirection = null;
     if (this.multiDirectionalTrader) {
-      const mdtDecision = this.multiDirectionalTrader.analyzeMarket(marketData, patterns);
-      if (mdtDecision && mdtDecision.shouldTrade) {
-        tradeDirection = mdtDecision.direction;
+      // Map detected patterns to a primary buy/sell signal for MDT
+      let primaryDirection = 'hold';
+      if (Array.isArray(patterns) && patterns.length > 0) {
+        const top = patterns[0];
+        if (top.direction === 'bullish') primaryDirection = 'buy';
+        else if (top.direction === 'bearish') primaryDirection = 'sell';
+      }
+
+      const signal = {
+        direction: primaryDirection,
+        confidence: confidence,
+        patterns: patterns,
+        suggestedSize: this.calculatePositionSize(confidence, marketData)
+      };
+      const mdtDecision = this.multiDirectionalTrader.evaluateTrade(signal, mdtMarketData);
+      // The MDT returns an object with { action, direction, size, ... }
+      // Consider any non-hold action as a trade signal.
+      if (mdtDecision && mdtDecision.action && mdtDecision.action !== 'hold') {
+        tradeDirection = mdtDecision.direction || (mdtDecision.action === 'buy' ? 'long' : mdtDecision.action === 'sell' ? 'short' : null);
+      }
+      // Fallback: if MDT is neutral but confidence is high enough, take a small long per legacy rule
+      if (!tradeDirection && confidence > (this.config.fallbackPatternConfidence || this.config.patternConfidence || 0.25)) {
+        tradeDirection = 'long';
       }
     } else {
       // Simple long-only for starter tier
@@ -506,7 +578,8 @@ class V13ProductionBacktest {
     }
     
     // Risk checks
-    const safetyCheck = this.safetyNet.validateTrade({
+    // SafetyNet gate (skippable in backtest)
+    const safetyCheck = this.config.safetyMode === 'off' ? { approved: true } : this.safetyNet.validateTrade({
       symbol: 'BTC-USD',
       direction: tradeDirection === 'long' ? 'BUY' : 'SELL',
       size: this.calculatePositionSize(confidence, marketData),
@@ -514,7 +587,7 @@ class V13ProductionBacktest {
       confidence: confidence
     }, marketData);
     
-    if (!safetyCheck.approved) {
+    if (!safetyCheck.approved && this.config.safetyMode !== 'relaxed') {
       this.results.moduleDecisions.push({
         timestamp: marketData.timestamp,
         module: 'SafetyNet',
@@ -523,8 +596,17 @@ class V13ProductionBacktest {
       });
       return;
     }
+    // In relaxed mode, log but proceed
+    if (!safetyCheck.approved && this.config.safetyMode === 'relaxed') {
+      this.results.moduleDecisions.push({
+        timestamp: marketData.timestamp,
+        module: 'SafetyNet',
+        decision: 'OVERRIDDEN',
+        reason: safetyCheck.reason
+      });
+    }
     
-    const riskCheck = this.riskManager.assessPreTradeRisk({
+    const riskCheck = this.config.safetyMode === 'off' ? { approved: true } : this.riskManager.assessTradeRisk({
       entryPrice: marketData.price,
       stopLoss: marketData.price * (tradeDirection === 'long' ? 0.95 : 1.05),
       positionSize: this.calculatePositionSize(confidence, marketData),
@@ -533,7 +615,7 @@ class V13ProductionBacktest {
       direction: tradeDirection
     });
     
-    if (!riskCheck.approved) {
+    if (!riskCheck.approved && this.config.safetyMode !== 'relaxed') {
       this.results.moduleDecisions.push({
         timestamp: marketData.timestamp,
         module: 'RiskManager',
@@ -541,6 +623,14 @@ class V13ProductionBacktest {
         reason: riskCheck.reason
       });
       return;
+    }
+    if (!riskCheck.approved && this.config.safetyMode === 'relaxed') {
+      this.results.moduleDecisions.push({
+        timestamp: marketData.timestamp,
+        module: 'RiskManager',
+        decision: 'OVERRIDDEN',
+        reason: riskCheck.reason
+      });
     }
     
     // Execute trade
@@ -759,8 +849,14 @@ async function main() {
   const daysArg = args.find(arg => arg.startsWith('--days'));
   const days = daysArg ? parseInt(daysArg.split('=')[1]) || 7 : 7;
   
-  // Generate synthetic data or load historical data
-  const historicalData = generateSyntheticData(days);
+  // ONLY REAL DATA - NO FAKE SHIT
+  console.error('❌ CRITICAL ERROR: NO DATA FILE PROVIDED!');
+  console.error('This bot ONLY works with REAL market data. No synthetic/fake data allowed!');
+  console.error('\nTo get REAL data:');
+  console.error('POLYGON_API_KEY=your_key node tools/download-polygon-range.js --symbol=X:BTCUSD --from=2024-01-01 --to=2024-12-31 --out=data/real-btc.json');
+  console.error('\nThen run:');
+  console.error('node backtest-v13-production.js pro --file=data/real-btc.json');
+  process.exit(1);
   
   // Create backtester
   const backtester = new V13ProductionBacktest({ tier });
@@ -774,34 +870,8 @@ async function main() {
   console.log(`\n📁 Results saved to ${filename}`);
 }
 
-// Generate synthetic market data for testing
-function generateSyntheticData(days) {
-  const data = [];
-  let price = 50000;
-  const baseVolume = 1000000;
-  
-  for (let i = 0; i < days * 24; i++) { // Hourly data
-    const trend = Math.sin(i / 100) * 0.2;
-    const noise = (Math.random() - 0.5) * 0.05;
-    const change = trend + noise;
-    
-    price = price * (1 + change);
-    const high = price * (1 + Math.random() * 0.02);
-    const low = price * (1 - Math.random() * 0.02);
-    const volume = baseVolume * (0.5 + Math.random());
-    
-    data.push({
-      timestamp: Date.now() - (days * 24 - i) * 3600000,
-      open: price,
-      high: high,
-      low: low,
-      close: price,
-      volume: volume
-    });
-  }
-  
-  return data;
-}
+// DELETED: ALL SYNTHETIC DATA GENERATION
+// REAL DATA ONLY - NO FAKE PRICES!
 
 // Export for testing
 module.exports = V13ProductionBacktest;

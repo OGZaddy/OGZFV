@@ -48003,5 +48003,115 @@
   ],
   "tradingKnowledge": [],
   "architecture": [],
-  "savedAt": 1757568863716
+  "savedAt": 1757568863716,
+  "trades": [
+    {
+      "trade": {
+        "id": "trade_1757871851024",
+        "direction": "long",
+        "price": 66366.836835,
+        "confidence": 0.6000000000000001,
+        "patterns": [],
+        "timestamp": 1727448000000,
+        "marketConditions": {
+          "volume": 117.62367413000004,
+          "volatility": null,
+          "regime": "UNKNOWN"
+        },
+        "indicators": {}
+      },
+      "analysis": "Local Trade Analysis @ 2025-09-14T17:44:11.047Z\n- Side:  Qty: 0 Entry: 66366.836835\n- Stop: n/a Take: n/a\n- Risk/unit: 0.00\n- R:R: N/A\n- Flags: No stop specified; No take-profit specified",
+      "timestamp": 1757871851047
+    },
+    {
+      "trade": {
+        "id": "trade_1757871851025",
+        "direction": "long",
+        "price": 66321.834345,
+        "confidence": 0.6000000000000001,
+        "patterns": [],
+        "timestamp": 1727448300000,
+        "marketConditions": {
+          "volume": 162.39755067999994,
+          "volatility": null,
+          "regime": "UNKNOWN"
+        },
+        "indicators": {}
+      },
+      "analysis": "Local Trade Analysis @ 2025-09-14T17:44:11.048Z\n- Side:  Qty: 0 Entry: 66321.834345\n- Stop: n/a Take: n/a\n- Risk/unit: 0.00\n- R:R: N/A\n- Flags: No stop specified; No take-profit specified",
+      "timestamp": 1757871851048
+    },
+    {
+      "trade": {
+        "id": "trade_1757871851026",
+        "direction": "long",
+        "price": 66365.296065,
+        "confidence": 0.35000000000000003,
+        "patterns": [],
+        "timestamp": 1727448600000,
+        "marketConditions": {
+          "volume": 90.27828988000002,
+          "volatility": null,
+          "regime": "UNKNOWN"
+        },
+        "indicators": {}
+      },
+      "analysis": "Local Trade Analysis @ 2025-09-14T17:44:11.048Z\n- Side:  Qty: 0 Entry: 66365.296065\n- Stop: n/a Take: n/a\n- Risk/unit: 0.00\n- R:R: N/A\n- Flags: No stop specified; No take-profit specified",
+      "timestamp": 1757871851048
+    },
+    {
+      "trade": {
+        "id": "trade_1757878176632",
+        "direction": "long",
+        "price": 66366.836835,
+        "confidence": 0.6000000000000001,
+        "patterns": [],
+        "timestamp": 1727448000000,
+        "marketConditions": {
+          "volume": 117.62367413000004,
+          "volatility": null,
+          "regime": "UNKNOWN"
+        },
+        "indicators": {}
+      },
+      "analysis": "Local Trade Analysis @ 2025-09-14T19:29:36.635Z\n- Side:  Qty: 0 Entry: 66366.836835\n- Stop: n/a Take: n/a\n- Risk/unit: 0.00\n- R:R: N/A\n- Flags: No stop specified; No take-profit specified",
+      "timestamp": 1757878176635
+    },
+    {
+      "trade": {
+        "id": "trade_1757878176633",
+        "direction": "long",
+        "price": 66321.834345,
+        "confidence": 0.6000000000000001,
+        "patterns": [],
+        "timestamp": 1727448300000,
+        "marketConditions": {
+          "volume": 162.39755067999994,
+          "volatility": null,
+          "regime": "UNKNOWN"
+        },
+        "indicators": {}
+      },
+      "analysis": "Local Trade Analysis @ 2025-09-14T19:29:36.638Z\n- Side:  Qty: 0 Entry: 66321.834345\n- Stop: n/a Take: n/a\n- Risk/unit: 0.00\n- R:R: N/A\n- Flags: No stop specified; No take-profit specified",
+      "timestamp": 1757878176638
+    },
+    {
+      "trade": {
+        "id": "trade_1757878176634",
+        "direction": "long",
+        "price": 66365.296065,
+        "confidence": 0.35000000000000003,
+        "patterns": [],
+        "timestamp": 1727448600000,
+        "marketConditions": {
+          "volume": 90.27828988000002,
+          "volatility": null,
+          "regime": "UNKNOWN"
+        },
+        "indicators": {}
+      },
+      "analysis": "Local Trade Analysis @ 2025-09-14T19:29:36.638Z\n- Side:  Qty: 0 Entry: 66365.296065\n- Stop: n/a Take: n/a\n- Risk/unit: 0.00\n- R:R: N/A\n- Flags: No stop specified; No take-profit specified",
+      "timestamp": 1757878176638
+    }
+  ]
 }

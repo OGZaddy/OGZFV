@@ -1,0 +1,12 @@
+{
+  "name": "elite-btc-5m",
+  "tier": "elite",
+  "asset": "BTC-USD",
+  "dataPath": "polygon-btc-1y.json",
+  "lookback": 5000,
+  "initialBalance": 10000,
+  "maxPositionSize": 0.05,
+  "stopLossPercent": 4.0,
+  "takeProfitPercent": 12.0
+}
+

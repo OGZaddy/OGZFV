@@ -1,0 +1,25 @@
+*** Begin Patch
+*** Add File: trai/local-trai.env.example
++# Local TRAI brain connecting to remote hub (VPS)
++# Copy to .env and adjust values as needed
++
+# Hub URL (your VPS)
+SSL_SERVER_URL=wss://your-domain.com/ws
+
+# Local Ollama (enable only on your desktop)
+OLLAMA_ENABLED=true
+OLLAMA_URL=http://127.0.0.1:11434
+LLM_MODEL=qwen2:7b
+
+# Memory (optional override paths)
+TRAINING_DATA_PATH=trai/conversations.json
+PERSISTENT_MEMORY_PATH=trai/trai-memory.json
+KNOWLEDGE_DIRS=knowledge,docs,public
+
+# Optional telemetry (for your own aggregated learning)
+TRAI_TELEMETRY_ENABLED=false
+TRAI_AGGREGATOR_URL=https://your-domain.com/api/trai/insight
+TRAI_TELEMETRY_TOKEN=replace-with-token
+CUSTOMER_ID=
+DEPLOYMENT_ID=
+*** End Patch

@@ -121,23 +121,25 @@ class BotDashboard {
       }
     });
     
-    // TRAI chat endpoint
+    // TRAI chat endpoint (no fake fallback)
     this.app.post('/api/trai/ask', async (req, res) => {
-      const { question } = req.body;
-      
-      if (this.sslWs && this.sslWs.readyState === WebSocket.OPEN) {
+      const { question } = req.body || {};
+      if (!question || typeof question !== 'string') {
+        return res.status(400).json({ error: 'Missing question' });
+      }
+      if (!(this.sslWs && this.sslWs.readyState === WebSocket.OPEN)) {
+        return res.status(503).json({ error: 'TRAI not connected' });
+      }
+      try {
         this.sslWs.send(JSON.stringify({
           type: 'question',
           data: question,
           source: 'dashboard'
         }));
-        
-        // Wait for response (simplified - in production use proper async handling)
-        setTimeout(() => {
-          res.json({ answer: 'TRAI is processing your question...' });
-        }, 1000);
-      } else {
-        res.json({ answer: 'TRAI is not connected' });
+        // Acknowledge only; actual answer will be pushed over WebSocket to clients
+        return res.status(202).json({ status: 'queued' });
+      } catch (e) {
+        return res.status(500).json({ error: 'Failed to forward to TRAI' });
       }
     });
     

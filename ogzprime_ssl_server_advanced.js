@@ -15,45 +15,23 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
-// const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Disabled - not needed for core functionality
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-// 🔥 IMPORT THE ADVANCED WEBSOCKET SYSTEM
-const AdvancedWebSocketBroadcastSystem = require('./core/AdvancedWebSocketBroadcastSystem');
-const { CONFIG } = require('./core/WebSocketConfig');
+// 🔥 SIMPLE WEBSOCKET HUB (no advanced broadcaster)
+const SimpleWebSocketHub = require('./core/SimpleWebSocketHub');
 
 // Set SSL server flag
 process.env.OGZ_SSL_SERVER = 'true';
 
-// Initialize the ADVANCED broadcasting system
-const broadcaster = new AdvancedWebSocketBroadcastSystem({
-  // Connection health
-  heartbeatInterval: 5000,
-  connectionTimeout: 30000,
-  
-  // Message delivery
-  messageTimeout: 3000,
-  maxRetries: 3,
-  ackTimeout: 2000,
-  
-  // Performance optimization
-  maxQueueSize: 10000,
-  batchSize: 50,
-  throttleMs: 10,
-  compressionThreshold: 1024,
-  
-  // Circuit breaker for resilience
-  circuitBreakerThreshold: 10,
-  circuitBreakerResetTime: 60000,
-  
-  // Monitoring
-  metricsInterval: 30000,
-  performanceAlertThreshold: 100
-});
+// Initialize the SIMPLE hub
+const broadcaster = new SimpleWebSocketHub();
 
 // ==========================================
 // Brain (Ollama/Qwen) availability broadcasting
 // ==========================================
 const OLLAMA_URL = process.env.OLLAMA_URL || 'http://127.0.0.1:11434';
+const OLLAMA_ENABLED = (process.env.OLLAMA_ENABLED === 'true' || process.env.OLLAMA_ENABLED === '1');
+const ENABLE_PRICE_BROADCAST = (process.env.ENABLE_PRICE_BROADCAST === 'true');
 let brainAvailable = false;
 let lastBrainLog = 0;
 
@@ -91,9 +69,11 @@ async function checkOllamaAvailability() {
   }
 }
 
-// Initial check + periodic monitoring
-checkOllamaAvailability().catch(() => {});
-setInterval(checkOllamaAvailability, 15000);
+// Initial check + periodic monitoring (disabled unless explicitly enabled)
+if (OLLAMA_ENABLED) {
+  checkOllamaAvailability().catch(() => {});
+  setInterval(checkOllamaAvailability, 15000);
+}
 
 // Special handling for bot connections
 broadcaster.on('bot_disconnected', (connection) => {
@@ -122,16 +102,52 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files (with HTML injection of TRAI widget)
+const PUBLIC_DIR = path.join(__dirname, 'public');
 
-// Dashboard routes
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'OGZFV-valhalla', 'ogz-ultimate-dashboard.html'));
+function injectTraiWidget(html) {
+  if (!html || typeof html !== 'string') return html;
+  if (html.includes('trai-widget.js')) return html; // already present
+  return html.replace('</head>', '  <script defer src="trai-widget.js"></script>\n</head>');
+}
+
+app.use(async (req, res, next) => {
+  try {
+    if (req.method !== 'GET') return next();
+    if (!req.path.endsWith('.html')) return next();
+    const filePath = path.join(PUBLIC_DIR, req.path.replace(/^\/+/, ''));
+    // Only intercept if file exists in public
+    if (!fs.existsSync(filePath)) return next();
+    const html = await fs.promises.readFile(filePath, 'utf8');
+    const injected = injectTraiWidget(html);
+    res.set('Content-Type', 'text/html');
+    return res.send(injected);
+  } catch (e) {
+    return next();
+  }
 });
 
-app.get('/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'OGZFV-valhalla', 'ogz-ultimate-dashboard.html'));
+app.use(express.static(PUBLIC_DIR));
+
+// Dashboard routes
+async function sendInjectedFile(res, filePath) {
+  try {
+    const html = await fs.promises.readFile(filePath, 'utf8');
+    res.set('Content-Type', 'text/html');
+    res.send(injectTraiWidget(html));
+  } catch (e) {
+    res.status(404).send('Not Found');
+  }
+}
+
+app.get('/', async (req, res) => {
+  const filePath = path.join(__dirname, 'OGZFV-valhalla', 'ogz-ultimate-dashboard.html');
+  await sendInjectedFile(res, filePath);
+});
+
+app.get('/dashboard', async (req, res) => {
+  const filePath = path.join(__dirname, 'OGZFV-valhalla', 'ogz-ultimate-dashboard.html');
+  await sendInjectedFile(res, filePath);
 });
 
 // Enhanced status endpoint with broadcaster stats
@@ -169,6 +185,29 @@ app.get('/api/live-status', (req, res) => {
       advancedBroadcasting: true
     }
   });
+});
+
+// ==========================================
+// Aggregated TRAI Insight Ingest (opt-in from customer instances)
+// ==========================================
+const INSIGHT_API_TOKEN = process.env.INSIGHT_API_TOKEN || '';
+app.post('/api/trai/insight', express.json(), async (req, res) => {
+  try {
+    if (!INSIGHT_API_TOKEN) return res.status(503).json({ error: 'Ingest disabled' });
+    const token = req.headers['x-insight-token'];
+    if (!token || token !== INSIGHT_API_TOKEN) return res.status(403).json({ error: 'Forbidden' });
+    const payload = req.body || {};
+    // Minimal validation
+    if (!payload || typeof payload !== 'object') return res.status(400).json({ error: 'Bad payload' });
+    const day = new Date().toISOString().slice(0, 10);
+    const file = path.join(__dirname, 'logs', `aggregated-insights-${day}.jsonl`);
+    const line = JSON.stringify({ ts: Date.now(), ip: req.ip, ...payload }) + '\n';
+    await fs.promises.mkdir(path.join(__dirname, 'logs'), { recursive: true }).catch(()=>{});
+    await fs.promises.appendFile(file, line).catch(()=>{});
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // System health endpoint
@@ -396,48 +435,30 @@ wss.on('connection', (ws, req) => {
         }
       }
       
-      // Handle TRAI questions from dashboard
-      if (data.type === 'question' && data.question) {
-        console.log(`🤖 TRAI Question received: ${data.question}`);
+      // Identify backtest clients (for routing TRAI analysis back)
+      if (data.type === 'identify' && (data.source === 'backtest' || data.source === 'backtest_with_trai')) {
+        const connection = broadcaster.connections.get(connectionId);
+        if (connection) {
+          connection.metadata.type = 'backtest';
+          console.log('🧪 Backtest client identified');
+        }
+      }
+      
+      // Handle TRAI questions from dashboard/backtest/voice
+      if ((data.type === 'question' && (data.question || data.data)) || (data.type === 'query' && data.prompt)) {
+        console.log(`🤖 TRAI Question received: ${data.question || data.data || data.prompt}`);
         
         // Forward to TRAI singleton via internal messaging
         broadcaster.broadcast({
           type: 'trai_question',
-          question: data.question,
+          question: data.question || data.data || data.prompt,
           from: connectionId,
           timestamp: Date.now()
         }, { filter: (conn) => conn.metadata.type === 'trai' });
-        
-        // Also try direct HTTP request to TRAI if available
-        const axios = require('axios');
-        axios.post('http://127.0.0.1:3010/api/trai/ask', {
-          question: data.question
-        }).then(response => {
-          // Send answer back to dashboard
-          const connection = broadcaster.connections.get(connectionId);
-          if (connection) {
-            broadcaster.sendDirect(connection, {
-              type: 'answer',
-              answer: response.data.answer,
-              timestamp: Date.now()
-            });
-          }
-        }).catch(err => {
-          console.error('TRAI request failed:', err.message);
-          // Fallback message
-          const connection = broadcaster.connections.get(connectionId);
-          if (connection) {
-            broadcaster.sendDirect(connection, {
-              type: 'answer',
-              answer: 'TRAI is processing your request. Please wait...',
-              timestamp: Date.now()
-            });
-          }
-        });
       }
       
-      // Special handling for TRAI identification
-      if (data.type === 'identify' && data.source === 'trai') {
+      // Special handling for TRAI identification (singleton or generic)
+      if (data.type === 'identify' && (data.source === 'trai' || data.source === 'trai_singleton')) {
         const connection = broadcaster.connections.get(connectionId);
         if (connection) {
           connection.metadata.type = 'trai';
@@ -463,6 +484,38 @@ wss.on('connection', (ws, req) => {
           });
         }
       }
+
+      // Forward trade events to TRAI for analysis
+      if (data.type === 'trade' || data.type === 'trade_result') {
+        broadcaster.broadcast(data, { filter: (conn) => conn.metadata.type === 'trai' });
+        // Aggregate performance on trade_result
+        if (data.type === 'trade_result') {
+          const t = data.data || data;
+          const tier = t.tier || t.botTier || t.sourceTier || 'unknown';
+          const deltaUsd = Number(t.pnlAmount || 0);
+          const deltaPct = Number(t.pnl || 0);
+          updatePerformance(tier, deltaUsd, deltaPct);
+          broadcastPerformanceSnapshot();
+        }
+      }
+
+      // Forward TRAI analysis back to backtest and dashboards
+      if (data.type === 'trade_analysis' || data.type === 'market_analysis') {
+        const payload = { type: data.type, data: data.data };
+        broadcaster.broadcast(payload, { filter: (conn) => conn.metadata.type === 'backtest' });
+        broadcaster.broadcast(payload, { filter: (conn) => conn.metadata.type === 'dashboard' });
+      }
+
+      // Forward and cache bot_status messages (live performance from bots)
+      if (data.type === 'bot_status') {
+        const t = data;
+        const tier = t.tier || t.botTier || 'unknown';
+        const usd = Number(t.pnlUsd || t.pnl_amount || 0);
+        const pct = Number(t.pnlPct || t.pnl || 0);
+        updatePerformance(tier, usd, pct);
+        broadcaster.broadcast({ type: 'bot_status', ...data }, { requiresAck: false });
+        broadcastPerformanceSnapshot();
+      }
       
     } catch (err) {
       console.error(`Error parsing message from ${connectionId}:`, err);
@@ -476,20 +529,20 @@ let tickCount = 0;
 let assetPrices = {};
 let currentAsset = 'BTC-USD';
 
-// 🔌 Polygon.io WebSocket connection
+// 🔌 Polygon.io WebSocket connection (optional; default disabled)
 const POLYGON_API_KEY = process.env.POLYGON_API_KEY;
 const POLYGON_CRYPTO_SOCKET = 'wss://socket.polygon.io/crypto';
+let polygonSocket = null;
 
-// Check if API key is configured
-if (!POLYGON_API_KEY) {
-  console.error('❌ POLYGON_API_KEY environment variable not set!');
-  console.error('   Add POLYGON_API_KEY=your_key_here to your .env file');
-  process.exit(1);
+if (ENABLE_PRICE_BROADCAST) {
+  if (!POLYGON_API_KEY) {
+    console.error('❌ POLYGON_API_KEY not set but ENABLE_PRICE_BROADCAST=true; disabling broadcast');
+  } else {
+    polygonSocket = new WebSocket(POLYGON_CRYPTO_SOCKET);
+  }
 }
 
-const polygonSocket = new WebSocket(POLYGON_CRYPTO_SOCKET);
-
-polygonSocket.on('open', () => {
+if (polygonSocket) polygonSocket.on('open', () => {
   console.log('🔌 Connected to Polygon.io crypto feed');
   polygonSocket.send(JSON.stringify({
     action: 'auth',
@@ -497,7 +550,7 @@ polygonSocket.on('open', () => {
   }));
 });
 
-polygonSocket.on('message', (data) => {
+if (polygonSocket) polygonSocket.on('message', (data) => {
   try {
     const messages = JSON.parse(data);
     const msgArray = Array.isArray(messages) ? messages : [messages];
@@ -512,11 +565,8 @@ polygonSocket.on('message', (data) => {
         console.log('✅ Polygon authenticated - subscribing to multiple assets');
         
         const assets = [
-          'XA.BTC-USD', 'XA.ETH-USD', 'XA.SOL-USD', 'XA.ADA-USD',
-          'XA.DOGE-USD', 'XA.XRP-USD', 'XA.LTC-USD', 'XA.MATIC-USD',
-          'XA.AVAX-USD', 'XA.LINK-USD', 'XA.DOT-USD', 'XA.ATOM-USD',
-          'XA.UNI-USD', 'XA.AAVE-USD', 'XA.ALGO-USD', 'XA.NEAR-USD',
-          'XA.FTM-USD', 'XA.SAND-USD', 'XA.MANA-USD', 'XA.AXS-USD'
+          // Correct crypto symbols for Polygon aggregates
+          'XA.X:BTCUSD', 'XA.X:ETHUSD', 'XA.X:SOLUSD', 'XA.X:ADAUSD'
         ];
         assets.forEach(asset => {
           polygonSocket.send(JSON.stringify({
@@ -527,16 +577,15 @@ polygonSocket.on('message', (data) => {
         });
       }
       
-      if (msg.ev === 'XA' && msg.c && msg.e) {
+      if (msg.ev === 'XA' && typeof msg.c === 'number' && msg.e) {
         tickCount++;
         const price = parseFloat(msg.c);
         const timestamp = new Date(msg.e).toISOString();
         
         // Determine asset
         let asset = 'BTC-USD';
-        if (msg.pair) {
-          // Fix: Only add dash if not already present
-          asset = msg.pair.includes('-') ? msg.pair : msg.pair.replace('USD', '-USD');
+        if (typeof msg.pair === 'string') {
+          asset = msg.pair.replace('X:', '').replace('USD', '-USD');
         }
         
         // Store price
@@ -562,17 +611,18 @@ polygonSocket.on('message', (data) => {
           }
         };
         
-        // Broadcast to ALL connections with high priority
+        // Broadcast to dashboards only (avoid flooding TRAI/backtests)
         const result = broadcaster.broadcast(priceMessage, {
           priority: 'high',
-          requiresAck: false // Don't require ACK for price updates
+          requiresAck: false,
+          filter: (conn) => conn.metadata.type === 'dashboard'
         });
-        
-        // Broadcast specifically to bots with critical priority
+
+        // Broadcast specifically to bots with critical priority (no backtests/TRAI)
         broadcaster.broadcast(priceMessage, {
-          type: 'bot',
           priority: 'critical',
-          requiresAck: true // Require ACK from bots
+          requiresAck: true,
+          filter: (conn) => conn.metadata.type === 'bot'
         });
         
         // Log broadcast results
@@ -588,7 +638,7 @@ polygonSocket.on('message', (data) => {
   }
 });
 
-polygonSocket.on('close', () => {
+if (polygonSocket) polygonSocket.on('close', () => {
   console.warn('⚠️ Polygon WebSocket disconnected');
   broadcaster.broadcast({
     type: 'data_feed_status',
@@ -600,7 +650,7 @@ polygonSocket.on('close', () => {
   });
 });
 
-polygonSocket.on('error', (err) => {
+if (polygonSocket) polygonSocket.on('error', (err) => {
   console.error('🚨 Polygon WebSocket error:', err.message);
 });
 
@@ -609,7 +659,8 @@ setInterval(() => {
   const stats = broadcaster.getStatistics();
   
   console.log(`📊 SYSTEM STATUS:`);
-  console.log(`   🔌 Polygon: ${polygonSocket.readyState === WebSocket.OPEN ? 'Connected ✅' : 'Disconnected ❌'}`);
+  const polyStatus = (!ENABLE_PRICE_BROADCAST || !polygonSocket) ? 'Disabled' : (polygonSocket.readyState === WebSocket.OPEN ? 'Connected ✅' : 'Disconnected ❌');
+  console.log(`   🔌 Polygon: ${polyStatus}`);
   console.log(`   📊 Ticks: ${tickCount}`);
   console.log(`   💰 Balance: $10000`);
   console.log(`   👥 Total Connections: ${stats.connections.total}`);
@@ -625,13 +676,41 @@ setInterval(() => {
   
 }, 30000);
 
+// ==========================================
+// Bot performance aggregation (real messages only)
+// ==========================================
+const perfByTier = Object.create(null); // { tier: { usd: number, pct: number, last: number } }
+
+function updatePerformance(tier, deltaUsd = 0, deltaPct = 0) {
+  if (!tier) return;
+  if (!perfByTier[tier]) perfByTier[tier] = { usd: 0, pct: 0, last: Date.now() };
+  if (Number.isFinite(deltaUsd)) perfByTier[tier].usd += deltaUsd;
+  if (Number.isFinite(deltaPct)) perfByTier[tier].pct += deltaPct;
+  perfByTier[tier].last = Date.now();
+}
+
+function broadcastPerformanceSnapshot() {
+  const byTier = {};
+  Object.keys(perfByTier).forEach(t => {
+    byTier[t] = { usd: Number(perfByTier[t].usd || 0), pct: Number(perfByTier[t].pct || 0) };
+  });
+  let bestTier = null, bestUsd = -Infinity, bestPct = -Infinity;
+  Object.keys(byTier).forEach(t => {
+    const u = byTier[t].usd;
+    if (u > bestUsd) { bestUsd = u; bestTier = t; bestPct = byTier[t].pct; }
+  });
+  const snapshot = {
+    type: 'performance_snapshot',
+    data: { byTier, best: bestTier ? { tier: bestTier, usd: bestUsd, pct: bestPct } : null, timestamp: Date.now() }
+  };
+  broadcaster.broadcast(snapshot, { requiresAck: false });
+}
+
 // Graceful shutdown
 process.on('SIGINT', () => {
   console.log('\n🛑 Shutting down SSL server...');
   
-  broadcaster.shutdown();
-  
-  if (polygonSocket.readyState === WebSocket.OPEN) {
+  if (polygonSocket && polygonSocket.readyState === WebSocket.OPEN) {
     polygonSocket.close();
   }
   
@@ -651,8 +730,8 @@ Object.keys(networkInterfaces).forEach(interfaceName => {
   });
 });
 
-console.log('\n✅ OGZ Prime ADVANCED Server Running (Nginx SSL Proxy)');
-console.log('🚀 Powered by Advanced WebSocket Broadcasting System');
+console.log('\n✅ OGZ Prime WebSocket Hub Running (Nginx SSL Proxy)');
+console.log('🚀 Simple WebSocket Hub (no advanced broadcaster)');
 console.log('\n📡 Available endpoints:');
 console.log(`   🔒 Secure WebSocket: wss://ogzprime.com/ws (via nginx))`);
 console.log(`   🔒 Secure API: https://ogzprime.com/api/live-status (via nginx)`);

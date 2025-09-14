@@ -207,8 +207,8 @@ class TierFeatureFlags {
       return new ComprehensivePatternDetector();
     } else {
       // Other tiers get the basic detector with limited patterns
-      const EnhancedPatternRecognition = require('./EnhancedPatternRecognition');
-      const detector = new EnhancedPatternRecognition();
+      const { EnhancedPatternChecker } = require('./EnhancedPatternRecognition');
+      const detector = new EnhancedPatternChecker();
       detector.maxPatterns = patternConfig.maxPatterns;
       return detector;
     }

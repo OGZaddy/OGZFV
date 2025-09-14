@@ -9,6 +9,7 @@ const axios = require('axios');
 const EventEmitter = require('events');
 const fs = require('fs').promises;
 const path = require('path');
+const { routeQuestion, pruneMemory } = require('./trai/skills/index.js');
 
 class TraiSingleton extends EventEmitter {
   constructor() {
@@ -21,11 +22,27 @@ class TraiSingleton extends EventEmitter {
     
     // Configuration
     this.config = {
-      sslServerUrl: 'ws://127.0.0.1:3010/ws',
+      // Allow overriding the SSL hub URL so local TRAI can connect to a remote VPS
+      sslServerUrl: process.env.SSL_SERVER_URL || 'ws://127.0.0.1:3010/ws',
+      // Local or remote Ollama endpoint
       ollamaUrl: process.env.OLLAMA_URL || 'http://127.0.0.1:11434',
-      model: 'qwen3-coder:30b',
-      memoryPath: '/home/trey/OGZFV-valhalla/trai/conversations.json',
-      persistentMemoryPath: '/home/trey/OGZFV-valhalla/trai/trai-memory.json'
+      // Gate LLM usage to avoid running models on the VPS unless explicitly enabled
+      enableOllama: (process.env.OLLAMA_ENABLED === 'true' || process.env.OLLAMA_ENABLED === '1'),
+      // Choose a model that fits your local GPU/RAM; can override via LLM_MODEL env
+      model: process.env.LLM_MODEL || 'qwen2:7b',
+      // Training data + persistent memory (overridable via env)
+      memoryPath: process.env.TRAINING_DATA_PATH || path.resolve(process.cwd(), 'trai', 'conversations.json'),
+      persistentMemoryPath: process.env.PERSISTENT_MEMORY_PATH || path.resolve(process.cwd(), 'trai', 'trai-memory.json'),
+      // Knowledge base directories to scan when LLM is disabled
+      knowledgeDirs: (process.env.KNOWLEDGE_DIRS
+        ? process.env.KNOWLEDGE_DIRS.split(',').map(s => path.resolve(process.cwd(), s.trim())).filter(Boolean)
+        : ['knowledge','docs','public'].map(d => path.resolve(process.cwd(), d))),
+      // Telemetry (opt-in) for aggregated learning
+      telemetryEnabled: (process.env.TRAI_TELEMETRY_ENABLED === 'true' || process.env.TRAI_TELEMETRY_ENABLED === '1'),
+      telemetryUrl: process.env.TRAI_AGGREGATOR_URL || 'https://ogzprime.com/api/trai/insight',
+      telemetryToken: process.env.TRAI_TELEMETRY_TOKEN || '',
+      customerId: process.env.CUSTOMER_ID || '',
+      deploymentId: process.env.DEPLOYMENT_ID || ''
     };
     
     // Core components
@@ -53,10 +70,15 @@ class TraiSingleton extends EventEmitter {
   
   async initialize() {
     console.log('🚀 [TRAI] Starting initialization...');
-    
+
     try {
-      // Step 1: Test Ollama connection
-      await this.testOllama();
+      // Step 1: Test Ollama connection (only if enabled)
+      if (this.config.enableOllama) {
+        await this.testOllama();
+      } else {
+        this.ollamaReady = false;
+        console.log('🧠 [TRAI] Ollama disabled by config (OLLAMA_ENABLED not true)');
+      }
       
       // Step 2: Connect to SSL server as client
       await this.connectToSSL();
@@ -82,6 +104,10 @@ class TraiSingleton extends EventEmitter {
   }
   
   async testOllama() {
+    if (!this.config.enableOllama) {
+      this.ollamaReady = false;
+      return;
+    }
     try {
       console.log(`🧠 [TRAI] Testing Ollama at ${this.config.ollamaUrl}...`);
       
@@ -172,6 +198,11 @@ class TraiSingleton extends EventEmitter {
       case 'question':
         await this.answerQuestion(msg.data);
         break;
+
+      case 'query':
+        // Compat: treat as question if present
+        if (msg.prompt) await this.answerQuestion(msg.prompt);
+        break;
         
       case 'trai_question':
         // Handle questions forwarded from SSL server
@@ -197,9 +228,9 @@ class TraiSingleton extends EventEmitter {
   }
   
   async queryQwen(prompt, context = {}) {
-    if (!this.ollamaReady) {
-      // Return a fallback response when Ollama is down
-      return "I'm currently unable to process this with my full capabilities (tunnel is down), but I'm still monitoring and recording everything for analysis once connection is restored.";
+    if (!this.ollamaReady || !this.config.enableOllama) {
+      // Do not attempt any local LLM call on this host
+      throw new Error('LLM disabled');
     }
     
     try {
@@ -219,10 +250,9 @@ class TraiSingleton extends EventEmitter {
       return response.data.response;
     } catch (error) {
       console.error('[TRAI] Qwen query failed:', error.message);
-      // Try to reconnect to Ollama
-      await this.testOllama();
-      // Return fallback response instead of throwing
-      return "Analysis temporarily unavailable - tunnel connection lost. Recording data for later analysis.";
+      // Try to reconnect to Ollama next tick, but don't block here
+      setTimeout(() => this.testOllama().catch(()=>{}), 0);
+      throw error;
     }
   }
   
@@ -275,7 +305,20 @@ Provide: risk assessment, optimization suggestions, and pattern identification.`
           }
         }));
       }
-      
+
+      // Upload sanitized telemetry (opt-in) for aggregated learning
+      try {
+        await this.uploadTelemetry({
+          kind: 'trade_analysis',
+          timestamp: Date.now(),
+          tier: tradeData.tier || tradeData.botTier || undefined,
+          direction: tradeData.direction || tradeData.action,
+          confidence: tradeData.confidence,
+          patterns: Array.isArray(tradeData.patterns) ? tradeData.patterns.slice(0, 10) : undefined,
+          pnlEst: tradeData.pnl,
+        });
+      } catch (_) {}
+
       return analysis;
     } catch (error) {
       console.error('[TRAI] Trade analysis failed:', error.message);
@@ -285,10 +328,17 @@ Provide: risk assessment, optimization suggestions, and pattern identification.`
   async answerQuestion(question) {
     console.log('💬 [TRAI] Answering question...');
     this.stats.questionsAnswered++;
-    
+
     try {
-      const answer = await this.queryQwen(question);
-      
+      const llm = (this.ollamaReady && this.config.enableOllama) ? (async (p)=> this.queryQwen(p)) : null;
+      // Knowledge base dirs (support/onboarding)
+      const knowledgeDirs = this.config.knowledgeDirs || [];
+      const answer = await routeQuestion({ question }, {
+        llm,
+        knowledgeDirs,
+        persistentMemory: this.persistentMemory
+      });
+
       if (this.connected) {
         this.ws.send(JSON.stringify({
           type: 'answer',
@@ -299,10 +349,29 @@ Provide: risk assessment, optimization suggestions, and pattern identification.`
           }
         }));
       }
-      
+
+      // Persist conversation
+      try {
+        if (!this.persistentMemory.conversations) this.persistentMemory.conversations = [];
+        this.persistentMemory.conversations.push({ question, answer, timestamp: Date.now() });
+        pruneMemory(this.persistentMemory);
+        await this.saveMemory();
+      } catch {}
+
       return answer;
     } catch (error) {
       console.error('[TRAI] Question answering failed:', error.message);
+      // Graceful notice to client that chat is disabled here (no fake content)
+      if (this.connected) {
+        this.ws.send(JSON.stringify({
+          type: 'answer',
+          data: {
+            question: question,
+            answer: 'TRAI chat is not available on this host.',
+            timestamp: Date.now()
+          }
+        }));
+      }
     }
   }
   
@@ -346,6 +415,25 @@ Provide: risk assessment, optimization suggestions, and pattern identification.`
       console.error('[TRAI] Memory loading error:', error.message);
       // Don't fail initialization, just operate without memory
       this.memoryLoaded = false;
+    }
+  }
+
+  async uploadTelemetry(payload) {
+    try {
+      if (!this.config.telemetryEnabled) return;
+      if (!this.config.telemetryUrl || !this.config.telemetryToken) return;
+      const body = {
+        ...payload,
+        customer: this.config.customerId || undefined,
+        deploy: this.config.deploymentId || undefined,
+        version: 1
+      };
+      await axios.post(this.config.telemetryUrl, body, {
+        headers: { 'Content-Type': 'application/json', 'x-insight-token': this.config.telemetryToken },
+        timeout: 3000
+      });
+    } catch (e) {
+      // silent fail (no telemetry is better than blocking)
     }
   }
   

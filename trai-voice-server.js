@@ -14,13 +14,40 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
+// Access control
+const VOICE_ENABLED = (process.env.TRAI_VOICE_ENABLED === 'true' || process.env.TRAI_VOICE_ENABLED === '1');
+const VOICE_ACCESS_TOKEN = process.env.VOICE_ACCESS_TOKEN || '';
+
+function extractToken(req) {
+  try {
+    const url = new URL(req.url, 'http://localhost');
+    const q = url.searchParams.get('token');
+    const h = req.headers['x-access-token'];
+    return q || h || '';
+  } catch (_) { return req.headers['x-access-token'] || ''; }
+}
+
 // API Keys from environment
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID;
 const DID_API_KEY = process.env.DID_API_KEY;
 
-app.use(express.static('public'));
 app.use(express.json());
+
+// Gate all HTTP if disabled
+if (!VOICE_ENABLED) {
+  app.use((req, res) => res.status(403).send('TRAI voice/video disabled'));
+} else {
+  // Require access token for UI
+  app.get('/', (req, res, next) => {
+    const token = req.query.token || req.headers['x-access-token'];
+    if (VOICE_ACCESS_TOKEN && token !== VOICE_ACCESS_TOKEN) {
+      return res.status(403).send('Forbidden');
+    }
+    next();
+  });
+  app.use(express.static('public'));
+}
 
 // Serve the main interface
 app.get('/', (req, res) => {
@@ -233,7 +260,13 @@ async function generateVoice(text) {
 }
 
 // WebSocket connection handler
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => {
+  if (!VOICE_ENABLED) { try { ws.close(1008, 'Voice disabled'); } catch(_){} return; }
+  const t = extractToken(req || {});
+  if (VOICE_ACCESS_TOKEN && t !== VOICE_ACCESS_TOKEN) {
+    try { ws.close(1008, 'Forbidden'); } catch(_){}
+    return;
+  }
   console.log('🔌 New client connected');
   
   ws.on('message', async (message) => {

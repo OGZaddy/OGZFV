@@ -6,6 +6,7 @@
   <title>OGZ Prime - Command Your Edge</title>
   <link rel="stylesheet" href="valhalla-style.css">
   <script src="https://js.stripe.com/v3/"></script>
+  <script defer src="trai-widget.js"></script>
   <script>
     const stripe = Stripe("pk_test_51Rc2VnGai7JiFhNgT1aZdghugWMXbWoOnOVpNwr7QmojxxIau57wGKOB3f8rBi8yFWVuvIGGON7bjvuUtcm7SIm100ylS00sz6");
 
@@ -181,15 +182,109 @@
     <h2>Get Started Today</h2>
     <p>Live trading system with real market data. Battle-tested algorithms running 24/7 on your behalf.</p>
     <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 30px;">
-    <a href="unified-dashboard.html">
+    <a href="#" id="liveDemoLink" onclick="return openDemoGate(event)">
   <button style="background: linear-gradient(45deg, #dc2626, #ff3333); padding: 18px 40px; color: white; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer;">
    🎯 Watch Live Demo
   </button>
 </a>
 
-      <a href="upgrade.html"><button style="background: transparent; border: 2px solid #dc2626; color: #dc2626; padding: 16px 38px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer;">⚡ See Pricing</button></a>
+      <a href="pricing.html"><button style="background: transparent; border: 2px solid #dc2626; color: #dc2626; padding: 16px 38px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer;">⚡ See Pricing</button></a>
     </div>
   </section>
+
+  <!-- Lead Capture Modal for Live Demo Gate -->
+  <div id="leadModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+    <div style="width: 95%; max-width: 520px; background:#0b0b0b; border:1px solid #dc2626; border-radius:12px; padding:22px; box-shadow: 0 20px 60px rgba(0,0,0,0.7);">
+      <h3 style="margin:0; color:#f87171;">Unlock Live Demo</h3>
+      <p style="color:#bbb; margin:8px 0 14px;">Enter your email to view the live trading dashboard. We’ll send strategy insights and performance updates.</p>
+      <form id="leadForm" onsubmit="return submitLead(event)">
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+          <input id="leadName" placeholder="Your name (optional)" style="flex:1; padding:12px; border-radius:8px; border:1px solid #333; background:#111; color:#fff;">
+        </div>
+        <div style="display:flex; gap:10px;">
+          <input id="leadEmail" placeholder="Email (required)" type="email" required style="flex:1; padding:12px; border-radius:8px; border:1px solid #333; background:#111; color:#fff;">
+        </div>
+        <div id="leadError" style="display:none; color:#f87171; margin-top:8px; font-size:0.95rem;"></div>
+        <div style="display:flex; gap:10px; margin-top:14px; align-items:center;">
+          <button id="leadSubmit" class="cta-btn" type="submit" style="flex:1;">Continue to Live Demo</button>
+          <button type="button" onclick="closeLeadModal()" style="background:transparent; border:1px solid #444; color:#aaa; padding:12px 16px; border-radius:8px; cursor:pointer;">Cancel</button>
+        </div>
+        <div style="margin-top:10px; color:#777; font-size:0.85rem;">We respect your inbox. Unsubscribe anytime. Read our <a href="legal.html" style="color:#f87171;">privacy</a>.</div>
+        <input type="text" id="leadBot" style="position:absolute; left:-9999px; top:-9999px;" tabindex="-1" autocomplete="off">
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Gate the live demo behind lead capture unless already captured
+    function openDemoGate(e) {
+      try {
+        const ok = localStorage.getItem('ogz_lead_demo_ok');
+        if (ok) {
+          window.location.href = 'unified-dashboard.html';
+          return false;
+        }
+        document.getElementById('leadModal').style.display = 'flex';
+      } catch (_) {
+        document.getElementById('leadModal').style.display = 'flex';
+      }
+      return false;
+    }
+    function closeLeadModal() {
+      document.getElementById('leadModal').style.display = 'none';
+    }
+    function showLeadError(msg) {
+      const el = document.getElementById('leadError');
+      el.textContent = msg; el.style.display = 'block';
+    }
+    function hideLeadError() {
+      const el = document.getElementById('leadError');
+      el.style.display = 'none';
+    }
+    function getUtmParams() {
+      const p = new URLSearchParams(window.location.search);
+      const keys = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'];
+      const obj = {}; keys.forEach(k => { if (p.get(k)) obj[k] = p.get(k); });
+      return obj;
+    }
+    async function submitLead(ev) {
+      ev.preventDefault(); hideLeadError();
+      const email = document.getElementById('leadEmail').value.trim();
+      const name = document.getElementById('leadName').value.trim();
+      const honeypot = document.getElementById('leadBot').value;
+      if (honeypot) { return false; }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showLeadError('Please enter a valid email.'); return false; }
+      const btn = document.getElementById('leadSubmit');
+      btn.disabled = true; btn.textContent = 'Submitting...';
+      try {
+        const payload = {
+          email,
+          name,
+          type: 'demo_gate',
+          timestamp: new Date().toISOString(),
+          source: 'index',
+          page: window.location.href,
+          userAgent: navigator.userAgent,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          ...getUtmParams()
+        };
+        // Send to Make.com webhook for lead tracking + AI follow-up
+        const res = await fetch('https://hook.us2.make.com/qvl54ugr24grkqgkbbm7i0xmfub3oh5a', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) { throw new Error('Lead webhook failed'); }
+        try { localStorage.setItem('ogz_lead_demo_ok', String(Date.now())); } catch(_){}
+        window.location.href = 'unified-dashboard.html';
+      } catch (e) {
+        showLeadError('Could not submit. Please try again in a moment.');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Continue to Live Demo';
+      }
+      return false;
+    }
+  </script>
 
   <footer>
     &copy; 2025 OGZ Prime. All Rights Reserved. | 

@@ -1,0 +1,12 @@
+{
+  "name": "elite-sol-5m",
+  "tier": "elite",
+  "asset": "SOL-USD",
+  "dataPath": "polygon-sol-1y.json",
+  "lookback": 5000,
+  "initialBalance": 10000,
+  "maxPositionSize": 0.05,
+  "stopLossPercent": 4.0,
+  "takeProfitPercent": 12.0
+}
+

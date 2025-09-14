@@ -22,7 +22,7 @@ core/TimeFrameManager.js                 # Timeframe management
 core/EnhancedPatternRecognition.js       # Pattern recognition
 core/ConnectionResilience.js             # Connection stability
 core/RiskManager.js                      # Risk management
-core/AdvancedWebSocketBroadcastSystem.js # Advanced WebSocket (server-side only)
+core/SimpleWebSocketHub.js               # Simple WebSocket hub (server-side)
 
 ## CONFIGURATION
 config/polygon-config.js                 # Polygon API configuration
