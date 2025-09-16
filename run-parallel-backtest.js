@@ -36,57 +36,12 @@ async function loadHistoricalData() {
     console.log('⚠️ Could not load polygon-btc-1y.json:', error.message);
   }
   
-  // Fallback to generating synthetic data
-  console.log('📊 Generating 1 year of synthetic data...');
-  return generateSyntheticData(365);
+  // NO FAKE DATA - EXIT IF NO REAL DATA
+  console.error('❌ CRITICAL: No real data found! This bot ONLY uses REAL market data.');
+  process.exit(1);
 }
 
-// Generate synthetic market data
-function generateSyntheticData(days) {
-  const data = [];
-  let price = 50000;
-  const baseVolume = 1000000;
-  const hoursPerDay = 24;
-  const totalHours = days * hoursPerDay;
-  
-  for (let i = 0; i < totalHours; i++) {
-    // Create realistic price movements
-    const dayProgress = (i % hoursPerDay) / hoursPerDay;
-    const weekProgress = (i % (hoursPerDay * 7)) / (hoursPerDay * 7);
-    const monthProgress = (i % (hoursPerDay * 30)) / (hoursPerDay * 30);
-    
-    // Combine multiple cycles for realistic movement
-    const dailyCycle = Math.sin(dayProgress * Math.PI * 2) * 0.01;
-    const weeklyCycle = Math.sin(weekProgress * Math.PI * 2) * 0.03;
-    const monthlyCycle = Math.sin(monthProgress * Math.PI * 2) * 0.05;
-    const trend = Math.sin(i / 1000) * 0.1; // Long-term trend
-    const noise = (Math.random() - 0.5) * 0.02; // Random noise
-    
-    const change = dailyCycle + weeklyCycle + monthlyCycle + trend + noise;
-    
-    price = price * (1 + change);
-    const high = price * (1 + Math.abs(noise) + 0.005);
-    const low = price * (1 - Math.abs(noise) - 0.005);
-    const close = low + (high - low) * (0.3 + Math.random() * 0.4);
-    
-    const volume = baseVolume * (0.5 + Math.random() * 1.5) * 
-                   (1 + Math.abs(change) * 10); // Volume spikes on big moves
-    
-    data.push({
-      timestamp: Date.now() - (totalHours - i) * 3600000,
-      open: price,
-      high: high,
-      low: low,
-      close: close,
-      volume: volume
-    });
-    
-    price = close; // Next candle opens at previous close
-  }
-  
-  console.log(`✅ Generated ${data.length} hourly candles (${days} days)`);
-  return data;
-}
+// REMOVED: generateSyntheticData - NO FAKE DATA ALLOWED
 
 // Run backtest for a specific tier
 async function runTierBacktest(tier, historicalData) {

@@ -17,6 +17,12 @@ const path = require('path');
 const axios = require('axios');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+// 🚀 MODULE AUTO-LOADER - The Path Master
+const moduleLoader = require('./ModuleAutoLoader');
+
+// 📊 POLYGON WEBSOCKET - Real price data
+const PolygonWebSocket = require('./core/PolygonWebSocket');
+
 // 🔥 SIMPLE WEBSOCKET HUB (no advanced broadcaster)
 const SimpleWebSocketHub = require('./core/SimpleWebSocketHub');
 
@@ -31,7 +37,7 @@ const broadcaster = new SimpleWebSocketHub();
 // ==========================================
 const OLLAMA_URL = process.env.OLLAMA_URL || 'http://127.0.0.1:11434';
 const OLLAMA_ENABLED = (process.env.OLLAMA_ENABLED === 'true' || process.env.OLLAMA_ENABLED === '1');
-const ENABLE_PRICE_BROADCAST = (process.env.ENABLE_PRICE_BROADCAST === 'true');
+const ENABLE_PRICE_BROADCAST = true; // Always enable real price data, fuck the fake shit
 let brainAvailable = false;
 let lastBrainLog = 0;
 
@@ -530,19 +536,17 @@ let assetPrices = {};
 let currentAsset = 'BTC-USD';
 
 // 🔌 Polygon.io WebSocket connection (optional; default disabled)
-const POLYGON_API_KEY = process.env.POLYGON_API_KEY;
+const POLYGON_API_KEY = process.env.POLYGON_API_KEY || 'RlsCgSaDNVNtGipX05xmcAHou_h7yhqZ';
 const POLYGON_CRYPTO_SOCKET = 'wss://socket.polygon.io/crypto';
-let polygonSocket = null;
 
-if (ENABLE_PRICE_BROADCAST) {
-  if (!POLYGON_API_KEY) {
-    console.error('❌ POLYGON_API_KEY not set but ENABLE_PRICE_BROADCAST=true; disabling broadcast');
-  } else {
-    polygonSocket = new WebSocket(POLYGON_CRYPTO_SOCKET);
-  }
-}
+// Always connect to real price data - NO FAKE SHIT
+console.log('🚀 Connecting to Polygon for REAL price data...');
+console.log('   API Key:', POLYGON_API_KEY ? `${POLYGON_API_KEY.slice(0,10)}...` : 'NOT SET');
+console.log('   WebSocket URL:', POLYGON_CRYPTO_SOCKET);
 
-if (polygonSocket) polygonSocket.on('open', () => {
+let polygonSocket = new WebSocket(POLYGON_CRYPTO_SOCKET);
+
+polygonSocket.on('open', () => {
   console.log('🔌 Connected to Polygon.io crypto feed');
   polygonSocket.send(JSON.stringify({
     action: 'auth',
@@ -550,23 +554,30 @@ if (polygonSocket) polygonSocket.on('open', () => {
   }));
 });
 
-if (polygonSocket) polygonSocket.on('message', (data) => {
+polygonSocket.on('error', (err) => {
+  console.error('❌ Polygon WebSocket error:', err.message);
+});
+
+polygonSocket.on('close', (code, reason) => {
+  console.log(`❌ Polygon WebSocket closed: ${code} - ${reason}`);
+});
+
+polygonSocket.on('message', (data) => {
+  console.log('📨 Polygon message received, length:', data.length);
   try {
     const messages = JSON.parse(data);
     const msgArray = Array.isArray(messages) ? messages : [messages];
 
     for (const msg of msgArray) {
-      // Debug logging
-      if (msg.ev || msg.status || msg.message) {
-        console.log(`🔍 POLYGON MSG:`, JSON.stringify(msg).substring(0, 200));
-      }
+      // Debug logging - Log EVERYTHING to see what's coming
+      console.log(`🔍 POLYGON MSG:`, JSON.stringify(msg).substring(0, 300));
       
       if (msg.status === 'auth_success') {
         console.log('✅ Polygon authenticated - subscribing to multiple assets');
-        
+
         const assets = [
-          // Correct crypto symbols for Polygon aggregates
-          'XA.X:BTCUSD', 'XA.X:ETHUSD', 'XA.X:SOLUSD', 'XA.X:ADAUSD'
+          // Try XQ (quotes) for crypto - this should give continuous price updates
+          'XQ.X:BTC-USD', 'XQ.X:ETH-USD', 'XQ.X:SOL-USD', 'XQ.X:ADA-USD'
         ];
         assets.forEach(asset => {
           polygonSocket.send(JSON.stringify({
@@ -577,10 +588,12 @@ if (polygonSocket) polygonSocket.on('message', (data) => {
         });
       }
       
-      if (msg.ev === 'XA' && typeof msg.c === 'number' && msg.e) {
+      // Handle quote events (XQ) for real-time crypto prices
+      if ((msg.ev === 'XQ' || msg.ev === 'XT') && (msg.bp || msg.ap || msg.p)) {
         tickCount++;
-        const price = parseFloat(msg.c);
-        const timestamp = new Date(msg.e).toISOString();
+        // For quotes use midpoint of bid/ask, for trades use price
+        const price = msg.p ? parseFloat(msg.p) : (parseFloat(msg.bp) + parseFloat(msg.ap)) / 2;
+        const timestamp = msg.t ? new Date(msg.t).toISOString() : new Date().toISOString();
         
         // Determine asset
         let asset = 'BTC-USD';
@@ -596,7 +609,7 @@ if (polygonSocket) polygonSocket.on('message', (data) => {
 
         // Log periodically
         if (tickCount % 10 === 0 || tickCount <= 5) {
-          console.log(`🎯 TICK #${tickCount}: ${asset} $${price.toFixed(2)} @ ${new Date(msg.e).toLocaleTimeString()}`);
+          console.log(`🎯 TICK #${tickCount}: ${asset} $${price.toFixed(2)} @ ${new Date(msg.t || Date.now()).toLocaleTimeString()}`);
         }
 
         // 🚀 BROADCAST USING ADVANCED SYSTEM

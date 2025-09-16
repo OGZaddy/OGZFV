@@ -24,7 +24,19 @@
       "Bash(pm2 restart:*)",
       "Bash(python3:*)",
       "Bash(grep:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(POLYGON_API_KEY=RlsCgSaDNVNtGipX05xmcAHou_h7yhqZ node tools/download-polygon-range.js --symbol=X:BTCUSD --span=minute --mult=5 --from=2024-01-01 --to=2024-12-31 --out=data/polygon-btc-2024-5m.json)",
+      "Bash(cat:*)",
+      "Bash(pm2 env:*)",
+      "Bash(OLLAMA_URL=http://127.0.0.1:11435 OLLAMA_ENABLED=true pm2 restart TRAI-SINGLETON --update-env)",
+      "Read(//etc/ssh/**)",
+      "Bash(OLLAMA_URL=https://trance-sprint-bahrain-prospective.trycloudflare.com OLLAMA_ENABLED=true pm2 restart TRAI-SINGLETON --update-env)",
+      "Bash(pm2 show:*)",
+      "Bash(POLYGON_API_KEY=RlsCgSaDNVNtGipX05xmcAHou_h7yhqZ pm2 restart ssl --update-env)",
+      "Bash(netstat:*)",
+      "Bash(pm2 info:*)",
+      "Bash(pm2 stop:*)",
+      "Bash(pm2 start:*)"
     ],
     "deny": [],
     "ask": []

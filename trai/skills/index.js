@@ -89,7 +89,8 @@ async function routeQuestion(question, ctx = {}) {
   const q = (question && question.question) ? question.question : (typeof question === 'string' ? question : '');
   const lower = q.toLowerCase();
 
-  // 1) Memory first: search previous conversations/insights
+  // 1) Memory FIRST: search previous conversations/insights for personality and context
+  // This preserves TRAI's personality and memory of past interactions
   try {
     if (persistentMemory) {
       let best = null; let bestScore = 0; let bestAnswer = '';
@@ -110,19 +111,26 @@ async function routeQuestion(question, ctx = {}) {
           if (s > bestScore) { bestScore = s; best = i; bestAnswer = (i.text || i.insight || i); }
         });
       }
-      if (best && bestScore > 0) {
+      // Only return memory answer if it's a VERY strong match (like exact questions about past conversations)
+      // This prevents random matches from old conversations
+      if (best && bestScore > 4 && bestAnswer && bestAnswer.length > 100) {  // Much higher threshold + quality check
+        console.log(`[TRAI] Using memory response (score: ${bestScore})`);
         return bestAnswer;
       }
     }
   } catch {}
 
-  // 2) Knowledge base: scan knowledge dirs / public docs
+  // 2) LLM SECOND - Use AI if memory doesn't have a strong match
   if (llm) {
     try {
       const a = await llm(q);
       if (a) return a;
-    } catch {}
+    } catch (error) {
+      console.error('[TRAI] LLM failed, falling back to knowledge base:', error.message);
+    }
   }
+
+  // 3) Knowledge base LAST: scan knowledge dirs / public docs as final fallback
 
   const files = loadFilesOnce(knowledgeDirs);
   let best = null;

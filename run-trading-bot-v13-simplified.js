@@ -388,7 +388,9 @@ class OGZPrimeV13Simplified {
     console.log(`💰 Account Balance: $${this.balance.toLocaleString()}`);
     console.log(`🎯 Houston Fund Target: $${this.tradingBrain.config.houstonFundTarget.toLocaleString()}`);
     console.log(`🛡️ Risk Management: ${this.riskManager.config.baseRiskPercent}% base risk per trade`);
-    console.log(`🎯 Multi-Directional: LONG (${(this.multiDirectionalTrader.config.maxLongExposure * 100).toFixed(0)}%) + SHORT (${(this.multiDirectionalTrader.config.maxShortExposure * 100).toFixed(0)}%) enabled`);
+    if (this.multiDirectionalTrader && this.multiDirectionalTrader.config) {
+      console.log(`🎯 Multi-Directional: LONG (${(this.multiDirectionalTrader.config.maxLongExposure * 100).toFixed(0)}%) + SHORT (${(this.multiDirectionalTrader.config.maxShortExposure * 100).toFixed(0)}%) enabled`);
+    }
     console.log(`📊 Performance Visualizer: Marketing reports every 25 trades + Houston fund tracking enabled`);
     console.log(`🧠 Trading Brain: Advanced execution with breakeven protection enabled`);
     console.log(`💰 Max Profit Manager: Tiered profit taking with 40% runners enabled`);
@@ -464,9 +466,9 @@ class OGZPrimeV13Simplified {
           const { asset, price, timestamp } = msg.data;
           console.log(`📊 WS Price Update: ${asset} $${price}`);
           
-          // CRITICAL: Only update market data for BTC-USD
-          if (asset === 'BTC-USD') {
-            console.log(`🎯 BTC-USD Price: $${price}`);
+          // CRITICAL: Only update market data for BTC (handle both formats)
+          if (asset === 'BTC-USD' || asset === 'BTC--USD') {
+            console.log(`🎯 BTC Price: $${price}`);
             this.cachedMarketData = {
               price: price,
               asset: asset,
@@ -474,13 +476,24 @@ class OGZPrimeV13Simplified {
               volume: msg.data.volume || 0
             };
             this.lastDataReceived = Date.now();
+
+            // Accumulate price data for analysis (lowered to 5 for testing)
+            if (!this.priceData) this.priceData = [];
+            this.priceData.push(price);
+            if (this.priceData.length > 100) this.priceData.shift(); // Keep last 100 prices
+            console.log(`📊 Price history: ${this.priceData.length} candles`);
           }
           
         } else if (msg.type === 'trade_signal') {
           // Handle trade signals
           console.log(`🎯 WS Trade Signal: ${msg.action} at $${msg.price}`);
+        } else if (msg.type === 'trade_confirmation') {
+          // Handle trade confirmation from server
+          this.onTradeConfirmed(msg.data);
+        } else if (msg.type === 'error') {
+          console.error('🔌 SSL SERVER ERROR:', msg.error);
         }
-        
+
         // Broadcast to other components if needed
         if (this.wsConnected) {
           this.broadcastToClients(msg);
@@ -1310,14 +1323,14 @@ class OGZPrimeV13Simplified {
       }
 
       // 🎯 ENHANCED PATTERN RECOGNITION: Advanced pattern detection with confidence adjustment
-      const patterns = this.patternRecognition.analyzePatterns({
+      const patterns = this.patternRecognition ? this.patternRecognition.analyzePatterns({
         candles: this.priceData,
         trend: marketData.trend,
         macd: marketData.macd,
         signal: marketData.signal,
         rsi: marketData.rsi,
         lastTrade: this.systemState.lastTrade
-      });
+      }) : { patterns: [], confidence: 0 };
       
       // 🧠 PATTERN SUCCESS TRACKING: Adjust confidence based on historical pattern performance
       let patternConfidenceBoost = 0;
@@ -1923,7 +1936,8 @@ class OGZPrimeV13Simplified {
     let confidence = 0;
     
     // OFFENSIVE MODULE: Market Regime Detection (BOOSTED: 15-25%)
-    if (this.marketRegimeDetector && this.priceData && this.priceData.length > 100) {
+    // TEST MODE: Lowered from 100 to 5 candles - CHANGE BACK TO 100 FOR PRODUCTION
+    if (this.marketRegimeDetector && this.priceData && this.priceData.length > 5) {
       const regimeAnalysis = this.marketRegimeDetector.analyzeMarket(this.priceData);
       if (regimeAnalysis) {
         if (regimeAnalysis.regime === 'trending_up' && regimeAnalysis.confidence > 0.7) {
@@ -1938,7 +1952,7 @@ class OGZPrimeV13Simplified {
     }
     
     // VISUALIZATION MODULE: Fibonacci Levels (10-15%)
-    if (this.fibonacciDetector && this.priceData && this.priceData.length > 50) {
+    if (this.fibonacciDetector && this.priceData && this.priceData.length > 5) {
       const fibLevels = this.fibonacciDetector.update(this.priceData);
       if (fibLevels) {
         const price = marketData.price || (this.priceData[this.priceData.length - 1]?.close || 0);
@@ -1953,7 +1967,7 @@ class OGZPrimeV13Simplified {
     }
     
     // VISUALIZATION MODULE: Support/Resistance (15-20%)
-    if (this.supportResistanceDetector && this.priceData && this.priceData.length > 50) {
+    if (this.supportResistanceDetector && this.priceData && this.priceData.length > 5) {
       const levels = this.supportResistanceDetector.update(this.priceData);
       if (levels && levels.length > 0) {
         const price = marketData.price || (this.priceData[this.priceData.length - 1]?.close || 0);
@@ -1972,7 +1986,7 @@ class OGZPrimeV13Simplified {
     }
     
     // OFFENSIVE MODULE: Optimized Indicators
-    if (this.optimizedIndicators && this.priceData && this.priceData.length > 30) {
+    if (this.optimizedIndicators && this.priceData && this.priceData.length > 5) {
       try {
         const rsi = this.optimizedIndicators.calculateRSI(this.priceData);
         const macd = this.optimizedIndicators.calculateMACD(this.priceData);
@@ -3284,6 +3298,43 @@ class OGZPrimeV13Simplified {
     } else {
       return `ANALYZING - Waiting for opportunity (${(this.systemState.averageConfidence * 100).toFixed(1)}%)`;
     }
+  }
+
+  /**
+   * ✅ Handle trade confirmation from SSL server
+   */
+  onTradeConfirmed(tradeData) {
+    console.log(`✅ TRADE CONFIRMED: ${tradeData.action} ${tradeData.size} at $${tradeData.price}`);
+
+    // Update position tracking
+    if (tradeData.action === 'BUY') {
+      this.systemState.position = {
+        symbol: tradeData.symbol,
+        size: tradeData.size,
+        entryPrice: tradeData.price,
+        entryTime: tradeData.timestamp || Date.now()
+      };
+      this.systemState.currentBalance -= tradeData.size;
+    } else if (tradeData.action === 'SELL' && this.systemState.position) {
+      // Calculate P&L
+      const pnl = (tradeData.price - this.systemState.position.entryPrice) * this.systemState.position.size;
+      this.systemState.totalPnL = (this.systemState.totalPnL || 0) + pnl;
+      this.systemState.currentBalance += (this.systemState.position.size + pnl);
+
+      // Update win rate
+      if (pnl > 0) {
+        this.systemState.winningTrades = (this.systemState.winningTrades || 0) + 1;
+      }
+      this.systemState.winRate = this.systemState.winningTrades / this.systemState.totalTrades;
+
+      console.log(`💰 P&L: $${pnl.toFixed(2)}, Total P&L: $${this.systemState.totalPnL.toFixed(2)}`);
+
+      // Clear position
+      this.systemState.position = null;
+    }
+
+    // Update bot status for dashboard
+    this.updateBotStatus();
   }
 
   /**

@@ -204,24 +204,22 @@ class RealQuantumEnhancement extends EventEmitter {
           const currentPrice = candles[candles.length - 1].close;
           
           // Simple arbitrage check (you'd connect to real exchanges)
-          const mockArbitrage = this.checkArbitrage(currentPrice);
-          if (mockArbitrage && mockArbitrage.profit > 0.002) {
-            console.log(`💰 ARBITRAGE: ${(mockArbitrage.profit * 100).toFixed(2)}% profit opportunity`);
-            this.metrics.arbitrageFound++;
-            this.arbitrageActive = true;
-            
-            // Could trigger a trade through YOUR system
-            if (mockArbitrage.profit > 0.005) { // 0.5% threshold
-              // Force a trade signal through YOUR system
-              const fakeAnalysis = {
-                decision: mockArbitrage.action,
-                confidence: 0.9,
-                reason: `Arbitrage opportunity: ${(mockArbitrage.profit * 100).toFixed(2)}%`,
-                arbitrage: true
-              };
-              
-              // Process through YOUR trading brain
-              this.ogz.tradingBrain.processAnalysis(fakeAnalysis, currentPrice);
+          const ALLOW_FAKE_QUANTUM = process.env.ALLOW_FAKE_QUANTUM === 'true';
+          if (ALLOW_FAKE_QUANTUM) {
+            const mockArbitrage = this.checkArbitrage(currentPrice);
+            if (mockArbitrage && mockArbitrage.profit > 0.002) {
+              console.log(`💰 ARBITRAGE: ${(mockArbitrage.profit * 100).toFixed(2)}% profit opportunity`);
+              this.metrics.arbitrageFound++;
+              this.arbitrageActive = true;
+              if (mockArbitrage.profit > 0.005) {
+                const fakeAnalysis = {
+                  decision: mockArbitrage.action,
+                  confidence: 0.9,
+                  reason: `Arbitrage opportunity: ${(mockArbitrage.profit * 100).toFixed(2)}%`,
+                  arbitrage: true
+                };
+                this.ogz.tradingBrain.processAnalysis(fakeAnalysis, currentPrice);
+              }
             }
           }
         }

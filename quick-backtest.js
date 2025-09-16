@@ -1,8 +1,10 @@
 // Quick backtest with real Polygon data
 const fs = require('fs');
 
-const data = JSON.parse(fs.readFileSync('polygon-btc-1y.json', 'utf8'));
-const testData = data.slice(-2000); // Last 2000 candles for more trades
+// Load Polygon data - the ONLY data source we use
+const dataFile = process.argv[2] || 'polygon-btc-1y.json';
+const data = JSON.parse(fs.readFileSync(dataFile, 'utf8'));
+const testData = data; // Use ALL the data
 
 console.log('Testing with', testData.length, 'candles');
 console.log('Price range: $' + Math.min(...testData.map(c => c.low)).toFixed(0) + ' - $' + Math.max(...testData.map(c => c.high)).toFixed(0));
@@ -34,14 +36,14 @@ for (let i = 100; i < testData.length; i++) {
   // Simple momentum strategy
   const momentum = (price - priceData[priceData.length - 10].close) / priceData[priceData.length - 10].close;
   
-  if (!position && momentum > 0.005 && rsi < 60) { // Buy on upward momentum
+  if (!position && rsi < 35 && momentum < -0.02) { // Buy oversold dips
     const entryPrice = price * 1.01; // Front-load 1%
     position = { entry: entryPrice, size: balance * 0.1 / entryPrice };
     trades++;
     console.log('Trade', trades + ': BUY at', entryPrice.toFixed(2), '(market=' + price.toFixed(2) + ', +1%) RSI=' + rsi.toFixed(1));
   } else if (position) {
     const pnl = (price - position.entry) / position.entry;
-    if (pnl > 0.05 || pnl < -0.03) { // 5% TP / 3% SL to account for 1% entry cost
+    if (pnl > 0.02 || pnl < -0.02) { // 2% TP / 2% SL - tighter stops
       const profit = position.size * (price - position.entry);
       balance += profit;
       console.log('  SELL at', price.toFixed(2), 'PnL=' + (pnl*100).toFixed(2) + '%', 'Balance=$' + balance.toFixed(2));

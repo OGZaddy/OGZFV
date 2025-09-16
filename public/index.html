@@ -274,10 +274,14 @@
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
           body: JSON.stringify(payload)
         });
-        if (!res.ok) { throw new Error('Lead webhook failed'); }
+        if (!res.ok) {
+          console.error('Webhook failed:', res.status, res.statusText);
+          throw new Error('Lead webhook failed');
+        }
         try { localStorage.setItem('ogz_lead_demo_ok', String(Date.now())); } catch(_){}
         window.location.href = 'unified-dashboard.html';
       } catch (e) {
+        console.error('Form submission error:', e);
         showLeadError('Could not submit. Please try again in a moment.');
       } finally {
         btn.disabled = false; btn.textContent = 'Continue to Live Demo';

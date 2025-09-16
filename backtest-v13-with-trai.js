@@ -389,7 +389,7 @@ async function runBacktestWithTRAI() {
         `--symbol=${argv.symbol}`, `--span=${argv.span}`, `--mult=${argv.mult}`, `--from=${argv.from}`, `--to=${argv.to}`, `--out=${targetFile}`
       ], { stdio: 'inherit', env: process.env });
       if (res.status !== 0) {
-        console.warn('⚠️ Download failed, will fall back to local/synthetic data');
+        console.warn('⚠️ Download failed; will try local file if present');
       }
     }
 

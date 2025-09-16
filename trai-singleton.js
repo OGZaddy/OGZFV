@@ -29,7 +29,7 @@ class TraiSingleton extends EventEmitter {
       // Gate LLM usage to avoid running models on the VPS unless explicitly enabled
       enableOllama: (process.env.OLLAMA_ENABLED === 'true' || process.env.OLLAMA_ENABLED === '1'),
       // Choose a model that fits your local GPU/RAM; can override via LLM_MODEL env
-      model: process.env.LLM_MODEL || 'qwen2:7b',
+      model: process.env.LLM_MODEL || 'qwen3-coder:30b',
       // Training data + persistent memory (overridable via env)
       memoryPath: process.env.TRAINING_DATA_PATH || path.resolve(process.cwd(), 'trai', 'conversations.json'),
       persistentMemoryPath: process.env.PERSISTENT_MEMORY_PATH || path.resolve(process.cwd(), 'trai', 'trai-memory.json'),
@@ -117,7 +117,7 @@ class TraiSingleton extends EventEmitter {
       
       const models = response.data.models || [];
       const hasQwen = models.some(m => m.name.includes('qwen3-coder'));
-      
+
       if (hasQwen) {
         this.ollamaReady = true;
         console.log('✅ [TRAI] Ollama connected, Qwen3-coder:30b available');
@@ -206,7 +206,7 @@ class TraiSingleton extends EventEmitter {
         
       case 'trai_question':
         // Handle questions forwarded from SSL server
-        const answer = await this.answerQuestion({ question: msg.question });
+        const answer = await this.answerQuestion(msg.question);
         // Send answer back through WebSocket
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
           this.ws.send(JSON.stringify({
@@ -234,7 +234,8 @@ class TraiSingleton extends EventEmitter {
     }
     
     try {
-      const response = await axios.post(`${this.config.ollamaUrl}/api/generate`, {
+      const url = `${this.config.ollamaUrl}/api/generate`;
+      const payload = {
         model: this.config.model,
         prompt: prompt,
         stream: false,
@@ -243,7 +244,9 @@ class TraiSingleton extends EventEmitter {
           top_p: 0.9,
           max_tokens: 2048
         }
-      }, {
+      };
+      console.log(`[TRAI] Calling Ollama at ${url} with model ${payload.model}`);
+      const response = await axios.post(url, payload, {
         timeout: 60000
       });
       
@@ -350,10 +353,18 @@ Provide: risk assessment, optimization suggestions, and pattern identification.`
         }));
       }
 
-      // Persist conversation
+      // Only persist GOOD conversations (not generic/error responses)
       try {
-        if (!this.persistentMemory.conversations) this.persistentMemory.conversations = [];
-        this.persistentMemory.conversations.push({ question, answer, timestamp: Date.now() });
+        // Don't save generic/fallback responses
+        const isGenericResponse = answer.includes('I\'m here to help') ||
+                                 answer.includes('Please rephrase') ||
+                                 answer.includes('I appreciate the vision') ||
+                                 answer.includes('I don\'t have personal') ||
+                                 answer.length < 50; // Too short probably means fallback
+
+        if (!isGenericResponse && answer && question) {
+          if (!this.persistentMemory.conversations) this.persistentMemory.conversations = [];
+          this.persistentMemory.conversations.push({ question, answer, timestamp: Date.now() });
         pruneMemory(this.persistentMemory);
         await this.saveMemory();
       } catch {}

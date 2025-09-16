@@ -9,6 +9,7 @@
 
 class TradingSafetyNet {
   constructor(config = {}) {
+    this.bypass = (process.env.SAFETYNET_BYPASS === 'true');
     this.config = {
       // 🚨 EMERGENCY CIRCUIT BREAKERS
       maxDailyLoss: config.maxDailyLoss || 0.05,           // 5% max daily loss
@@ -70,6 +71,9 @@ class TradingSafetyNet {
     this.state.peakBalance = this.state.currentBalance;
     
     console.log('🛡️ TradingSafetyNet initialized with emergency protections');
+    if (this.bypass) {
+      console.warn('🟡 SAFETY NET BYPASS ACTIVE: All trades will be approved (validateTrade)');
+    }
   }
   
   /**
@@ -79,6 +83,9 @@ class TradingSafetyNet {
    * @returns {Object} Safety result with approval/denial and reasons
    */
   validateTrade(tradeRequest, marketData) {
+    if (this.bypass) {
+      return this.createSafetyResult(true, 'BYPASS', 'Safety net bypassed by SAFETYNET_BYPASS=true');
+    }
     console.log('🛡️ SAFETY NET: Starting trade validation...');
     console.log('🛡️ Trade Request:', {
       symbol: tradeRequest?.symbol,
