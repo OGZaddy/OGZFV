@@ -1,0 +1,307 @@
+🔍 OMNISSIAH DIAGNOSTIC PROTOCOL INITIATED
+
+[2025-09-21T21:46:24.494Z] Module cache cleared - Loading fresh
+🔒 [v13-simplified-bot] Attempting to acquire singleton lock...
+🔒 [v13-simplified-bot] Singleton lock acquired successfully
+   PID: 1724415
+   Token: 597b716d56d859f6ce4add46cc7a2db0
+   Lock file: /home/trey/OGZFV-valhalla/.v13-simplified-bot.lock
+🔥 LOADED PerformanceAnalyzer - has recordTrade: function
+💀 Stopping PM2...
+🔓 Removing lock...
+
+🔥 Creating diagnostic bot...
+🔥 CONSTRUCTOR START - PerformanceAnalyzer class: function
+🔥 CONSTRUCTOR START - PerformanceAnalyzer.prototype.recordTrade: function
+🔥 CONSTRUCTOR START - PerformanceAnalyzer.prototype.processTrade: function
+
+🚀💰 OGZ PRIME V13 SIMPLIFIED - PRODUCTION TRADING ENGINE 💰🚀
+═══════════════════════════════════════════════════════════════════
+🎯 OPTIMIZED FOR ACTUAL TRADING - NO QUANTUM COMPLEXITY
+💡 LOWER CONFIDENCE THRESHOLDS = MORE PROFITABLE TRADES
+⚡ FASTER EXECUTION = BETTER MARKET TIMING
+🛡️ PRODUCTION SAFETY = REAL MONEY PROTECTION
+═══════════════════════════════════════════════════════════════════
+
+🎯 Feature flags loaded for STARTER tier
+
+🎭 SUBSCRIPTION TIER: STARTER
+   📊 Patterns: 0
+   💼 Max Positions: 1
+   🔄 Multi-Directional: NO
+   ⚛️ Quantum Features: DISABLED
+   📈 Max Leverage: 1x
+
+📊 Performance Visualizer initialized
+📊 PerformanceValidator initialized - Tracking component profitability
+📊 TradingProfileManager initialized with balanced profile
+🛡️ TradingSafetyNet initialized with emergency protections
+🎯 Performance Dashboard Integration initialized
+🛡️ RiskManager initialized with advanced protection protocols (UTC-enabled)
+ℹ️ [2025-09-21T21:46:24.799Z] [RiskManager] Configuration loaded with base risk: 2%
+💰 MaxProfitManager initialized with advanced profit optimization
+💰 [2025-09-21T21:46:24.800Z] [MaxProfitManager] Configuration loaded with tiered exits and dynamic trailing
+🧠 Enhanced Trading Brain initialized with $10,000 balance
+🎯 Houston Fund Target: $25,000
+💰 MaxProfitManager initialized with advanced profit optimization
+💰 [2025-09-21T21:46:24.821Z] [MaxProfitManager] Configuration loaded with tiered exits and dynamic trailing
+🛡️ TradingSafetyNet initialized with emergency protections
+📊 PerformanceAnalyzer initialized with configuration:
+   ✅ Tracking 12 metrics
+   ✅ Update interval: 60000ms
+   ✅ Alert thresholds configured
+   ✅ Min trades for analysis: 20
+   ✅ Edge decay lookback: 50 trades
+🔥 INSTANCE CHECK - performanceAnalyzer has recordTrade: function
+🔥 INSTANCE CHECK - performanceAnalyzer has processTrade: function
+⚠️ Quantum Position Sizer disabled (upgrade to ELITE tier for quantum features)
+⚠️ MultiDirectionalTrader disabled (STARTER tier - long only)
+📊 Initializing PerformanceVisualizer...
+📊 Performance Visualizer initialized
+💰 Performance tracking initialized with $10000.00
+📊 Initializing Performance Validator...
+📊 PerformanceValidator initialized - Tracking component profitability
+🔥 HIGH-VALUE MODULES INTEGRATED: RiskManager + OptimizedTradingBrain + MaxProfitManager + TradingSafetyNet + PerformanceAnalyzer + QuantumPositionSizer + MultiDirectionalTrader + PerformanceVisualizer ONLINE!
+💰 Account Balance: $10,000
+🎯 Houston Fund Target: $25,000
+🛡️ Risk Management: 2% base risk per trade
+📊 Performance Visualizer: Marketing reports every 25 trades + Houston fund tracking enabled
+🧠 Trading Brain: Advanced execution with breakeven protection enabled
+💰 Max Profit Manager: Tiered profit taking with 40% runners enabled
+[CONSTRUCTOR] {"initialized":true}
+🔥 Initializing...
+
+🚀 INITIALIZING OGZ PRIME V13 SIMPLIFIED...
+═══════════════════════════════════════════════════════════════
+⏳ Waiting for SSL server (port 3010) to be available...
+✅ SSL server is available, proceeding with connection...
+[WEBSOCKET_CONNECT_CALLED] {}
+🔌 Connecting to unified WebSocket at ws://127.0.0.1:3010/ws...
+[WEBSOCKET_CONNECT_RESULT] {"hasWs":true}
+⏳ Waiting for WebSocket connection...
+✅ WebSocket connected
+📨 Received WS message type: identification_confirmed
+📨 Received WS message type: price
+📊 WS Price Update: ETH--USD $4481.15
+📨 Received WS message type: price
+📊 WS Price Update: ETH--USD $4481.15
+📨 Received WS message type: price
+📊 WS Price Update: ETH--USD $4475.924999999999
+📨 Received WS message type: price
+📊 WS Price Update: ETH--USD $4475.75
+📨 Received WS message type: price
+📊 WS Price Update: BTC--USD $115585
+🎯 BTC Price: $115585
+📊 Price history: 1 candles
+📨 Received WS message type: price
+📊 WS Price Update: ETH--USD $4481.15
+📨 Received WS message type: price
+📊 WS Price Update: ADA--USD $0.88671
+📨 Received WS message type: price
+📊 WS Price Update: ETH--USD $4481.15
+📨 Received WS message type: price
+📊 WS Price Update: SOL--USD $237.4925
+📨 Received WS message type: price
+📊 WS Price Update: BTC--USD $115460.5
+🎯 BTC Price: $115460.5
+📊 Price history: 2 candles
+📨 Received WS message type: price
+📊 WS Price Update: ADA--USD $0.887615
+📨 Received WS message type: price
+📊 WS Price Update: ADA--USD $0.887625
+📨 Received WS message type: price
+📊 WS Price Update: ADA--USD $0.8876
+📨 Received WS message type: price
+📊 WS Price Update: ADA--USD $0.886705
+📨 Received WS message type: price
+📊 WS Price Update: ADA--USD $0.8867
+📨 Received WS message type: price
+📊 WS Price Update: BTC--USD $115585
+🎯 BTC Price: $115585
+📊 Price history: 3 candles
+📨 Received WS message type: price
+📊 WS Price Update: ADA--USD $0.8867
+📨 Received WS message type: price
+📊 WS Price Update: SOL--USD $237.50349999999997
+📨 Received WS message type: price
+📊 WS Price Update: BTC--USD $115585
+🎯 BTC Price: $115585
+📊 Price history: 4 candles
+📨 Received WS message type: price
+📊 WS Price Update: ADA--USD $0.886695
+📨 Received WS message type: price
+📊 WS Price Update: SOL--USD $237.4925
+📨 Received WS message type: price
+📊 WS Price Update: SOL--USD $237.505
+📨 Received WS message type: price
+📊 WS Price Update: ADA--USD $0.8875949999999999
+📨 Received WS message type: price
+📊 WS Price Update: SOL--USD $237.499
+📨 Received WS message type: price
+📊 WS Price Update: ADA--USD $0.8876
+💎 PHASE 1: PREMIUM PROFILE SYSTEM...
+💎 Loading Premium Trading Profiles...
+📁 Found 5 profile files
+✅ Loaded profile: BTC-USD_default (default)
+📊 Profile features: 
+🛡️ Risk settings: breakeven=undefined, momentum=undefined
+🎯 Loaded profile: default (BTC-USD)
+💎 Profile tier: FREE
+⚙️ Applied settings: confidence=0.1, maxPos=0.15
+✅ Loaded profile: BTC-USD_live_stream (live_stream)
+❌ Invalid profile structure: elite-btc.json
+❌ Invalid profile structure: elite-eth.json
+❌ Invalid profile structure: elite-sol.json
+🎯 Active profile: default
+💎 Available profiles: 2
+✅ Premium Profile System initialized successfully!
+💰 PHASE 2: CORE TRADING SYSTEMS...
+💰 Initializing Core Trading Systems...
+🌐 Multi-Asset Correlation Analyzer initialized
+📊 Tracking: ETH, BNB, SOL, MATIC, AVAX, DXY, SPX, GOLD, VIX
+🎯 Multi-Directional Trader initialized
+📈 Long positions enabled: YES
+📉 Short positions enabled: YES
+🛡️ Hedging enabled: YES
+💎 Arbitrage enabled: YES
+🎯 ULTIMATE TRADING SYSTEM INITIALIZED!
+🌐 Correlation Analysis: ENABLED
+🔄 Multi-Directional Trading: ENABLED
+💎 Arbitrage Detection: ENABLED
+🧠 Adaptive Regime Detection: ENABLED
+⚡ READY TO DOMINATE ALL MARKET CONDITIONS!
+🌐 Multi-Asset Correlation Analyzer initialized
+📊 Tracking: ETH-USD, BNB-USD, SOL-USD, MATIC-USD
+🎯 Multi-Directional Trader initialized
+📈 Long positions enabled: YES
+📉 Short positions enabled: YES
+🛡️ Hedging enabled: YES
+💎 Arbitrage enabled: YES
+✅ Core Trading Systems initialized successfully!
+🧠 PHASE 3: ENHANCED SYSTEMS...
+🧠 Initializing Enhanced Systems...
+🚀 ML Log Processor started - Logs under control!
+🤖 ML Log Processor initialized - No more log avalanches!
+🧠 LOG LEARNING SYSTEM ACTIVATED - Bot will learn from itself!
+🚀 ML Log Processor started - Logs under control!
+🤖 ML Log Processor initialized - No more log avalanches!
+🔌 PolygonWebSocket initialized - CASCADE-PROOF VERSION
+🚀 Enhanced TimeframeManager initialized - Base: [object Object], Mode: balanced (TTL-enabled)
+❌ Pattern recognition disabled for this tier
+
+⚔️ Initializing Offensive Trading Modules...
+🔮 ULTIMATE Market Regime Detector initialized
+📊 Tracking 9 correlation assets
+🧠 Correlation Analysis: ENABLED
+🌍 Macro Analysis: ENABLED
+✅ Offensive Modules initialized successfully!
+✅ Enhanced Systems initialized successfully!
+🌐 PHASE 4: NETWORK SERVICES...
+🌐 Initializing Network Services...
+🚀 HTTP Server online on port 3008
+✅ Network Services initialized successfully!
+⚡ PHASE 5: START MONITORING & TRADING...
+[START_TRADING_OPS_BEGIN] {"configInterval":30000,"systemActive":true}
+[IMMEDIATE_TEST_START] {}
+[PERFORM_CYCLE_START] {"active":true,"emergency":false,"priceDataLength":4,"hasCachedData":true}
+[GET_MARKET_DATA_START] {"hasCached":true,"lastReceived":1758491187327,"timeSince":513}
+🔍 DATA CHECK: cached=true, lastReceived=1758491187327, age=513ms
+✅ MARKET DATA VALID: BTC--USD = $115585 (age: 513ms)
+[GET_MARKET_DATA_RESULT] {"price":115585,"rsi":50,"trend":"sideways","volatility":0.02}
+[PERFORM_CYCLE_GOT_MARKET] {"hasData":true,"price":115585}
+[CONSOLE_INTERCEPT] {"message":"[CONSOLE_INTERCEPT] {\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[CONSOLE_INTERCEPT] {\\\\\\\"message\\\\\\\":\\\\\\\"[CONSOLE_INTERCEPT] {\\\\\\\\\\\\\\\"message\\\\\\\\\\\\\\\
+[CONSOLE_INTERCEPT] {"message":"[CONSOLE_INTERCEPT] {\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[CONSOLE_INTERCEPT] {\\\\\\\"message\\\\\\\":\\\\\\\"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT L
+[CONSOLE_INTERCEPT] {"message":"[CONSOLE_INTERCEPT] {\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT LINE 1300\\\"}\"}"}
+[CONSOLE_INTERCEPT] {"message":"[CONSOLE_INTERCEPT] {\"message\":\"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT LINE 1300\"}"}
+[CONSOLE_INTERCEPT] {"message":"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT LINE 1300"}
+📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT LINE 1300
+🔍 Performing trading cycle...
+[GET_MARKET_DATA_START] {"hasCached":true,"lastReceived":1758491187327,"timeSince":514}
+🔍 DATA CHECK: cached=true, lastReceived=1758491187327, age=514ms
+✅ MARKET DATA VALID: BTC--USD = $115585 (age: 514ms)
+[GET_MARKET_DATA_RESULT] {"price":115585,"rsi":50,"trend":"sideways","volatility":0}
+🔍 Performing trading cycle...
+[CALC_CONFIDENCE_START] {"hasMarketData":true,"patternCount":0}
+[CALC_CONFIDENCE_RESULT] {"confidence":0.08,"percentage":"8.0"}
+📈 Pattern confidence too low (8.0%), using indicators: 8.0%
+📊 Market analysis: Price=115585, Confidence=8.0%
+🔍 CONFIDENCE CHECK: 8.0% >= 10.0% = false
+⏳ Waiting for better opportunity: 8.0% < 10.0%
+📊 Sent bot analysis: ANALYZING (8.0%)
+[PERFORM_CYCLE_COMPLETE] {"totalTrades":0,"activePositions":0}
+[IMMEDIATE_TEST_SUCCESS] {}
+⚡ Starting Trading Operations...
+🔥 Testing immediate trading cycle call...
+[PERFORM_CYCLE_START] {"active":true,"emergency":false,"priceDataLength":4,"hasCachedData":true}
+[GET_MARKET_DATA_START] {"hasCached":true,"lastReceived":1758491187327,"timeSince":515}
+🔍 DATA CHECK: cached=true, lastReceived=1758491187327, age=515ms
+✅ MARKET DATA VALID: BTC--USD = $115585 (age: 515ms)
+[GET_MARKET_DATA_RESULT] {"price":115585,"rsi":50,"trend":"sideways","volatility":0}
+[PERFORM_CYCLE_GOT_MARKET] {"hasData":true,"price":115585}
+[CONSOLE_INTERCEPT] {"message":"[CONSOLE_INTERCEPT] {\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[CONSOLE_INTERCEPT] {\\\\\\\"message\\\\\\\":\\\\\\\"[CONSOLE_INTERCEPT] {\\\\\\\\\\\\\\\"message\\\\\\\\\\\\\\\
+[CONSOLE_INTERCEPT] {"message":"[CONSOLE_INTERCEPT] {\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[CONSOLE_INTERCEPT] {\\\\\\\"message\\\\\\\":\\\\\\\"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT L
+[CONSOLE_INTERCEPT] {"message":"[CONSOLE_INTERCEPT] {\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT LINE 1300\\\"}\"}"}
+[CONSOLE_INTERCEPT] {"message":"[CONSOLE_INTERCEPT] {\"message\":\"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT LINE 1300\"}"}
+[CONSOLE_INTERCEPT] {"message":"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT LINE 1300"}
+📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT LINE 1300
+🔍 Performing trading cycle...
+[GET_MARKET_DATA_START] {"hasCached":true,"lastReceived":1758491187327,"timeSince":515}
+🔍 DATA CHECK: cached=true, lastReceived=1758491187327, age=515ms
+✅ MARKET DATA VALID: BTC--USD = $115585 (age: 515ms)
+[GET_MARKET_DATA_RESULT] {"price":115585,"rsi":50,"trend":"sideways","volatility":0}
+🔍 Performing trading cycle...
+[CALC_CONFIDENCE_START] {"hasMarketData":true,"patternCount":0}
+[CALC_CONFIDENCE_RESULT] {"confidence":0.08,"percentage":"8.0"}
+📈 Pattern confidence too low (8.0%), using indicators: 8.0%
+📊 Market analysis: Price=115585, Confidence=8.0%
+🔍 CONFIDENCE CHECK: 8.0% >= 10.0% = false
+⏳ Waiting for better opportunity: 8.0% < 10.0%
+📊 Sent bot analysis: ANALYZING (8.0%)
+[PERFORM_CYCLE_COMPLETE] {"totalTrades":0,"activePositions":0}
+[CONSOLE_INTERCEPT] {"message":"[CONSOLE_INTERCEPT] {\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[SET_INTERVAL_CALLED] {\\\\\\\"delay\\\\\\\":30000,\\\\\\\"hasFunction\\\\\\\":true,\\\\\\\"callStack\\\\\\\":\\
+[CONSOLE_INTERCEPT] {"message":"[CONSOLE_INTERCEPT] {\"message\":\"[SET_INTERVAL_CALLED] {\\\"delay\\\":30000,\\\"hasFunction\\\":true,\\\"callStack\\\":\\\"    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-v
+[CONSOLE_INTERCEPT] {"message":"[SET_INTERVAL_CALLED] {\"delay\":30000,\"hasFunction\":true,\"callStack\":\"    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:1269:28
+[SET_INTERVAL_CALLED] {"delay":30000,"hasFunction":true,"callStack":"    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:1269:28)"}
+❌ CRITICAL: SYSTEM INITIALIZATION FAILED! TypeError: Converting circular structure to JSON
+    --> starting at object with constructor 'Timeout'
+    |     property '_idlePrev' -> object with constructor 'TimersList'
+    --- property '_idleNext' closes the circle
+    at JSON.stringify (<anonymous>)
+    at logDiagnostic (/home/trey/OGZFV-valhalla/omnissiah-diagnostic.js:17:16)
+    at global.setInterval (/home/trey/OGZFV-valhalla/omnissiah-diagnostic.js:135:7)
+    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:1269:28)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/omnissiah-diagnostic.js:140:20)
+    at async DiagnosticBot.initialize (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:584:7)
+    at async runDiagnostic (/home/trey/OGZFV-valhalla/omnissiah-diagnostic.js:272:5)
+🚨 EMERGENCY MODE ACTIVATED: INITIALIZATION_FAILURE
+📋 Details: Converting circular structure to JSON
+    --> starting at object with constructor 'Timeout'
+    |     property '_idlePrev' -> object with constructor 'TimersList'
+    --- property '_idleNext' closes the circle
+💰 ACCOUNT PROTECTION ACTIVE
+[INIT_ERROR] {"error":"Converting circular structure to JSON\n    --> starting at object with constructor 'Timeout'\n    |     property '_idlePrev' -> object with constructor 'TimersList'\n    --- property '_idleN
+💀 DIAGNOSTIC FAILED: TypeError: Converting circular structure to JSON
+    --> starting at object with constructor 'Timeout'
+    |     property '_idlePrev' -> object with constructor 'TimersList'
+    --- property '_idleNext' closes the circle
+    at JSON.stringify (<anonymous>)
+    at logDiagnostic (/home/trey/OGZFV-valhalla/omnissiah-diagnostic.js:17:16)
+    at global.setInterval (/home/trey/OGZFV-valhalla/omnissiah-diagnostic.js:135:7)
+    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:1269:28)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/omnissiah-diagnostic.js:140:20)
+    at async DiagnosticBot.initialize (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:584:7)
+    at async runDiagnostic (/home/trey/OGZFV-valhalla/omnissiah-diagnostic.js:272:5)
+TypeError: Converting circular structure to JSON
+    --> starting at object with constructor 'Timeout'
+    |     property '_idlePrev' -> object with constructor 'TimersList'
+    --- property '_idleNext' closes the circle
+    at JSON.stringify (<anonymous>)
+    at logDiagnostic (/home/trey/OGZFV-valhalla/omnissiah-diagnostic.js:17:16)
+    at global.setInterval (/home/trey/OGZFV-valhalla/omnissiah-diagnostic.js:135:7)
+    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:1269:28)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/omnissiah-diagnostic.js:140:20)
+    at async DiagnosticBot.initialize (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:584:7)
+    at async runDiagnostic (/home/trey/OGZFV-valhalla/omnissiah-diagnostic.js:272:5)

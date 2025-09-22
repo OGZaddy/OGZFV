@@ -47,7 +47,7 @@ class V13ProductionBacktest {
     this.config = {
       initialBalance: config.initialBalance || 10000,
       maxPositionSize: config.maxPositionSize || 0.05, // 5% max per trade
-      minTradeConfidence: config.minTradeConfidence || 0, // Match production
+      minTradeConfidence: config.minTradeConfidence !== undefined ? config.minTradeConfidence : -0.5, // Allow trades on indicators alone
       patternConfidence: config.patternConfidence || 0.35, // 35% pattern threshold
       emergencyConfidence: config.emergencyConfidence || 0.25, // Emergency threshold
       stopLossPercent: config.stopLossPercent || 5.0, // 5% stop loss
@@ -56,7 +56,7 @@ class V13ProductionBacktest {
       breakevenThreshold: config.breakevenThreshold || 1.0, // 1% to breakeven
       maxDailyLoss: config.maxDailyLoss || 10.0, // 10% max daily loss
       fee: config.fee || 0.001, // 0.1% trading fee
-      slippage: config.slippage || 0.0005, // 0.05% slippage
+      slippage: config.slippage || 0.01, // 1% slippage - MATCHES LIVE BOT FRONT-LOADING
       // Backtest safety mode: 'normal' | 'relaxed' | 'off'
       safetyMode: config.safetyMode || process.env.BACKTEST_SAFETY || 'normal',
       ...config
@@ -511,8 +511,9 @@ class V13ProductionBacktest {
     
     // Debug logging
     if (this.debugCounter === undefined) this.debugCounter = 0;
-    if (this.debugCounter++ < 20) {
-      console.log(`[${this.debugCounter}] Confidence=${confidence.toFixed(3)}, Min=${this.config.minTradeConfidence}, RSI=${marketData.rsi?.toFixed(1)}, Regime=${marketData.marketRegime?.regime}`);
+    // Debug: Always log first 100 confidence values to diagnose no-trades issue
+    if (this.debugCounter++ < 100) {
+      console.log(`[${this.debugCounter}] Confidence=${confidence.toFixed(3)}, Min=${this.config.minTradeConfidence}, RSI=${marketData.rsi?.toFixed(1)}, Regime=${marketData.marketRegime?.regime}, Patterns=${patterns.length}`);
     }
     
     // Check minimum confidence
@@ -845,22 +846,29 @@ async function main() {
   
   console.log(`\n🚀 Starting Production Backtest with ${tier.toUpperCase()} tier...`);
   
-  // Parse days from args
-  const daysArg = args.find(arg => arg.startsWith('--days'));
-  const days = daysArg ? parseInt(daysArg.split('=')[1]) || 7 : 7;
-  
-  // ONLY REAL DATA - NO FAKE SHIT
-  console.error('❌ CRITICAL ERROR: NO DATA FILE PROVIDED!');
-  console.error('This bot ONLY works with REAL market data. No synthetic/fake data allowed!');
-  console.error('\nTo get REAL data:');
-  console.error('POLYGON_API_KEY=your_key node tools/download-polygon-range.js --symbol=X:BTCUSD --from=2024-01-01 --to=2024-12-31 --out=data/real-btc.json');
-  console.error('\nThen run:');
-  console.error('node backtest-v13-production.js pro --file=data/real-btc.json');
-  process.exit(1);
-  
+  // Parse file from args
+  const fileArg = args.find(arg => arg.startsWith('--file='));
+  const dataFile = fileArg ? fileArg.split('=')[1] : null;
+
+  // Check if data file was provided
+  if (!dataFile) {
+    console.error('❌ CRITICAL ERROR: NO DATA FILE PROVIDED!');
+    console.error('This bot ONLY works with REAL market data. No synthetic/fake data allowed!');
+    console.error('\nTo get REAL data:');
+    console.error('POLYGON_API_KEY=your_key node tools/download-polygon-range.js --symbol=X:BTCUSD --from=2024-01-01 --to=2024-12-31 --out=data/real-btc.json');
+    console.error('\nThen run:');
+    console.error('node backtest-v13-production.js elite --file=data/real-btc.json');
+    process.exit(1);
+  }
+
+  // Load the real data
+  console.log(`📂 Loading data from: ${dataFile}`);
+  const historicalData = JSON.parse(fs.readFileSync(dataFile, 'utf-8'));
+  console.log(`✅ Loaded ${historicalData.length} candles`);
+
   // Create backtester
   const backtester = new V13ProductionBacktest({ tier });
-  
+
   // Run backtest
   const results = await backtester.runBacktest(historicalData);
   

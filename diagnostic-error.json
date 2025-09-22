@@ -1,0 +1,281 @@
+{
+  "error": "Converting circular structure to JSON\n    --> starting at object with constructor 'Timeout'\n    |     property '_idlePrev' -> object with constructor 'TimersList'\n    --- property '_idleNext' closes the circle",
+  "stack": "TypeError: Converting circular structure to JSON\n    --> starting at object with constructor 'Timeout'\n    |     property '_idlePrev' -> object with constructor 'TimersList'\n    --- property '_idleNext' closes the circle\n    at JSON.stringify (<anonymous>)\n    at logDiagnostic (/home/trey/OGZFV-valhalla/omnissiah-diagnostic.js:17:16)\n    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/omnissiah-diagnostic.js:142:5)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async DiagnosticBot.initialize (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:584:7)\n    at async runDiagnostic (/home/trey/OGZFV-valhalla/omnissiah-diagnostic.js:272:5)",
+  "log": [
+    {
+      "timestamp": 1758491378099,
+      "step": "CONSTRUCTOR",
+      "data": "{\"initialized\":true}"
+    },
+    {
+      "timestamp": 1758491379103,
+      "step": "WEBSOCKET_CONNECT_CALLED",
+      "data": "{}"
+    },
+    {
+      "timestamp": 1758491379113,
+      "step": "WEBSOCKET_CONNECT_RESULT",
+      "data": "{\"hasWs\":true}"
+    },
+    {
+      "timestamp": 1758491381123,
+      "step": "START_TRADING_OPS_BEGIN",
+      "data": "{\"configInterval\":30000,\"systemActive\":true}"
+    },
+    {
+      "timestamp": 1758491381123,
+      "step": "IMMEDIATE_TEST_START",
+      "data": "{}"
+    },
+    {
+      "timestamp": 1758491381123,
+      "step": "PERFORM_CYCLE_START",
+      "data": "{\"active\":true,\"emergency\":false,\"priceDataLength\":1,\"hasCachedData\":true}"
+    },
+    {
+      "timestamp": 1758491381123,
+      "step": "GET_MARKET_DATA_START",
+      "data": "{\"hasCached\":true,\"lastReceived\":1758491379912,\"timeSince\":1211}"
+    },
+    {
+      "timestamp": 1758491381124,
+      "step": "GET_MARKET_DATA_RESULT",
+      "data": "{\"price\":115565,\"rsi\":50,\"trend\":\"sideways\",\"volatility\":0.02}"
+    },
+    {
+      "timestamp": 1758491381124,
+      "step": "PERFORM_CYCLE_GOT_MARKET",
+      "data": "{\"hasData\":true,\"price\":115565}"
+    },
+    {
+      "timestamp": 1758491381124,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT LINE 1300\"}"
+    },
+    {
+      "timestamp": 1758491381124,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT LINE 1300\\\"}\"}"
+    },
+    {
+      "timestamp": 1758491381124,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[CONSOLE_INTERCEPT] {\\\\\\\"message\\\\\\\":\\\\\\\"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT LINE 1300\\\\\\\"}\\\"}\"}"
+    },
+    {
+      "timestamp": 1758491381124,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[CONSOLE_INTERCEPT] {\\\\\\\"message\\\\\\\":\\\\\\\"[CONSOLE_INTERCEPT] {\\\\\\\\\\\\\\\"message\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT L"
+    },
+    {
+      "timestamp": 1758491381124,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[CONSOLE_INTERCEPT] {\\\\\\\"message\\\\\\\":\\\\\\\"[CONSOLE_INTERCEPT] {\\\\\\\\\\\\\\\"message\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"[CONSOLE_INTERCEPT] {\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"message\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"
+    },
+    {
+      "timestamp": 1758491381125,
+      "step": "GET_MARKET_DATA_START",
+      "data": "{\"hasCached\":true,\"lastReceived\":1758491379912,\"timeSince\":1213}"
+    },
+    {
+      "timestamp": 1758491381125,
+      "step": "GET_MARKET_DATA_RESULT",
+      "data": "{\"price\":115565,\"rsi\":50,\"trend\":\"sideways\",\"volatility\":0}"
+    },
+    {
+      "timestamp": 1758491381125,
+      "step": "CALC_CONFIDENCE_START",
+      "data": "{\"hasMarketData\":true,\"patternCount\":0}"
+    },
+    {
+      "timestamp": 1758491381125,
+      "step": "CALC_CONFIDENCE_RESULT",
+      "data": "{\"confidence\":0.08,\"percentage\":\"8.0\"}"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "PERFORM_CYCLE_COMPLETE",
+      "data": "{\"totalTrades\":0,\"activePositions\":0}"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "IMMEDIATE_TEST_SUCCESS",
+      "data": "{}"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "PERFORM_CYCLE_START",
+      "data": "{\"active\":true,\"emergency\":false,\"priceDataLength\":1,\"hasCachedData\":true}"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "GET_MARKET_DATA_START",
+      "data": "{\"hasCached\":true,\"lastReceived\":1758491379912,\"timeSince\":1214}"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "GET_MARKET_DATA_RESULT",
+      "data": "{\"price\":115565,\"rsi\":50,\"trend\":\"sideways\",\"volatility\":0}"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "PERFORM_CYCLE_GOT_MARKET",
+      "data": "{\"hasData\":true,\"price\":115565}"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT LINE 1300\"}"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT LINE 1300\\\"}\"}"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[CONSOLE_INTERCEPT] {\\\\\\\"message\\\\\\\":\\\\\\\"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT LINE 1300\\\\\\\"}\\\"}\"}"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[CONSOLE_INTERCEPT] {\\\\\\\"message\\\\\\\":\\\\\\\"[CONSOLE_INTERCEPT] {\\\\\\\\\\\\\\\"message\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT L"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[CONSOLE_INTERCEPT] {\\\\\\\"message\\\\\\\":\\\\\\\"[CONSOLE_INTERCEPT] {\\\\\\\\\\\\\\\"message\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"[CONSOLE_INTERCEPT] {\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"message\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "GET_MARKET_DATA_START",
+      "data": "{\"hasCached\":true,\"lastReceived\":1758491379912,\"timeSince\":1214}"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "GET_MARKET_DATA_RESULT",
+      "data": "{\"price\":115565,\"rsi\":50,\"trend\":\"sideways\",\"volatility\":0}"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "CALC_CONFIDENCE_START",
+      "data": "{\"hasMarketData\":true,\"patternCount\":0}"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "CALC_CONFIDENCE_RESULT",
+      "data": "{\"confidence\":0.08,\"percentage\":\"8.0\"}"
+    },
+    {
+      "timestamp": 1758491381126,
+      "step": "PERFORM_CYCLE_COMPLETE",
+      "data": "{\"totalTrades\":0,\"activePositions\":0}"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "SET_INTERVAL_CALLED",
+      "data": "{\"delay\":30000,\"hasFunction\":true,\"callStack\":\"    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:1269:28)\"}"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[SET_INTERVAL_CALLED] {\\\"delay\\\":30000,\\\"hasFunction\\\":true,\\\"callStack\\\":\\\"    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:1269:28"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[SET_INTERVAL_CALLED] {\\\\\\\"delay\\\\\\\":30000,\\\\\\\"hasFunction\\\\\\\":true,\\\\\\\"callStack\\\\\\\":\\\\\\\"    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-v"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[CONSOLE_INTERCEPT] {\\\\\\\"message\\\\\\\":\\\\\\\"[SET_INTERVAL_CALLED] {\\\\\\\\\\\\\\\"delay\\\\\\\\\\\\\\\":30000,\\\\\\\\\\\\\\\"hasFunction\\\\\\\\\\\\\\\":true,\\\\\\\\\\\\\\\"callStack\\\\\\\\\\\\\\\":\\\\"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "SET_INTERVAL_CREATED",
+      "data": "{\"intervalId\":\"176\"}"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "SET_INTERVAL_CALLED",
+      "data": "{\"delay\":15000,\"hasFunction\":true,\"callStack\":\"    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:1279:34)\"}"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[SET_INTERVAL_CALLED] {\\\"delay\\\":15000,\\\"hasFunction\\\":true,\\\"callStack\\\":\\\"    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:1279:34"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[SET_INTERVAL_CALLED] {\\\\\\\"delay\\\\\\\":15000,\\\\\\\"hasFunction\\\\\\\":true,\\\\\\\"callStack\\\\\\\":\\\\\\\"    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-v"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[CONSOLE_INTERCEPT] {\\\\\\\"message\\\\\\\":\\\\\\\"[SET_INTERVAL_CALLED] {\\\\\\\\\\\\\\\"delay\\\\\\\\\\\\\\\":15000,\\\\\\\\\\\\\\\"hasFunction\\\\\\\\\\\\\\\":true,\\\\\\\\\\\\\\\"callStack\\\\\\\\\\\\\\\":\\\\"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "SET_INTERVAL_CREATED",
+      "data": "{\"intervalId\":\"177\"}"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "SET_INTERVAL_CALLED",
+      "data": "{\"delay\":10000,\"hasFunction\":true,\"callStack\":\"    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:1284:30)\"}"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[SET_INTERVAL_CALLED] {\\\"delay\\\":10000,\\\"hasFunction\\\":true,\\\"callStack\\\":\\\"    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:1284:30"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[SET_INTERVAL_CALLED] {\\\\\\\"delay\\\\\\\":10000,\\\\\\\"hasFunction\\\\\\\":true,\\\\\\\"callStack\\\\\\\":\\\\\\\"    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-v"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[CONSOLE_INTERCEPT] {\\\\\\\"message\\\\\\\":\\\\\\\"[SET_INTERVAL_CALLED] {\\\\\\\\\\\\\\\"delay\\\\\\\\\\\\\\\":10000,\\\\\\\\\\\\\\\"hasFunction\\\\\\\\\\\\\\\":true,\\\\\\\\\\\\\\\"callStack\\\\\\\\\\\\\\\":\\\\"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "SET_INTERVAL_CREATED",
+      "data": "{\"intervalId\":\"178\"}"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "SET_INTERVAL_CALLED",
+      "data": "{\"delay\":5000,\"hasFunction\":true,\"callStack\":\"    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:1289:33)\"}"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[SET_INTERVAL_CALLED] {\\\"delay\\\":5000,\\\"hasFunction\\\":true,\\\"callStack\\\":\\\"    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-valhalla/run-trading-bot-v13-simplified.js:1289:33)"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[SET_INTERVAL_CALLED] {\\\\\\\"delay\\\\\\\":5000,\\\\\\\"hasFunction\\\\\\\":true,\\\\\\\"callStack\\\\\\\":\\\\\\\"    at DiagnosticBot.startTradingOperations (/home/trey/OGZFV-va"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "CONSOLE_INTERCEPT",
+      "data": "{\"message\":\"[CONSOLE_INTERCEPT] {\\\"message\\\":\\\"[CONSOLE_INTERCEPT] {\\\\\\\"message\\\\\\\":\\\\\\\"[SET_INTERVAL_CALLED] {\\\\\\\\\\\\\\\"delay\\\\\\\\\\\\\\\":5000,\\\\\\\\\\\\\\\"hasFunction\\\\\\\\\\\\\\\":true,\\\\\\\\\\\\\\\"callStack\\\\\\\\\\\\\\\":\\\\\\"
+    },
+    {
+      "timestamp": 1758491381127,
+      "step": "SET_INTERVAL_CREATED",
+      "data": "{\"intervalId\":\"179\"}"
+    },
+    {
+      "timestamp": 1758491381129,
+      "step": "INIT_ERROR",
+      "data": "{\"error\":\"Converting circular structure to JSON\\n    --> starting at object with constructor 'Timeout'\\n    |     property '_idlePrev' -> object with constructor 'TimersList'\\n    --- property '_idleN"
+    }
+  ]
+}

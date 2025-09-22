@@ -1,17 +1,17 @@
 {
-  "timestamp": "9/16/2025, 4:47:02 PM",
-  "thought": "Processing multi-timeframe confluence...",
-  "decision": "ANALYZING - Waiting for opportunity (14.2%)",
+  "timestamp": "9/22/2025, 6:09:36 PM",
+  "thought": "Evaluating MACD crossover signals...",
+  "decision": "HIGH CONFIDENCE - Ready to trade (14.2%)",
   "confidence": 14,
   "balance": 10000,
-  "price": 115918.5,
+  "price": 112517.55,
   "winRate": 0,
   "totalTrades": 0,
   "dailyPnL": 0,
   "systemState": {
     "active": true,
     "mode": "trading",
-    "startTime": 1758041014555,
+    "startTime": 1758555797917,
     "totalTrades": 0,
     "successfulTrades": 0,
     "failedTrades": 0,
@@ -25,7 +25,7 @@
     "maxDrawdownReached": 0,
     "emergencyMode": false,
     "riskLimitExceeded": false,
-    "lastTradeTime": 1758041197593,
-    "lastRiskCheck": 1758041217598
+    "lastTradeTime": 1758564561061,
+    "lastRiskCheck": 1758564571154
   }
 }

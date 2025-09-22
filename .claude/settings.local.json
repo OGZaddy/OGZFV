@@ -36,7 +36,8 @@
       "Bash(netstat:*)",
       "Bash(pm2 info:*)",
       "Bash(pm2 stop:*)",
-      "Bash(pm2 start:*)"
+      "Bash(pm2 start:*)",
+      "Read(//home/trey/.pm2/logs/**)"
     ],
     "deny": [],
     "ask": []

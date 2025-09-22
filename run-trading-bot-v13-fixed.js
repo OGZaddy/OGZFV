@@ -1,25 +1,11 @@
-// CACHE BUSTER - Forces fresh load every time
-if (require.cache[__filename]) {
-  delete require.cache[__filename];
-}
-
-// Clear all project modules from cache
-Object.keys(require.cache).forEach(key => {
-  if (key.includes('OGZFV-valhalla')) {
-    delete require.cache[key];
-  }
-});
-
-console.log(`[${new Date().toISOString()}] Module cache cleared - Loading fresh`);
-
 // ===================================================================
 // 🚀 OGZ PRIME V13 SIMPLIFIED - PRODUCTION READY TRADING ENGINE
 // ===================================================================
 // BASED ON V13 QUANTUM BUT QUANTUM FEATURES DISABLED FOR STABILITY
 // FOCUS: ACTUAL TRADING WITH OPTIMIZED CONFIDENCE THRESHOLDS
-//
+// 
 // 🎯 Enhanced Pattern Recognition - High accuracy signals
-// 🔄 Multi-Directional Trading - Buy/Sell optimization
+// 🔄 Multi-Directional Trading - Buy/Sell optimization  
 // 🧠 ML Learning Systems - Adaptive intelligence
 // ⚡ Optimized Execution - Fast and reliable
 // 🛡️ Production Safety - Risk management
@@ -73,12 +59,12 @@ const RealQuantumEnhancement = require('./core/quantum-enhancement-layer');
 // RobustMessageHandler removed - was causing MODULE_NOT_FOUND crash
 const PerformanceDashboardIntegration = require('./core/PerformanceDashboardIntegration');
 
+// 🔥 HIGH-VALUE MODULE IMPORTS - PHASE 1 INTEGRATION
 const RiskManager = require('./core/RiskManager');
 const { OptimizedTradingBrain } = require('./core/OptimizedTradingBrain');
 const MaxProfitManager = require('./core/MaxProfitManager');
 const TradingSafetyNet = require('./core/TradingSafetyNet');
 const PerformanceAnalyzer = require('./core/PerformanceAnalyzer');
-console.log('🔥 LOADED PerformanceAnalyzer - has recordTrade:', typeof PerformanceAnalyzer.prototype.recordTrade);
 const QuantumPositionSizer = require('./core/QuantumPositionSizer');
 const PerformanceValidator = require('./core/PerformanceValidator');
 const PerformanceVisualizer = require('./core/PerformanceVisualizer');
@@ -115,9 +101,6 @@ const OptimizedIndicators = require('./core/OptimizedIndicators');
 
 class OGZPrimeV13Simplified {
   constructor() {
-    console.log('🔥 CONSTRUCTOR START - PerformanceAnalyzer class:', typeof PerformanceAnalyzer);
-    console.log('🔥 CONSTRUCTOR START - PerformanceAnalyzer.prototype.recordTrade:', typeof PerformanceAnalyzer.prototype.recordTrade);
-    console.log('🔥 CONSTRUCTOR START - PerformanceAnalyzer.prototype.processTrade:', typeof PerformanceAnalyzer.prototype.processTrade);
     console.log('\n🚀💰 OGZ PRIME V13 SIMPLIFIED - PRODUCTION TRADING ENGINE 💰🚀');
     console.log('═══════════════════════════════════════════════════════════════════');
     console.log('🎯 OPTIMIZED FOR ACTUAL TRADING - NO QUANTUM COMPLEXITY');
@@ -333,9 +316,7 @@ class OGZPrimeV13Simplified {
         dailyLoss: 0.05       // Alert if daily loss exceeds 5%
       }
     });
-    console.log('🔥 INSTANCE CHECK - performanceAnalyzer has recordTrade:', typeof this.performanceAnalyzer.recordTrade);
-    console.log('🔥 INSTANCE CHECK - performanceAnalyzer has processTrade:', typeof this.performanceAnalyzer.processTrade);
-
+    
     // 🔮 INITIALIZE QUANTUM POSITION SIZER - ONLY FOR ELITE TIER
     if (this.tierFlags.isEnabled('quantum.positionSizer')) {
       this.quantumSizer = new QuantumPositionSizer({
@@ -548,11 +529,11 @@ class OGZPrimeV13Simplified {
       
       // Connect to WebSocket FIRST - this is critical!
       this.connectWebSocket();
-
+      
       // Wait for initial connection and data
       console.log('⏳ Waiting for WebSocket connection...');
       await new Promise(resolve => setTimeout(resolve, 2000));
-
+      
       // Check if connected
       if (!this.wsConnected) {
         console.warn('⚠️ WebSocket not connected yet, but continuing initialization...');
@@ -1297,7 +1278,7 @@ class OGZPrimeV13Simplified {
    * 🎯 Main trading cycle - THE CORE TRADING LOGIC
    */
   async performTradingCycle() {
-    console.log('📍 performTradingCycle called - V13-SIMPLIFIED VERSION AT LINE 1300');
+    console.log('📍 performTradingCycle called');
     if (!this.systemState.active || this.systemState.emergencyMode) {
       console.log('⚠️ Trading cycle skipped - inactive or emergency');
       return;
@@ -1394,23 +1375,11 @@ class OGZPrimeV13Simplified {
       // Calculate confidence with OPTIMIZED LOGIC + Pattern Enhancement
       let confidence = this.calculateTradingConfidence(marketData, patterns);
       confidence = Math.max(0, Math.min(1, confidence + patternConfidenceBoost));
-
-      // IMPORTANT: If pattern confidence is too low, use indicator-based confidence directly
-      if (confidence < 0.20 && marketData) {
-        const indicatorConfidence = this.calculateRealConfidence(marketData, []);
-        console.log(`📈 Pattern confidence too low (${(confidence * 100).toFixed(1)}%), using indicators: ${(indicatorConfidence * 100).toFixed(1)}%`);
-
-        // Use indicator confidence if it's significantly higher
-        if (indicatorConfidence > confidence) {
-          confidence = indicatorConfidence;
-          console.log(`✅ Switching to indicator-based confidence: ${(confidence * 100).toFixed(1)}%`);
-        }
-      }
-
+      
       // Update system state
       this.systemState.averageConfidence = confidence;
       this.systemState.lastTradeTime = Date.now();
-
+      
       console.log(`📊 Market analysis: Price=${marketData.price}, Confidence=${(confidence * 100).toFixed(1)}%`);
       console.log(`🔍 CONFIDENCE CHECK: ${(confidence * 100).toFixed(1)}% >= ${(this.config.minTradeConfidence * 100).toFixed(1)}% = ${confidence >= this.config.minTradeConfidence}`);
       
@@ -1427,8 +1396,7 @@ class OGZPrimeV13Simplified {
           Has MDT: ${!!this.multiDirectionalTrader}
           Has Patterns: ${patterns?.length || 0}
           RSI: ${marketData.rsi}
-          Trend: ${marketData.trend}
-          PriceData Length: ${this.priceData ? this.priceData.length : 0}`);
+          Trend: ${marketData.trend}`);
         console.log(`🎯 TRADING DECISION: Direction=${direction}, Patterns=${patterns.length}, Confidence=${(confidence * 100).toFixed(1)}%`);
         
         if (direction && direction !== 'hold') {
@@ -1524,9 +1492,6 @@ class OGZPrimeV13Simplified {
               
               // 📊 PERFORMANCE ANALYZER: Record trade execution
               if (this.performanceAnalyzer) {
-                console.log('🔥 RUNTIME CHECK - performanceAnalyzer methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(this.performanceAnalyzer)));
-                console.log('🔥 RUNTIME CHECK - has recordTrade:', typeof this.performanceAnalyzer.recordTrade);
-                console.log('🔥 RUNTIME CHECK - has processTrade:', typeof this.performanceAnalyzer.processTrade);
                 this.performanceAnalyzer.processTrade({
                   direction: mdtDecision.direction,
                   size: mdtDecision.size,
@@ -2266,9 +2231,7 @@ class OGZPrimeV13Simplified {
         return 'sell';
       } else if (patterns.length === 0) {
         // Use technical indicators when no patterns
-        console.log(`📊 No patterns detected, checking indicators. PriceData length: ${this.priceData ? this.priceData.length : 0}`);
         if (!this.priceData || this.priceData.length < 26) {
-          console.log(`⚠️ Not enough price data for indicators: ${this.priceData ? this.priceData.length : 0} < 26`);
           return 'hold'; // Not enough data
         }
 
@@ -2283,9 +2246,9 @@ class OGZPrimeV13Simplified {
         if (currentPrice > sma20 && smaDistance > 0.1) buySignals++;
         else if (currentPrice < sma20 && smaDistance < -0.1) sellSignals++;
 
-        // 2. RSI (EMERGENCY AGGRESSIVE THRESHOLDS FOR TESTING)
-        if (marketData.rsi < 45) buySignals++; // Oversold (was 30)
-        else if (marketData.rsi > 55) sellSignals++; // Overbought (was 70)
+        // 2. RSI
+        if (marketData.rsi < 30) buySignals++; // Oversold
+        else if (marketData.rsi > 70) sellSignals++; // Overbought
 
         // 3. MACD
         if (marketData.macd > marketData.signal && marketData.macd > 0) buySignals++;
@@ -2297,34 +2260,53 @@ class OGZPrimeV13Simplified {
 
         // 5. ATR for volatility confirmation (only trade when volatility is reasonable)
         const atr = marketData.volatility || 0;
-        const volatilityGood = atr > 0.0005 && atr < 0.05; // Between 0.05% and 5% (ADJUSTED FOR CRYPTO)
+        const volatilityGood = atr > 0.001 && atr < 0.05; // Between 0.1% and 5%
 
         console.log(`📊 Indicators: SMA=${sma20.toFixed(2)} (${smaDistance.toFixed(2)}%), RSI=${marketData.rsi}, MACD=${marketData.macd}, Trend=${marketData.trend}, ATR=${atr}`);
         console.log(`🎯 Signals: Buy=${buySignals}, Sell=${sellSignals}, Volatility=${volatilityGood ? 'Good' : 'Bad'}`);
 
-        // Need at least 1 signal to trade (EMERGENCY MODE - FORCE TRADING)
+        // Need at least 1 signal to trade (lowered for testing)
         if (buySignals >= 1) {
-          console.log(`🟢 BUY SIGNAL: ${buySignals} indicators aligned (volatility: ${volatilityGood ? 'good' : 'ignored'})`);
+          console.log(`🟢 BUY SIGNAL: ${buySignals} indicators aligned`);
           return 'buy';
         } else if (sellSignals >= 1) {
-          console.log(`🔴 SELL SIGNAL: ${sellSignals} indicators aligned (volatility: ${volatilityGood ? 'good' : 'ignored'})`);
+          console.log(`🔴 SELL SIGNAL: ${sellSignals} indicators aligned`);
           return 'sell';
-        } else {
-          // EMERGENCY: If RSI extreme, trade anyway
-          if (marketData.rsi && marketData.rsi < 35) {
-            console.log(`🚨 EMERGENCY BUY: RSI ${marketData.rsi} oversold!`);
-            return 'buy';
-          } else if (marketData.rsi && marketData.rsi > 65) {
-            console.log(`🚨 EMERGENCY SELL: RSI ${marketData.rsi} overbought!`);
-            return 'sell';
-          }
-          console.log(`⚠️ Not enough signals - HOLD (Buy=${buySignals}, Sell=${sellSignals}, RSI=${marketData.rsi})`);
-          return 'hold';
+        }
+      // STARTER TIER: Determine direction from indicators when no patterns
+      if ((!patterns || patterns.length === 0) && confidence > 0) {
+        console.log('📊 STARTER: Using indicators for direction (no patterns)');
+        
+        // Use RSI for direction
+        if (marketData.rsi && marketData.rsi < 35) {
+          console.log('📊 RSI oversold - BUY signal');
+          return 'buy';
+        } else if (marketData.rsi && marketData.rsi > 65) {
+          console.log('📊 RSI overbought - SELL signal');  
+          return 'sell';
+        }
+        
+        // Use trend for direction
+        if (marketData.trend === 'up') {
+          console.log('📈 Uptrend detected - BUY signal');
+          return 'buy';
+        } else if (marketData.trend === 'down') {
+          console.log('📉 Downtrend detected - SELL signal');
+          return 'sell';
+        }
+        
+        // Default to buy if we have confidence
+        if (confidence > 0.05) {
+          console.log('💰 Have confidence but no clear signal - defaulting to BUY');
+          return 'buy';
         }
       }
-
+      
       return 'hold';
-
+      } else {
+        return 'hold';
+      }
+      
     } catch (error) {
       console.error('❌ Direction determination error:', error);
       return 'hold';
@@ -2637,9 +2619,6 @@ class OGZPrimeV13Simplified {
       }, this.systemState.currentBalance);
       
       // 📊 PERFORMANCE ANALYZER: Record trade execution
-      console.log('🔥 TRADE EXEC CHECK @ line 2642 - performanceAnalyzer:', typeof this.performanceAnalyzer);
-      console.log('🔥 TRADE EXEC CHECK @ line 2642 - has processTrade:', typeof this.performanceAnalyzer.processTrade);
-      console.log('🔥 TRADE EXEC CHECK @ line 2642 - has recordTrade:', typeof this.performanceAnalyzer.recordTrade);
       this.performanceAnalyzer.processTrade({
         id: tradeId,
         direction: direction,
@@ -3098,9 +3077,6 @@ class OGZPrimeV13Simplified {
       
       // 📊 PERFORMANCE ANALYZER: Record trade result for analytics
       if (this.performanceAnalyzer) {
-        console.log('🔥 CLOSE CHECK @ line 3103 - performanceAnalyzer:', typeof this.performanceAnalyzer);
-        console.log('🔥 CLOSE CHECK @ line 3103 - has processTrade:', typeof this.performanceAnalyzer.processTrade);
-        console.log('🔥 CLOSE CHECK @ line 3103 - has recordTrade:', typeof this.performanceAnalyzer.recordTrade);
         this.performanceAnalyzer.processTrade({
           tradeId: position.id,
           success: pnl > 0,

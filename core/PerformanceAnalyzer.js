@@ -217,6 +217,11 @@ class PerformanceAnalyzer {
    * @param {Object} [analysisData={}] - Analysis data when trade was initiated
    * @returns {Object|null} Trade quality assessment and recommendations
    */
+  // Alias for backward compatibility
+  recordTrade(trade, analysisData = {}) {
+    return this.processTrade(trade, analysisData);
+  }
+
   processTrade(trade, analysisData = {}) {
     if (!trade) {
       this.log('Invalid trade data provided', 'error');

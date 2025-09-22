@@ -6,10 +6,9 @@
   "lookback": 5000,
   "initialBalance": 10000,
   "maxPositionSize": 0.05,
-  "stopLossPercent": 4.0,
-  "takeProfitPercent": 12.0,
-  "minTradeConfidence": -1.0,
+  "stopLossPercent": 4,
+  "takeProfitPercent": 12,
+  "minTradeConfidence": -1,
   "patternConfidence": 0.15,
   "fallbackPatternConfidence": 0.1
 }
-

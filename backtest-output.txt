@@ -1,0 +1,10 @@
+
+🚀 Starting Production Backtest with ELITE tier...
+❌ CRITICAL ERROR: NO DATA FILE PROVIDED!
+This bot ONLY works with REAL market data. No synthetic/fake data allowed!
+
+To get REAL data:
+POLYGON_API_KEY=your_key node tools/download-polygon-range.js --symbol=X:BTCUSD --from=2024-01-01 --to=2024-12-31 --out=data/real-btc.json
+
+Then run:
+node backtest-v13-production.js pro --file=data/real-btc.json
