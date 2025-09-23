@@ -12,7 +12,6 @@ Object.keys(require.cache).forEach(key => {
 
 console.log(`[${new Date().toISOString()}] Module cache cleared - Loading fresh`);
 
-console.log('📍 FILE LOADED: run-trading-bot-v13-simplified.js at', new Date().toISOString());
 // ===================================================================
 // 🚀 OGZ PRIME V13 SIMPLIFIED - PRODUCTION READY TRADING ENGINE
 // ===================================================================
@@ -32,7 +31,10 @@ require('dotenv').config();
 
 // 🚨 CRITICAL: SINGLETON LOCK TO PREVENT DUPLICATE INSTANCES
 const { OGZSingletonLock, checkCriticalPorts } = require('./core/SingletonLock');
-// MOVED TO MAIN FUNCTION - Don't acquire at module load time!
+const singletonLock = new OGZSingletonLock('v13-simplified-bot');
+
+// Acquire lock immediately - will exit if another instance is running
+singletonLock.acquireLock();
 
 const express = require('express');
 const http = require('http');
@@ -3673,11 +3675,6 @@ async function main() {
   console.log('⚡ LOWER THRESHOLDS = MORE TRADES');
   console.log('═══════════════════════════════════════════════════════════\n');
 
-  // SINGLETON LOCK DISABLED - Was preventing bot from starting properly
-  // const singletonLock = new OGZSingletonLock('v13-simplified-bot');
-  // singletonLock.acquireLock();
-  console.log('⚠️ SINGLETON LOCK DISABLED - Running without instance protection');
-
   const bot = new OGZPrimeV13Simplified();
   
   // Handle graceful shutdown
@@ -3728,9 +3725,9 @@ async function main() {
   }
 }
 
-// Start the bot - ALWAYS run main() regardless of how it's started
-// PM2 doesn't set require.main properly
-console.log('🔧 Starting main() - require.main check bypassed for PM2 compatibility');
-main().catch(console.error);
+// Start the bot if this file is run directly
+if (require.main === module) {
+  main().catch(console.error);
+}
 
 module.exports = OGZPrimeV13Simplified;

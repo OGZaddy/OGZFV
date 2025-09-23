@@ -1,17 +1,17 @@
 {
-  "timestamp": "9/22/2025, 6:09:36 PM",
-  "thought": "Evaluating MACD crossover signals...",
+  "timestamp": "9/23/2025, 6:04:34 PM",
+  "thought": "Calculating risk-adjusted returns...",
   "decision": "HIGH CONFIDENCE - Ready to trade (14.2%)",
   "confidence": 14,
   "balance": 10000,
-  "price": 112517.55,
+  "price": 111975.75,
   "winRate": 0,
   "totalTrades": 0,
   "dailyPnL": 0,
   "systemState": {
     "active": true,
     "mode": "trading",
-    "startTime": 1758555797917,
+    "startTime": 1758650611106,
     "totalTrades": 0,
     "successfulTrades": 0,
     "failedTrades": 0,
@@ -25,7 +25,7 @@
     "maxDrawdownReached": 0,
     "emergencyMode": false,
     "riskLimitExceeded": false,
-    "lastTradeTime": 1758564561061,
-    "lastRiskCheck": 1758564571154
+    "lastTradeTime": 1758650674149,
+    "lastRiskCheck": 1758650674149
   }
 }
