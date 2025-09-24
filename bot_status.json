@@ -1,20 +1,20 @@
 {
-  "timestamp": "9/24/2025, 5:00:32 AM",
-  "thought": "Monitoring RSI levels for oversold conditions...",
+  "timestamp": "9/24/2025, 6:56:08 AM",
+  "thought": "Scanning for high-confidence trade setups...",
   "decision": "HIGH CONFIDENCE - Ready to trade (14.2%)",
   "confidence": 14,
   "balance": 10000,
-  "price": 112200.5,
+  "price": 112600,
   "winRate": 0,
   "totalTrades": 0,
   "dailyPnL": 0,
   "systemState": {
     "active": true,
     "mode": "trading",
-    "startTime": 1758689634842,
+    "startTime": 1758696650872,
     "totalTrades": 0,
     "successfulTrades": 0,
-    "failedTrades": 0,
+    "failedTrades": 1,
     "totalPnL": 0,
     "dailyPnL": 0,
     "currentBalance": 10000,
@@ -25,7 +25,7 @@
     "maxDrawdownReached": 0,
     "emergencyMode": false,
     "riskLimitExceeded": false,
-    "lastTradeTime": 1758690027884,
-    "lastRiskCheck": 1758690027889
+    "lastTradeTime": 1758696953915,
+    "lastRiskCheck": 1758696963917
   }
 }

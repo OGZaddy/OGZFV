@@ -863,11 +863,16 @@ class EnhancedPatternChecker {
           const mlBoost = mlEvaluation.confidence > 0.5 ? 0.1 : 0;
           const finalConfidence = Math.min(0.95, baseConfidence + mlBoost);
 
+          // FIX: Map bullish/bearish to buy/sell for trading bot compatibility
+          const mappedDirection = patternConfig.direction === 'bullish' ? 'buy' :
+                                 patternConfig.direction === 'bearish' ? 'sell' :
+                                 patternConfig.direction; // Keep original if already buy/sell
+
           patterns.push({
             name: patternConfig.name,
             key: patternKey,
             confidence: finalConfidence,
-            direction: patternConfig.direction,
+            direction: mappedDirection,
             type: patternConfig.type,
             bars: patternConfig.bars,
             reliability: patternConfig.reliability,
