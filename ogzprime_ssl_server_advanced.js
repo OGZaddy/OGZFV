@@ -413,7 +413,7 @@ wss.on('connection', (ws, req) => {
       }
       
       // Special handling for bot identification
-      if (data.type === 'identify' && data.source === 'trading_bot') {
+      if (data.type === 'identify' && (data.source === 'bot' || data.source === 'trading_bot')) {
         console.log('🤖 TRADING BOT IDENTIFIED!');
         
         // Update connection metadata
