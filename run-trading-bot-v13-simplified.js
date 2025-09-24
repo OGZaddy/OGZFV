@@ -98,7 +98,7 @@ const MLLogProcessor = require('./core/MLLogProcessor');
 // Enhanced WebSocket and management
 const PolygonWebSocket = require('./core/PolygonWebSocket');
 const TimeFrameManager = require('./core/TimeFrameManager');
-const { EnhancedPatternChecker, PatternFeatureExtractor } = require('./core/EnhancedPatternRecognition');
+const { EnhancedPatternChecker, EnhancedPatternRecognition, PatternFeatureExtractor } = require('./core/EnhancedPatternRecognition');
 
 // TIER-BASED FEATURE FLAGS - Control what features each subscription gets
 const TierFeatureFlags = require('./core/TierFeatureFlags');
@@ -462,10 +462,10 @@ class OGZPrimeV13Simplified {
       console.log('✅ WebSocket connected');
       this.wsConnected = true;
       
-      // Identify as trading bot for CRITICAL priority
+      // Identify as bot for CRITICAL priority (matches SSL server price broadcast filter)
       this.ws.send(JSON.stringify({
         type: 'identify',
-        source: 'trading_bot',
+        source: 'bot',
         bot: 'valhalla',
         version: 'V13-SIMPLIFIED',
         capabilities: ['trading', 'realtime', 'priority']
@@ -476,12 +476,14 @@ class OGZPrimeV13Simplified {
       try {
         const msg = JSON.parse(data.toString());
         console.log(`📨 Received WS message type: ${msg.type}`); // Debug log
-        
+        console.log(`🔍 Full message:`, JSON.stringify(msg)); // DEBUG: See full message structure
+
         // Process incoming WebSocket messages
         if (msg.type === 'price' && msg.data) {
           // Handle price updates from WebSocket
           const { asset, price, timestamp } = msg.data;
           console.log(`📊 WS Price Update: ${asset} $${price}`);
+          console.log(`🔍 Debug - asset: '${asset}', BTC check: ${asset === 'BTC-USD' || asset === 'BTC--USD'}`);
           
           // CRITICAL: Only update market data for BTC (handle both formats)
           if (asset === 'BTC-USD' || asset === 'BTC--USD') {
@@ -971,9 +973,9 @@ class OGZPrimeV13Simplified {
       const detector = this.tierFlags.getPatternDetector();
       
       if (detector) {
-        // If it's EnhancedPatternChecker, configure it
+        // If it's EnhancedPatternRecognition, configure it with ML
         if (detector.constructor.name === 'EnhancedPatternRecognition') {
-          this.patternRecognition = new EnhancedPatternChecker({
+          this.patternRecognition = new EnhancedPatternRecognition({
             // CRITICAL: LOWER THRESHOLDS FOR MORE TRADING
             similarityThreshold: 0.65,        // LOWERED from 0.8 to 0.65
             minTradeHistory: 2,              // LOWERED from 3 to 2
@@ -992,7 +994,7 @@ class OGZPrimeV13Simplified {
           this.patternRecognition = detector;
         }
         
-        console.log(`✅ Pattern Recognition initialized for ${tier.toUpperCase()} tier with ${this.tierFlags.getFeatureValue('patterns.maxPatterns')} patterns`);
+        console.log(`✅ Pattern Recognition initialized for ${this.tierFlags.tier.toUpperCase()} tier with ${this.tierFlags.getFeatureValue('patterns.maxPatterns')} patterns`);
       } else {
         console.log('❌ Pattern recognition disabled for this tier');
         this.patternRecognition = null;
@@ -1354,7 +1356,7 @@ class OGZPrimeV13Simplified {
       // 🎯 ENHANCED PATTERN RECOGNITION: Advanced pattern detection with confidence adjustment
       let patterns = [];
       if (this.patternRecognition) {
-        const patternResult = this.patternRecognition.analyzePatterns({
+        const patternResult = await this.analyzePatterns({
           candles: this.priceData,
           trend: marketData.trend,
           macd: marketData.macd,
@@ -1374,7 +1376,7 @@ class OGZPrimeV13Simplified {
           if (patternHistory && patternHistory.timesSeen >= 3) {
             const successRate = patternHistory.wins / patternHistory.timesSeen;
             const avgPnL = patternHistory.totalPnL / patternHistory.timesSeen;
-            
+
             if (successRate > 0.7 && avgPnL > 20) {
               patternConfidenceBoost += 0.15; // Strong historical performance
               console.log(`🎯 Pattern Boost: +15% confidence (${(successRate * 100).toFixed(1)}% win rate, $${avgPnL.toFixed(2)} avg PnL)`);

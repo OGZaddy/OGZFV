@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const { indicators } = require('./OptimizedIndicators');
+const ComprehensivePatternDetector = require('./ComprehensivePatternDetector');
 
 // Pattern performance tracking for visualization and marketing
 const pattern_performance = {};
@@ -795,14 +796,25 @@ class EnhancedPatternChecker {
     
     // Initialize pattern memory system
     this.memory = new PatternMemorySystem(options.memory || {});
-    
+
+    // Initialize comprehensive pattern detector with all 47 patterns
+    this.patternDetector = new ComprehensivePatternDetector();
+    this.allPatterns = {
+      ...this.patternDetector.tier1Patterns,
+      ...this.patternDetector.tier2Patterns,
+      ...this.patternDetector.tier3Patterns
+    };
+
+    console.log(`🎯 ML Pattern System initialized with ${Object.keys(this.allPatterns).length} patterns`);
+
     // Stats
     this.stats = {
       evaluations: 0,
       highConfidenceSignals: 0,
-      tradeResults: 0
+      tradeResults: 0,
+      patternsDetected: 0
     };
-    
+
     // Store last evaluated features for reference
     this.lastEvaluatedFeatures = null;
   }
@@ -814,32 +826,85 @@ class EnhancedPatternChecker {
    */
   analyzePatterns(marketData) {
     const patterns = [];
-    
-    // Extract features from market data
-    const features = FeatureExtractor.extract({
-      candles: marketData.candles || [],
-      trend: marketData.trend || 'sideways',
-      macd: marketData.macd || 0,
-      signal: marketData.signal || 0,
-      rsi: marketData.rsi || 50,
-      volume: marketData.volume || 1000000
-    });
-    
-    // Evaluate the pattern
-    const result = this.evaluatePattern(features);
-    
-    if (result && result.confidence > 0.5) {
-      patterns.push({
-        name: result.bestMatch?.pattern || 'Unknown',
-        confidence: result.confidence,
-        direction: result.confidence > 0.6 ? 'bullish' : 'bearish',
-        signature: JSON.stringify(features).substring(0, 50),
-        features: features,
-        quality: result.quality || 0.5
-      });
+    const candles = marketData.candles || [];
+
+    if (candles.length < 3) {
+      return patterns; // Not enough data for pattern detection
     }
-    
-    return patterns;
+
+    this.stats.evaluations++;
+    let patternsFound = 0;
+
+    // Test all 47 patterns using the comprehensive pattern detector
+    for (const [patternKey, patternConfig] of Object.entries(this.allPatterns)) {
+      try {
+        // Use the pattern's detect function
+        const isDetected = patternConfig.detect(candles);
+
+        if (isDetected) {
+          patternsFound++;
+
+          // Create pattern signature for ML tracking
+          const signature = `${patternKey}_${patternConfig.direction}_${patternConfig.type}`;
+
+          // Get ML-enhanced confidence from memory system
+          const features = FeatureExtractor.extract({
+            candles: candles,
+            trend: marketData.trend || 'sideways',
+            macd: marketData.macd || 0,
+            signal: marketData.signal || 0,
+            rsi: marketData.rsi || 50,
+            volume: marketData.volume || 1000000
+          });
+
+          // Use ML to adjust pattern confidence
+          const mlEvaluation = this.evaluatePattern(features);
+          const baseConfidence = patternConfig.reliability || 0.5;
+          const mlBoost = mlEvaluation.confidence > 0.5 ? 0.1 : 0;
+          const finalConfidence = Math.min(0.95, baseConfidence + mlBoost);
+
+          patterns.push({
+            name: patternConfig.name,
+            key: patternKey,
+            confidence: finalConfidence,
+            direction: patternConfig.direction,
+            type: patternConfig.type,
+            bars: patternConfig.bars,
+            reliability: patternConfig.reliability,
+            signature: signature,
+            features: features,
+            quality: mlEvaluation.quality || 0.5,
+            mlConfidence: mlEvaluation.confidence,
+            isMLEnhanced: mlBoost > 0
+          });
+
+          // Record pattern detection for learning
+          this.memory.recordPattern(features, {
+            pattern: signature,
+            detected: true,
+            confidence: finalConfidence,
+            timestamp: Date.now()
+          });
+        }
+      } catch (error) {
+        // Silently continue if a pattern detection fails
+        console.warn(`Pattern ${patternKey} detection failed:`, error.message);
+      }
+    }
+
+    this.stats.patternsDetected += patternsFound;
+
+    // Sort patterns by confidence (highest first)
+    patterns.sort((a, b) => b.confidence - a.confidence);
+
+    // Limit to top 10 patterns to avoid noise
+    const topPatterns = patterns.slice(0, 10);
+
+    if (topPatterns.length > 0) {
+      console.log(`🎯 Detected ${topPatterns.length} patterns (${patternsFound} total), top: ${topPatterns[0].name} (${(topPatterns[0].confidence * 100).toFixed(1)}%)`);
+    }
+
+    return topPatterns;
   }
   
   /**
