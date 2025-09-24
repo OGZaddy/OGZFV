@@ -143,7 +143,7 @@ class OGZPrimeV13Simplified {
       
       // LOWER CONFIDENCE THRESHOLDS = MORE TRADES
       minTradeConfidence: 0, // TEMPORARILY SET TO 0 FOR TESTING (was 0.45)
-      patternConfidence: parseFloat(process.env.PATTERN_CONFIDENCE) || 0.35,    // LOWERED from 50% to 35%
+      patternConfidence: (process.env.FEATURE_FLAG === 'TESTING') ? 0 : (parseFloat(process.env.PATTERN_CONFIDENCE) || 0.35),    // TESTING MODE: 0%, otherwise 35%
       emergencyConfidence: parseFloat(process.env.EMERGENCY_CONFIDENCE) || 0.25, // NEW emergency low threshold
       
       // POSITION SIZING - OPTIMIZED
@@ -172,7 +172,10 @@ class OGZPrimeV13Simplified {
       enableArbitrage: process.env.ENABLE_ARBITRAGE !== 'false',
       enableHedging: process.env.ENABLE_HEDGING !== 'false',
       enableShorts: process.env.ENABLE_SHORTS !== 'false',
-      
+
+      // TESTING MODE - BYPASS ALL FORTRESS DEFENSES
+      testingMode: process.env.FEATURE_FLAG === 'TESTING',
+
       // PRODUCTION SAFETY
       simulate: process.argv.includes('--simulate'),
       maxDrawdown: parseFloat(process.env.MAX_DRAWDOWN) || 15.0,
@@ -793,8 +796,11 @@ class OGZPrimeV13Simplified {
       this.config.minTradeConfidence = profile.minConfidenceThreshold;
     }
     
-    if (profile.patternSimilarityThreshold) {
+    if (profile.patternSimilarityThreshold && !this.config.testingMode) {
       this.config.patternConfidence = profile.patternSimilarityThreshold;
+      console.log(`📊 Profile loaded pattern threshold: ${profile.patternSimilarityThreshold * 100}%`);
+    } else if (this.config.testingMode) {
+      console.log(`🚀 TESTING MODE: Pattern threshold override blocked, keeping 0%`);
     }
     
     if (profile.maxPositionSize) {
@@ -1368,8 +1374,10 @@ class OGZPrimeV13Simplified {
         patterns = Array.isArray(patternResult) ? patternResult : (patternResult?.patterns || []);
       }
       
-      // 🧠 PATTERN SUCCESS TRACKING: Adjust confidence based on historical pattern performance
+      // 🧠 PATTERN SUCCESS TRACKING: TEMPORARILY DISABLED TO FIX METHOD ERROR
       let patternConfidenceBoost = 0;
+      // TODO: Restore pattern history tracking once getPatternHistory method is fixed
+      /*
       if (patterns && patterns.length > 0) {
         for (const pattern of patterns) {
           const patternHistory = this.patternRecognition?.getPatternHistory(pattern.signature);
@@ -1390,6 +1398,7 @@ class OGZPrimeV13Simplified {
           }
         }
       }
+      */
       
       // Calculate confidence with OPTIMIZED LOGIC + Pattern Enhancement
       let confidence = this.calculateTradingConfidence(marketData, patterns);
@@ -1415,7 +1424,8 @@ class OGZPrimeV13Simplified {
       console.log(`🔍 CONFIDENCE CHECK: ${(confidence * 100).toFixed(1)}% >= ${(this.config.minTradeConfidence * 100).toFixed(1)}% = ${confidence >= this.config.minTradeConfidence}`);
       
       // CRITICAL: LOWER THRESHOLD FOR MORE TRADING
-      if (confidence >= this.config.minTradeConfidence) {
+      // TESTING MODE: Bypass all confidence checks
+      if (confidence >= this.config.minTradeConfidence || this.config.testingMode) {
         console.log(`✅ CONFIDENCE THRESHOLD MET - PROCEEDING TO TRADE LOGIC`);
         
         // Determine trade direction
@@ -1734,7 +1744,9 @@ class OGZPrimeV13Simplified {
    * 📊 Calculate MACD from real price data
    */
   calculateMACD(priceData) {
-    if (priceData.length < 26) return 0;
+    // TESTING MODE: Drop candle requirement to 1
+    const requiredCandles = this.config.testingMode ? 1 : 26;
+    if (priceData.length < requiredCandles) return 0;
     
     // Calculate EMA12 and EMA26
     const ema12 = this.calculateEMA(priceData.slice(0, 12), 12);
@@ -2078,17 +2090,17 @@ class OGZPrimeV13Simplified {
         
         // MACD Signals (15-20% for strong signals)
         if (macd) {
-          if (macd.macd > 0 && macd.signal > 0 && macd.histogram > 0) {
+          if (macd.macdLine > 0 && macd.signalLine > 0 && macd.histogram > 0) {
             confidence += 0.20; // Strong bullish - BOOSTED from 0.15
-          } else if (macd.macd > 0 && macd.signal > 0) {
+          } else if (macd.macdLine > 0 && macd.signalLine > 0) {
             confidence += 0.15; // Bullish
-          } else if (macd.macd < 0 && macd.signal < 0 && macd.histogram < 0) {
+          } else if (macd.macdLine < 0 && macd.signalLine < 0 && macd.histogram < 0) {
             confidence += 0.18; // Strong bearish - BOOSTED
-          } else if (macd.macd < 0 && macd.signal < 0) {
+          } else if (macd.macdLine < 0 && macd.signalLine < 0) {
             confidence += 0.12; // Bearish - BOOSTED from 0.10
           }
-          marketData.macd = macd.macd;
-          marketData.macdSignal = macd.signal;
+          marketData.macd = macd.macdLine;
+          marketData.macdSignal = macd.signalLine;
           marketData.macdHistogram = macd.histogram;
         }
         
@@ -2267,10 +2279,11 @@ class OGZPrimeV13Simplified {
       } else if (patterns.length === 0) {
         // Use technical indicators when no patterns
         console.log(`📊 No patterns detected, checking indicators. PriceData length: ${this.priceData ? this.priceData.length : 0}`);
-        // REMOVED 26 CANDLE REQUIREMENT - TRADE ON ANY DATA WE HAVE
-        if (!this.priceData || this.priceData.length < 5) {
-          console.log(`⚠️ Need at least 5 candles, have: ${this.priceData ? this.priceData.length : 0}`);
-          return 'hold'; // Only need 5 candles minimum
+        // TESTING MODE: Drop candle requirement to 1
+        const requiredCandles = this.config.testingMode ? 1 : 5;
+        if (!this.priceData || this.priceData.length < requiredCandles) {
+          console.log(`⚠️ Need at least ${requiredCandles} candles, have: ${this.priceData ? this.priceData.length : 0}`);
+          return 'hold';
         }
 
         let buySignals = 0;

@@ -1,20 +1,20 @@
 {
-  "timestamp": "9/24/2025, 4:19:10 AM",
-  "thought": "Evaluating MACD crossover signals...",
+  "timestamp": "9/24/2025, 5:00:32 AM",
+  "thought": "Monitoring RSI levels for oversold conditions...",
   "decision": "HIGH CONFIDENCE - Ready to trade (14.2%)",
   "confidence": 14,
   "balance": 10000,
-  "price": 111510,
+  "price": 112200.5,
   "winRate": 0,
   "totalTrades": 0,
   "dailyPnL": 0,
   "systemState": {
     "active": true,
     "mode": "trading",
-    "startTime": 1758686627704,
+    "startTime": 1758689634842,
     "totalTrades": 0,
     "successfulTrades": 0,
-    "failedTrades": 13,
+    "failedTrades": 0,
     "totalPnL": 0,
     "dailyPnL": 0,
     "currentBalance": 10000,
@@ -25,7 +25,7 @@
     "maxDrawdownReached": 0,
     "emergencyMode": false,
     "riskLimitExceeded": false,
-    "lastTradeTime": 1758687500750,
-    "lastRiskCheck": 1758687550773
+    "lastTradeTime": 1758690027884,
+    "lastRiskCheck": 1758690027889
   }
 }
