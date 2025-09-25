@@ -2791,9 +2791,9 @@ class OGZPrimeV13Simplified {
         console.log(`   Breakeven: ${position.breakevenActivated} | Protected: ${position.protectedProfit}`);
         
         // 💰 MAX PROFIT MANAGER: Check for partial profit taking
-        if (position.currentProfit > 0) {
-          const profitAction = this.profitManager.checkProfitTargets(position);
-          if (profitAction.takePartial) {
+        if (position.currentProfit > 0 && this.maxProfitManager) {
+          const profitAction = this.maxProfitManager.checkProfitTargets(position);
+          if (profitAction && profitAction.takePartial) {
             await this.takePartialProfit(position, profitAction.percent);
           }
         }

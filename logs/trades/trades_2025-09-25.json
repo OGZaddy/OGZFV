@@ -1,0 +1,17 @@
+[
+  {
+    "id": "trade_1758770567651_d83r0mow9",
+    "timestamp": 1758770567654,
+    "type": "entry",
+    "direction": "buy",
+    "positionSize": 0.01,
+    "confidence": 0.1,
+    "price": 112755,
+    "tradeValue": 75,
+    "fees": 0.2625,
+    "stopLoss": 112129.773525,
+    "takeProfit": 117265.2,
+    "trailingStop": 108808.575,
+    "mode": "LIVE"
+  }
+]
