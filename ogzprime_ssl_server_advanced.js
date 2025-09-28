@@ -14,6 +14,8 @@ const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const axios = require('axios');
+const MoverMemory = require('./mover/mover-memory');
 // const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Disabled - not needed for core functionality
 
 // 🔥 IMPORT THE ADVANCED WEBSOCKET SYSTEM
@@ -48,6 +50,111 @@ const broadcaster = new AdvancedWebSocketBroadcastSystem({
   metricsInterval: 30000,
   performanceAlertThreshold: 100
 });
+
+// ==========================================
+// Minimal offline learning + tunnel health
+// ==========================================
+const memory = new MoverMemory({ memoryDir: path.join(__dirname, 'memory') });
+let ollamaAvailable = false;
+let lastOllamaStatusLog = 0;
+
+const OLLAMA_URL = process.env.OLLAMA_URL || 'http://127.0.0.1:11434';
+const QWEN_MODEL = process.env.QWEN_MODEL || 'qwen3-coder:30b';
+
+async function checkOllamaAvailability() {
+  try {
+    const res = await axios.get(`${OLLAMA_URL}/api/tags`, { timeout: 2000 });
+    const ok = !!(res && res.status === 200);
+    if (ok !== ollamaAvailable) {
+      ollamaAvailable = ok;
+      const now = Date.now();
+      if (now - lastOllamaStatusLog > 2000) {
+        console.log(`🧠 Ollama/Qwen availability: ${ollamaAvailable ? 'UP' : 'DOWN'} at ${new Date().toLocaleTimeString()}`);
+        lastOllamaStatusLog = now;
+      }
+      // Notify connected clients of brain status changes (non-breaking)
+      broadcaster.broadcast({
+        type: 'brain_status',
+        status: ollamaAvailable ? 'available' : 'unavailable',
+        timestamp: now
+      }, { priority: 'high', requiresAck: false });
+    }
+  } catch (_) {
+    if (ollamaAvailable) {
+      ollamaAvailable = false;
+      const now = Date.now();
+      if (now - lastOllamaStatusLog > 2000) {
+        console.log(`🧠 Ollama/Qwen availability: DOWN at ${new Date().toLocaleTimeString()}`);
+        lastOllamaStatusLog = now;
+      }
+      broadcaster.broadcast({
+        type: 'brain_status',
+        status: 'unavailable',
+        timestamp: now
+      }, { priority: 'high', requiresAck: false });
+    }
+  }
+}
+
+// Lightweight local analyzer (no LLM) to keep learning when tunnel is down
+const priceHistory = new Map(); // asset -> recent prices
+function analyzeLocally(event) {
+  try {
+    if (!event) return;
+    // Price tick analysis
+    if (event.type === 'price' && event.data && event.data.asset && typeof event.data.price === 'number') {
+      const { asset, price, timestamp } = event.data;
+      const arr = priceHistory.get(asset) || [];
+      arr.push({ price, t: timestamp });
+      if (arr.length > 100) arr.shift();
+      priceHistory.set(asset, arr);
+
+      // Simple direction and momentum
+      const len = arr.length;
+      if (len >= 3) {
+        const p0 = arr[len - 3].price;
+        const p1 = arr[len - 2].price;
+        const p2 = arr[len - 1].price;
+        const dir = p2 > p1 ? 'up' : (p2 < p1 ? 'down' : 'flat');
+        const momentum = p2 - p0;
+        memory.recordEvent('analysis', {
+          kind: 'price_momentum',
+          asset,
+          direction: dir,
+          momentum,
+          lastPrice: p2,
+          window: 3
+        });
+      }
+      return;
+    }
+
+    // System errors/alerts
+    if (event.type === 'alert' || event.type === 'error') {
+      memory.recordEvent('analysis', {
+        kind: 'system_event',
+        severity: event.severity || 'info',
+        message: event.message || 'system',
+        data: event
+      });
+      return;
+    }
+
+    // Generic message summarization stub
+    memory.recordEvent('analysis', {
+      kind: 'generic',
+      summaryType: event.type,
+      preview: JSON.stringify(event).slice(0, 200)
+    });
+  } catch (e) {
+    // Never throw
+  }
+}
+
+// Periodic health check for the tunnel/ollama
+setInterval(checkOllamaAvailability, 15000);
+// Initial check
+checkOllamaAvailability().catch(() => {});
 
 // Special handling for bot connections
 broadcaster.on('bot_disconnected', (connection) => {
