@@ -12,9 +12,9 @@ Object.keys(require.cache).forEach(key => {
 
 console.log(`[${new Date().toISOString()}] Module cache cleared - Loading fresh`);
 
-console.log('📍 FILE LOADED: run-trading-bot-v13-simplified.js at', new Date().toISOString());
+console.log('📍 FILE LOADED: run-trading-bot-v14FINAL.js at', new Date().toISOString());
 // ===================================================================
-// 🚀 OGZ PRIME V13 SIMPLIFIED - PRODUCTION READY TRADING ENGINE
+// 🚀 OGZ PRIME V14 FINAL - PRODUCTION READY TRADING ENGINE
 // ===================================================================
 // BASED ON V13 QUANTUM BUT QUANTUM FEATURES DISABLED FOR STABILITY
 // FOCUS: ACTUAL TRADING WITH OPTIMIZED CONFIDENCE THRESHOLDS
@@ -117,12 +117,12 @@ const OptimizedIndicators = require('./core/OptimizedIndicators');
 // REMOVED DynamicEntryAnalysis - expects bot instance, hooks into methods
 // REMOVED AggressiveTradingMode - too dangerous (has random trading!)
 
-class OGZPrimeV13Simplified {
+class OGZPrimeV14Final {
   constructor() {
     console.log('🔥 CONSTRUCTOR START - PerformanceAnalyzer class:', typeof PerformanceAnalyzer);
     console.log('🔥 CONSTRUCTOR START - PerformanceAnalyzer.prototype.recordTrade:', typeof PerformanceAnalyzer.prototype.recordTrade);
     console.log('🔥 CONSTRUCTOR START - PerformanceAnalyzer.prototype.processTrade:', typeof PerformanceAnalyzer.prototype.processTrade);
-    console.log('\n🚀💰 OGZ PRIME V13 SIMPLIFIED - PRODUCTION TRADING ENGINE 💰🚀');
+    console.log('\n🚀💰 OGZ PRIME V14 FINAL - PRODUCTION TRADING ENGINE 💰🚀');
     console.log('═══════════════════════════════════════════════════════════════════');
     console.log('🎯 OPTIMIZED FOR ACTUAL TRADING - NO QUANTUM COMPLEXITY');
     console.log('💡 LOWER CONFIDENCE THRESHOLDS = MORE PROFITABLE TRADES');
@@ -562,7 +562,7 @@ class OGZPrimeV13Simplified {
    *  Initialize the complete trading system
    */
   async initialize() {
-    console.log('\n🚀 INITIALIZING OGZ PRIME V13 SIMPLIFIED...');
+    console.log('\n🚀 INITIALIZING OGZ PRIME V14 FINAL...');
     console.log('═══════════════════════════════════════════════════════════════');
     
     try {
@@ -608,7 +608,7 @@ class OGZPrimeV13Simplified {
       await this.startTradingOperations();
       
       console.log('═══════════════════════════════════════════════════════════════');
-      console.log('✅ OGZ PRIME V13 SIMPLIFIED INITIALIZATION COMPLETE!');
+      console.log('✅ OGZ PRIME V14 FINAL INITIALIZATION COMPLETE!');
       console.log('💰 READY FOR PROFITABLE TRADING!');
       console.log(`🎯 Min Confidence: ${this.config.minTradeConfidence * 100}%`);
       console.log(`📊 Pattern Threshold: ${this.config.patternConfidence * 100}%`);
@@ -3772,7 +3772,7 @@ class OGZPrimeV13Simplified {
    * 🛑 Shutdown system gracefully
    */
   async shutdown() {
-    console.log('\n🛑 SHUTTING DOWN OGZ PRIME V13 SIMPLIFIED...');
+    console.log('\n🛑 SHUTTING DOWN OGZ PRIME V14 FINAL...');
     
     try {
       // Clear all intervals
@@ -3800,7 +3800,7 @@ class OGZPrimeV13Simplified {
       // Save final status
       this.updateBotStatus();
       
-      console.log('✅ OGZ PRIME V13 SIMPLIFIED SHUTDOWN COMPLETE');
+      console.log('✅ OGZ PRIME V14 FINAL SHUTDOWN COMPLETE');
       
     } catch (error) {
       console.error('❌ Shutdown error:', error);
@@ -3813,7 +3813,7 @@ class OGZPrimeV13Simplified {
 // ===================================================================
 
 async function main() {
-  console.log('\n🚀💰 STARTING OGZ PRIME V13 SIMPLIFIED 💰🚀');
+  console.log('\n🚀💰 STARTING OGZ PRIME V14 FINAL 💰🚀');
   console.log('═══════════════════════════════════════════════════════════');
   console.log('🎯 PRODUCTION-READY TRADING ENGINE');
   console.log('💡 OPTIMIZED FOR REAL PROFITS');
@@ -3822,11 +3822,11 @@ async function main() {
   console.log('═══════════════════════════════════════════════════════════\n');
 
   // SINGLETON LOCK DISABLED - Was preventing bot from starting properly
-  // const singletonLock = new OGZSingletonLock('v13-simplified-bot');
+  // const singletonLock = new OGZSingletonLock('v14-final-bot');
   // singletonLock.acquireLock();
   console.log('⚠️ SINGLETON LOCK DISABLED - Running without instance protection');
 
-  const bot = new OGZPrimeV13Simplified();
+  const bot = new OGZPrimeV14Final();
   
   // Handle graceful shutdown
   process.on('SIGINT', async () => {
@@ -3861,7 +3861,7 @@ async function main() {
       console.log('⚠️ Quantum Enhancement disabled (upgrade to ELITE tier for quantum features)');
     }
     
-    console.log('\n🎯 OGZ PRIME V13 SIMPLIFIED IS LIVE!');
+    console.log('\n🎯 OGZ PRIME V14 FINAL IS LIVE!');
     console.log('💰 READY TO MAKE MONEY!');
     console.log('🌐 Dashboard: http://localhost:3008');
     console.log('📡 WebSocket: ws://localhost:8001');
@@ -3881,4 +3881,4 @@ async function main() {
 console.log('🔧 Starting main() - require.main check bypassed for PM2 compatibility');
 main().catch(console.error);
 
-module.exports = OGZPrimeV13Simplified;
+module.exports = OGZPrimeV14Final;
