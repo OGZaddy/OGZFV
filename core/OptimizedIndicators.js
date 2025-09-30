@@ -154,8 +154,16 @@ class OptimizedIndicators {
     // Calculate initial average gain/loss
     for (let i = 1; i <= period; i++) {
       if (i >= candles.length) break;
-      
-      const change = candles[i].close - candles[i - 1].close;
+
+      const prev = candles[i - 1];
+      const curr = candles[i];
+
+      if (!prev || !curr || prev.close === undefined || curr.close === undefined) {
+        continue;
+      }
+
+      const change = curr.close - prev.close;
+
       if (change > 0) {
         gains += change;
       } else {
@@ -169,7 +177,7 @@ class OptimizedIndicators {
     // Calculate RSI using Wilder's smoothing
     for (let i = period + 1; i < candles.length; i++) {
       const change = candles[i].close - candles[i - 1].close;
-      
+
       if (change > 0) {
         avgGain = (avgGain * (period - 1) + change) / period;
         avgLoss = (avgLoss * (period - 1)) / period;
@@ -186,7 +194,7 @@ class OptimizedIndicators {
 
     const rs = avgGain / avgLoss;
     const rsi = 100 - (100 / (1 + rs));
-    
+
     return rsi;
   }
 
@@ -234,7 +242,6 @@ class OptimizedIndicators {
     }
 
     if (!candles || candles.length < slowPeriod + signalPeriod) {
-      console.log(`🔧 MACD: Not enough candles! Have ${candles?.length || 0}, need ${slowPeriod + signalPeriod}`);
       return { macdLine: 0, signalLine: 0, histogram: 0 };
     }
 
@@ -262,8 +269,6 @@ class OptimizedIndicators {
     const macdLine = macdValues[macdValues.length - 1] || 0;
     const signalLine = signalEMAs[signalEMAs.length - 1] || 0;
     const histogram = macdLine - signalLine;
-
-    console.log(`🔧 MACD FIXED: Line=${macdLine.toFixed(4)}, Signal=${signalLine.toFixed(4)}, Histogram=${histogram.toFixed(4)}`);
 
     return {
       macdLine,

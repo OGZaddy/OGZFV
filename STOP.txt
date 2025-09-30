@@ -1,0 +1,17 @@
+STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP
+==================================================================
+
+YOU MUST WORK IN: /home/trey/OGZFV-valhalla/
+
+NOT IN: /root/OGZFV-valhalla/
+
+THE ONLY BOT FILE: run-trading-bot-v14FINAL.js
+
+EVERY CHANGE MUST BE LOGGED IN: CHANGELOG-MASTER.md
+
+==================================================================
+STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP
+
+If you ignore this, you will break everything.
+
+Read: README-CRITICAL-STOP-READ-THIS-FIRST.md

@@ -258,6 +258,76 @@ class KrakenAdapterSimple {
     return this.capabilities.crypto; // All Kraken symbols are crypto
   }
 
+  // Add WebSocket streaming for real-time price data
+  async connectWebSocketStream(onPriceUpdate) {
+    try {
+      // Public WebSocket for market data (no auth needed for public feeds)
+      this.ws = new WebSocket('wss://ws.kraken.com');
+
+      this.ws.on('open', () => {
+        console.log('✅ Kraken WebSocket connected');
+
+        // Subscribe to BTC-USD ticker
+        const subscription = {
+          event: 'subscribe',
+          pair: ['XBT/USD'],  // Kraken uses XBT for Bitcoin
+          subscription: {
+            name: 'ticker'
+          }
+        };
+
+        this.ws.send(JSON.stringify(subscription));
+        console.log('📊 Subscribed to BTC-USD ticker stream');
+      });
+
+      this.ws.on('message', (data) => {
+        try {
+          const msg = JSON.parse(data);
+
+          // Kraken sends various message types, filter for ticker updates
+          if (Array.isArray(msg) && msg[2] === 'ticker') {
+            const tickerData = msg[1];
+            const price = parseFloat(tickerData.c[0]); // Current price
+
+            // Call the callback with price update
+            if (onPriceUpdate) {
+              onPriceUpdate({
+                type: 'price',
+                data: {
+                  asset: 'BTC--USD',
+                  price: price,
+                  timestamp: Date.now(),
+                  source: 'kraken'
+                }
+              });
+            }
+          }
+        } catch (err) {
+          // Ignore non-JSON messages (Kraken sends heartbeats)
+        }
+      });
+
+      this.ws.on('error', (error) => {
+        console.error('❌ Kraken WebSocket error:', error.message);
+      });
+
+      this.ws.on('close', () => {
+        console.log('🔌 Kraken WebSocket disconnected');
+        // Attempt to reconnect after 5 seconds
+        setTimeout(() => {
+          if (this.connected) {
+            this.connectWebSocketStream(onPriceUpdate);
+          }
+        }, 5000);
+      });
+
+      return true;
+    } catch (error) {
+      console.error('❌ Failed to connect Kraken WebSocket:', error.message);
+      return false;
+    }
+  }
+
   async disconnect() {
     if (this.ws) {
       this.ws.close();

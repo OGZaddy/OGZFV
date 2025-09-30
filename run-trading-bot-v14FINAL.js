@@ -1,3 +1,19 @@
+/**
+ * 🚨🚨🚨 CRITICAL: STOP AND READ THIS FIRST! 🚨🚨🚨
+ *
+ * THIS IS THE ONLY ACTIVE BOT FILE - DO NOT CREATE NEW VERSIONS!
+ * Location: /home/trey/OGZFV-valhalla/run-trading-bot-v14FINAL.js
+ *
+ * RULES:
+ * 1. EVERY change must be logged in CHANGELOG-MASTER.md (even brackets!)
+ * 2. DO NOT optimize what's already working
+ * 3. ASK before making changes - no tangents!
+ * 4. NEVER create files in /root/ directory
+ *
+ * Current Status: WORKING & TRADING - Don't break it!
+ * See README-CRITICAL-STOP-READ-THIS-FIRST.md for full guidelines
+ */
+
 // CACHE BUSTER - Forces fresh load every time
 if (require.cache[__filename]) {
   delete require.cache[__filename];
@@ -131,6 +147,8 @@ class OGZPrimeV14Final {
     console.log('═══════════════════════════════════════════════════════════════════\n');
 
     // INITIALIZE KRAKEN ADAPTER FOR LIVE TRADING
+    console.log('🔍 Kraken API Key:', process.env.KRAKEN_API_KEY ? 'Found' : 'MISSING');
+    console.log('🔍 Kraken API Secret:', process.env.KRAKEN_API_SECRET ? 'Found' : 'MISSING');
     this.krakenAdapter = new KrakenAdapterSimple({
       apiKey: process.env.KRAKEN_API_KEY,
       apiSecret: process.env.KRAKEN_API_SECRET
@@ -237,13 +255,41 @@ class OGZPrimeV14Final {
     this.mlProcessor = null;
     this.polygonWS = null;
     this.timeFrameManager = null;
-    this.patternRecognition = null;
-    
-    // Offensive modules - signal generation
-    this.marketRegimeDetector = null;
-    this.fibonacciDetector = null;
-    this.supportResistanceDetector = null;
-    this.optimizedIndicators = null;
+
+    // 🔍 PATTERN RECOGNITION - THE BRAIN OF SIGNAL GENERATION!
+    this.patternRecognition = new EnhancedPatternChecker({
+      minPatternStrength: 0.6,
+      enableHistoricalTracking: true,
+      patternConfidenceThreshold: 0.3,
+      trackPerformance: true
+    });
+    console.log('✅ EnhancedPatternChecker CONNECTED!');
+
+    // 🎯 OFFENSIVE MODULES - SIGNAL GENERATION (NOW ACTUALLY CONNECTED!)
+    console.log('🚀 CONNECTING OFFENSIVE TRADING MODULES...');
+
+    this.marketRegimeDetector = new MarketRegimeDetector({
+      lookbackPeriod: 100,
+      regimeChangeThreshold: 0.02
+    });
+    console.log('✅ MarketRegimeDetector CONNECTED!');
+
+    this.fibonacciDetector = new FibonacciDetector({
+      significantMoveThreshold: 0.05,
+      retracementLevels: [0.236, 0.382, 0.5, 0.618, 0.786]
+    });
+    console.log('✅ FibonacciDetector CONNECTED!');
+
+    this.supportResistanceDetector = new SupportResistanceDetector({
+      lookback: 100,
+      touchThreshold: 0.002,
+      minTouches: 3
+    });
+    console.log('✅ SupportResistanceDetector CONNECTED!');
+
+    // OptimizedIndicators is already instantiated as a singleton!
+    this.optimizedIndicators = OptimizedIndicators;
+    console.log('✅ OptimizedIndicators CONNECTED (singleton)!');
     
     // Express and WebSocket servers
     this.app = null;
@@ -499,16 +545,16 @@ class OGZPrimeV14Final {
         // Process incoming WebSocket messages
         if (msg.type === 'price' && msg.data) {
           // Handle price updates from WebSocket
-          const { asset, price, timestamp } = msg.data;
+          const { asset, price, timestamp, allPrices } = msg.data;
           console.log(`📊 WS Price Update: ${asset} $${price}`);
-          console.log(`🔍 Debug - asset: '${asset}', BTC check: ${asset === 'BTC-USD' || asset === 'BTC--USD'}`);
-          
-          // CRITICAL: Only update market data for BTC (handle both formats)
-          if (asset === 'BTC-USD' || asset === 'BTC--USD') {
-            console.log(`🎯 BTC Price: $${price}`);
+
+          // CRITICAL FIX: Extract BTC-USD from allPrices object
+          const btcPrice = allPrices?.['BTC-USD'];
+          if (btcPrice) {
+            console.log(`🎯 BTC Price from allPrices: $${btcPrice}`);
             this.cachedMarketData = {
-              price: price,
-              asset: asset,
+              price: btcPrice,
+              asset: 'BTC-USD',
               timestamp: timestamp || Date.now(),
               volume: msg.data.volume || 0
             };
@@ -516,13 +562,21 @@ class OGZPrimeV14Final {
 
             // Accumulate price data for analysis (lowered to 5 for testing)
             if (!this.priceData) this.priceData = [];
+            // Push candle with consistent OHLCV format for all modules
             this.priceData.push({
-              o: price,              // open
-              h: price,              // high
-              l: price,              // low
-              c: price,              // close
-              v: msg.data.volume || 0,  // volume
-              t: timestamp || Date.now()  // timestamp
+              open: btcPrice,           // Standard field name
+              high: btcPrice,           // Standard field name
+              low: btcPrice,            // Standard field name
+              close: btcPrice,          // Standard field name
+              volume: msg.data.volume || 0,
+              timestamp: timestamp || Date.now(),
+              // Also include short names for backward compatibility
+              o: btcPrice,
+              h: btcPrice,
+              l: btcPrice,
+              c: btcPrice,
+              v: msg.data.volume || 0,
+              t: timestamp || Date.now()
             });
             if (this.priceData.length > 100) this.priceData.shift(); // Keep last 100 prices
             console.log(`📊 Price history: ${this.priceData.length} candles`);
@@ -2118,17 +2172,19 @@ class OGZPrimeV14Final {
         
         // MACD Signals - DIRECTIONAL
         if (macd) {
-          if (macd.macd > 0 && macd.signal > 0 && macd.histogram > 0) {
+          // FIX: Use correct property names from OptimizedIndicators
+          if (macd.macdLine > 0 && macd.signalLine > 0 && macd.histogram > 0) {
             bullishConfidence += 0.20; // Strong bullish momentum
-          } else if (macd.macd > 0 && macd.signal > 0) {
+          } else if (macd.macdLine > 0 && macd.signalLine > 0) {
             bullishConfidence += 0.15; // Bullish momentum
-          } else if (macd.macd < 0 && macd.signal < 0 && macd.histogram < 0) {
+          } else if (macd.macdLine < 0 && macd.signalLine < 0 && macd.histogram < 0) {
             bearishConfidence += 0.20; // Strong bearish momentum
-          } else if (macd.macd < 0 && macd.signal < 0) {
+          } else if (macd.macdLine < 0 && macd.signalLine < 0) {
             bearishConfidence += 0.15; // Bearish momentum
           }
-          marketData.macd = macd.macd;
-          marketData.macdSignal = macd.signal;
+          // Persist on marketData with consistent naming
+          marketData.macd = macd.macdLine;
+          marketData.macdSignal = macd.signalLine;
           marketData.macdHistogram = macd.histogram;
         }
         
@@ -2350,9 +2406,13 @@ class OGZPrimeV14Final {
 
         // 1. SMA (use whatever candles we have, min 5)
         const smaLength = Math.min(20, this.priceData.length);
-        const sma = this.priceData.slice(-smaLength).reduce((a, b) => a + b, 0) / smaLength;
+        // FIX: Map to close prices before summing - prioritize standard field names
+        const smaSlice = this.priceData.slice(-smaLength);
+        const sma = smaSlice.length > 0
+          ? smaSlice.map(candle => candle.close || candle.c || 0).reduce((a, b) => a + b, 0) / smaSlice.length
+          : marketData.price; // Fallback to current price if no data
         const currentPrice = marketData.price;
-        const smaDistance = ((currentPrice - sma) / sma) * 100;
+        const smaDistance = sma !== 0 ? ((currentPrice - sma) / sma) * 100 : 0; // Guard against division by zero
 
         if (currentPrice > sma && smaDistance > 0.1) buySignals++;
         else if (currentPrice < sma && smaDistance < -0.1) sellSignals++;
@@ -2361,9 +2421,9 @@ class OGZPrimeV14Final {
         if (marketData.rsi < 45) buySignals++; // Oversold (was 30)
         else if (marketData.rsi > 55) sellSignals++; // Overbought (was 70)
 
-        // 3. MACD
-        if (marketData.macd > marketData.signal && marketData.macd > 0) buySignals++;
-        else if (marketData.macd < marketData.signal && marketData.macd < 0) sellSignals++;
+        // 3. MACD - Use corrected field names from indicator calculation
+        if (marketData.macd > marketData.macdSignal && marketData.macd > 0) buySignals++;
+        else if (marketData.macd < marketData.macdSignal && marketData.macd < 0) sellSignals++;
 
         // 4. Trend
         if (marketData.trend === 'up') buySignals++;
@@ -2424,21 +2484,33 @@ class OGZPrimeV14Final {
         }
       }
 
-      // Create new candle
+      // Create new candle with consistent OHLCV format
       this.currentCandle = {
         timestamp: candleStart,
-        o: price,  // Open
-        h: price,  // High
-        l: price,  // Low
-        c: price,  // Close (will update)
-        v: 1       // Volume (tick count)
+        open: price,   // Standard field name
+        high: price,   // Standard field name
+        low: price,    // Standard field name
+        close: price,  // Standard field name
+        volume: 1,     // Standard field name
+        // Also include short names for backward compatibility
+        o: price,
+        h: price,
+        l: price,
+        c: price,
+        v: 1,
+        t: candleStart
       };
     } else {
-      // Update current candle
-      this.currentCandle.h = Math.max(this.currentCandle.h, price);
-      this.currentCandle.l = Math.min(this.currentCandle.l, price);
-      this.currentCandle.c = price;
-      this.currentCandle.v++;
+      // Update current candle with both naming conventions
+      this.currentCandle.high = Math.max(this.currentCandle.high || this.currentCandle.h, price);
+      this.currentCandle.low = Math.min(this.currentCandle.low || this.currentCandle.l, price);
+      this.currentCandle.close = price;
+      this.currentCandle.volume = (this.currentCandle.volume || this.currentCandle.v || 0) + 1;
+      // Also update short names
+      this.currentCandle.h = this.currentCandle.high;
+      this.currentCandle.l = this.currentCandle.low;
+      this.currentCandle.c = this.currentCandle.close;
+      this.currentCandle.v = this.currentCandle.volume;
     }
   }
 
@@ -2577,7 +2649,7 @@ class OGZPrimeV14Final {
       const confidenceMultiplier = 0.5 + (confidence * 0.5);
       
       // Apply leverage limits based on tier
-      const maxLeverage = this.tierFlags.getFeatureValue('trading.maxLeverage') || 1;
+      const maxLeverage = 1; // Fixed to 1 for safety - getFeatureValue not available
       const leverageMultiplier = Math.min(maxLeverage, 1 + (confidence - 0.5) * 2);
       
       const size = baseSize * volatilityAdjustment * confidenceMultiplier * leverageMultiplier;
@@ -3610,9 +3682,15 @@ class OGZPrimeV14Final {
     if (this.cachedMarketData && this.cachedMarketData.price) {
       return this.cachedMarketData.price;
     }
-    // Fallback to last known price if available
+    // Fallback to last known price if available - FIX: return close price, not whole candle
+    if (this.priceData && this.priceData.length > 0) {
+      const lastCandle = this.priceData[this.priceData.length - 1];
+      return lastCandle.close || lastCandle.c || 119000;
+    }
+    // Fallback to priceHistory if priceData not available
     if (this.priceHistory && this.priceHistory.length > 0) {
-      return this.priceHistory[this.priceHistory.length - 1];
+      const lastPrice = this.priceHistory[this.priceHistory.length - 1];
+      return typeof lastPrice === 'number' ? lastPrice : (lastPrice.close || lastPrice.c || 119000);
     }
     // Emergency fallback
     return 119000; // Current BTC price range

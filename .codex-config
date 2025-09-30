@@ -1,0 +1,41 @@
+{
+  "CRITICAL_RULES": {
+    "MASTER_RULE": "ALL WORK MUST BE IN /home/trey/OGZFV-valhalla/",
+    "FORBIDDEN_PATH": "/root/OGZFV-valhalla/",
+    "ACTIVE_BOT": "run-trading-bot-v14FINAL.js",
+    "CHANGELOG_REQUIRED": true,
+    "CHANGELOG_FILE": "CHANGELOG-MASTER.md",
+    "CURRENT_CHANGE_NUMBER": 451
+  },
+
+  "WORKING_DIRECTORY": "/home/trey/OGZFV-valhalla/",
+  "USER_CONTEXT": "trey",
+
+  "DO_NOT_TOUCH": [
+    "/root/*",
+    "deprecated/*",
+    "node_modules/*"
+  ],
+
+  "MISSION_PRIORITIES": [
+    "1. EVERY change must be logged (even brackets)",
+    "2. Don't break what's working",
+    "3. Ask before changing anything"
+  ],
+
+  "CURRENT_INFRASTRUCTURE": {
+    "bot_file": "run-trading-bot-v14FINAL.js",
+    "websocket_port": 3010,
+    "dashboard": "unified-dashboard.html",
+    "ssl_server": "ogzprime_ssl_server_advanced.js",
+    "process_manager": "pm2"
+  },
+
+  "WARNING": "Agents have repeatedly ignored these rules and broken the system. This is your configuration file - READ IT!",
+
+  "README_LOCATIONS": [
+    "/home/trey/OGZFV-valhalla/README-CRITICAL-STOP-READ-THIS-FIRST.md",
+    "/home/trey/OGZFV-valhalla/AGENTS.md",
+    "/home/trey/OGZFV-valhalla/README.md"
+  ]
+}

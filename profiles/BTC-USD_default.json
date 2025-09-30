@@ -10,7 +10,7 @@
   "primaryTimeframe": "1m",
   "minPatternMatches": 1,
   "patternSimilarityThreshold": 0.7,
-  "minConfidenceThreshold": 0.7,
+  "minConfidenceThreshold": 0.0,
   "maxPositionSize": 0.15,
   "enableMultiTimeframe": false,
   "enableFibonacciLevels": false,

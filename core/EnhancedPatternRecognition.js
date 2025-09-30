@@ -3,7 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { indicators } = require('./OptimizedIndicators');
+const indicators = require('./OptimizedIndicators'); // Fixed: Import singleton directly
 
 // Pattern performance tracking for visualization and marketing
 const pattern_performance = {};
