@@ -1,0 +1,23 @@
+{
+  "total_files_processed": 14,
+  "total_messages_loaded": 7970,
+  "duplicate_messages_removed": 39,
+  "unique_messages": 42974,
+  "sources": {
+    "claude": 7731,
+    "chatgpt": 35047,
+    "projects": 196,
+    "other": 0
+  },
+  "timestamp": "2025-09-09T21:25:44.168Z",
+  "categories": {
+    "architecture": 9681,
+    "brainstorming": 1072,
+    "casual_chat": 20593,
+    "development": 7611,
+    "emotions": 567,
+    "problem_solving": 1519,
+    "rants": 732,
+    "training": 1199
+  }
+}
