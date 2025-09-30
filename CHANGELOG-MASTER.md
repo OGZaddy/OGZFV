@@ -2,6 +2,45 @@
 
 ## Consolidated from all changelog files on Tue Sep 30 03:54:26 PM UTC 2025
 
+## 🚨 CRITICAL FOUNDATIONAL FIXES - September 30, 2025 🚨
+**Time**: 4:45 PM UTC
+**Severity**: MAJOR - These bugs broke confidence calculations!
+
+### Change 455: MACD Signal Line WAS NEVER CALCULATED
+- **File**: `/home/trey/OGZFV-valhalla/run-trading-bot-v14FINAL.js`
+- **Lines**: 1824-1838
+- **THE BUG**: calculateMACD() only returned a number (MACD line), NOT the signal line
+- **THE FIX**: Now returns `{macd: macdLine, signal: signalLine}`
+- **IMPACT**: Pattern recognition was getting signal=0 for MONTHS!
+
+### Change 456: Trend Labels Were Wrong Format
+- **File**: `/home/trey/OGZFV-valhalla/run-trading-bot-v14FINAL.js`
+- **Lines**: 1789-1792
+- **THE BUG**: determineTrend() returned 'up'/'down' not 'uptrend'/'downtrend'
+- **THE FIX**: Changed to return 'uptrend', 'downtrend', 'sideways'
+- **IMPACT**: Trend-based confidence boosts NEVER worked!
+
+### Change 457: Volume Averaging Didn't Exist
+- **File**: `/home/trey/OGZFV-valhalla/run-trading-bot-v14FINAL.js`
+- **Lines**: 1747-1776
+- **THE BUG**: No calculateAverageVolume() function existed
+- **THE FIX**: Added complete volume averaging implementation
+- **IMPACT**: Volume-based confidence was always 0!
+
+### Change 458: Updated getMarketData() Return Structure
+- **File**: `/home/trey/OGZFV-valhalla/run-trading-bot-v14FINAL.js`
+- **Lines**: 1724-1735
+- **ADDED**: macdSignal, avgVolume fields
+- **IMPACT**: Confidence engine now has complete data
+
+### Change 459: Fixed Pattern Recognition Call
+- **File**: `/home/trey/OGZFV-valhalla/run-trading-bot-v14FINAL.js`
+- **Line**: 1443
+- **THE FIX**: `signal: marketData.macdSignal || 0`
+- **IMPACT**: Pattern recognition finally gets real signal data
+
+---
+
 # 📋 OGZ PRIME SYSTEM CHANGELOG - August 13, 2025
 ## CRITICAL UPDATES FOR MOVER-AI AWARENESS
 

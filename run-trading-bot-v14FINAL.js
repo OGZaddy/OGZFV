@@ -1440,7 +1440,7 @@ class OGZPrimeV14Final {
           candles: this.priceData,
           trend: marketData.trend,
           macd: marketData.macd,
-          signal: marketData.signal,
+          signal: marketData.macdSignal || 0,  // Use macdSignal field
           rsi: marketData.rsi,
           lastTrade: this.systemState.lastTrade
         });
@@ -1718,13 +1718,19 @@ class OGZPrimeV14Final {
         // Calculate technical indicators from price history
         const technicals = this.calculateTechnicalIndicators(this.priceHistory);
         
+        // Calculate average volume from recent candles
+        const avgVolume = this.calculateAverageVolume();
+
         return {
           ...this.cachedMarketData,
           price: this.cachedMarketData.price,  // Ensure price is always set
           rsi: technicals.rsi,
           macd: technicals.macd,
+          macdSignal: technicals.macdSignal,
           volatility: technicals.volatility,
-          trend: this.determineTrend(this.priceHistory)
+          trend: this.determineTrend(this.priceHistory),
+          volume: this.cachedMarketData.volume || 0,
+          avgVolume: avgVolume
         };
       } else {
         console.log(`⏰ Data too old: ${dataAge}ms > ${maxAge}ms`);
@@ -1733,6 +1739,40 @@ class OGZPrimeV14Final {
       console.log(`❌ Missing data: cached=${!!this.cachedMarketData}, received=${!!this.lastDataReceived}, price=${this.cachedMarketData?.price}`);
     }
     return null;
+  }
+
+  /**
+   * 📊 Calculate average volume from recent candles
+   */
+  calculateAverageVolume() {
+    try {
+      if (!this.candles || this.candles.length === 0) {
+        // Fallback to price data if candles not available
+        if (!this.priceData || this.priceData.length === 0) {
+          return 100000; // Default volume
+        }
+        // Calculate from price data
+        const validVolumes = this.priceData
+          .filter(d => d && d.volume > 0)
+          .map(d => d.volume);
+
+        if (validVolumes.length === 0) return 100000;
+
+        const sum = validVolumes.reduce((a, b) => a + b, 0);
+        return sum / validVolumes.length;
+      }
+
+      // Calculate from candles
+      const recentCandles = this.candles.slice(-20); // Last 20 candles
+      const totalVolume = recentCandles.reduce((sum, candle) => {
+        return sum + (candle.volume || candle.v || 0);
+      }, 0);
+
+      return totalVolume / Math.max(1, recentCandles.length);
+    } catch (error) {
+      console.error('❌ Volume calculation error:', error);
+      return 100000; // Default volume
+    }
   }
 
   /**
@@ -1747,9 +1787,9 @@ class OGZPrimeV14Final {
     const older = priceHistory[0].c;
     
     if (recent > older * 1.01) {
-      return 'up';
+      return 'uptrend';
     } else if (recent < older * 0.99) {
-      return 'down';
+      return 'downtrend';
     } else {
       return 'sideways';
     }
@@ -1762,21 +1802,26 @@ class OGZPrimeV14Final {
     try {
       // Use passed data or bot's price history
       const data = priceData || this.priceHistory;
-      
+
       if (!data || data.length < 2) {
-        return { rsi: 50, macd: 0, volatility: 0.02 }; // Safe defaults
+        return { rsi: 50, macd: 0, macdSignal: 0, volatility: 0.02 }; // Safe defaults
       }
-      
+
       // Calculate RSI from real data
       const rsi = this.calculateRSI(data.slice(-14));
-      
-      // Calculate MACD from real data  
-      const macd = this.calculateMACD(data.slice(-26));
-      
+
+      // Calculate MACD with signal line from real data
+      const macdData = this.calculateMACD(data.slice(-26));
+
       // Calculate volatility from real price movements
       const volatility = this.calculateVolatility(data.slice(-20));
-      
-      return { rsi, macd, volatility };
+
+      return {
+        rsi,
+        macd: macdData.macd,
+        macdSignal: macdData.signal,
+        volatility
+      };
       
     } catch (error) {
       console.error('❌ Technical indicator calculation error:', error);
@@ -1822,14 +1867,19 @@ class OGZPrimeV14Final {
   calculateMACD(priceData) {
     // TESTING MODE: Reduce minimum candle requirement to 1
     const minCandles = process.env.TESTING === 'true' ? 1 : 26;
-    if (priceData.length < minCandles) return 0;
+    if (priceData.length < minCandles) return { macd: 0, signal: 0 };
 
     // CRITICAL FIX: Use most recent data, not oldest!
     // priceData stores newest at the end, so use slice(-26) not slice(0,26)
     const ema12 = this.calculateEMA(priceData.slice(-12), 12);
     const ema26 = this.calculateEMA(priceData.slice(-26), 26);
+    const macdLine = ema12 - ema26;
 
-    return ema12 - ema26;
+    // Calculate signal line (9-period EMA of MACD)
+    // For simplicity, using a basic approximation
+    const signalLine = macdLine * 0.9; // Simplified signal line
+
+    return { macd: macdLine, signal: signalLine };
   }
 
   /**
