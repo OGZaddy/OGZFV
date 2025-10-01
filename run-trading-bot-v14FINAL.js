@@ -172,18 +172,18 @@ class OGZPrimeV14Final {
       primaryAsset: process.env.PRIMARY_ASSET || 'BTC-USD',
       
       // LOWER CONFIDENCE THRESHOLDS = MORE TRADES
-      minTradeConfidence: 0, // TEMPORARILY SET TO 0 FOR TESTING (was 0.45)
-      patternConfidence: parseFloat(process.env.PATTERN_CONFIDENCE) || 0.35,    // LOWERED from 50% to 35%
-      emergencyConfidence: parseFloat(process.env.EMERGENCY_CONFIDENCE) || 0.25, // NEW emergency low threshold
+      minTradeConfidence: 0.10, // 10% minimum confidence to allow trading
+      patternConfidence: parseFloat(process.env.PATTERN_CONFIDENCE) || 0.20,    // 20% pattern threshold
+      emergencyConfidence: parseFloat(process.env.EMERGENCY_CONFIDENCE) || 0.05, // 5% emergency threshold
       
       // POSITION SIZING - OPTIMIZED
       maxPositionSize: parseFloat(process.env.MAX_POSITION_SIZE) || 0.05,       // 5% max per trade
       dynamicSizing: process.env.ENABLE_DYNAMIC_SIZING !== 'false',             // Dynamic based on confidence
       volatilityScaling: process.env.ENABLE_VOLATILITY_SCALING !== 'false',     // Scale by market volatility
       
-      // RISK MANAGEMENT - CRYPTO-OPTIMIZED TRAILING STOPS
-      stopLossPercent: parseFloat(process.env.STOP_LOSS_PERCENT) || 5.0,        // 5% stop loss (wider for crypto)
-      takeProfitPercent: parseFloat(process.env.TAKE_PROFIT_PERCENT) || 12.0,   // 12% take profit (higher target)
+      // RISK MANAGEMENT - BALANCED FOR ACTUAL TRADING
+      stopLossPercent: parseFloat(process.env.STOP_LOSS_PERCENT) || 2.0,        // 2% stop loss
+      takeProfitPercent: parseFloat(process.env.TAKE_PROFIT_PERCENT) || 6.0,    // 6% take profit (1:3 ratio)
       trailingStopPercent: parseFloat(process.env.TRAILING_STOP_PERCENT) || 6.0, // 6% trailing stop (MUCH wider for crypto volatility)
       breakevenThreshold: parseFloat(process.env.BREAKEVEN_THRESHOLD) || 1.0,   // Move to breakeven at 1% profit
       maxDailyLoss: parseFloat(process.env.MAX_DAILY_LOSS) || 10.0,             // 10% max daily loss
@@ -194,8 +194,8 @@ class OGZPrimeV14Final {
       riskCheckInterval: parseInt(process.env.RISK_CHECK) || 10000,             // 10 seconds risk checks
       
       // NETWORK CONFIGURATION
-      httpPort: parseInt(process.env.PORT) || 3008,  // API port (reverted to original)
-      wsPort: parseInt(process.env.WS_PORT) || 8001, // WebSocket port (reverted to original)
+      httpPort: parseInt(process.env.PORT) || 3008,  // HTTP server for dashboard
+      wsPort: parseInt(process.env.WS_PORT) || 3010,  // Unified WebSocket port
       
       // FEATURE FLAGS
       enableLearning: process.env.ENABLE_LEARNING !== 'false',
@@ -3991,8 +3991,8 @@ async function main() {
     
     console.log('\n🎯 OGZ PRIME V14 FINAL IS LIVE!');
     console.log('💰 READY TO MAKE MONEY!');
-    console.log('🌐 Dashboard: http://localhost:3008');
-    console.log('📡 WebSocket: ws://localhost:8001');
+    console.log('🌐 Dashboard: http://localhost:3008/unified-dashboard.html');
+    console.log('📡 WebSocket: ws://localhost:3010');
     console.log('🚀 Trading Mode: LIVE PRODUCTION TRADING');
     console.log('💎 Premium Profiles: LOADED & ACTIVE');
     console.log('⚡ Quantum Enhancement: ACTIVE');

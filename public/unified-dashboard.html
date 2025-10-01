@@ -855,14 +855,14 @@
                 // Auto-detect WebSocket URL based on current location
                 const getWebSocketURL = () => {
                     // Use the unified socket on port 3010
-                    if (isLocal) return 'ws://localhost:3010';
+                    if (isLocal) return 'ws://127.0.0.1:3010';
                     // Use current hostname with /ws path (NGINX proxy)
                     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
                     return `${protocol}//${window.location.hostname}/ws`;
                 };
                 
                 const getAPIURL = () => {
-                    if (isLocal) return 'http://localhost:3010/api';
+                    if (isLocal) return 'http://127.0.0.1:3010/api';
                     // Use current hostname with /api path (NGINX proxy)
                     return `${window.location.protocol}//${window.location.hostname}/api`;
                 };
