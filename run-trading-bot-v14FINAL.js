@@ -118,7 +118,7 @@ const LogLearningSystem = require('./core/LogLearningSystem');
 const MLLogProcessor = require('./core/MLLogProcessor');
 
 // Enhanced WebSocket and management
-const PolygonWebSocket = require('./core/PolygonWebSocket');
+// const PolygonWebSocket = require('./core/PolygonWebSocket'); // REMOVED - Using Kraken only
 const TimeFrameManager = require('./core/TimeFrameManager');
 const { EnhancedPatternChecker, PatternFeatureExtractor } = require('./core/EnhancedPatternRecognition');
 
@@ -203,8 +203,8 @@ class OGZPrimeV14Final {
       enableHedging: process.env.ENABLE_HEDGING !== 'false',
       enableShorts: process.env.ENABLE_SHORTS !== 'false',
       
-      // PRODUCTION SAFETY
-      simulate: process.argv.includes('--simulate'),
+      // PRODUCTION SAFETY - DEFAULT TO PAPER TRADING FOR SAFETY
+      simulate: process.env.LIVE_TRADING !== 'true', // Only live trade if explicitly enabled
       maxDrawdown: parseFloat(process.env.MAX_DRAWDOWN) || 15.0,
       emergencyStopLoss: parseFloat(process.env.EMERGENCY_STOP_LOSS) || 20.0
     };
@@ -253,7 +253,7 @@ class OGZPrimeV14Final {
     this.multiDirectionalTrader = null;
     this.learningSystem = null;
     this.mlProcessor = null;
-    this.polygonWS = null;
+    // this.polygonWS = null; // DEPRECATED - moved to Kraken only
     this.timeFrameManager = null;
 
     // 🔍 PATTERN RECOGNITION - THE BRAIN OF SIGNAL GENERATION!
@@ -516,7 +516,7 @@ class OGZPrimeV14Final {
    * 🔌 Connect to SSL server WebSocket with enhanced client
    */
   connectWebSocket() {
-    const wsUrl = 'ws://127.0.0.1:3010/ws'; // Force IPv4 to avoid IPv6 connection issues
+    const wsUrl = 'ws://127.0.0.1:3010'; // Connect to unified WebSocket server
     console.log(`🔌 Connecting to unified WebSocket at ${wsUrl}...`);
     
     this.ws = new WebSocket(wsUrl);
@@ -625,8 +625,8 @@ class OGZPrimeV14Final {
       await this.waitForServer(3010);
       console.log('✅ SSL server is available, proceeding with connection...');
       
-      // Connect to WebSocket FIRST - this is critical!
-      this.connectWebSocket();
+      // WebSocket connection disabled - SSL server not accepting connections
+      // this.connectWebSocket();
 
       // Wait for initial connection and data
       console.log('⏳ Waiting for WebSocket connection...');
@@ -1032,13 +1032,13 @@ class OGZPrimeV14Final {
       });
     }
 
-    // Market data systems
-    this.polygonWS = new PolygonWebSocket({
-      apiKey: process.env.POLYGON_API_KEY,
-      symbols: [this.config.primaryAsset, 'ETH-USD', 'SOL-USD'],
-      enableRealTimeProcessing: true,
-      optimizeForTrading: true
-    });
+    // Market data systems - KRAKEN ONLY (Polygon removed per user request)
+    // this.polygonWS = new PolygonWebSocket({
+    //   apiKey: process.env.POLYGON_API_KEY,
+    //   symbols: [this.config.primaryAsset, 'ETH-USD', 'SOL-USD'],
+    //   enableRealTimeProcessing: true,
+    //   optimizeForTrading: true
+    // });
 
     this.timeFrameManager = new TimeFrameManager({
       primaryTimeframe: '1m',
@@ -1338,6 +1338,38 @@ class OGZPrimeV14Final {
       console.error('❌ Failed to connect to Kraken - trading will be paper only');
     } else {
       console.log('✅ Kraken connected - LIVE TRADING ENABLED');
+
+      // CONNECT TO KRAKEN WEBSOCKET FOR REAL-TIME MARKET DATA
+      console.log('🔗 Connecting to Kraken WebSocket for market data...');
+      await this.krakenAdapter.connectWebSocketStream((messageData) => {
+        // Handle Kraken WebSocket message format
+        if (messageData.type === 'price' && messageData.data) {
+          const priceData = messageData.data;
+          // Update cached market data with real Kraken data
+          this.cachedMarketData = {
+            asset: 'BTC-USD',
+            price: priceData.price,
+            volume: priceData.volume || 0,
+            timestamp: Date.now()
+          };
+          this.lastDataReceived = Date.now();
+
+          // Accumulate price data for analysis (same as original logic)
+          if (!this.priceData) this.priceData = [];
+          this.priceData.push({
+            c: priceData.price, // Close price
+            v: priceData.volume || 0, // Volume
+            t: Date.now() // Timestamp
+          });
+
+          // Keep only recent data for memory management
+          if (this.priceData.length > 100) {
+            this.priceData = this.priceData.slice(-50);
+          }
+
+          console.log(`📈 Kraken price update: $${priceData.price}`);
+        }
+      });
     }
 
     // Test immediate call
@@ -3732,18 +3764,23 @@ class OGZPrimeV14Final {
     if (this.cachedMarketData && this.cachedMarketData.price) {
       return this.cachedMarketData.price;
     }
-    // Fallback to last known price if available - FIX: return close price, not whole candle
-    if (this.priceData && this.priceData.length > 0) {
-      const lastCandle = this.priceData[this.priceData.length - 1];
-      return lastCandle.close || lastCandle.c || 119000;
-    }
-    // Fallback to priceHistory if priceData not available
-    if (this.priceHistory && this.priceHistory.length > 0) {
-      const lastPrice = this.priceHistory[this.priceHistory.length - 1];
-      return typeof lastPrice === 'number' ? lastPrice : (lastPrice.close || lastPrice.c || 119000);
-    }
-    // Emergency fallback
-    return 119000; // Current BTC price range
+    // DEPRECATED FALLBACKS - These were using fake/hardcoded data
+    // // Fallback to last known price if available - FIX: return close price, not whole candle
+    // if (this.priceData && this.priceData.length > 0) {
+    //   const lastCandle = this.priceData[this.priceData.length - 1];
+    //   return lastCandle.close || lastCandle.c || 119000;
+    // }
+    // // Fallback to priceHistory if priceData not available
+    // if (this.priceHistory && this.priceHistory.length > 0) {
+    //   const lastPrice = this.priceHistory[this.priceHistory.length - 1];
+    //   return typeof lastPrice === 'number' ? lastPrice : (lastPrice.close || lastPrice.c || 119000);
+    // }
+    // // Emergency fallback
+    // return 119000; // Current BTC price range
+
+    // KRAKEN ONLY - No fake data fallbacks allowed
+    console.log('❌ No valid market data from Kraken - cannot proceed without real data');
+    return null;
   }
 
   /**
