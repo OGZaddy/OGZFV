@@ -1,0 +1,710 @@
+{
+  "timestamp": "2025-09-30T23:15:59.863Z",
+  "combinationsTested": 380,
+  "runtime": "0h 0m 3s",
+  "bestConfiguration": {
+    "stopLoss": 0.005,
+    "takeProfit": 0.33,
+    "confidence": 0.25,
+    "timeframe": 1,
+    "rsiPeriod": 15,
+    "rsiOversold": 20,
+    "rsiOverbought": 60,
+    "macdFast": 18,
+    "macdSlow": 31,
+    "macdSignal": 13,
+    "emaShort": 18,
+    "emaMedium": 49,
+    "emaLong": 135,
+    "riskPerTrade": 0.02,
+    "maxPositions": 8,
+    "minVolume": 1.4000000000000001,
+    "maxATR": 0.04,
+    "trendAlign": true,
+    "startHour": 7,
+    "endHour": 15,
+    "trailingStopActivation": 0.03,
+    "trailingStopDistance": 0.04,
+    "breakevenThreshold": 0.04,
+    "trendWeight": 0.2,
+    "momentumWeight": 0.35,
+    "volumeWeight": 0.2,
+    "volatilityWeight": 0.2,
+    "riskRewardRatio": 66
+  },
+  "performance": {
+    "winRate": 70.98692544932246,
+    "tradesPerDay": 4,
+    "profitFactor": 161.4836466735605,
+    "monthlyReturn": 19258.037600827258,
+    "score": 19591.83851825469
+  },
+  "learningInsights": [
+    {
+      "pattern": "1_6",
+      "tested": 9,
+      "avgScore": 237.5442597556747,
+      "bestScore": 311.61653781040286
+    },
+    {
+      "pattern": "1_5",
+      "tested": 15,
+      "avgScore": 225.61340234556636,
+      "bestScore": 311.8574824889331
+    },
+    {
+      "pattern": "8_7",
+      "tested": 3,
+      "avgScore": 1897.8176904991303,
+      "bestScore": 2170.105262708575
+    },
+    {
+      "pattern": "2_6",
+      "tested": 11,
+      "avgScore": 394.2814310118958,
+      "bestScore": 515.1556764775983
+    },
+    {
+      "pattern": "2_9",
+      "tested": 4,
+      "avgScore": 436.98005233283396,
+      "bestScore": 481.5906536732856
+    },
+    {
+      "pattern": "4_9",
+      "tested": 2,
+      "avgScore": 922.4596025989244,
+      "bestScore": 1001.3764232801082
+    },
+    {
+      "pattern": "1_7",
+      "tested": 8,
+      "avgScore": 200.53669151874516,
+      "bestScore": 272.470298545818
+    },
+    {
+      "pattern": "4_5",
+      "tested": 4,
+      "avgScore": 1055.7504385845596,
+      "bestScore": 1171.3472617087887
+    },
+    {
+      "pattern": "2_2",
+      "tested": 8,
+      "avgScore": 483.9505998447388,
+      "bestScore": 592.3424271935296
+    },
+    {
+      "pattern": "2_5",
+      "tested": 7,
+      "avgScore": 478.678649667402,
+      "bestScore": 574.3053838163278
+    },
+    {
+      "pattern": "4_1",
+      "tested": 3,
+      "avgScore": 1181.785799084544,
+      "bestScore": 1404.9315709470077
+    },
+    {
+      "pattern": "1_8",
+      "tested": 11,
+      "avgScore": 197.5594397096949,
+      "bestScore": 282.400653029138
+    },
+    {
+      "pattern": "0_4",
+      "tested": 6,
+      "avgScore": 119.02050982844783,
+      "bestScore": 147.18765405840665
+    },
+    {
+      "pattern": "1_2",
+      "tested": 9,
+      "avgScore": 230.024658086072,
+      "bestScore": 335.07764797585224
+    },
+    {
+      "pattern": "31_7",
+      "tested": 2,
+      "avgScore": 6794.643837913791,
+      "bestScore": 7296.920545495377
+    },
+    {
+      "pattern": "6_1",
+      "tested": 1,
+      "avgScore": 1388.6018712843272,
+      "bestScore": 1388.6018712843272
+    },
+    {
+      "pattern": "78_1",
+      "tested": 1,
+      "avgScore": 16005.923795113864,
+      "bestScore": 16005.923795113864
+    },
+    {
+      "pattern": "7_4",
+      "tested": 3,
+      "avgScore": 1877.7494718337102,
+      "bestScore": 1967.6331898045116
+    },
+    {
+      "pattern": "1_4",
+      "tested": 11,
+      "avgScore": 205.75980781550663,
+      "bestScore": 296.8366954360102
+    },
+    {
+      "pattern": "2_8",
+      "tested": 9,
+      "avgScore": 412.32962830588684,
+      "bestScore": 539.4849245218113
+    },
+    {
+      "pattern": "1_3",
+      "tested": 16,
+      "avgScore": 273.4398073843463,
+      "bestScore": 408.20859503006716
+    },
+    {
+      "pattern": "2_3",
+      "tested": 11,
+      "avgScore": 498.0867428012809,
+      "bestScore": 681.4382588399989
+    },
+    {
+      "pattern": "3_2",
+      "tested": 8,
+      "avgScore": 700.1471258759518,
+      "bestScore": 857.4543958755293
+    },
+    {
+      "pattern": "3_5",
+      "tested": 12,
+      "avgScore": 737.6427893597547,
+      "bestScore": 964.7012588944261
+    },
+    {
+      "pattern": "1_9",
+      "tested": 3,
+      "avgScore": 194.95410613420918,
+      "bestScore": 276.1067335749058
+    },
+    {
+      "pattern": "3_4",
+      "tested": 8,
+      "avgScore": 705.5237079725255,
+      "bestScore": 895.035284612439
+    },
+    {
+      "pattern": "72_6",
+      "tested": 1,
+      "avgScore": 14082.613122607741,
+      "bestScore": 14082.613122607741
+    },
+    {
+      "pattern": "3_3",
+      "tested": 2,
+      "avgScore": 678.0957742722553,
+      "bestScore": 744.8114566198378
+    },
+    {
+      "pattern": "0_8",
+      "tested": 6,
+      "avgScore": 114.40639413046496,
+      "bestScore": 135.18146880476536
+    },
+    {
+      "pattern": "4_7",
+      "tested": 3,
+      "avgScore": 1055.6090963239176,
+      "bestScore": 1199.7496739503433
+    },
+    {
+      "pattern": "3_1",
+      "tested": 15,
+      "avgScore": 679.1408194867319,
+      "bestScore": 827.62840054607
+    },
+    {
+      "pattern": "13_8",
+      "tested": 1,
+      "avgScore": 3005.0293275672216,
+      "bestScore": 3005.0293275672216
+    },
+    {
+      "pattern": "1_1",
+      "tested": 8,
+      "avgScore": 253.90362299453557,
+      "bestScore": 310.7736011242738
+    },
+    {
+      "pattern": "24_9",
+      "tested": 1,
+      "avgScore": 5304.536350805749,
+      "bestScore": 5304.536350805749
+    },
+    {
+      "pattern": "8_3",
+      "tested": 1,
+      "avgScore": 2369.7832916886086,
+      "bestScore": 2369.7832916886086
+    },
+    {
+      "pattern": "2_7",
+      "tested": 7,
+      "avgScore": 420.77989787182963,
+      "bestScore": 485.10175356864295
+    },
+    {
+      "pattern": "14_4",
+      "tested": 1,
+      "avgScore": 3919.343895549172,
+      "bestScore": 3919.343895549172
+    },
+    {
+      "pattern": "6_2",
+      "tested": 2,
+      "avgScore": 1775.5368785728463,
+      "bestScore": 2063.4507303549863
+    },
+    {
+      "pattern": "2_4",
+      "tested": 6,
+      "avgScore": 477.0851221735555,
+      "bestScore": 551.3809473067747
+    },
+    {
+      "pattern": "0_1",
+      "tested": 5,
+      "avgScore": 116.4861075583166,
+      "bestScore": 165.93884544580175
+    },
+    {
+      "pattern": "0_3",
+      "tested": 4,
+      "avgScore": 131.64707844826285,
+      "bestScore": 162.2438998922222
+    },
+    {
+      "pattern": "18_3",
+      "tested": 1,
+      "avgScore": 4654.278882487637,
+      "bestScore": 4654.278882487637
+    },
+    {
+      "pattern": "58_5",
+      "tested": 1,
+      "avgScore": 15670.196197638508,
+      "bestScore": 15670.196197638508
+    },
+    {
+      "pattern": "20_9",
+      "tested": 1,
+      "avgScore": 3971.3923462723697,
+      "bestScore": 3971.3923462723697
+    },
+    {
+      "pattern": "10_4",
+      "tested": 1,
+      "avgScore": 2735.7014868684682,
+      "bestScore": 2735.7014868684682
+    },
+    {
+      "pattern": "3_7",
+      "tested": 5,
+      "avgScore": 605.1244179707932,
+      "bestScore": 727.0870441630709
+    },
+    {
+      "pattern": "6_3",
+      "tested": 2,
+      "avgScore": 1816.8054013074122,
+      "bestScore": 1951.2802129217384
+    },
+    {
+      "pattern": "0_2",
+      "tested": 3,
+      "avgScore": 130.13092540376724,
+      "bestScore": 158.99148106419185
+    },
+    {
+      "pattern": "2_1",
+      "tested": 12,
+      "avgScore": 425.3101513387687,
+      "bestScore": 530.0998179529124
+    },
+    {
+      "pattern": "6_4",
+      "tested": 3,
+      "avgScore": 1767.6859377784642,
+      "bestScore": 1973.0344918046376
+    },
+    {
+      "pattern": "19_6",
+      "tested": 1,
+      "avgScore": 5187.178290009855,
+      "bestScore": 5187.178290009855
+    },
+    {
+      "pattern": "0_5",
+      "tested": 3,
+      "avgScore": 116.15388672651231,
+      "bestScore": 123.63134175525553
+    },
+    {
+      "pattern": "20_5",
+      "tested": 1,
+      "avgScore": 4788.109785508393,
+      "bestScore": 4788.109785508393
+    },
+    {
+      "pattern": "5_5",
+      "tested": 1,
+      "avgScore": 1501.401066607023,
+      "bestScore": 1501.401066607023
+    },
+    {
+      "pattern": "3_9",
+      "tested": 3,
+      "avgScore": 602.7033278785466,
+      "bestScore": 630.1473150202461
+    },
+    {
+      "pattern": "3_6",
+      "tested": 5,
+      "avgScore": 649.2950762112494,
+      "bestScore": 755.3324776897458
+    },
+    {
+      "pattern": "0_6",
+      "tested": 3,
+      "avgScore": 132.63950986037008,
+      "bestScore": 146.18320473663866
+    },
+    {
+      "pattern": "4_3",
+      "tested": 3,
+      "avgScore": 1328.9283476247385,
+      "bestScore": 1376.119058501636
+    },
+    {
+      "pattern": "19_8",
+      "tested": 1,
+      "avgScore": 4040.006204892022,
+      "bestScore": 4040.006204892022
+    },
+    {
+      "pattern": "7_7",
+      "tested": 1,
+      "avgScore": 1604.7731396638912,
+      "bestScore": 1604.7731396638912
+    },
+    {
+      "pattern": "3_8",
+      "tested": 6,
+      "avgScore": 633.6563947266787,
+      "bestScore": 735.9642832975019
+    },
+    {
+      "pattern": "27_3",
+      "tested": 1,
+      "avgScore": 7734.850886015459,
+      "bestScore": 7734.850886015459
+    },
+    {
+      "pattern": "56_2",
+      "tested": 1,
+      "avgScore": 16015.05842395189,
+      "bestScore": 16015.05842395189
+    },
+    {
+      "pattern": "4_2",
+      "tested": 2,
+      "avgScore": 1255.511234407066,
+      "bestScore": 1487.1098756747838
+    },
+    {
+      "pattern": "17_4",
+      "tested": 2,
+      "avgScore": 4616.896182902646,
+      "bestScore": 4682.763063025457
+    },
+    {
+      "pattern": "0_9",
+      "tested": 3,
+      "avgScore": 106.5042555637827,
+      "bestScore": 136.07689466988208
+    },
+    {
+      "pattern": "10_5",
+      "tested": 2,
+      "avgScore": 2524.632192603909,
+      "bestScore": 2579.914083125046
+    },
+    {
+      "pattern": "4_4",
+      "tested": 3,
+      "avgScore": 1095.7595249110616,
+      "bestScore": 1127.375729568697
+    },
+    {
+      "pattern": "10_2",
+      "tested": 2,
+      "avgScore": 2968.0415162523104,
+      "bestScore": 3165.0897020762263
+    },
+    {
+      "pattern": "6_7",
+      "tested": 1,
+      "avgScore": 1582.7163482446285,
+      "bestScore": 1582.7163482446285
+    },
+    {
+      "pattern": "5_1",
+      "tested": 3,
+      "avgScore": 1187.8290345458709,
+      "bestScore": 1241.5244223264147
+    },
+    {
+      "pattern": "13_2",
+      "tested": 1,
+      "avgScore": 3991.4007544663586,
+      "bestScore": 3991.4007544663586
+    },
+    {
+      "pattern": "10_7",
+      "tested": 1,
+      "avgScore": 2493.4719063378216,
+      "bestScore": 2493.4719063378216
+    },
+    {
+      "pattern": "0_7",
+      "tested": 3,
+      "avgScore": 92.91247748345445,
+      "bestScore": 113.14531261448957
+    },
+    {
+      "pattern": "9_7",
+      "tested": 2,
+      "avgScore": 2194.2288704609564,
+      "bestScore": 2197.9413597349085
+    },
+    {
+      "pattern": "66_9",
+      "tested": 1,
+      "avgScore": 12868.15765952617,
+      "bestScore": 12868.15765952617
+    },
+    {
+      "pattern": "5_6",
+      "tested": 1,
+      "avgScore": 1496.4099075393256,
+      "bestScore": 1496.4099075393256
+    },
+    {
+      "pattern": "4_6",
+      "tested": 5,
+      "avgScore": 1042.7766633705712,
+      "bestScore": 1286.1525976430216
+    },
+    {
+      "pattern": "6_8",
+      "tested": 4,
+      "avgScore": 1359.2631722875954,
+      "bestScore": 1498.3201054183014
+    },
+    {
+      "pattern": "8_1",
+      "tested": 2,
+      "avgScore": 2272.7944664113998,
+      "bestScore": 2318.3822099487616
+    },
+    {
+      "pattern": "7_3",
+      "tested": 2,
+      "avgScore": 2315.916485974066,
+      "bestScore": 2347.1618224850536
+    },
+    {
+      "pattern": "5_7",
+      "tested": 2,
+      "avgScore": 1355.7391627549164,
+      "bestScore": 1454.3939629744575
+    },
+    {
+      "pattern": "5_8",
+      "tested": 2,
+      "avgScore": 1109.5702661138057,
+      "bestScore": 1170.096893811748
+    },
+    {
+      "pattern": "9_2",
+      "tested": 1,
+      "avgScore": 1989.7292397802748,
+      "bestScore": 1989.7292397802748
+    },
+    {
+      "pattern": "40_6",
+      "tested": 1,
+      "avgScore": 8322.992946479599,
+      "bestScore": 8322.992946479599
+    },
+    {
+      "pattern": "5_9",
+      "tested": 1,
+      "avgScore": 995.7665598863537,
+      "bestScore": 995.7665598863537
+    },
+    {
+      "pattern": "27_5",
+      "tested": 1,
+      "avgScore": 6858.483990408706,
+      "bestScore": 6858.483990408706
+    },
+    {
+      "pattern": "5_2",
+      "tested": 1,
+      "avgScore": 1372.6326237193884,
+      "bestScore": 1372.6326237193884
+    },
+    {
+      "pattern": "5_3",
+      "tested": 1,
+      "avgScore": 1332.5417736175536,
+      "bestScore": 1332.5417736175536
+    },
+    {
+      "pattern": "32_1",
+      "tested": 1,
+      "avgScore": 9016.869546241951,
+      "bestScore": 9016.869546241951
+    },
+    {
+      "pattern": "14_3",
+      "tested": 1,
+      "avgScore": 3448.1245033323985,
+      "bestScore": 3448.1245033323985
+    },
+    {
+      "pattern": "11_8",
+      "tested": 1,
+      "avgScore": 2216.0659402110214,
+      "bestScore": 2216.0659402110214
+    },
+    {
+      "pattern": "6_5",
+      "tested": 1,
+      "avgScore": 1480.8067210167546,
+      "bestScore": 1480.8067210167546
+    },
+    {
+      "pattern": "14_5",
+      "tested": 1,
+      "avgScore": 3672.17009628468,
+      "bestScore": 3672.17009628468
+    },
+    {
+      "pattern": "14_2",
+      "tested": 1,
+      "avgScore": 4103.306937096337,
+      "bestScore": 4103.306937096337
+    },
+    {
+      "pattern": "22_7",
+      "tested": 1,
+      "avgScore": 4739.751377841376,
+      "bestScore": 4739.751377841376
+    },
+    {
+      "pattern": "23_8",
+      "tested": 1,
+      "avgScore": 5408.40441333955,
+      "bestScore": 5408.40441333955
+    },
+    {
+      "pattern": "4_8",
+      "tested": 2,
+      "avgScore": 900.3825534096809,
+      "bestScore": 970.3322154475593
+    },
+    {
+      "pattern": "12_3",
+      "tested": 1,
+      "avgScore": 3021.726236555182,
+      "bestScore": 3021.726236555182
+    },
+    {
+      "pattern": "96_1",
+      "tested": 1,
+      "avgScore": 19365.659037486657,
+      "bestScore": 19365.659037486657
+    },
+    {
+      "pattern": "31_4",
+      "tested": 1,
+      "avgScore": 7356.104273261829,
+      "bestScore": 7356.104273261829
+    },
+    {
+      "pattern": "32_6",
+      "tested": 1,
+      "avgScore": 7643.905216470092,
+      "bestScore": 7643.905216470092
+    },
+    {
+      "pattern": "5_4",
+      "tested": 1,
+      "avgScore": 1702.183492259347,
+      "bestScore": 1702.183492259347
+    },
+    {
+      "pattern": "12_2",
+      "tested": 1,
+      "avgScore": 2819.044079143302,
+      "bestScore": 2819.044079143302
+    },
+    {
+      "pattern": "46_9",
+      "tested": 1,
+      "avgScore": 10445.752121714238,
+      "bestScore": 10445.752121714238
+    },
+    {
+      "pattern": "13_4",
+      "tested": 2,
+      "avgScore": 3492.028055723892,
+      "bestScore": 3593.9510292249997
+    },
+    {
+      "pattern": "8_4",
+      "tested": 1,
+      "avgScore": 2686.9049751809234,
+      "bestScore": 2686.9049751809234
+    },
+    {
+      "pattern": "7_1",
+      "tested": 1,
+      "avgScore": 1824.566575359341,
+      "bestScore": 1824.566575359341
+    },
+    {
+      "pattern": "7_5",
+      "tested": 1,
+      "avgScore": 1818.1698991967137,
+      "bestScore": 1818.1698991967137
+    },
+    {
+      "pattern": "23_7",
+      "tested": 1,
+      "avgScore": 5899.952492980642,
+      "bestScore": 5899.952492980642
+    },
+    {
+      "pattern": "66_3",
+      "tested": 1,
+      "avgScore": 19591.83851825469,
+      "bestScore": 19591.83851825469
+    }
+  ]
+}

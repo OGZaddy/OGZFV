@@ -1,0 +1,391 @@
+{
+  "timestamp": "2025-09-29T11:08:15.898Z",
+  "results": [
+    {
+      "config": {
+        "name": "Conservative 1min",
+        "timeframe": "1m",
+        "minConfidence": 0.5,
+        "maxPositionSize": 0.05,
+        "description": "Original conservative settings on 1-minute candles"
+      },
+      "metrics": {
+        "totalReturn": 0,
+        "totalPnL": 0,
+        "totalTrades": 0,
+        "winRate": 0,
+        "maxDrawdown": 0,
+        "profitFactor": 0,
+        "sharpeRatio": 0,
+        "executionTime": "0.17"
+      },
+      "tradesPerDay": 0,
+      "report": {
+        "summary": {
+          "initialBalance": 10000,
+          "finalBalance": 10000,
+          "totalReturn": 0,
+          "totalPnL": 0,
+          "duration": "0.17s"
+        },
+        "metrics": {
+          "totalTrades": 0,
+          "winningTrades": 0,
+          "losingTrades": 0,
+          "totalPnL": 0,
+          "winRate": 0,
+          "maxDrawdown": 0,
+          "sharpeRatio": 0,
+          "avgWin": 0,
+          "avgLoss": 0,
+          "profitFactor": 0,
+          "peakBalance": 10000,
+          "currentDrawdown": 0
+        },
+        "trades": [],
+        "config": {
+          "symbol": "BTC-USD",
+          "initialBalance": 10000,
+          "maxPositionSize": 0.05,
+          "minTradeConfidence": 0.5,
+          "patternConfidence": 0.4,
+          "enableQuantumSizing": false,
+          "tier": "ELITE"
+        },
+        "timestamp": "2025-09-29T11:08:15.238Z"
+      }
+    },
+    {
+      "config": {
+        "name": "Moderate 1min",
+        "timeframe": "1m",
+        "minConfidence": 0.35,
+        "maxPositionSize": 0.1,
+        "description": "Moderate risk with 35% confidence threshold"
+      },
+      "metrics": {
+        "totalReturn": 0,
+        "totalPnL": 0,
+        "totalTrades": 0,
+        "winRate": 0,
+        "maxDrawdown": 0,
+        "profitFactor": 0,
+        "sharpeRatio": 0,
+        "executionTime": "0.14"
+      },
+      "tradesPerDay": 0,
+      "report": {
+        "summary": {
+          "initialBalance": 10000,
+          "finalBalance": 10000,
+          "totalReturn": 0,
+          "totalPnL": 0,
+          "duration": "0.14s"
+        },
+        "metrics": {
+          "totalTrades": 0,
+          "winningTrades": 0,
+          "losingTrades": 0,
+          "totalPnL": 0,
+          "winRate": 0,
+          "maxDrawdown": 0,
+          "sharpeRatio": 0,
+          "avgWin": 0,
+          "avgLoss": 0,
+          "profitFactor": 0,
+          "peakBalance": 10000,
+          "currentDrawdown": 0
+        },
+        "trades": [],
+        "config": {
+          "symbol": "BTC-USD",
+          "initialBalance": 10000,
+          "maxPositionSize": 0.1,
+          "minTradeConfidence": 0.35,
+          "patternConfidence": 0.27999999999999997,
+          "enableQuantumSizing": false,
+          "tier": "ELITE"
+        },
+        "timestamp": "2025-09-29T11:08:15.381Z"
+      }
+    },
+    {
+      "config": {
+        "name": "Aggressive 1min",
+        "timeframe": "1m",
+        "minConfidence": 0.25,
+        "maxPositionSize": 0.15,
+        "description": "Aggressive trading with 25% threshold"
+      },
+      "metrics": {
+        "totalReturn": 0,
+        "totalPnL": 0,
+        "totalTrades": 0,
+        "winRate": 0,
+        "maxDrawdown": 0,
+        "profitFactor": 0,
+        "sharpeRatio": 0,
+        "executionTime": "0.13"
+      },
+      "tradesPerDay": 0,
+      "report": {
+        "summary": {
+          "initialBalance": 10000,
+          "finalBalance": 10000,
+          "totalReturn": 0,
+          "totalPnL": 0,
+          "duration": "0.13s"
+        },
+        "metrics": {
+          "totalTrades": 0,
+          "winningTrades": 0,
+          "losingTrades": 0,
+          "totalPnL": 0,
+          "winRate": 0,
+          "maxDrawdown": 0,
+          "sharpeRatio": 0,
+          "avgWin": 0,
+          "avgLoss": 0,
+          "profitFactor": 0,
+          "peakBalance": 10000,
+          "currentDrawdown": 0
+        },
+        "trades": [],
+        "config": {
+          "symbol": "BTC-USD",
+          "initialBalance": 10000,
+          "maxPositionSize": 0.15,
+          "minTradeConfidence": 0.25,
+          "patternConfidence": 0.2,
+          "enableQuantumSizing": false,
+          "tier": "ELITE"
+        },
+        "timestamp": "2025-09-29T11:08:15.514Z"
+      }
+    },
+    {
+      "config": {
+        "name": "Scalper 1min",
+        "timeframe": "1m",
+        "minConfidence": 0.2,
+        "maxPositionSize": 0.2,
+        "description": "Ultra-aggressive scalping mode"
+      },
+      "metrics": {
+        "totalReturn": 0,
+        "totalPnL": 0,
+        "totalTrades": 0,
+        "winRate": 0,
+        "maxDrawdown": 0,
+        "profitFactor": 0,
+        "sharpeRatio": 0,
+        "executionTime": "0.13"
+      },
+      "tradesPerDay": 0,
+      "report": {
+        "summary": {
+          "initialBalance": 10000,
+          "finalBalance": 10000,
+          "totalReturn": 0,
+          "totalPnL": 0,
+          "duration": "0.13s"
+        },
+        "metrics": {
+          "totalTrades": 0,
+          "winningTrades": 0,
+          "losingTrades": 0,
+          "totalPnL": 0,
+          "winRate": 0,
+          "maxDrawdown": 0,
+          "sharpeRatio": 0,
+          "avgWin": 0,
+          "avgLoss": 0,
+          "profitFactor": 0,
+          "peakBalance": 10000,
+          "currentDrawdown": 0
+        },
+        "trades": [],
+        "config": {
+          "symbol": "BTC-USD",
+          "initialBalance": 10000,
+          "maxPositionSize": 0.2,
+          "minTradeConfidence": 0.2,
+          "patternConfidence": 0.16000000000000003,
+          "enableQuantumSizing": false,
+          "tier": "ELITE"
+        },
+        "timestamp": "2025-09-29T11:08:15.647Z"
+      }
+    },
+    {
+      "config": {
+        "name": "Moderate 5min",
+        "timeframe": "5m",
+        "minConfidence": 0.35,
+        "maxPositionSize": 0.1,
+        "description": "5-minute timeframe for less noise"
+      },
+      "metrics": {
+        "totalReturn": 0,
+        "totalPnL": 0,
+        "totalTrades": 0,
+        "winRate": 0,
+        "maxDrawdown": 0,
+        "profitFactor": 0,
+        "sharpeRatio": 0,
+        "executionTime": "0.03"
+      },
+      "tradesPerDay": 0,
+      "report": {
+        "summary": {
+          "initialBalance": 10000,
+          "finalBalance": 10000,
+          "totalReturn": 0,
+          "totalPnL": 0,
+          "duration": "0.03s"
+        },
+        "metrics": {
+          "totalTrades": 0,
+          "winningTrades": 0,
+          "losingTrades": 0,
+          "totalPnL": 0,
+          "winRate": 0,
+          "maxDrawdown": 0,
+          "sharpeRatio": 0,
+          "avgWin": 0,
+          "avgLoss": 0,
+          "profitFactor": 0,
+          "peakBalance": 10000,
+          "currentDrawdown": 0
+        },
+        "trades": [],
+        "config": {
+          "symbol": "BTC-USD",
+          "initialBalance": 10000,
+          "maxPositionSize": 0.1,
+          "minTradeConfidence": 0.35,
+          "patternConfidence": 0.27999999999999997,
+          "enableQuantumSizing": false,
+          "tier": "ELITE"
+        },
+        "timestamp": "2025-09-29T11:08:15.757Z"
+      }
+    },
+    {
+      "config": {
+        "name": "Moderate 15min",
+        "timeframe": "15m",
+        "minConfidence": 0.35,
+        "maxPositionSize": 0.1,
+        "description": "15-minute for trend following"
+      },
+      "metrics": {
+        "totalReturn": 0,
+        "totalPnL": 0,
+        "totalTrades": 0,
+        "winRate": 0,
+        "maxDrawdown": 0,
+        "profitFactor": 0,
+        "sharpeRatio": 0,
+        "executionTime": "0.02"
+      },
+      "tradesPerDay": 0,
+      "report": {
+        "summary": {
+          "initialBalance": 10000,
+          "finalBalance": 10000,
+          "totalReturn": 0,
+          "totalPnL": 0,
+          "duration": "0.01s"
+        },
+        "metrics": {
+          "totalTrades": 0,
+          "winningTrades": 0,
+          "losingTrades": 0,
+          "totalPnL": 0,
+          "winRate": 0,
+          "maxDrawdown": 0,
+          "sharpeRatio": 0,
+          "avgWin": 0,
+          "avgLoss": 0,
+          "profitFactor": 0,
+          "peakBalance": 10000,
+          "currentDrawdown": 0
+        },
+        "trades": [],
+        "config": {
+          "symbol": "BTC-USD",
+          "initialBalance": 10000,
+          "maxPositionSize": 0.1,
+          "minTradeConfidence": 0.35,
+          "patternConfidence": 0.27999999999999997,
+          "enableQuantumSizing": false,
+          "tier": "ELITE"
+        },
+        "timestamp": "2025-09-29T11:08:15.829Z"
+      }
+    },
+    {
+      "config": {
+        "name": "Swing 1hr",
+        "timeframe": "1h",
+        "minConfidence": 0.4,
+        "maxPositionSize": 0.15,
+        "description": "Hourly for swing trading"
+      },
+      "metrics": {
+        "totalReturn": 0,
+        "totalPnL": 0,
+        "totalTrades": 0,
+        "winRate": 0,
+        "maxDrawdown": 0,
+        "profitFactor": 0,
+        "sharpeRatio": 0,
+        "executionTime": "0.01"
+      },
+      "tradesPerDay": 0,
+      "report": {
+        "summary": {
+          "initialBalance": 10000,
+          "finalBalance": 10000,
+          "totalReturn": 0,
+          "totalPnL": 0,
+          "duration": "0.01s"
+        },
+        "metrics": {
+          "totalTrades": 0,
+          "winningTrades": 0,
+          "losingTrades": 0,
+          "totalPnL": 0,
+          "winRate": 0,
+          "maxDrawdown": 0,
+          "sharpeRatio": 0,
+          "avgWin": 0,
+          "avgLoss": 0,
+          "profitFactor": 0,
+          "peakBalance": 10000,
+          "currentDrawdown": 0
+        },
+        "trades": [],
+        "config": {
+          "symbol": "BTC-USD",
+          "initialBalance": 10000,
+          "maxPositionSize": 0.15,
+          "minTradeConfidence": 0.4,
+          "patternConfidence": 0.32000000000000006,
+          "enableQuantumSizing": false,
+          "tier": "ELITE"
+        },
+        "timestamp": "2025-09-29T11:08:15.897Z"
+      }
+    }
+  ],
+  "summary": {
+    "bestReturn": "Conservative 1min",
+    "mostActive": "Conservative 1min",
+    "bestWinRate": "Conservative 1min",
+    "lowestDrawdown": "Conservative 1min",
+    "bestProfitFactor": "Conservative 1min",
+    "optimalByScore": "Conservative 1min"
+  }
+}

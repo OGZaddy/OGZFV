@@ -1,0 +1,2946 @@
+{
+  "timestamp": "2025-09-30T22:57:45.344Z",
+  "totalTests": 420,
+  "results": [
+    {
+      "config": "year/1min/40%/3%",
+      "trades": 859,
+      "winRate": 53.20139697322468,
+      "finalBalance": 10113.341416511923,
+      "return": 1.1334141651192295
+    },
+    {
+      "config": "year/1min/30%/3%",
+      "trades": 1084,
+      "winRate": 50.46125461254613,
+      "finalBalance": 10103.9533335306,
+      "return": 1.039533335306005
+    },
+    {
+      "config": "year/15min/25%/3%",
+      "trades": 1155,
+      "winRate": 52.38095238095239,
+      "finalBalance": 10101.664444413267,
+      "return": 1.0166444441326712
+    },
+    {
+      "config": "year/30min/40%/2%",
+      "trades": 871,
+      "winRate": 53.84615384615385,
+      "finalBalance": 10098.238377558897,
+      "return": 0.9823837755889689
+    },
+    {
+      "config": "year/15min/40%/3%",
+      "trades": 813,
+      "winRate": 52.89052890528906,
+      "finalBalance": 10095.77877040557,
+      "return": 0.9577877040556996
+    },
+    {
+      "config": "year/15min/15%/3%",
+      "trades": 1463,
+      "winRate": 50.512645249487356,
+      "finalBalance": 10092.500650928481,
+      "return": 0.9250065092848127
+    },
+    {
+      "config": "year/15min/45%/3%",
+      "trades": 764,
+      "winRate": 51.96335078534031,
+      "finalBalance": 10091.023729753544,
+      "return": 0.9102372975354411
+    },
+    {
+      "config": "year/30min/40%/3%",
+      "trades": 857,
+      "winRate": 50.87514585764295,
+      "finalBalance": 10088.537273458776,
+      "return": 0.8853727345877632
+    },
+    {
+      "config": "year/1hour/40%/3%",
+      "trades": 845,
+      "winRate": 52.781065088757394,
+      "finalBalance": 10088.377719330842,
+      "return": 0.883777193308415
+    },
+    {
+      "config": "year/15min/45%/2%",
+      "trades": 745,
+      "winRate": 51.81208053691275,
+      "finalBalance": 10087.812251289004,
+      "return": 0.8781225128900406
+    },
+    {
+      "config": "year/15min/20%/2%",
+      "trades": 1243,
+      "winRate": 52.373290426387776,
+      "finalBalance": 10080.291913439922,
+      "return": 0.8029191343992169
+    },
+    {
+      "config": "year/15min/20%/3%",
+      "trades": 1228,
+      "winRate": 49.8371335504886,
+      "finalBalance": 10072.54191333972,
+      "return": 0.7254191333972085
+    },
+    {
+      "config": "year/1hour/20%/2%",
+      "trades": 1214,
+      "winRate": 51.23558484349259,
+      "finalBalance": 10070.414490919653,
+      "return": 0.7041449091965296
+    },
+    {
+      "config": "year/5min/25%/2%",
+      "trades": 1166,
+      "winRate": 51.543739279588344,
+      "finalBalance": 10069.980441359,
+      "return": 0.6998044135900091
+    },
+    {
+      "config": "year/1hour/30%/3%",
+      "trades": 1091,
+      "winRate": 50.779101741521536,
+      "finalBalance": 10067.918800614574,
+      "return": 0.6791880061457414
+    },
+    {
+      "config": "year/1min/45%/2%",
+      "trades": 746,
+      "winRate": 51.07238605898124,
+      "finalBalance": 10065.082723592,
+      "return": 0.6508272359200055
+    },
+    {
+      "config": "year/30min/30%/2%",
+      "trades": 1090,
+      "winRate": 52.84403669724771,
+      "finalBalance": 10063.990941094575,
+      "return": 0.6399094109457474
+    },
+    {
+      "config": "year/30min/35%/2%",
+      "trades": 879,
+      "winRate": 52.55972696245734,
+      "finalBalance": 10063.070552300907,
+      "return": 0.6307055230090736
+    },
+    {
+      "config": "year/1min/35%/2%",
+      "trades": 862,
+      "winRate": 53.36426914153132,
+      "finalBalance": 10062.493152918478,
+      "return": 0.6249315291847779
+    },
+    {
+      "config": "year/30min/20%/3%",
+      "trades": 1217,
+      "winRate": 50.287592440427275,
+      "finalBalance": 10061.976010446082,
+      "return": 0.6197601044608201
+    },
+    {
+      "config": "year/5min/20%/2%",
+      "trades": 1216,
+      "winRate": 50.98684210526315,
+      "finalBalance": 10060.759568686008,
+      "return": 0.607595686860077
+    },
+    {
+      "config": "year/1hour/25%/3%",
+      "trades": 1168,
+      "winRate": 51.54109589041096,
+      "finalBalance": 10054.5957993584,
+      "return": 0.5459579935839974
+    },
+    {
+      "config": "year/5min/30%/2%",
+      "trades": 1082,
+      "winRate": 51.75600739371534,
+      "finalBalance": 10053.718119638597,
+      "return": 0.5371811963859727
+    },
+    {
+      "config": "year/1min/35%/3%",
+      "trades": 858,
+      "winRate": 49.883449883449885,
+      "finalBalance": 10049.573091811639,
+      "return": 0.4957309181163873
+    },
+    {
+      "config": "year/5min/35%/2%",
+      "trades": 872,
+      "winRate": 52.06422018348624,
+      "finalBalance": 10049.39097282393,
+      "return": 0.493909728239305
+    },
+    {
+      "config": "year/1min/25%/2%",
+      "trades": 1139,
+      "winRate": 50.4828797190518,
+      "finalBalance": 10047.903264195667,
+      "return": 0.47903264195667367
+    },
+    {
+      "config": "year/5min/40%/3%",
+      "trades": 819,
+      "winRate": 50.79365079365079,
+      "finalBalance": 10047.838951903896,
+      "return": 0.4783895190389558
+    },
+    {
+      "config": "year/30min/25%/2%",
+      "trades": 1168,
+      "winRate": 51.284246575342465,
+      "finalBalance": 10046.79911284318,
+      "return": 0.46799112843180407
+    },
+    {
+      "config": "year/30min/35%/3%",
+      "trades": 854,
+      "winRate": 48.711943793911004,
+      "finalBalance": 10046.776150610065,
+      "return": 0.4677615061006508
+    },
+    {
+      "config": "year/1min/40%/2%",
+      "trades": 849,
+      "winRate": 49.46996466431096,
+      "finalBalance": 10046.173486209911,
+      "return": 0.46173486209911063
+    },
+    {
+      "config": "year/1min/20%/1%",
+      "trades": 1215,
+      "winRate": 51.27572016460905,
+      "finalBalance": 10045.422826963895,
+      "return": 0.4542282696389521
+    },
+    {
+      "config": "year/15min/30%/3%",
+      "trades": 1089,
+      "winRate": 50.505050505050505,
+      "finalBalance": 10044.56078913381,
+      "return": 0.4456078913380952
+    },
+    {
+      "config": "year/5min/20%/3%",
+      "trades": 1218,
+      "winRate": 50.32840722495895,
+      "finalBalance": 10044.032266488546,
+      "return": 0.44032266488546157
+    },
+    {
+      "config": "year/15min/40%/1%",
+      "trades": 856,
+      "winRate": 53.154205607476634,
+      "finalBalance": 10043.1192835542,
+      "return": 0.43119283554200594
+    },
+    {
+      "config": "month/1hour/30%/3%",
+      "trades": 101,
+      "winRate": 56.43564356435643,
+      "finalBalance": 10039.925728637621,
+      "return": 0.3992572863762143
+    },
+    {
+      "config": "year/30min/45%/2%",
+      "trades": 765,
+      "winRate": 50.45751633986928,
+      "finalBalance": 10038.904697929334,
+      "return": 0.3890469792933436
+    },
+    {
+      "config": "month/30min/20%/3%",
+      "trades": 114,
+      "winRate": 57.01754385964912,
+      "finalBalance": 10037.995720247804,
+      "return": 0.37995720247803544
+    },
+    {
+      "config": "month/30min/15%/3%",
+      "trades": 122,
+      "winRate": 56.557377049180324,
+      "finalBalance": 10037.570680754114,
+      "return": 0.3757068075411371
+    },
+    {
+      "config": "year/1min/25%/3%",
+      "trades": 1153,
+      "winRate": 50.65047701647876,
+      "finalBalance": 10036.711851427623,
+      "return": 0.36711851427622605
+    },
+    {
+      "config": "year/5min/45%/1%",
+      "trades": 749,
+      "winRate": 54.0720961281709,
+      "finalBalance": 10035.883478577061,
+      "return": 0.35883478577061395
+    },
+    {
+      "config": "month/1min/30%/3%",
+      "trades": 98,
+      "winRate": 57.14285714285714,
+      "finalBalance": 10035.655675963877,
+      "return": 0.35655675963877
+    },
+    {
+      "config": "year/1hour/20%/3%",
+      "trades": 1231,
+      "winRate": 52.071486596263206,
+      "finalBalance": 10035.09027586552,
+      "return": 0.3509027586551929
+    },
+    {
+      "config": "year/5min/45%/3%",
+      "trades": 754,
+      "winRate": 49.73474801061008,
+      "finalBalance": 10034.557829249421,
+      "return": 0.34557829249421046
+    },
+    {
+      "config": "year/15min/30%/2%",
+      "trades": 1076,
+      "winRate": 52.13754646840149,
+      "finalBalance": 10034.327006256397,
+      "return": 0.34327006256396997
+    },
+    {
+      "config": "year/1min/20%/2%",
+      "trades": 1221,
+      "winRate": 49.95904995904996,
+      "finalBalance": 10034.152875485168,
+      "return": 0.34152875485167894
+    },
+    {
+      "config": "year/30min/45%/1%",
+      "trades": 755,
+      "winRate": 52.71523178807948,
+      "finalBalance": 10032.940076840898,
+      "return": 0.3294007684089775
+    },
+    {
+      "config": "year/1hour/40%/2%",
+      "trades": 847,
+      "winRate": 51.82998819362455,
+      "finalBalance": 10032.534644511774,
+      "return": 0.32534644511773875
+    },
+    {
+      "config": "year/15min/25%/1%",
+      "trades": 1146,
+      "winRate": 50.34904013961605,
+      "finalBalance": 10032.205258657272,
+      "return": 0.32205258657271774
+    },
+    {
+      "config": "year/1hour/45%/3%",
+      "trades": 761,
+      "winRate": 50.06570302233902,
+      "finalBalance": 10032.134104873292,
+      "return": 0.3213410487329202
+    },
+    {
+      "config": "year/1min/45%/3%",
+      "trades": 740,
+      "winRate": 50.13513513513514,
+      "finalBalance": 10031.348449439949,
+      "return": 0.31348449439949033
+    },
+    {
+      "config": "year/5min/15%/1%",
+      "trades": 1474,
+      "winRate": 51.76390773405699,
+      "finalBalance": 10030.994787432253,
+      "return": 0.3099478743225336
+    },
+    {
+      "config": "year/15min/30%/1%",
+      "trades": 1056,
+      "winRate": 51.609848484848484,
+      "finalBalance": 10029.970268766423,
+      "return": 0.2997026876642303
+    },
+    {
+      "config": "month/5min/25%/3%",
+      "trades": 92,
+      "winRate": 54.347826086956516,
+      "finalBalance": 10029.545056005421,
+      "return": 0.2954505600542143
+    },
+    {
+      "config": "year/30min/20%/1%",
+      "trades": 1206,
+      "winRate": 51.49253731343284,
+      "finalBalance": 10029.371396886661,
+      "return": 0.29371396886661383
+    },
+    {
+      "config": "year/1hour/35%/2%",
+      "trades": 853,
+      "winRate": 50.76201641266119,
+      "finalBalance": 10029.082367158408,
+      "return": 0.2908236715840758
+    },
+    {
+      "config": "year/5min/30%/1%",
+      "trades": 1078,
+      "winRate": 51.02040816326531,
+      "finalBalance": 10027.364204178002,
+      "return": 0.2736420417800218
+    },
+    {
+      "config": "year/1hour/45%/1%",
+      "trades": 748,
+      "winRate": 52.27272727272727,
+      "finalBalance": 10027.248796697859,
+      "return": 0.2724879669785878
+    },
+    {
+      "config": "month/1hour/35%/3%",
+      "trades": 71,
+      "winRate": 54.929577464788736,
+      "finalBalance": 10027.070440856889,
+      "return": 0.27070440856889033
+    },
+    {
+      "config": "year/5min/15%/2%",
+      "trades": 1459,
+      "winRate": 51.267991775188484,
+      "finalBalance": 10026.902762210459,
+      "return": 0.2690276221045861
+    },
+    {
+      "config": "year/1min/30%/2%",
+      "trades": 1071,
+      "winRate": 50.42016806722689,
+      "finalBalance": 10025.705535856001,
+      "return": 0.25705535856001005
+    },
+    {
+      "config": "month/1hour/40%/3%",
+      "trades": 70,
+      "winRate": 55.714285714285715,
+      "finalBalance": 10024.639110002321,
+      "return": 0.24639110002321105
+    },
+    {
+      "config": "year/30min/20%/2%",
+      "trades": 1217,
+      "winRate": 51.27362366474938,
+      "finalBalance": 10024.528456083475,
+      "return": 0.24528456083475247
+    },
+    {
+      "config": "year/15min/45%/1%",
+      "trades": 784,
+      "winRate": 51.91326530612245,
+      "finalBalance": 10023.867787292626,
+      "return": 0.23867787292625509
+    },
+    {
+      "config": "year/1hour/15%/2%",
+      "trades": 1462,
+      "winRate": 50,
+      "finalBalance": 10023.535629535672,
+      "return": 0.23535629535672342
+    },
+    {
+      "config": "month/1min/40%/3%",
+      "trades": 69,
+      "winRate": 53.62318840579711,
+      "finalBalance": 10023.498213975876,
+      "return": 0.23498213975875842
+    },
+    {
+      "config": "year/1hour/20%/1%",
+      "trades": 1234,
+      "winRate": 52.43111831442464,
+      "finalBalance": 10023.081151729997,
+      "return": 0.23081151729997146
+    },
+    {
+      "config": "year/1min/40%/1%",
+      "trades": 854,
+      "winRate": 52.341920374707264,
+      "finalBalance": 10023.044221212036,
+      "return": 0.23044221212036062
+    },
+    {
+      "config": "year/15min/35%/1%",
+      "trades": 844,
+      "winRate": 53.08056872037915,
+      "finalBalance": 10022.891426946708,
+      "return": 0.22891426946707724
+    },
+    {
+      "config": "year/30min/30%/3%",
+      "trades": 1087,
+      "winRate": 47.65409383624655,
+      "finalBalance": 10022.780108635736,
+      "return": 0.22780108635735816
+    },
+    {
+      "config": "month/15min/15%/2%",
+      "trades": 120,
+      "winRate": 54.166666666666664,
+      "finalBalance": 10022.132633667425,
+      "return": 0.22132633667424673
+    },
+    {
+      "config": "month/5min/20%/3%",
+      "trades": 99,
+      "winRate": 53.535353535353536,
+      "finalBalance": 10022.058398889369,
+      "return": 0.2205839888936862
+    },
+    {
+      "config": "year/30min/35%/1%",
+      "trades": 864,
+      "winRate": 53.24074074074075,
+      "finalBalance": 10021.544663805858,
+      "return": 0.2154466380585836
+    },
+    {
+      "config": "week/1min/15%/3%",
+      "trades": 28,
+      "winRate": 67.85714285714286,
+      "finalBalance": 10021.383669494353,
+      "return": 0.21383669494352944
+    },
+    {
+      "config": "year/1hour/25%/2%",
+      "trades": 1167,
+      "winRate": 50.04284490145673,
+      "finalBalance": 10021.290471592385,
+      "return": 0.21290471592385077
+    },
+    {
+      "config": "year/15min/35%/2%",
+      "trades": 836,
+      "winRate": 49.52153110047847,
+      "finalBalance": 10020.570725309168,
+      "return": 0.20570725309167753
+    },
+    {
+      "config": "year/1min/45%/1%",
+      "trades": 765,
+      "winRate": 49.15032679738562,
+      "finalBalance": 10019.91023594835,
+      "return": 0.1991023594834951
+    },
+    {
+      "config": "month/15min/35%/3%",
+      "trades": 67,
+      "winRate": 58.2089552238806,
+      "finalBalance": 10019.74464165565,
+      "return": 0.19744641655650413
+    },
+    {
+      "config": "month/1hour/25%/3%",
+      "trades": 99,
+      "winRate": 55.55555555555556,
+      "finalBalance": 10019.373701561053,
+      "return": 0.19373701561053167
+    },
+    {
+      "config": "month/5min/45%/3%",
+      "trades": 65,
+      "winRate": 46.15384615384615,
+      "finalBalance": 10019.158528977687,
+      "return": 0.19158528977686728
+    },
+    {
+      "config": "month/30min/35%/3%",
+      "trades": 80,
+      "winRate": 57.49999999999999,
+      "finalBalance": 10019.096007081771,
+      "return": 0.1909600708177095
+    },
+    {
+      "config": "year/1min/15%/3%",
+      "trades": 1463,
+      "winRate": 50.10252904989747,
+      "finalBalance": 10019.085107093555,
+      "return": 0.19085107093555054
+    },
+    {
+      "config": "month/1hour/15%/3%",
+      "trades": 120,
+      "winRate": 50.83333333333333,
+      "finalBalance": 10017.996906471268,
+      "return": 0.1799690647126772
+    },
+    {
+      "config": "month/1hour/40%/2%",
+      "trades": 74,
+      "winRate": 54.054054054054056,
+      "finalBalance": 10017.80186762037,
+      "return": 0.17801867620370104
+    },
+    {
+      "config": "month/15min/15%/3%",
+      "trades": 120,
+      "winRate": 55.00000000000001,
+      "finalBalance": 10017.613901030543,
+      "return": 0.17613901030543275
+    },
+    {
+      "config": "year/5min/40%/2%",
+      "trades": 859,
+      "winRate": 49.243306169965074,
+      "finalBalance": 10017.463096039039,
+      "return": 0.17463096039038645
+    },
+    {
+      "config": "month/15min/30%/2%",
+      "trades": 95,
+      "winRate": 56.84210526315789,
+      "finalBalance": 10016.975777976711,
+      "return": 0.1697577797671147
+    },
+    {
+      "config": "month/30min/40%/3%",
+      "trades": 76,
+      "winRate": 61.8421052631579,
+      "finalBalance": 10016.717835882453,
+      "return": 0.16717835882453072
+    },
+    {
+      "config": "year/15min/35%/3%",
+      "trades": 859,
+      "winRate": 50.87310826542492,
+      "finalBalance": 10016.571233934244,
+      "return": 0.16571233934244448
+    },
+    {
+      "config": "year/15min/15%/1%",
+      "trades": 1464,
+      "winRate": 51.29781420765027,
+      "finalBalance": 10016.485498320171,
+      "return": 0.16485498320171244
+    },
+    {
+      "config": "year/1min/15%/2%",
+      "trades": 1450,
+      "winRate": 50.41379310344828,
+      "finalBalance": 10016.041756895209,
+      "return": 0.16041756895208892
+    },
+    {
+      "config": "month/30min/30%/3%",
+      "trades": 91,
+      "winRate": 57.14285714285714,
+      "finalBalance": 10015.804121770512,
+      "return": 0.1580412177051221
+    },
+    {
+      "config": "year/30min/40%/1%",
+      "trades": 827,
+      "winRate": 50.66505441354293,
+      "finalBalance": 10015.163826631278,
+      "return": 0.15163826631278424
+    },
+    {
+      "config": "year/5min/30%/3%",
+      "trades": 1060,
+      "winRate": 49.716981132075475,
+      "finalBalance": 10014.749887964717,
+      "return": 0.14749887964717345
+    },
+    {
+      "config": "month/1hour/15%/2%",
+      "trades": 119,
+      "winRate": 53.78151260504202,
+      "finalBalance": 10014.708972031873,
+      "return": 0.14708972031872689
+    },
+    {
+      "config": "year/1hour/30%/1%",
+      "trades": 1055,
+      "winRate": 48.72037914691943,
+      "finalBalance": 10014.381547357061,
+      "return": 0.14381547357061208
+    },
+    {
+      "config": "month/1hour/45%/3%",
+      "trades": 56,
+      "winRate": 53.57142857142857,
+      "finalBalance": 10014.373025642924,
+      "return": 0.14373025642924403
+    },
+    {
+      "config": "month/5min/15%/2%",
+      "trades": 119,
+      "winRate": 52.10084033613446,
+      "finalBalance": 10014.328249696844,
+      "return": 0.1432824969684407
+    },
+    {
+      "config": "week/1hour/35%/2%",
+      "trades": 22,
+      "winRate": 63.63636363636363,
+      "finalBalance": 10014.036369767542,
+      "return": 0.14036369767542056
+    },
+    {
+      "config": "year/1min/30%/1%",
+      "trades": 1094,
+      "winRate": 49.36014625228519,
+      "finalBalance": 10013.584578257758,
+      "return": 0.13584578257758037
+    },
+    {
+      "config": "year/1min/15%/1%",
+      "trades": 1466,
+      "winRate": 52.455661664392906,
+      "finalBalance": 10013.446185165365,
+      "return": 0.13446185165365024
+    },
+    {
+      "config": "year/15min/20%/1%",
+      "trades": 1242,
+      "winRate": 50.40257648953301,
+      "finalBalance": 10012.960843415056,
+      "return": 0.12960843415055934
+    },
+    {
+      "config": "month/30min/30%/2%",
+      "trades": 89,
+      "winRate": 59.55056179775281,
+      "finalBalance": 10012.511284563976,
+      "return": 0.12511284563976005
+    },
+    {
+      "config": "month/15min/15%/1%",
+      "trades": 119,
+      "winRate": 54.621848739495796,
+      "finalBalance": 10011.88339111309,
+      "return": 0.11883391113089602
+    },
+    {
+      "config": "week/1hour/45%/3%",
+      "trades": 19,
+      "winRate": 68.42105263157895,
+      "finalBalance": 10011.877004183812,
+      "return": 0.11877004183812459
+    },
+    {
+      "config": "month/1hour/20%/2%",
+      "trades": 101,
+      "winRate": 55.44554455445545,
+      "finalBalance": 10011.859180877062,
+      "return": 0.1185918087706159
+    },
+    {
+      "config": "month/30min/40%/2%",
+      "trades": 61,
+      "winRate": 57.377049180327866,
+      "finalBalance": 10011.529961803759,
+      "return": 0.11529961803758851
+    },
+    {
+      "config": "month/5min/20%/2%",
+      "trades": 106,
+      "winRate": 54.71698113207547,
+      "finalBalance": 10011.47601323876,
+      "return": 0.11476013238760062
+    },
+    {
+      "config": "week/1hour/20%/2%",
+      "trades": 25,
+      "winRate": 64,
+      "finalBalance": 10011.412108448601,
+      "return": 0.1141210844860143
+    },
+    {
+      "config": "week/1min/30%/3%",
+      "trades": 23,
+      "winRate": 56.52173913043478,
+      "finalBalance": 10011.356313224991,
+      "return": 0.11356313224991027
+    },
+    {
+      "config": "month/1hour/35%/2%",
+      "trades": 62,
+      "winRate": 46.774193548387096,
+      "finalBalance": 10010.866067084127,
+      "return": 0.10866067084127279
+    },
+    {
+      "config": "year/5min/45%/2%",
+      "trades": 745,
+      "winRate": 49.93288590604027,
+      "finalBalance": 10010.540039324453,
+      "return": 0.10540039324452663
+    },
+    {
+      "config": "month/5min/40%/3%",
+      "trades": 65,
+      "winRate": 49.23076923076923,
+      "finalBalance": 10010.398270357113,
+      "return": 0.10398270357112778
+    },
+    {
+      "config": "week/15min/30%/2%",
+      "trades": 24,
+      "winRate": 62.5,
+      "finalBalance": 10010.38314467903,
+      "return": 0.10383144679030011
+    },
+    {
+      "config": "week/5min/25%/2%",
+      "trades": 26,
+      "winRate": 69.23076923076923,
+      "finalBalance": 10010.359269943161,
+      "return": 0.10359269943161054
+    },
+    {
+      "config": "year/30min/15%/2%",
+      "trades": 1468,
+      "winRate": 49.25068119891008,
+      "finalBalance": 10010.350662137931,
+      "return": 0.10350662137931067
+    },
+    {
+      "config": "week/1min/25%/2%",
+      "trades": 23,
+      "winRate": 60.86956521739131,
+      "finalBalance": 10010.254264692468,
+      "return": 0.10254264692468495
+    },
+    {
+      "config": "week/15min/25%/2%",
+      "trades": 18,
+      "winRate": 61.111111111111114,
+      "finalBalance": 10010.06909704026,
+      "return": 0.10069097040259294
+    },
+    {
+      "config": "month/1hour/20%/3%",
+      "trades": 100,
+      "winRate": 51,
+      "finalBalance": 10010.00119431068,
+      "return": 0.10001194310680149
+    },
+    {
+      "config": "month/1min/30%/2%",
+      "trades": 96,
+      "winRate": 53.125,
+      "finalBalance": 10009.831707323372,
+      "return": 0.0983170732337203
+    },
+    {
+      "config": "year/30min/15%/1%",
+      "trades": 1466,
+      "winRate": 48.97680763983629,
+      "finalBalance": 10009.756258215912,
+      "return": 0.09756258215911656
+    },
+    {
+      "config": "month/1min/45%/1%",
+      "trades": 71,
+      "winRate": 63.38028169014085,
+      "finalBalance": 10009.75269797727,
+      "return": 0.09752697977270144
+    },
+    {
+      "config": "year/15min/25%/2%",
+      "trades": 1161,
+      "winRate": 50.73212747631353,
+      "finalBalance": 10009.576290360317,
+      "return": 0.09576290360317216
+    },
+    {
+      "config": "week/5min/30%/3%",
+      "trades": 21,
+      "winRate": 66.66666666666666,
+      "finalBalance": 10009.542513801267,
+      "return": 0.09542513801266977
+    },
+    {
+      "config": "week/1hour/25%/3%",
+      "trades": 18,
+      "winRate": 61.111111111111114,
+      "finalBalance": 10009.534692351135,
+      "return": 0.09534692351135163
+    },
+    {
+      "config": "month/15min/25%/2%",
+      "trades": 95,
+      "winRate": 55.78947368421052,
+      "finalBalance": 10009.44891331802,
+      "return": 0.0944891331801955
+    },
+    {
+      "config": "week/30min/35%/3%",
+      "trades": 16,
+      "winRate": 56.25,
+      "finalBalance": 10009.239840652166,
+      "return": 0.09239840652166094
+    },
+    {
+      "config": "month/1min/25%/1%",
+      "trades": 99,
+      "winRate": 55.55555555555556,
+      "finalBalance": 10009.195960051995,
+      "return": 0.09195960051994916
+    },
+    {
+      "config": "month/15min/30%/3%",
+      "trades": 89,
+      "winRate": 56.17977528089888,
+      "finalBalance": 10009.15297933843,
+      "return": 0.09152979338430668
+    },
+    {
+      "config": "month/30min/15%/1%",
+      "trades": 120,
+      "winRate": 50,
+      "finalBalance": 10009.013700498608,
+      "return": 0.0901370049860816
+    },
+    {
+      "config": "week/1min/45%/2%",
+      "trades": 14,
+      "winRate": 71.42857142857143,
+      "finalBalance": 10008.99033728896,
+      "return": 0.0899033728896029
+    },
+    {
+      "config": "year/1hour/25%/1%",
+      "trades": 1154,
+      "winRate": 50.95320623916811,
+      "finalBalance": 10008.95729950161,
+      "return": 0.0895729950160967
+    },
+    {
+      "config": "week/30min/45%/2%",
+      "trades": 12,
+      "winRate": 66.66666666666666,
+      "finalBalance": 10008.9445850966,
+      "return": 0.08944585096600349
+    },
+    {
+      "config": "week/1min/40%/2%",
+      "trades": 18,
+      "winRate": 66.66666666666666,
+      "finalBalance": 10008.935147269109,
+      "return": 0.0893514726910871
+    },
+    {
+      "config": "week/1min/20%/2%",
+      "trades": 22,
+      "winRate": 59.09090909090909,
+      "finalBalance": 10008.452536096502,
+      "return": 0.08452536096501717
+    },
+    {
+      "config": "month/1min/25%/3%",
+      "trades": 100,
+      "winRate": 54,
+      "finalBalance": 10008.140649452067,
+      "return": 0.0814064945206701
+    },
+    {
+      "config": "year/1hour/15%/1%",
+      "trades": 1443,
+      "winRate": 50.03465003465003,
+      "finalBalance": 10008.030839714302,
+      "return": 0.08030839714301692
+    },
+    {
+      "config": "year/5min/15%/3%",
+      "trades": 1450,
+      "winRate": 50.689655172413794,
+      "finalBalance": 10007.777226789247,
+      "return": 0.07777226789246924
+    },
+    {
+      "config": "year/1hour/40%/1%",
+      "trades": 831,
+      "winRate": 48.49578820697955,
+      "finalBalance": 10007.75765353604,
+      "return": 0.07757653536040379
+    },
+    {
+      "config": "month/15min/45%/3%",
+      "trades": 65,
+      "winRate": 52.307692307692314,
+      "finalBalance": 10007.749673135935,
+      "return": 0.07749673135935153
+    },
+    {
+      "config": "month/1min/15%/2%",
+      "trades": 121,
+      "winRate": 52.892561983471076,
+      "finalBalance": 10007.18790997109,
+      "return": 0.07187909971089539
+    },
+    {
+      "config": "day/5min/40%/3%",
+      "trades": 2,
+      "winRate": 100,
+      "finalBalance": 10007.018386342104,
+      "return": 0.0701838634210435
+    },
+    {
+      "config": "month/15min/20%/3%",
+      "trades": 99,
+      "winRate": 51.515151515151516,
+      "finalBalance": 10006.851382823592,
+      "return": 0.06851382823591848
+    },
+    {
+      "config": "week/30min/15%/2%",
+      "trades": 28,
+      "winRate": 64.28571428571429,
+      "finalBalance": 10006.559064104944,
+      "return": 0.065590641049439
+    },
+    {
+      "config": "year/30min/30%/1%",
+      "trades": 1065,
+      "winRate": 50.140845070422536,
+      "finalBalance": 10006.537525128857,
+      "return": 0.06537525128856941
+    },
+    {
+      "config": "day/1hour/40%/3%",
+      "trades": 1,
+      "winRate": 100,
+      "finalBalance": 10006.452525210456,
+      "return": 0.0645252521045586
+    },
+    {
+      "config": "week/15min/30%/3%",
+      "trades": 21,
+      "winRate": 47.61904761904761,
+      "finalBalance": 10006.408100466157,
+      "return": 0.0640810046615661
+    },
+    {
+      "config": "week/30min/20%/1%",
+      "trades": 26,
+      "winRate": 65.38461538461539,
+      "finalBalance": 10006.290312370678,
+      "return": 0.06290312370678294
+    },
+    {
+      "config": "week/1min/35%/3%",
+      "trades": 15,
+      "winRate": 60,
+      "finalBalance": 10006.171910673747,
+      "return": 0.06171910673747334
+    },
+    {
+      "config": "week/5min/35%/2%",
+      "trades": 16,
+      "winRate": 56.25,
+      "finalBalance": 10006.154297074936,
+      "return": 0.061542970749360396
+    },
+    {
+      "config": "year/1min/35%/1%",
+      "trades": 870,
+      "winRate": 50.3448275862069,
+      "finalBalance": 10005.967564580038,
+      "return": 0.05967564580038015
+    },
+    {
+      "config": "month/1min/35%/2%",
+      "trades": 69,
+      "winRate": 50.72463768115942,
+      "finalBalance": 10005.927288816196,
+      "return": 0.05927288816195869
+    },
+    {
+      "config": "month/1min/25%/2%",
+      "trades": 98,
+      "winRate": 54.08163265306123,
+      "finalBalance": 10005.873395083183,
+      "return": 0.05873395083182913
+    },
+    {
+      "config": "month/1hour/35%/1%",
+      "trades": 70,
+      "winRate": 58.57142857142858,
+      "finalBalance": 10005.818396535393,
+      "return": 0.05818396535392822
+    },
+    {
+      "config": "month/1min/15%/1%",
+      "trades": 125,
+      "winRate": 52.800000000000004,
+      "finalBalance": 10005.810905540291,
+      "return": 0.058109055402910594
+    },
+    {
+      "config": "month/30min/20%/2%",
+      "trades": 98,
+      "winRate": 52.04081632653062,
+      "finalBalance": 10005.795713360592,
+      "return": 0.057957133605923444
+    },
+    {
+      "config": "year/1hour/35%/1%",
+      "trades": 880,
+      "winRate": 49.88636363636363,
+      "finalBalance": 10005.638043821942,
+      "return": 0.056380438219421194
+    },
+    {
+      "config": "week/1min/30%/1%",
+      "trades": 25,
+      "winRate": 72,
+      "finalBalance": 10005.611551017093,
+      "return": 0.05611551017093006
+    },
+    {
+      "config": "year/5min/25%/3%",
+      "trades": 1118,
+      "winRate": 49.910554561717355,
+      "finalBalance": 10005.538431774112,
+      "return": 0.05538431774111814
+    },
+    {
+      "config": "week/30min/35%/1%",
+      "trades": 21,
+      "winRate": 66.66666666666666,
+      "finalBalance": 10005.08752162636,
+      "return": 0.05087521626359376
+    },
+    {
+      "config": "month/1min/35%/3%",
+      "trades": 74,
+      "winRate": 56.75675675675676,
+      "finalBalance": 10005.030662608746,
+      "return": 0.05030662608745842
+    },
+    {
+      "config": "week/5min/45%/2%",
+      "trades": 16,
+      "winRate": 68.75,
+      "finalBalance": 10004.91210451916,
+      "return": 0.049121045191604935
+    },
+    {
+      "config": "week/5min/20%/1%",
+      "trades": 23,
+      "winRate": 69.56521739130434,
+      "finalBalance": 10004.893763671776,
+      "return": 0.048937636717764695
+    },
+    {
+      "config": "year/15min/15%/2%",
+      "trades": 1456,
+      "winRate": 51.030219780219774,
+      "finalBalance": 10004.838438601793,
+      "return": 0.048384386017933136
+    },
+    {
+      "config": "week/1min/30%/2%",
+      "trades": 21,
+      "winRate": 52.38095238095239,
+      "finalBalance": 10004.799457217967,
+      "return": 0.04799457217966847
+    },
+    {
+      "config": "month/30min/15%/2%",
+      "trades": 115,
+      "winRate": 48.69565217391305,
+      "finalBalance": 10004.73276273161,
+      "return": 0.047327627316099095
+    },
+    {
+      "config": "month/30min/45%/3%",
+      "trades": 69,
+      "winRate": 53.62318840579711,
+      "finalBalance": 10004.653669122938,
+      "return": 0.04653669122937572
+    },
+    {
+      "config": "year/5min/20%/1%",
+      "trades": 1234,
+      "winRate": 50.162074554294975,
+      "finalBalance": 10004.648940427385,
+      "return": 0.04648940427385241
+    },
+    {
+      "config": "month/30min/25%/1%",
+      "trades": 99,
+      "winRate": 50.505050505050505,
+      "finalBalance": 10004.605610884924,
+      "return": 0.046056108849243174
+    },
+    {
+      "config": "day/30min/20%/2%",
+      "trades": 3,
+      "winRate": 100,
+      "finalBalance": 10004.507660921225,
+      "return": 0.045076609212246696
+    },
+    {
+      "config": "day/15min/25%/3%",
+      "trades": 2,
+      "winRate": 100,
+      "finalBalance": 10004.399128420553,
+      "return": 0.04399128420553097
+    },
+    {
+      "config": "week/5min/20%/3%",
+      "trades": 22,
+      "winRate": 45.45454545454545,
+      "finalBalance": 10004.371781063672,
+      "return": 0.04371781063671733
+    },
+    {
+      "config": "month/5min/45%/2%",
+      "trades": 61,
+      "winRate": 55.73770491803278,
+      "finalBalance": 10004.172658629788,
+      "return": 0.04172658629788202
+    },
+    {
+      "config": "month/30min/40%/1%",
+      "trades": 74,
+      "winRate": 63.51351351351351,
+      "finalBalance": 10004.103393398856,
+      "return": 0.04103393398856497
+    },
+    {
+      "config": "month/5min/15%/1%",
+      "trades": 118,
+      "winRate": 50,
+      "finalBalance": 10003.885091482916,
+      "return": 0.03885091482916323
+    },
+    {
+      "config": "week/1min/40%/3%",
+      "trades": 13,
+      "winRate": 53.84615384615385,
+      "finalBalance": 10003.871473074289,
+      "return": 0.038714730742885874
+    },
+    {
+      "config": "month/1hour/45%/1%",
+      "trades": 64,
+      "winRate": 53.125,
+      "finalBalance": 10003.82507223003,
+      "return": 0.03825072230030856
+    },
+    {
+      "config": "month/1hour/40%/1%",
+      "trades": 63,
+      "winRate": 41.269841269841265,
+      "finalBalance": 10003.787147021287,
+      "return": 0.03787147021286728
+    },
+    {
+      "config": "week/5min/30%/1%",
+      "trades": 18,
+      "winRate": 61.111111111111114,
+      "finalBalance": 10003.708688887267,
+      "return": 0.03708688887267272
+    },
+    {
+      "config": "year/1hour/15%/3%",
+      "trades": 1459,
+      "winRate": 50.445510623714874,
+      "finalBalance": 10003.513151611887,
+      "return": 0.03513151611887224
+    },
+    {
+      "config": "week/30min/40%/3%",
+      "trades": 18,
+      "winRate": 50,
+      "finalBalance": 10003.427756032188,
+      "return": 0.03427756032187972
+    },
+    {
+      "config": "day/1hour/25%/3%",
+      "trades": 2,
+      "winRate": 100,
+      "finalBalance": 10003.357221961704,
+      "return": 0.033572219617035444
+    },
+    {
+      "config": "week/1hour/25%/1%",
+      "trades": 18,
+      "winRate": 61.111111111111114,
+      "finalBalance": 10003.30367359736,
+      "return": 0.033036735973601024
+    },
+    {
+      "config": "month/30min/35%/1%",
+      "trades": 66,
+      "winRate": 57.57575757575758,
+      "finalBalance": 10003.222300358959,
+      "return": 0.032223003589588184
+    },
+    {
+      "config": "day/30min/15%/3%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 10003.183747341553,
+      "return": 0.03183747341552589
+    },
+    {
+      "config": "day/15min/35%/2%",
+      "trades": 1,
+      "winRate": 100,
+      "finalBalance": 10003.147669954018,
+      "return": 0.03147669954018056
+    },
+    {
+      "config": "year/30min/25%/1%",
+      "trades": 1163,
+      "winRate": 49.26913155631986,
+      "finalBalance": 10003.125780337416,
+      "return": 0.03125780337415563
+    },
+    {
+      "config": "day/30min/30%/3%",
+      "trades": 1,
+      "winRate": 100,
+      "finalBalance": 10003.095698023075,
+      "return": 0.03095698023074874
+    },
+    {
+      "config": "week/5min/40%/2%",
+      "trades": 11,
+      "winRate": 45.45454545454545,
+      "finalBalance": 10002.987673532107,
+      "return": 0.029876735321067827
+    },
+    {
+      "config": "day/15min/20%/1%",
+      "trades": 3,
+      "winRate": 100,
+      "finalBalance": 10002.739542564414,
+      "return": 0.027395425644135683
+    },
+    {
+      "config": "week/5min/15%/3%",
+      "trades": 26,
+      "winRate": 57.692307692307686,
+      "finalBalance": 10002.70649151336,
+      "return": 0.027064915133596518
+    },
+    {
+      "config": "week/15min/20%/3%",
+      "trades": 23,
+      "winRate": 39.130434782608695,
+      "finalBalance": 10002.670361176453,
+      "return": 0.02670361176453298
+    },
+    {
+      "config": "year/5min/25%/1%",
+      "trades": 1132,
+      "winRate": 50.08833922261484,
+      "finalBalance": 10002.62335861799,
+      "return": 0.026233586179896518
+    },
+    {
+      "config": "week/1min/25%/1%",
+      "trades": 25,
+      "winRate": 60,
+      "finalBalance": 10002.483539449444,
+      "return": 0.02483539449443924
+    },
+    {
+      "config": "week/30min/45%/1%",
+      "trades": 13,
+      "winRate": 53.84615384615385,
+      "finalBalance": 10002.419729978881,
+      "return": 0.024197299788811508
+    },
+    {
+      "config": "week/30min/30%/3%",
+      "trades": 18,
+      "winRate": 44.44444444444444,
+      "finalBalance": 10002.380935681167,
+      "return": 0.023809356811671022
+    },
+    {
+      "config": "week/15min/45%/3%",
+      "trades": 14,
+      "winRate": 64.28571428571429,
+      "finalBalance": 10002.29593803302,
+      "return": 0.022959380330194106
+    },
+    {
+      "config": "day/1hour/35%/3%",
+      "trades": 2,
+      "winRate": 100,
+      "finalBalance": 10002.27199160604,
+      "return": 0.022719916060395917
+    },
+    {
+      "config": "day/1min/40%/3%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 10002.175478404972,
+      "return": 0.021754784049717275
+    },
+    {
+      "config": "month/1min/20%/2%",
+      "trades": 98,
+      "winRate": 50,
+      "finalBalance": 10002.119318789088,
+      "return": 0.021193187890876288
+    },
+    {
+      "config": "day/1min/15%/2%",
+      "trades": 3,
+      "winRate": 66.66666666666666,
+      "finalBalance": 10002.012338878152,
+      "return": 0.0201233887815215
+    },
+    {
+      "config": "week/30min/15%/1%",
+      "trades": 27,
+      "winRate": 51.85185185185185,
+      "finalBalance": 10001.984556524385,
+      "return": 0.019845565243849707
+    },
+    {
+      "config": "week/1hour/40%/3%",
+      "trades": 12,
+      "winRate": 58.333333333333336,
+      "finalBalance": 10001.94260613935,
+      "return": 0.01942606139349664
+    },
+    {
+      "config": "day/30min/35%/3%",
+      "trades": 1,
+      "winRate": 100,
+      "finalBalance": 10001.885732409377,
+      "return": 0.01885732409376942
+    },
+    {
+      "config": "month/15min/35%/1%",
+      "trades": 65,
+      "winRate": 46.15384615384615,
+      "finalBalance": 10001.868265420888,
+      "return": 0.018682654208878376
+    },
+    {
+      "config": "year/5min/35%/1%",
+      "trades": 842,
+      "winRate": 49.16864608076009,
+      "finalBalance": 10001.84701354296,
+      "return": 0.018470135429597575
+    },
+    {
+      "config": "week/1hour/30%/1%",
+      "trades": 20,
+      "winRate": 50,
+      "finalBalance": 10001.77178465185,
+      "return": 0.017717846518498847
+    },
+    {
+      "config": "day/5min/25%/1%",
+      "trades": 2,
+      "winRate": 100,
+      "finalBalance": 10001.734408185575,
+      "return": 0.017344081855753757
+    },
+    {
+      "config": "week/5min/25%/3%",
+      "trades": 20,
+      "winRate": 45,
+      "finalBalance": 10001.566586539228,
+      "return": 0.01566586539227501
+    },
+    {
+      "config": "month/1hour/30%/1%",
+      "trades": 93,
+      "winRate": 47.31182795698925,
+      "finalBalance": 10001.564645719583,
+      "return": 0.015646457195834955
+    },
+    {
+      "config": "day/1hour/15%/3%",
+      "trades": 3,
+      "winRate": 66.66666666666666,
+      "finalBalance": 10001.511269208157,
+      "return": 0.015112692081565912
+    },
+    {
+      "config": "day/1min/15%/1%",
+      "trades": 2,
+      "winRate": 100,
+      "finalBalance": 10001.463867367984,
+      "return": 0.014638673679837665
+    },
+    {
+      "config": "day/15min/20%/3%",
+      "trades": 3,
+      "winRate": 66.66666666666666,
+      "finalBalance": 10001.44580201487,
+      "return": 0.014458020148704235
+    },
+    {
+      "config": "day/30min/45%/2%",
+      "trades": 1,
+      "winRate": 100,
+      "finalBalance": 10001.428914720274,
+      "return": 0.014289147202744063
+    },
+    {
+      "config": "day/1min/40%/2%",
+      "trades": 2,
+      "winRate": 100,
+      "finalBalance": 10001.416682749781,
+      "return": 0.014166827497811028
+    },
+    {
+      "config": "day/30min/15%/2%",
+      "trades": 3,
+      "winRate": 66.66666666666666,
+      "finalBalance": 10001.403416686657,
+      "return": 0.014034166866567829
+    },
+    {
+      "config": "day/30min/25%/3%",
+      "trades": 2,
+      "winRate": 100,
+      "finalBalance": 10001.377098639217,
+      "return": 0.013770986392173655
+    },
+    {
+      "config": "day/30min/45%/1%",
+      "trades": 2,
+      "winRate": 100,
+      "finalBalance": 10001.367123140777,
+      "return": 0.013671231407770391
+    },
+    {
+      "config": "day/1hour/45%/3%",
+      "trades": 1,
+      "winRate": 100,
+      "finalBalance": 10001.338582843991,
+      "return": 0.013385828439913894
+    },
+    {
+      "config": "day/30min/30%/2%",
+      "trades": 0,
+      "winRate": 0,
+      "finalBalance": 10001.305207079069,
+      "return": 0.013052070790690777
+    },
+    {
+      "config": "week/5min/15%/2%",
+      "trades": 26,
+      "winRate": 53.84615384615385,
+      "finalBalance": 10001.271096943437,
+      "return": 0.012710969434374417
+    },
+    {
+      "config": "day/1min/25%/2%",
+      "trades": 3,
+      "winRate": 66.66666666666666,
+      "finalBalance": 10001.197188027189,
+      "return": 0.01197188027188531
+    },
+    {
+      "config": "week/1hour/20%/1%",
+      "trades": 25,
+      "winRate": 64,
+      "finalBalance": 10001.185620180624,
+      "return": 0.01185620180624028
+    },
+    {
+      "config": "month/1hour/25%/1%",
+      "trades": 92,
+      "winRate": 44.565217391304344,
+      "finalBalance": 10001.148022088068,
+      "return": 0.011480220880675915
+    },
+    {
+      "config": "month/15min/35%/2%",
+      "trades": 70,
+      "winRate": 54.285714285714285,
+      "finalBalance": 10001.144625354947,
+      "return": 0.011446253549474933
+    },
+    {
+      "config": "day/1hour/20%/2%",
+      "trades": 3,
+      "winRate": 66.66666666666666,
+      "finalBalance": 10001.138691231406,
+      "return": 0.01138691231406483
+    },
+    {
+      "config": "week/15min/40%/2%",
+      "trades": 13,
+      "winRate": 61.53846153846154,
+      "finalBalance": 10001.061125257764,
+      "return": 0.010611252577637061
+    },
+    {
+      "config": "day/1hour/40%/1%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 10001.050309875707,
+      "return": 0.010503098757071712
+    },
+    {
+      "config": "day/1min/30%/1%",
+      "trades": 2,
+      "winRate": 100,
+      "finalBalance": 10001.042716246202,
+      "return": 0.010427162462019622
+    },
+    {
+      "config": "week/5min/40%/1%",
+      "trades": 15,
+      "winRate": 40,
+      "finalBalance": 10000.981789078985,
+      "return": 0.009817890789854573
+    },
+    {
+      "config": "month/30min/25%/2%",
+      "trades": 88,
+      "winRate": 44.31818181818182,
+      "finalBalance": 10000.96416725002,
+      "return": 0.009641672500201821
+    },
+    {
+      "config": "day/1hour/30%/3%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 10000.943847342736,
+      "return": 0.009438473427362624
+    },
+    {
+      "config": "week/1hour/20%/3%",
+      "trades": 20,
+      "winRate": 45,
+      "finalBalance": 10000.921829012877,
+      "return": 0.009218290128774244
+    },
+    {
+      "config": "week/5min/15%/1%",
+      "trades": 27,
+      "winRate": 59.25925925925925,
+      "finalBalance": 10000.906716496253,
+      "return": 0.009067164962525567
+    },
+    {
+      "config": "month/1min/35%/1%",
+      "trades": 69,
+      "winRate": 52.17391304347826,
+      "finalBalance": 10000.906121091746,
+      "return": 0.009061210917461721
+    },
+    {
+      "config": "day/30min/35%/1%",
+      "trades": 0,
+      "winRate": 0,
+      "finalBalance": 10000.887366391882,
+      "return": 0.008873663918820968
+    },
+    {
+      "config": "week/15min/15%/1%",
+      "trades": 27,
+      "winRate": 51.85185185185185,
+      "finalBalance": 10000.879582249114,
+      "return": 0.008795822491138097
+    },
+    {
+      "config": "day/15min/25%/1%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 10000.858768201448,
+      "return": 0.00858768201447674
+    },
+    {
+      "config": "day/1hour/15%/2%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 10000.830393846118,
+      "return": 0.008303938461176587
+    },
+    {
+      "config": "week/1hour/30%/3%",
+      "trades": 17,
+      "winRate": 52.94117647058824,
+      "finalBalance": 10000.826647611984,
+      "return": 0.008266476119842991
+    },
+    {
+      "config": "day/15min/30%/2%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 10000.82635834055,
+      "return": 0.00826358340549632
+    },
+    {
+      "config": "day/15min/15%/2%",
+      "trades": 2,
+      "winRate": 100,
+      "finalBalance": 10000.810878027023,
+      "return": 0.008108780270231365
+    },
+    {
+      "config": "day/5min/25%/2%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 10000.804142025923,
+      "return": 0.008041420259232837
+    },
+    {
+      "config": "week/1hour/15%/1%",
+      "trades": 27,
+      "winRate": 51.85185185185185,
+      "finalBalance": 10000.707123049198,
+      "return": 0.007071230491983443
+    },
+    {
+      "config": "month/15min/45%/2%",
+      "trades": 60,
+      "winRate": 43.333333333333336,
+      "finalBalance": 10000.706312816807,
+      "return": 0.007063128168065304
+    },
+    {
+      "config": "day/15min/35%/1%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 10000.682957168121,
+      "return": 0.006829571681209927
+    },
+    {
+      "config": "week/1min/45%/1%",
+      "trades": 12,
+      "winRate": 66.66666666666666,
+      "finalBalance": 10000.645121425945,
+      "return": 0.006451214259450353
+    },
+    {
+      "config": "year/1hour/45%/2%",
+      "trades": 782,
+      "winRate": 51.66240409207161,
+      "finalBalance": 10000.64490570785,
+      "return": 0.006449057078498298
+    },
+    {
+      "config": "week/5min/25%/1%",
+      "trades": 23,
+      "winRate": 56.52173913043478,
+      "finalBalance": 10000.638274853469,
+      "return": 0.006382748534688289
+    },
+    {
+      "config": "day/1min/30%/3%",
+      "trades": 1,
+      "winRate": 100,
+      "finalBalance": 10000.603815332184,
+      "return": 0.006038153321842401
+    },
+    {
+      "config": "week/15min/45%/1%",
+      "trades": 19,
+      "winRate": 63.1578947368421,
+      "finalBalance": 10000.579574370488,
+      "return": 0.005795743704875349
+    },
+    {
+      "config": "month/1min/45%/2%",
+      "trades": 65,
+      "winRate": 50.76923076923077,
+      "finalBalance": 10000.571754023624,
+      "return": 0.005717540236237256
+    },
+    {
+      "config": "month/1hour/30%/2%",
+      "trades": 88,
+      "winRate": 55.68181818181818,
+      "finalBalance": 10000.54580215059,
+      "return": 0.005458021505892248
+    },
+    {
+      "config": "week/1min/35%/1%",
+      "trades": 14,
+      "winRate": 50,
+      "finalBalance": 10000.54395717148,
+      "return": 0.00543957171479633
+    },
+    {
+      "config": "day/15min/45%/3%",
+      "trades": 0,
+      "winRate": 0,
+      "finalBalance": 10000.431741395263,
+      "return": 0.0043174139526308865
+    },
+    {
+      "config": "day/1hour/20%/1%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 10000.396987115295,
+      "return": 0.003969871152949053
+    },
+    {
+      "config": "week/30min/25%/2%",
+      "trades": 20,
+      "winRate": 50,
+      "finalBalance": 10000.3951938366,
+      "return": 0.003951938366008107
+    },
+    {
+      "config": "day/1hour/35%/1%",
+      "trades": 0,
+      "winRate": 0,
+      "finalBalance": 10000.378529501178,
+      "return": 0.0037852950117849104
+    },
+    {
+      "config": "day/15min/25%/2%",
+      "trades": 3,
+      "winRate": 100,
+      "finalBalance": 10000.361334301098,
+      "return": 0.0036133430109839535
+    },
+    {
+      "config": "month/15min/45%/1%",
+      "trades": 68,
+      "winRate": 51.470588235294116,
+      "finalBalance": 10000.354398902393,
+      "return": 0.0035439890239285883
+    },
+    {
+      "config": "day/5min/45%/1%",
+      "trades": 0,
+      "winRate": 0,
+      "finalBalance": 10000.296755873393,
+      "return": 0.0029675587339261255
+    },
+    {
+      "config": "day/1hour/25%/2%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 10000.29041383072,
+      "return": 0.0029041383072035388
+    },
+    {
+      "config": "day/15min/20%/2%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 10000.287842034004,
+      "return": 0.002878420340039156
+    },
+    {
+      "config": "day/15min/45%/2%",
+      "trades": 1,
+      "winRate": 100,
+      "finalBalance": 10000.257978727248,
+      "return": 0.0025797872724797346
+    },
+    {
+      "config": "month/1min/45%/3%",
+      "trades": 63,
+      "winRate": 46.03174603174603,
+      "finalBalance": 10000.25494613765,
+      "return": 0.0025494613764931273
+    },
+    {
+      "config": "month/1hour/15%/1%",
+      "trades": 119,
+      "winRate": 50.42016806722689,
+      "finalBalance": 10000.237370615747,
+      "return": 0.002373706157468405
+    },
+    {
+      "config": "day/1min/35%/1%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 10000.236799225364,
+      "return": 0.002367992253639386
+    },
+    {
+      "config": "day/1min/25%/1%",
+      "trades": 2,
+      "winRate": 0,
+      "finalBalance": 10000.189655145197,
+      "return": 0.0018965514519732095
+    },
+    {
+      "config": "day/1hour/45%/1%",
+      "trades": 0,
+      "winRate": 0,
+      "finalBalance": 10000.183555647232,
+      "return": 0.0018355564723242426
+    },
+    {
+      "config": "day/5min/15%/2%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 10000.178146502016,
+      "return": 0.0017814650201580663
+    },
+    {
+      "config": "day/1min/35%/2%",
+      "trades": 0,
+      "winRate": 0,
+      "finalBalance": 10000.164992282527,
+      "return": 0.0016499228252723698
+    },
+    {
+      "config": "month/1min/30%/1%",
+      "trades": 86,
+      "winRate": 53.48837209302325,
+      "finalBalance": 10000.147344226776,
+      "return": 0.0014734422677611292
+    },
+    {
+      "config": "day/1hour/35%/2%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 10000.145559258255,
+      "return": 0.0014555925825516169
+    },
+    {
+      "config": "week/1min/20%/1%",
+      "trades": 21,
+      "winRate": 57.14285714285714,
+      "finalBalance": 10000.108830306383,
+      "return": 0.0010883030638251512
+    },
+    {
+      "config": "day/1min/35%/3%",
+      "trades": 1,
+      "winRate": 100,
+      "finalBalance": 10000.008137910025,
+      "return": 0.00008137910024743178
+    },
+    {
+      "config": "day/1min/40%/1%",
+      "trades": 0,
+      "winRate": 0,
+      "finalBalance": 10000,
+      "return": 0
+    },
+    {
+      "config": "day/1min/45%/2%",
+      "trades": 0,
+      "winRate": 0,
+      "finalBalance": 10000,
+      "return": 0
+    },
+    {
+      "config": "day/5min/35%/2%",
+      "trades": 0,
+      "winRate": 0,
+      "finalBalance": 10000,
+      "return": 0
+    },
+    {
+      "config": "day/5min/40%/2%",
+      "trades": 0,
+      "winRate": 0,
+      "finalBalance": 10000,
+      "return": 0
+    },
+    {
+      "config": "day/5min/45%/2%",
+      "trades": 0,
+      "winRate": 0,
+      "finalBalance": 10000,
+      "return": 0
+    },
+    {
+      "config": "day/1hour/30%/1%",
+      "trades": 0,
+      "winRate": 0,
+      "finalBalance": 10000,
+      "return": 0
+    },
+    {
+      "config": "day/1hour/30%/2%",
+      "trades": 3,
+      "winRate": 33.33333333333333,
+      "finalBalance": 9999.990197801133,
+      "return": -0.00009802198866964319
+    },
+    {
+      "config": "week/30min/25%/1%",
+      "trades": 19,
+      "winRate": 31.57894736842105,
+      "finalBalance": 9999.937734453393,
+      "return": -0.000622655466067954
+    },
+    {
+      "config": "day/1hour/15%/1%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 9999.931842071343,
+      "return": -0.0006815792865745606
+    },
+    {
+      "config": "day/1min/20%/1%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 9999.916306822475,
+      "return": -0.000836931775247649
+    },
+    {
+      "config": "week/30min/30%/2%",
+      "trades": 19,
+      "winRate": 52.63157894736842,
+      "finalBalance": 9999.864151305947,
+      "return": -0.0013584869405349309
+    },
+    {
+      "config": "month/15min/40%/2%",
+      "trades": 70,
+      "winRate": 45.714285714285715,
+      "finalBalance": 9999.861416632724,
+      "return": -0.0013858336727571442
+    },
+    {
+      "config": "month/15min/40%/1%",
+      "trades": 66,
+      "winRate": 57.57575757575758,
+      "finalBalance": 9999.86043180158,
+      "return": -0.0013956819841951073
+    },
+    {
+      "config": "week/5min/35%/1%",
+      "trades": 9,
+      "winRate": 44.44444444444444,
+      "finalBalance": 9999.833852523378,
+      "return": -0.0016614747662242735
+    },
+    {
+      "config": "day/5min/40%/1%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9999.791643877581,
+      "return": -0.002083561224189907
+    },
+    {
+      "config": "week/5min/45%/1%",
+      "trades": 13,
+      "winRate": 46.15384615384615,
+      "finalBalance": 9999.791169233707,
+      "return": -0.002088307662925217
+    },
+    {
+      "config": "month/5min/35%/3%",
+      "trades": 70,
+      "winRate": 51.42857142857142,
+      "finalBalance": 9999.786481139876,
+      "return": -0.00213518860124168
+    },
+    {
+      "config": "day/1hour/25%/1%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 9999.783297792175,
+      "return": -0.0021670220782471004
+    },
+    {
+      "config": "week/1min/40%/1%",
+      "trades": 14,
+      "winRate": 50,
+      "finalBalance": 9999.721551404245,
+      "return": -0.0027844859575452572
+    },
+    {
+      "config": "year/30min/25%/3%",
+      "trades": 1147,
+      "winRate": 48.47428073234525,
+      "finalBalance": 9999.72066164794,
+      "return": -0.0027933835206022197
+    },
+    {
+      "config": "month/5min/35%/2%",
+      "trades": 76,
+      "winRate": 46.05263157894737,
+      "finalBalance": 9999.669817266311,
+      "return": -0.00330182733689071
+    },
+    {
+      "config": "day/15min/40%/1%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9999.609621979545,
+      "return": -0.00390378020454591
+    },
+    {
+      "config": "day/5min/20%/3%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 9999.594926904607,
+      "return": -0.004050730953931634
+    },
+    {
+      "config": "day/30min/15%/1%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 9999.56612945787,
+      "return": -0.004338705421305349
+    },
+    {
+      "config": "week/1hour/40%/1%",
+      "trades": 10,
+      "winRate": 50,
+      "finalBalance": 9999.53508501426,
+      "return": -0.004649149857395969
+    },
+    {
+      "config": "day/30min/25%/1%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 9999.525406837913,
+      "return": -0.004745931620873308
+    },
+    {
+      "config": "week/1hour/30%/2%",
+      "trades": 19,
+      "winRate": 42.10526315789473,
+      "finalBalance": 9999.524908685282,
+      "return": -0.004750913147181564
+    },
+    {
+      "config": "day/15min/45%/1%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9999.510411526151,
+      "return": -0.004895884738489257
+    },
+    {
+      "config": "day/15min/30%/1%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9999.420178833161,
+      "return": -0.0057982116683888306
+    },
+    {
+      "config": "day/5min/20%/1%",
+      "trades": 3,
+      "winRate": 66.66666666666666,
+      "finalBalance": 9999.406780737556,
+      "return": -0.005932192624441086
+    },
+    {
+      "config": "year/5min/40%/1%",
+      "trades": 888,
+      "winRate": 49.66216216216216,
+      "finalBalance": 9999.328736741454,
+      "return": -0.0067126325854587774
+    },
+    {
+      "config": "day/15min/15%/1%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 9999.316703372482,
+      "return": -0.006832966275178478
+    },
+    {
+      "config": "week/5min/40%/3%",
+      "trades": 11,
+      "winRate": 45.45454545454545,
+      "finalBalance": 9999.294837864043,
+      "return": -0.007051621359569254
+    },
+    {
+      "config": "week/30min/30%/1%",
+      "trades": 21,
+      "winRate": 57.14285714285714,
+      "finalBalance": 9999.277693866621,
+      "return": -0.007223061333788791
+    },
+    {
+      "config": "month/5min/25%/1%",
+      "trades": 100,
+      "winRate": 49,
+      "finalBalance": 9999.256762579887,
+      "return": -0.007432374201125639
+    },
+    {
+      "config": "day/30min/30%/1%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 9999.222326235018,
+      "return": -0.007776737649819551
+    },
+    {
+      "config": "day/15min/40%/3%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9999.209692387964,
+      "return": -0.007903076120364859
+    },
+    {
+      "config": "day/5min/30%/2%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 9999.198864927987,
+      "return": -0.008011350720134942
+    },
+    {
+      "config": "week/5min/30%/2%",
+      "trades": 19,
+      "winRate": 36.84210526315789,
+      "finalBalance": 9999.187926374512,
+      "return": -0.008120736254877556
+    },
+    {
+      "config": "day/15min/40%/2%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 9999.184417326256,
+      "return": -0.008155826737438475
+    },
+    {
+      "config": "day/5min/15%/1%",
+      "trades": 2,
+      "winRate": 0,
+      "finalBalance": 9999.166272073779,
+      "return": -0.008337279262213997
+    },
+    {
+      "config": "day/30min/40%/1%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9999.160927158071,
+      "return": -0.0083907284192901
+    },
+    {
+      "config": "week/1hour/35%/1%",
+      "trades": 10,
+      "winRate": 60,
+      "finalBalance": 9999.154922153446,
+      "return": -0.00845077846553977
+    },
+    {
+      "config": "month/1hour/45%/2%",
+      "trades": 60,
+      "winRate": 48.333333333333336,
+      "finalBalance": 9999.149906662287,
+      "return": -0.008500933377126785
+    },
+    {
+      "config": "week/30min/20%/3%",
+      "trades": 19,
+      "winRate": 47.368421052631575,
+      "finalBalance": 9999.074162686435,
+      "return": -0.009258373135653529
+    },
+    {
+      "config": "day/1min/30%/2%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9999.069900570194,
+      "return": -0.009300994298064323
+    },
+    {
+      "config": "day/5min/35%/1%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9999.06314635647,
+      "return": -0.009368536435304123
+    },
+    {
+      "config": "month/1min/40%/2%",
+      "trades": 55,
+      "winRate": 43.63636363636363,
+      "finalBalance": 9999.05927398856,
+      "return": -0.00940726011440347
+    },
+    {
+      "config": "week/30min/35%/2%",
+      "trades": 17,
+      "winRate": 47.05882352941176,
+      "finalBalance": 9999.042572382234,
+      "return": -0.009574276177663706
+    },
+    {
+      "config": "week/1hour/40%/2%",
+      "trades": 12,
+      "winRate": 50,
+      "finalBalance": 9999.000506240249,
+      "return": -0.009994937597512034
+    },
+    {
+      "config": "day/30min/45%/3%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9998.969977158957,
+      "return": -0.010300228410433192
+    },
+    {
+      "config": "day/30min/40%/2%",
+      "trades": 1,
+      "winRate": 100,
+      "finalBalance": 9998.962790695428,
+      "return": -0.010372093045716612
+    },
+    {
+      "config": "month/5min/40%/2%",
+      "trades": 72,
+      "winRate": 47.22222222222222,
+      "finalBalance": 9998.897746452307,
+      "return": -0.011022535476931807
+    },
+    {
+      "config": "day/1hour/45%/2%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9998.878192925675,
+      "return": -0.01121807074325261
+    },
+    {
+      "config": "week/1hour/45%/1%",
+      "trades": 15,
+      "winRate": 46.666666666666664,
+      "finalBalance": 9998.843632366272,
+      "return": -0.011563676337282232
+    },
+    {
+      "config": "day/5min/30%/3%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 9998.827014237017,
+      "return": -0.011729857629834441
+    },
+    {
+      "config": "day/1hour/40%/2%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 9998.80157846844,
+      "return": -0.01198421531560598
+    },
+    {
+      "config": "week/15min/35%/1%",
+      "trades": 16,
+      "winRate": 50,
+      "finalBalance": 9998.764773095345,
+      "return": -0.012352269046550646
+    },
+    {
+      "config": "day/15min/30%/3%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9998.749316097632,
+      "return": -0.012506839023681096
+    },
+    {
+      "config": "day/1min/15%/3%",
+      "trades": 3,
+      "winRate": 66.66666666666666,
+      "finalBalance": 9998.718086321785,
+      "return": -0.012819136782145506
+    },
+    {
+      "config": "year/30min/15%/3%",
+      "trades": 1452,
+      "winRate": 49.862258953168045,
+      "finalBalance": 9998.677757172465,
+      "return": -0.013222428275348646
+    },
+    {
+      "config": "week/15min/15%/2%",
+      "trades": 27,
+      "winRate": 48.148148148148145,
+      "finalBalance": 9998.662296996536,
+      "return": -0.013377030034644122
+    },
+    {
+      "config": "day/5min/30%/1%",
+      "trades": 2,
+      "winRate": 0,
+      "finalBalance": 9998.659730157602,
+      "return": -0.013402698423979018
+    },
+    {
+      "config": "day/1min/45%/1%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9998.653148047355,
+      "return": -0.013468519526450107
+    },
+    {
+      "config": "week/1min/15%/1%",
+      "trades": 26,
+      "winRate": 38.46153846153847,
+      "finalBalance": 9998.612820127713,
+      "return": -0.013871798722866514
+    },
+    {
+      "config": "day/1min/20%/2%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9998.565271101155,
+      "return": -0.014347288988446961
+    },
+    {
+      "config": "month/5min/30%/2%",
+      "trades": 96,
+      "winRate": 51.041666666666664,
+      "finalBalance": 9998.538037359504,
+      "return": -0.014619626404964947
+    },
+    {
+      "config": "day/30min/25%/2%",
+      "trades": 2,
+      "winRate": 50,
+      "finalBalance": 9998.499165748277,
+      "return": -0.015008342517230632
+    },
+    {
+      "config": "week/15min/25%/1%",
+      "trades": 19,
+      "winRate": 42.10526315789473,
+      "finalBalance": 9998.481040895642,
+      "return": -0.015189591043581458
+    },
+    {
+      "config": "day/30min/35%/2%",
+      "trades": 2,
+      "winRate": 0,
+      "finalBalance": 9998.41898463962,
+      "return": -0.015810153603797516
+    },
+    {
+      "config": "month/5min/20%/1%",
+      "trades": 96,
+      "winRate": 47.91666666666667,
+      "finalBalance": 9998.395366478953,
+      "return": -0.016046335210467076
+    },
+    {
+      "config": "day/5min/45%/3%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9998.348829493874,
+      "return": -0.016511705061257088
+    },
+    {
+      "config": "month/5min/25%/2%",
+      "trades": 93,
+      "winRate": 50.53763440860215,
+      "finalBalance": 9998.33972702083,
+      "return": -0.016602729791702586
+    },
+    {
+      "config": "week/15min/20%/2%",
+      "trades": 23,
+      "winRate": 43.47826086956522,
+      "finalBalance": 9998.335778581295,
+      "return": -0.016642214187049833
+    },
+    {
+      "config": "month/5min/45%/1%",
+      "trades": 58,
+      "winRate": 48.275862068965516,
+      "finalBalance": 9998.327045087415,
+      "return": -0.01672954912584828
+    },
+    {
+      "config": "week/15min/30%/1%",
+      "trades": 20,
+      "winRate": 40,
+      "finalBalance": 9998.229675394654,
+      "return": -0.017703246053461043
+    },
+    {
+      "config": "week/15min/35%/3%",
+      "trades": 14,
+      "winRate": 57.14285714285714,
+      "finalBalance": 9998.201246901077,
+      "return": -0.017987530989230435
+    },
+    {
+      "config": "day/1min/20%/3%",
+      "trades": 3,
+      "winRate": 66.66666666666666,
+      "finalBalance": 9998.168433433413,
+      "return": -0.01831566566586844
+    },
+    {
+      "config": "day/30min/20%/1%",
+      "trades": 2,
+      "winRate": 0,
+      "finalBalance": 9998.160083304745,
+      "return": -0.018399166952549423
+    },
+    {
+      "config": "day/5min/35%/3%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9998.009870984957,
+      "return": -0.019901290150428394
+    },
+    {
+      "config": "day/5min/25%/3%",
+      "trades": 2,
+      "winRate": 0,
+      "finalBalance": 9997.917865164818,
+      "return": -0.020821348351819324
+    },
+    {
+      "config": "week/5min/45%/3%",
+      "trades": 14,
+      "winRate": 35.714285714285715,
+      "finalBalance": 9997.77119291434,
+      "return": -0.022288070856593546
+    },
+    {
+      "config": "month/1min/40%/1%",
+      "trades": 78,
+      "winRate": 50,
+      "finalBalance": 9997.756657631404,
+      "return": -0.022433423685961316
+    },
+    {
+      "config": "week/1min/25%/3%",
+      "trades": 20,
+      "winRate": 40,
+      "finalBalance": 9997.727866543673,
+      "return": -0.022721334563266284
+    },
+    {
+      "config": "month/5min/30%/1%",
+      "trades": 85,
+      "winRate": 51.76470588235295,
+      "finalBalance": 9997.727439821534,
+      "return": -0.022725601784659377
+    },
+    {
+      "config": "week/1hour/45%/2%",
+      "trades": 12,
+      "winRate": 41.66666666666667,
+      "finalBalance": 9997.711992385137,
+      "return": -0.022880076148630905
+    },
+    {
+      "config": "week/1min/15%/2%",
+      "trades": 28,
+      "winRate": 57.14285714285714,
+      "finalBalance": 9997.623948490114,
+      "return": -0.023760515098856558
+    },
+    {
+      "config": "day/15min/35%/3%",
+      "trades": 2,
+      "winRate": 0,
+      "finalBalance": 9997.490199366928,
+      "return": -0.02509800633071791
+    },
+    {
+      "config": "week/15min/45%/2%",
+      "trades": 13,
+      "winRate": 46.15384615384615,
+      "finalBalance": 9997.486824518319,
+      "return": -0.02513175481681174
+    },
+    {
+      "config": "month/30min/30%/1%",
+      "trades": 79,
+      "winRate": 44.303797468354425,
+      "finalBalance": 9997.41042946974,
+      "return": -0.025895705302591523
+    },
+    {
+      "config": "day/1min/25%/3%",
+      "trades": 2,
+      "winRate": 0,
+      "finalBalance": 9997.226408573886,
+      "return": -0.027735914261138535
+    },
+    {
+      "config": "day/5min/20%/2%",
+      "trades": 3,
+      "winRate": 33.33333333333333,
+      "finalBalance": 9997.20004234331,
+      "return": -0.027999576566908217
+    },
+    {
+      "config": "day/5min/15%/3%",
+      "trades": 2,
+      "winRate": 0,
+      "finalBalance": 9997.184975467504,
+      "return": -0.02815024532495954
+    },
+    {
+      "config": "week/15min/20%/1%",
+      "trades": 24,
+      "winRate": 41.66666666666667,
+      "finalBalance": 9997.170540743902,
+      "return": -0.02829459256097834
+    },
+    {
+      "config": "week/15min/25%/3%",
+      "trades": 21,
+      "winRate": 38.095238095238095,
+      "finalBalance": 9997.16375285364,
+      "return": -0.0283624714636062
+    },
+    {
+      "config": "month/1hour/20%/1%",
+      "trades": 93,
+      "winRate": 46.236559139784944,
+      "finalBalance": 9997.026448132137,
+      "return": -0.029735518678626248
+    },
+    {
+      "config": "month/30min/20%/1%",
+      "trades": 101,
+      "winRate": 47.524752475247524,
+      "finalBalance": 9996.92641921779,
+      "return": -0.030735807822093193
+    },
+    {
+      "config": "day/1min/45%/3%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9996.819484491656,
+      "return": -0.031805155083438875
+    },
+    {
+      "config": "week/1hour/25%/2%",
+      "trades": 19,
+      "winRate": 42.10526315789473,
+      "finalBalance": 9996.777041986188,
+      "return": -0.03222958013811877
+    },
+    {
+      "config": "day/15min/15%/3%",
+      "trades": 2,
+      "winRate": 0,
+      "finalBalance": 9996.720293386432,
+      "return": -0.03279706613568123
+    },
+    {
+      "config": "week/15min/40%/1%",
+      "trades": 13,
+      "winRate": 30.76923076923077,
+      "finalBalance": 9996.68951398776,
+      "return": -0.0331048601224029
+    },
+    {
+      "config": "day/30min/40%/3%",
+      "trades": 1,
+      "winRate": 0,
+      "finalBalance": 9996.672358244785,
+      "return": -0.03327641755215154
+    },
+    {
+      "config": "day/30min/20%/3%",
+      "trades": 2,
+      "winRate": 0,
+      "finalBalance": 9996.629521768635,
+      "return": -0.03370478231365269
+    },
+    {
+      "config": "month/5min/35%/1%",
+      "trades": 64,
+      "winRate": 42.1875,
+      "finalBalance": 9996.62424718649,
+      "return": -0.03375752813510189
+    },
+    {
+      "config": "week/30min/40%/1%",
+      "trades": 12,
+      "winRate": 41.66666666666667,
+      "finalBalance": 9996.521919469971,
+      "return": -0.034780805300288195
+    },
+    {
+      "config": "week/1min/35%/2%",
+      "trades": 11,
+      "winRate": 45.45454545454545,
+      "finalBalance": 9996.381123340514,
+      "return": -0.03618876659485977
+    },
+    {
+      "config": "month/30min/35%/2%",
+      "trades": 68,
+      "winRate": 47.05882352941176,
+      "finalBalance": 9996.304291941058,
+      "return": -0.036957080589418184
+    },
+    {
+      "config": "month/30min/45%/1%",
+      "trades": 61,
+      "winRate": 44.26229508196721,
+      "finalBalance": 9996.215868951407,
+      "return": -0.037841310485928266
+    },
+    {
+      "config": "week/1hour/15%/3%",
+      "trades": 25,
+      "winRate": 48,
+      "finalBalance": 9996.182240110707,
+      "return": -0.03817759889292574
+    },
+    {
+      "config": "month/1min/20%/1%",
+      "trades": 101,
+      "winRate": 49.504950495049506,
+      "finalBalance": 9996.11080052997,
+      "return": -0.0388919947002978
+    },
+    {
+      "config": "month/15min/25%/1%",
+      "trades": 91,
+      "winRate": 43.956043956043956,
+      "finalBalance": 9995.986378397298,
+      "return": -0.04013621602702187
+    },
+    {
+      "config": "month/15min/30%/1%",
+      "trades": 85,
+      "winRate": 45.88235294117647,
+      "finalBalance": 9995.98330729412,
+      "return": -0.04016692705879905
+    },
+    {
+      "config": "week/30min/15%/3%",
+      "trades": 26,
+      "winRate": 46.15384615384615,
+      "finalBalance": 9995.916296334797,
+      "return": -0.04083703665202847
+    },
+    {
+      "config": "week/15min/35%/2%",
+      "trades": 15,
+      "winRate": 40,
+      "finalBalance": 9995.842080674274,
+      "return": -0.041579193257257424
+    },
+    {
+      "config": "week/1hour/35%/3%",
+      "trades": 16,
+      "winRate": 62.5,
+      "finalBalance": 9995.166480776928,
+      "return": -0.04833519223071562
+    },
+    {
+      "config": "day/1hour/20%/3%",
+      "trades": 3,
+      "winRate": 33.33333333333333,
+      "finalBalance": 9994.8236818172,
+      "return": -0.0517631818279915
+    },
+    {
+      "config": "week/30min/20%/2%",
+      "trades": 24,
+      "winRate": 37.5,
+      "finalBalance": 9994.781506725738,
+      "return": -0.05218493274262074
+    },
+    {
+      "config": "week/1min/20%/3%",
+      "trades": 15,
+      "winRate": 46.666666666666664,
+      "finalBalance": 9994.693049279887,
+      "return": -0.05306950720112581
+    },
+    {
+      "config": "month/30min/45%/2%",
+      "trades": 67,
+      "winRate": 47.76119402985074,
+      "finalBalance": 9994.386835304666,
+      "return": -0.056131646953344896
+    },
+    {
+      "config": "year/1min/25%/1%",
+      "trades": 1161,
+      "winRate": 49.69853574504737,
+      "finalBalance": 9993.939636464896,
+      "return": -0.060603635351035336
+    },
+    {
+      "config": "week/30min/40%/2%",
+      "trades": 13,
+      "winRate": 38.46153846153847,
+      "finalBalance": 9993.909085303185,
+      "return": -0.06090914696815162
+    },
+    {
+      "config": "week/1min/45%/3%",
+      "trades": 11,
+      "winRate": 27.27272727272727,
+      "finalBalance": 9993.70726154169,
+      "return": -0.06292738458310851
+    },
+    {
+      "config": "week/30min/45%/3%",
+      "trades": 10,
+      "winRate": 30,
+      "finalBalance": 9992.803641718969,
+      "return": -0.0719635828103128
+    },
+    {
+      "config": "month/15min/40%/3%",
+      "trades": 66,
+      "winRate": 53.03030303030303,
+      "finalBalance": 9992.369896902894,
+      "return": -0.07630103097106257
+    },
+    {
+      "config": "week/30min/25%/3%",
+      "trades": 20,
+      "winRate": 40,
+      "finalBalance": 9992.173057374459,
+      "return": -0.07826942625541052
+    },
+    {
+      "config": "month/15min/20%/2%",
+      "trades": 96,
+      "winRate": 51.041666666666664,
+      "finalBalance": 9991.925871472582,
+      "return": -0.08074128527417997
+    },
+    {
+      "config": "month/15min/20%/1%",
+      "trades": 93,
+      "winRate": 41.935483870967744,
+      "finalBalance": 9991.151097580801,
+      "return": -0.08848902419198566
+    },
+    {
+      "config": "week/1hour/15%/2%",
+      "trades": 28,
+      "winRate": 46.42857142857143,
+      "finalBalance": 9991.044547138967,
+      "return": -0.08955452861033336
+    },
+    {
+      "config": "month/5min/40%/1%",
+      "trades": 58,
+      "winRate": 34.48275862068966,
+      "finalBalance": 9990.39431505689,
+      "return": -0.09605684943109737
+    },
+    {
+      "config": "week/15min/40%/3%",
+      "trades": 14,
+      "winRate": 28.57142857142857,
+      "finalBalance": 9990.125807974788,
+      "return": -0.09874192025212325
+    },
+    {
+      "config": "week/15min/15%/3%",
+      "trades": 26,
+      "winRate": 42.30769230769231,
+      "finalBalance": 9989.979960596605,
+      "return": -0.1002003940339455
+    },
+    {
+      "config": "month/1hour/25%/2%",
+      "trades": 90,
+      "winRate": 46.666666666666664,
+      "finalBalance": 9988.329720604868,
+      "return": -0.11670279395131729
+    },
+    {
+      "config": "month/1min/15%/3%",
+      "trades": 117,
+      "winRate": 47.008547008547005,
+      "finalBalance": 9987.596828902453,
+      "return": -0.12403171097546875
+    },
+    {
+      "config": "month/15min/25%/3%",
+      "trades": 92,
+      "winRate": 40.21739130434783,
+      "finalBalance": 9987.338418988178,
+      "return": -0.1266158101182191
+    },
+    {
+      "config": "month/5min/15%/3%",
+      "trades": 119,
+      "winRate": 51.26050420168067,
+      "finalBalance": 9986.317463379852,
+      "return": -0.1368253662014831
+    },
+    {
+      "config": "month/30min/25%/3%",
+      "trades": 91,
+      "winRate": 43.956043956043956,
+      "finalBalance": 9986.270312902616,
+      "return": -0.13729687097384158
+    },
+    {
+      "config": "week/5min/20%/2%",
+      "trades": 18,
+      "winRate": 16.666666666666664,
+      "finalBalance": 9986.014768060419,
+      "return": -0.13985231939581355
+    },
+    {
+      "config": "week/5min/35%/3%",
+      "trades": 13,
+      "winRate": 23.076923076923077,
+      "finalBalance": 9983.959390977767,
+      "return": -0.16040609022233185
+    },
+    {
+      "config": "year/15min/40%/2%",
+      "trades": 875,
+      "winRate": 51.42857142857142,
+      "finalBalance": 9982.91309851468,
+      "return": -0.17086901485319686
+    },
+    {
+      "config": "month/5min/30%/3%",
+      "trades": 88,
+      "winRate": 50,
+      "finalBalance": 9982.644973332952,
+      "return": -0.1735502666704815
+    },
+    {
+      "config": "month/1min/20%/3%",
+      "trades": 97,
+      "winRate": 47.42268041237113,
+      "finalBalance": 9976.147591561416,
+      "return": -0.2385240843858446
+    },
+    {
+      "config": "year/30min/45%/3%",
+      "trades": 746,
+      "winRate": 49.06166219839142,
+      "finalBalance": 9971.986357480837,
+      "return": -0.2801364251916311
+    },
+    {
+      "config": "year/1hour/30%/2%",
+      "trades": 1088,
+      "winRate": 50,
+      "finalBalance": 9970.389546214405,
+      "return": -0.2961045378559538
+    },
+    {
+      "config": "year/5min/35%/3%",
+      "trades": 834,
+      "winRate": 48.32134292565947,
+      "finalBalance": 9967.912339725239,
+      "return": -0.3208766027476122
+    },
+    {
+      "config": "year/1hour/35%/3%",
+      "trades": 848,
+      "winRate": 48.46698113207547,
+      "finalBalance": 9962.032706514014,
+      "return": -0.37967293485986375
+    },
+    {
+      "config": "year/1min/20%/3%",
+      "trades": 1215,
+      "winRate": 48.806584362139915,
+      "finalBalance": 9944.464148014797,
+      "return": -0.5553585198520341
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "summary": {
+    "initialBalance": 10000,
+    "finalBalance": 9992.099959974928,
+    "totalReturn": -0.07900040025071575,
+    "totalPnL": -7.9000400250708935,
+    "duration": "0.51s"
+  },
+  "metrics": {
+    "totalTrades": 1,
+    "winningTrades": 0,
+    "losingTrades": 1,
+    "totalPnL": -7.9000400250708935,
+    "winRate": 0,
+    "maxDrawdown": 0,
+    "sharpeRatio": 0,
+    "avgWin": 0,
+    "avgLoss": 7.9000400250708935,
+    "profitFactor": 0,
+    "peakBalance": 10490.18845089538,
+    "currentDrawdown": 0
+  },
+  "trades": [
+    {
+      "type": "BUY",
+      "entryPrice": 41673.88,
+      "amount": 0.011997922919584162,
+      "cost": 503,
+      "confidence": 0.325,
+      "timestamp": 1701688320000,
+      "patterns": [],
+      "exitPrice": 41514.56,
+      "exitTimestamp": 1701688740000,
+      "pnl": -7.9000400250708935,
+      "pnlPercent": -1.5705844980260226,
+      "duration": 420000
+    }
+  ],
+  "config": {
+    "symbol": "BTC-USD",
+    "initialBalance": 10000,
+    "maxPositionSize": 0.3,
+    "minTradeConfidence": 0.1,
+    "patternConfidence": 0.05,
+    "enableQuantumSizing": true,
+    "tier": "ELITE"
+  },
+  "timestamp": "2025-09-29T12:54:32.621Z"
+}

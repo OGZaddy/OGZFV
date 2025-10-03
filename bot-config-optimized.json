@@ -1,0 +1,30 @@
+{
+  "timeframe": "15min",
+  "confidence": {
+    "threshold": 0.25,
+    "calculation": {
+      "trend": 0.4,
+      "momentum": 0.25,
+      "volume": 0.2,
+      "volatility": 0.15
+    }
+  },
+  "risk": {
+    "perTrade": 0.02,
+    "stopLoss": 0.015,
+    "takeProfit": 0.04,
+    "trailing": {
+      "activate": 0.02,
+      "distance": 0.01
+    }
+  },
+  "filters": {
+    "minVolume": 1.2,
+    "trendAlign": true,
+    "maxATR": 0.03,
+    "timeOfDay": {
+      "start": 8,
+      "end": 16
+    }
+  }
+}

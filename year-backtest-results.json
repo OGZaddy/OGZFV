@@ -1,0 +1,104 @@
+{
+  "timestamp": "2025-09-30T22:52:07.286Z",
+  "configuration": {
+    "timeframe": "15min",
+    "confidenceThreshold": 0.4,
+    "riskPerTrade": 0.02,
+    "dataPoints": 35040,
+    "period": "1 year"
+  },
+  "results": {
+    "totalTrades": 929,
+    "winningTrades": 308,
+    "losingTrades": 621,
+    "winRate": 33.153928955866526,
+    "totalProfit": -294.3664900675267,
+    "totalReturn": -2.943664900675267,
+    "finalBalance": 9705.633509932473,
+    "maxDrawdown": 6.90804681495499,
+    "profitFactor": 0.8996359395330091,
+    "avgWin": 8.534632003244727,
+    "avgLoss": 4.705189503552315,
+    "avgHoldTime": 303.2777179763186,
+    "monthlyStats": [
+      {
+        "month": 8,
+        "trades": 0,
+        "profit": 0,
+        "return": "0.00%"
+      },
+      {
+        "month": 9,
+        "trades": 80,
+        "profit": 71.43247821253485,
+        "return": "0.71%"
+      },
+      {
+        "month": 10,
+        "trades": 81,
+        "profit": -17.409904844137486,
+        "return": "-2.17%"
+      },
+      {
+        "month": 11,
+        "trades": 55,
+        "profit": -36.3535082978504,
+        "return": "-0.36%"
+      },
+      {
+        "month": 0,
+        "trades": 58,
+        "profit": -145.1333744268545,
+        "return": "0.56%"
+      },
+      {
+        "month": 1,
+        "trades": 82,
+        "profit": -24.465147868849556,
+        "return": "-2.24%"
+      },
+      {
+        "month": 2,
+        "trades": 78,
+        "profit": -63.0354243228023,
+        "return": "1.39%"
+      },
+      {
+        "month": 3,
+        "trades": 100,
+        "profit": 39.47780128195828,
+        "return": "0.40%"
+      },
+      {
+        "month": 4,
+        "trades": 99,
+        "profit": -99.74034022980825,
+        "return": "-2.99%"
+      },
+      {
+        "month": 5,
+        "trades": 118,
+        "profit": -84.92615837666145,
+        "return": "1.15%"
+      },
+      {
+        "month": 6,
+        "trades": 67,
+        "profit": 33.47314067040753,
+        "return": "0.35%"
+      },
+      {
+        "month": 7,
+        "trades": 55,
+        "profit": 6.840510909813645,
+        "return": "-1.93%"
+      }
+    ],
+    "tradesPerMonth": 77.41666666666667
+  },
+  "annualized": {
+    "return": -2.943664900675267,
+    "sharpeRatio": -0.42612115689526436,
+    "trades": 929
+  }
+}

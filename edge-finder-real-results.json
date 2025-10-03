@@ -1,0 +1,41 @@
+{
+  "timestamp": "2025-09-30T22:00:20.165Z",
+  "currentBTCPrice": 114374.99,
+  "testedConfidenceLevels": [
+    0.15,
+    0.4,
+    0.75
+  ],
+  "marketScenarios": [
+    "Strong Uptrend",
+    "Strong Downtrend",
+    "Sideways Market",
+    "High Volatility",
+    "Breakout Condition"
+  ],
+  "results": [
+    {
+      "confidenceLevel": 0.15,
+      "totalTrades": 4,
+      "profitableTrades": 2,
+      "winRate": 50
+    },
+    {
+      "confidenceLevel": 0.4,
+      "totalTrades": 3,
+      "profitableTrades": 2,
+      "winRate": 66.66666666666666
+    },
+    {
+      "confidenceLevel": 0.75,
+      "totalTrades": 0,
+      "profitableTrades": 0,
+      "winRate": 0
+    }
+  ],
+  "recommendation": {
+    "confidenceThreshold": 0.4,
+    "expectedWinRate": 66.66666666666666,
+    "reasoning": "Based on real trading logic analysis with current market conditions"
+  }
+}

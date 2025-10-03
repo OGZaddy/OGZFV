@@ -1,0 +1,71 @@
+{
+  "timestamp": "2025-09-30T22:49:22.071Z",
+  "dataPoints": 56,
+  "timeSpan": "56 minutes",
+  "configurations": [
+    {
+      "name": "15min / 25% confidence",
+      "threshold": 0.25,
+      "trades": 2,
+      "winRate": 100,
+      "totalProfit": 1.2308071005916759,
+      "returnPct": 0.012308071005918464,
+      "finalBalance": 10001.230807100592,
+      "profitFactor": 0,
+      "avgWin": 0.6154035502958379,
+      "avgLoss": 0
+    },
+    {
+      "name": "15min / 20% confidence",
+      "threshold": 0.2,
+      "trades": 2,
+      "winRate": 100,
+      "totalProfit": 1.2308071005916759,
+      "returnPct": 0.012308071005918464,
+      "finalBalance": 10001.230807100592,
+      "profitFactor": 0,
+      "avgWin": 0.6154035502958379,
+      "avgLoss": 0
+    },
+    {
+      "name": "15min / 30% confidence",
+      "threshold": 0.3,
+      "trades": 0,
+      "winRate": 0,
+      "totalProfit": 0,
+      "returnPct": 0,
+      "finalBalance": 10000,
+      "profitFactor": 0,
+      "avgWin": 0,
+      "avgLoss": 0
+    },
+    {
+      "name": "15min / 35% confidence",
+      "threshold": 0.35,
+      "trades": 0,
+      "winRate": 0,
+      "totalProfit": 0,
+      "returnPct": 0,
+      "finalBalance": 10000,
+      "profitFactor": 0,
+      "avgWin": 0,
+      "avgLoss": 0
+    },
+    {
+      "name": "15min / 40% confidence",
+      "threshold": 0.4,
+      "trades": 0,
+      "winRate": 0,
+      "totalProfit": 0,
+      "returnPct": 0,
+      "finalBalance": 10000,
+      "profitFactor": 0,
+      "avgWin": 0,
+      "avgLoss": 0
+    }
+  ],
+  "winner": {
+    "byWinRate": "15min / 25% confidence",
+    "byProfit": "15min / 25% confidence"
+  }
+}

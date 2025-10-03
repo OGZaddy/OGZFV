@@ -1,0 +1,206 @@
+{
+  "timestamp": "2025-09-30T19:38:18.319Z",
+  "testConfigurations": {
+    "confidenceLevels": [
+      0.15,
+      0.4,
+      0.75
+    ],
+    "timeframes": [
+      1,
+      5,
+      15
+    ],
+    "dataLengths": [
+      1000,
+      5000
+    ]
+  },
+  "results": [
+    {
+      "config": "15% / 1min / 1000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "15% / 1min / 5000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "15% / 5min / 1000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "15% / 5min / 5000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "15% / 15min / 1000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "15% / 15min / 5000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "40% / 1min / 1000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "40% / 1min / 5000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "40% / 5min / 1000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "40% / 5min / 5000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "40% / 15min / 1000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "40% / 15min / 5000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "75% / 1min / 1000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "75% / 1min / 5000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "75% / 5min / 1000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "75% / 5min / 5000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "75% / 15min / 1000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    },
+    {
+      "config": "75% / 15min / 5000 points",
+      "metrics": {
+        "trades": 0,
+        "winRate": "0.0%",
+        "return": "0.00%",
+        "profitFactor": "0.00",
+        "finalBalance": "10000.00"
+      }
+    }
+  ],
+  "winners": {
+    "highestReturn": "15% / 1min",
+    "bestWinRate": "15% / 1min",
+    "bestProfitFactor": "15% / 1min"
+  }
+}

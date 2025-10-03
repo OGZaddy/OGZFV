@@ -1,0 +1,13 @@
+{
+  "summary": {
+    "startBalance": 1000,
+    "finalBalance": 241.59169652400067,
+    "btcHoldings": 0.01900000000000001,
+    "finalBTCPrice": 41514.56,
+    "finalPortfolioValue": 1030.368336524001,
+    "totalReturn": "3.04%",
+    "totalTrades": 945,
+    "buyTrades": 482,
+    "sellTrades": 463
+  }
+}

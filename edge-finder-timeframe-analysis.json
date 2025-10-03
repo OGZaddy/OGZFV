@@ -1,0 +1,121 @@
+{
+  "timestamp": "2025-09-30T22:24:53.149Z",
+  "marketConditions": {
+    "price": 114045.03,
+    "currentConfidence": 0.33,
+    "trend": "sideways",
+    "volatility": "medium"
+  },
+  "timeframeAnalysis": [
+    {
+      "timeframe": "1min",
+      "interval": 60000,
+      "description": "Scalping - Ultra high frequency",
+      "tradesPerDay": -50,
+      "holdTime": "1-5 minutes",
+      "activeConfigurations": [
+        {
+          "timeframe": "1min",
+          "confidence": 0.15,
+          "wouldTrade": true,
+          "expectedWinRate": 48
+        },
+        {
+          "timeframe": "1min",
+          "confidence": 0.25,
+          "wouldTrade": true,
+          "expectedWinRate": 50
+        }
+      ]
+    },
+    {
+      "timeframe": "5min",
+      "interval": 300000,
+      "description": "Day trading - High frequency",
+      "tradesPerDay": -20,
+      "holdTime": "15-60 minutes",
+      "activeConfigurations": [
+        {
+          "timeframe": "5min",
+          "confidence": 0.15,
+          "wouldTrade": true,
+          "expectedWinRate": 53.75
+        },
+        {
+          "timeframe": "5min",
+          "confidence": 0.25,
+          "wouldTrade": true,
+          "expectedWinRate": 56.25
+        }
+      ]
+    },
+    {
+      "timeframe": "15min",
+      "interval": 900000,
+      "description": "Swing trading - Medium frequency",
+      "tradesPerDay": -10,
+      "holdTime": "1-4 hours",
+      "activeConfigurations": [
+        {
+          "timeframe": "15min",
+          "confidence": 0.15,
+          "wouldTrade": true,
+          "expectedWinRate": 59.5
+        },
+        {
+          "timeframe": "15min",
+          "confidence": 0.25,
+          "wouldTrade": true,
+          "expectedWinRate": 62.5
+        }
+      ]
+    },
+    {
+      "timeframe": "1hour",
+      "interval": 3600000,
+      "description": "Position trading - Low frequency",
+      "tradesPerDay": -3,
+      "holdTime": "4-24 hours",
+      "activeConfigurations": [
+        {
+          "timeframe": "1hour",
+          "confidence": 0.15,
+          "wouldTrade": true,
+          "expectedWinRate": 63.75
+        },
+        {
+          "timeframe": "1hour",
+          "confidence": 0.25,
+          "wouldTrade": true,
+          "expectedWinRate": 66.25
+        }
+      ]
+    },
+    {
+      "timeframe": "4hour",
+      "interval": 14400000,
+      "description": "Swing positions - Very low frequency",
+      "tradesPerDay": -1.5,
+      "holdTime": "1-3 days",
+      "activeConfigurations": [
+        {
+          "timeframe": "4hour",
+          "confidence": 0.15,
+          "wouldTrade": true,
+          "expectedWinRate": 68
+        },
+        {
+          "timeframe": "4hour",
+          "confidence": 0.25,
+          "wouldTrade": true,
+          "expectedWinRate": 70
+        }
+      ]
+    }
+  ],
+  "recommendation": {
+    "timeframe": "1min",
+    "confidence": 0.15,
+    "expectedWinRate": 48
+  }
+}

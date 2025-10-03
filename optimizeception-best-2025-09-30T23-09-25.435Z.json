@@ -1,0 +1,302 @@
+{
+  "timestamp": "2025-09-30T23:09:25.435Z",
+  "combinationsTested": 70,
+  "runtime": "0h 0m 0s",
+  "bestConfiguration": {
+    "stopLoss": 0.01,
+    "takeProfit": 0.35000000000000003,
+    "confidence": 0.15000000000000002,
+    "timeframe": 15,
+    "rsiPeriod": 10,
+    "rsiOversold": 20,
+    "rsiOverbought": 75,
+    "macdFast": 19,
+    "macdSlow": 33,
+    "macdSignal": 11,
+    "emaShort": 19,
+    "emaMedium": 40,
+    "emaLong": 60,
+    "riskPerTrade": 0.015,
+    "maxPositions": 8,
+    "minVolume": 0.8,
+    "maxATR": 0.05,
+    "trendAlign": false,
+    "startHour": 0,
+    "endHour": 3,
+    "trailingStopActivation": 0.03,
+    "trailingStopDistance": 0.02,
+    "breakevenThreshold": 0.02,
+    "trendWeight": 0.1,
+    "momentumWeight": 0.2,
+    "volumeWeight": 0.15000000000000002,
+    "volatilityWeight": 0.15000000000000002,
+    "riskRewardRatio": 35
+  },
+  "performance": {
+    "winRate": 65.75066567015641,
+    "tradesPerDay": 6,
+    "profitFactor": 67.19176718276334,
+    "monthlyReturn": 11914.518092897402,
+    "score": 8602.678049616647
+  },
+  "learningInsights": [
+    {
+      "pattern": "3_4",
+      "tested": 1,
+      "avgScore": 784.3018409142716,
+      "bestScore": 784.3018409142716
+    },
+    {
+      "pattern": "2_4",
+      "tested": 1,
+      "avgScore": 621.6171616629546,
+      "bestScore": 621.6171616629546
+    },
+    {
+      "pattern": "5_2",
+      "tested": 1,
+      "avgScore": 1695.1983437856911,
+      "bestScore": 1695.1983437856911
+    },
+    {
+      "pattern": "0_6",
+      "tested": 1,
+      "avgScore": 145.9878752410843,
+      "bestScore": 145.9878752410843
+    },
+    {
+      "pattern": "1_5",
+      "tested": 4,
+      "avgScore": 294.6775437620269,
+      "bestScore": 327.3440281198942
+    },
+    {
+      "pattern": "8_3",
+      "tested": 1,
+      "avgScore": 2086.4443550702917,
+      "bestScore": 2086.4443550702917
+    },
+    {
+      "pattern": "1_3",
+      "tested": 3,
+      "avgScore": 240.01741492301926,
+      "bestScore": 301.38581985575064
+    },
+    {
+      "pattern": "2_6",
+      "tested": 4,
+      "avgScore": 437.01058731234,
+      "bestScore": 474.44078405466485
+    },
+    {
+      "pattern": "2_7",
+      "tested": 4,
+      "avgScore": 480.5794307727365,
+      "bestScore": 587.5556603969095
+    },
+    {
+      "pattern": "1_4",
+      "tested": 2,
+      "avgScore": 196.18425513095815,
+      "bestScore": 210.4616083894988
+    },
+    {
+      "pattern": "21_2",
+      "tested": 1,
+      "avgScore": 5521.396962088149,
+      "bestScore": 5521.396962088149
+    },
+    {
+      "pattern": "18_2",
+      "tested": 1,
+      "avgScore": 4350.696595394897,
+      "bestScore": 4350.696595394897
+    },
+    {
+      "pattern": "2_5",
+      "tested": 4,
+      "avgScore": 500.97817163490146,
+      "bestScore": 585.4208882765579
+    },
+    {
+      "pattern": "0_3",
+      "tested": 3,
+      "avgScore": 127.66182149929948,
+      "bestScore": 138.95239566742057
+    },
+    {
+      "pattern": "2_1",
+      "tested": 3,
+      "avgScore": 420.04035085259085,
+      "bestScore": 533.2455269427121
+    },
+    {
+      "pattern": "5_7",
+      "tested": 1,
+      "avgScore": 1161.4506306789624,
+      "bestScore": 1161.4506306789624
+    },
+    {
+      "pattern": "5_1",
+      "tested": 2,
+      "avgScore": 1583.4815287317608,
+      "bestScore": 1593.8931067999767
+    },
+    {
+      "pattern": "3_1",
+      "tested": 2,
+      "avgScore": 690.159214951005,
+      "bestScore": 762.2179692346647
+    },
+    {
+      "pattern": "10_7",
+      "tested": 1,
+      "avgScore": 2574.8116414123897,
+      "bestScore": 2574.8116414123897
+    },
+    {
+      "pattern": "3_5",
+      "tested": 4,
+      "avgScore": 854.7203892088155,
+      "bestScore": 978.0625075207316
+    },
+    {
+      "pattern": "7_1",
+      "tested": 1,
+      "avgScore": 1981.9213234709507,
+      "bestScore": 1981.9213234709507
+    },
+    {
+      "pattern": "0_7",
+      "tested": 1,
+      "avgScore": 74.57051219452627,
+      "bestScore": 74.57051219452627
+    },
+    {
+      "pattern": "4_9",
+      "tested": 1,
+      "avgScore": 886.7390902527593,
+      "bestScore": 886.7390902527593
+    },
+    {
+      "pattern": "1_8",
+      "tested": 1,
+      "avgScore": 147.5107153742299,
+      "bestScore": 147.5107153742299
+    },
+    {
+      "pattern": "10_5",
+      "tested": 1,
+      "avgScore": 2631.93689201301,
+      "bestScore": 2631.93689201301
+    },
+    {
+      "pattern": "0_1",
+      "tested": 2,
+      "avgScore": 137.50874590532993,
+      "bestScore": 148.12558896954923
+    },
+    {
+      "pattern": "1_7",
+      "tested": 3,
+      "avgScore": 227.10493558768925,
+      "bestScore": 316.02175285632296
+    },
+    {
+      "pattern": "22_8",
+      "tested": 1,
+      "avgScore": 4823.631158391885,
+      "bestScore": 4823.631158391885
+    },
+    {
+      "pattern": "0_4",
+      "tested": 1,
+      "avgScore": 100.45399571357713,
+      "bestScore": 100.45399571357713
+    },
+    {
+      "pattern": "5_8",
+      "tested": 2,
+      "avgScore": 1105.5295402557315,
+      "bestScore": 1185.2502873870872
+    },
+    {
+      "pattern": "4_5",
+      "tested": 1,
+      "avgScore": 1082.8138321842807,
+      "bestScore": 1082.8138321842807
+    },
+    {
+      "pattern": "1_2",
+      "tested": 1,
+      "avgScore": 310.9498243281569,
+      "bestScore": 310.9498243281569
+    },
+    {
+      "pattern": "3_6",
+      "tested": 1,
+      "avgScore": 624.168328400615,
+      "bestScore": 624.168328400615
+    },
+    {
+      "pattern": "2_2",
+      "tested": 1,
+      "avgScore": 475.24215798868437,
+      "bestScore": 475.24215798868437
+    },
+    {
+      "pattern": "37_8",
+      "tested": 1,
+      "avgScore": 7772.3267059023365,
+      "bestScore": 7772.3267059023365
+    },
+    {
+      "pattern": "0_5",
+      "tested": 1,
+      "avgScore": 138.240258285965,
+      "bestScore": 138.240258285965
+    },
+    {
+      "pattern": "1_6",
+      "tested": 1,
+      "avgScore": 202.00116865840585,
+      "bestScore": 202.00116865840585
+    },
+    {
+      "pattern": "2_9",
+      "tested": 1,
+      "avgScore": 431.8764400482066,
+      "bestScore": 431.8764400482066
+    },
+    {
+      "pattern": "3_3",
+      "tested": 1,
+      "avgScore": 711.1848745039257,
+      "bestScore": 711.1848745039257
+    },
+    {
+      "pattern": "4_1",
+      "tested": 1,
+      "avgScore": 1077.0631702115484,
+      "bestScore": 1077.0631702115484
+    },
+    {
+      "pattern": "17_5",
+      "tested": 1,
+      "avgScore": 4651.389505413542,
+      "bestScore": 4651.389505413542
+    },
+    {
+      "pattern": "13_3",
+      "tested": 1,
+      "avgScore": 3756.5372761617364,
+      "bestScore": 3756.5372761617364
+    },
+    {
+      "pattern": "35_2",
+      "tested": 1,
+      "avgScore": 8602.678049616647,
+      "bestScore": 8602.678049616647
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "timestamp": "2025-09-30T23:09:24.699Z",
+  "combinationsTested": 0,
+  "runtime": "0h 0m 0s",
+  "bestConfiguration": {
+    "stopLoss": 0.14500000000000002,
+    "takeProfit": 0.42000000000000004,
+    "confidence": 0.35000000000000003,
+    "timeframe": 1,
+    "rsiPeriod": 20,
+    "rsiOversold": 35,
+    "rsiOverbought": 60,
+    "macdFast": 13,
+    "macdSlow": 21,
+    "macdSignal": 7,
+    "emaShort": 10,
+    "emaMedium": 36,
+    "emaLong": 145,
+    "riskPerTrade": 0.065,
+    "maxPositions": 1,
+    "minVolume": 1.3,
+    "maxATR": 0.09,
+    "trendAlign": false,
+    "startHour": 6,
+    "endHour": 20,
+    "trailingStopActivation": 0.05,
+    "trailingStopDistance": 0.01,
+    "breakevenThreshold": 0.01,
+    "trendWeight": 0.25,
+    "momentumWeight": 0.4,
+    "volumeWeight": 0.15000000000000002,
+    "volatilityWeight": 0.2,
+    "riskRewardRatio": 2.896551724137931
+  },
+  "performance": {
+    "winRate": 64.40769520465413,
+    "tradesPerDay": 2,
+    "profitFactor": 5.241588642980668,
+    "monthlyReturn": 254.49531857884008,
+    "score": 784.3018409142716
+  },
+  "learningInsights": [
+    {
+      "pattern": "3_4",
+      "tested": 1,
+      "avgScore": 784.3018409142716,
+      "bestScore": 784.3018409142716
+    }
+  ]
+}

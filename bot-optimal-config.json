@@ -1,0 +1,31 @@
+{
+  "timeframe": 900000,
+  "confidenceThreshold": 0.25,
+  "riskManagement": {
+    "baseRisk": 0.02,
+    "maxPositions": 3,
+    "stopLoss": 0.03
+  },
+  "indicators": {
+    "macd": {
+      "fast": 12,
+      "slow": 26,
+      "signal": 9
+    },
+    "rsi": {
+      "period": 14,
+      "oversold": 30,
+      "overbought": 70
+    },
+    "ema": {
+      "short": 9,
+      "medium": 21,
+      "long": 50
+    },
+    "volume": {
+      "avgPeriod": 20,
+      "spikeThreshold": 1.5
+    }
+  },
+  "description": "Optimal configuration: 15min timeframe with 25% confidence threshold and balanced risk profile"
+}

@@ -1,0 +1,29 @@
+{
+  "timestamp": "2025-09-30T22:58:34.587Z",
+  "totalTests": 420,
+  "profitableConfigs": 274,
+  "bestOverall": {
+    "config": "year/1min/40%/3%",
+    "trades": 859,
+    "winRate": 53.20139697322468,
+    "finalBalance": 10113.341416511923,
+    "return": 1.1334141651192295
+  },
+  "ultimateConfig": {
+    "config": "1min/30%/3%",
+    "consistency": 1,
+    "avgReturn": 0.3789228451291319,
+    "appearances": 4
+  },
+  "statistics": {
+    "avgReturn": 0.0954937845955336,
+    "stdDev": 0.21452865010596925,
+    "sharpeRatio": 0.44513301392780497,
+    "successRate": 0.6523809523809524
+  },
+  "insights": {
+    "bestTimeframe": "15min",
+    "bestConfidence": "40%",
+    "bestRisk": "3%"
+  }
+}
