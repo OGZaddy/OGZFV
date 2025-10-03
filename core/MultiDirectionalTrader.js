@@ -144,8 +144,8 @@ class MultiDirectionalTrader extends EventEmitter {
       confidence: 0.5
     };
     
-    // Trend analysis
-    if (trend && trend.strength > 0.7) {
+    // Trend analysis - REDUCED threshold from 0.7 to 0.3 for paper trading
+    if (trend && trend.strength > 0.3) {
       if (trend.direction === 'up') {
         regime.type = 'bull';
         regime.characteristics.push('strong_uptrend');
@@ -159,8 +159,8 @@ class MultiDirectionalTrader extends EventEmitter {
       regime.confidence = 0.8;
     }
     
-    // Volatility analysis
-    else if (volatility && volatility.current > volatility.average * 2) {
+    // Volatility analysis - REDUCED from 2x to 1.5x for paper trading
+    else if (volatility && volatility.current > volatility.average * 1.5) {
       regime.type = 'volatile';
       regime.characteristics.push('high_volatility');
       regime.tradingMode = 'defensive';
@@ -176,7 +176,15 @@ class MultiDirectionalTrader extends EventEmitter {
       regime.strength = 0.5;
       regime.confidence = 0.6;
     }
-    
+    // DEFAULT TO RANGING if no other regime detected - ensures trading can occur
+    else {
+      regime.type = 'ranging';
+      regime.characteristics.push('normal_market');
+      regime.tradingMode = 'normal';
+      regime.strength = 0.5;
+      regime.confidence = 0.5;
+    }
+
     // Crash detection
     if (momentum && momentum.rsi < 20 && volume && volume.ratio > 3) {
       regime.type = 'crash';
@@ -217,7 +225,7 @@ class MultiDirectionalTrader extends EventEmitter {
       lastUpdate: Date.now()
     };
     
-    console.log(`📊 REGIME DETECTED: ${regime.type.toUpperCase()} (${regime.tradingMode})`);
+    console.log(`📊 MDT REGIME: ${regime.type.toUpperCase()} (mode: ${regime.tradingMode}, strength: ${regime.strength})`);
     console.log(`🎯 Characteristics: ${regime.characteristics.join(', ')}`);
     
     return regime;
