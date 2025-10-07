@@ -2317,7 +2317,7 @@ class OGZPrimeV14Final {
       }
       
       // Basic MACD
-      if (marketData.macd) {
+      if (marketData.macd !== undefined && marketData.macdSignal !== undefined) {
         if (marketData.macd > 0 && marketData.macdSignal > 0) {
           confidence += 0.20; // Bullish - BOOSTED
         } else if (marketData.macd < 0 && marketData.macdSignal < 0) {
@@ -2411,15 +2411,15 @@ class OGZPrimeV14Final {
     }
     
     // DIRECTIONAL DECISION: Compare bullish vs bearish scores
-    let finalConfidence = 0;
+    let finalConfidence = confidence;
     let direction = 'neutral';
 
     if (bullishConfidence > bearishConfidence && bullishConfidence > 0.15) {
       direction = 'buy';
-      finalConfidence = bullishConfidence;
+      finalConfidence += bullishConfidence;
     } else if (bearishConfidence > bullishConfidence && bearishConfidence > 0.15) {
       direction = 'sell';
-      finalConfidence = bearishConfidence;
+      finalConfidence += bearishConfidence;
     }
 
     // Apply volatility adjustment to final confidence
@@ -2520,8 +2520,10 @@ class OGZPrimeV14Final {
         else if (marketData.rsi > 55) sellSignals++; // Overbought (was 70)
 
         // 3. MACD - Use corrected field names from indicator calculation
-        if (marketData.macd > marketData.macdSignal && marketData.macd > 0) buySignals++;
-        else if (marketData.macd < marketData.macdSignal && marketData.macd < 0) sellSignals++;
+        if (marketData.macd !== undefined && marketData.macdSignal !== undefined) {
+          if (marketData.macd > marketData.macdSignal && marketData.macd > 0) buySignals++;
+          else if (marketData.macd < marketData.macdSignal && marketData.macd < 0) sellSignals++;
+        }
 
         // 4. Trend
         if (marketData.trend === 'up') buySignals++;
@@ -2807,7 +2809,7 @@ class OGZPrimeV14Final {
       console.log(`💵 Market Price: $${marketData.price.toFixed(2)}`);
       
       // Front-load 1% to the buy price to ensure fills
-      const entryPrice = direction === 'long' 
+      const entryPrice = direction === 'buy'
         ? marketData.price * 1.01  // Add 1% for buys
         : marketData.price * 0.99; // Subtract 1% for sells (to ensure short fills)
       
