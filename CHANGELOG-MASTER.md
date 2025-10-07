@@ -2,6 +2,14 @@
 
 ## Consolidated from all changelog files on Tue Sep 30 03:54:26 PM UTC 2025
 
+### Change 487: Directional entry buffer and MACD zero handling fixes
+- **Date**: 2025-10-07
+- **Files**: `run-trading-bot-v14FINAL.js`
+- **Fixes**:
+  1. Entry buffer now checks for `'buy'` directions so long trades get the intended +1% price cushion instead of the short-side discount.
+  2. MACD confidence helpers treat zero histograms as valid by requiring `!== undefined` before evaluating sign, restoring crossover signals.
+  3. Final confidence retains neutral contributions when a direction wins by adding the bullish/bearish score on top of the aggregated base confidence.
+
 ## 🚨 KRAKEN DATA SOURCE MIGRATION - October 1, 2025 🚨
 **Time**: 4:50 AM UTC
 **Severity**: MAJOR - Removed all Polygon/fake data, switched to Kraken-only
